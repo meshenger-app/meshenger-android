@@ -337,7 +337,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(this, "Microphone permission needed to make calls", 1).show();
+            Toast.makeText(this, "Microphone permission needed to make calls", Toast.LENGTH_LONG).show();
             finish();
         }
     }

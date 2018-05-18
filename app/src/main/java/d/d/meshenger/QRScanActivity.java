@@ -59,7 +59,7 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
         if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
         }else{
-            Toast.makeText(this, "Camera permission needed to scan Codes", 1).show();
+            Toast.makeText(this, "Camera permission needed to scan Codes", Toast.LENGTH_LONG).show();
             finish();
         }
     }

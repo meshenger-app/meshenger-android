@@ -76,7 +76,7 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
 
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         object.put("username", prefs.getString("username", "Unknown"));
-        object.put("address", getAddress());
+        object.put("address", Utils.getAddress());
         object.put("challenge", this.binder.generateChallenge());
         object.put("identifier", Utils.getMac());
 
@@ -94,7 +94,7 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
         }
     }
 
-    private String getAddress() throws Exception{
+    /*private String getAddress() throws Exception{
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo info = wm.getConnectionInfo();
         if(info == null){
@@ -103,7 +103,7 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 
         return ip;
-    }
+    }*/
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {

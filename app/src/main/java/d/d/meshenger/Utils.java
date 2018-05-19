@@ -45,17 +45,15 @@ public class Utils {
             for (NetworkInterface nif : all) {
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
 
+                String fallBackAdress = null;
                 for(InterfaceAddress a : nif.getInterfaceAddresses()) {
                     if(a.getAddress().isLinkLocalAddress()){
                         return a.getAddress().toString().substring(1);
+                    }else{
+                        fallBackAdress = a.getAddress().toString().substring(1);
                     }
                 }
-
-                for(InterfaceAddress a : nif.getInterfaceAddresses()) {
-                    if(!a.getAddress().isLinkLocalAddress()){
-                        return a.getAddress().toString().substring(1);
-                    }
-                }
+                return fallBackAdress;
             }
         } catch (Exception ex) {
         }

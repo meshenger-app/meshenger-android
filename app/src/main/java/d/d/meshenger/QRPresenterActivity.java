@@ -76,7 +76,12 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
 
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         object.put("username", prefs.getString("username", "Unknown"));
-        object.put("address", Utils.getAddress());
+        String address = Utils.getAddress();
+        if(address == null){
+            Toast.makeText(this, "No information available, please connect to a network", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        object.put("address", address);
         object.put("challenge", this.binder.generateChallenge());
         object.put("identifier", Utils.getMac());
 

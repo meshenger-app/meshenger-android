@@ -1,21 +1,34 @@
 package d.d.meshenger;
 
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.FitWindowsLinearLayout;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
-public class CallActivity extends AppCompatActivity implements ServiceConnection, View.OnClickListener {
+public class CallActivity extends AppCompatActivity implements ServiceConnection, View.OnClickListener, SensorEventListener {
     TextView statusTextView, nameTextView;
 
     MainService.MainBinder binder = null;
@@ -23,13 +36,17 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
 
     Call currentCall;
 
+    SensorManager sensorManager;
+    PowerManager powerManager;
+    PowerManager.WakeLock wakeLock;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
 
-        statusTextView = findViewById(R.id.callStatus);
-        nameTextView = findViewById(R.id.callName);
+        statusTextView = (TextView)findViewById(R.id.callStatus);
+        nameTextView = (TextView)findViewById(R.id.callName);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -53,6 +70,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             };
             bindService(new Intent(this, MainService.class), connection, 0);
             findViewById(R.id.callDecline).setOnClickListener(this);
+            startSensor();
         } else if ("ACTION_ACCEPT_CALL".equals(action)) {
             connection = this;
             bindService(new Intent(this, MainService.class), this, 0);
@@ -70,6 +88,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                     currentCall.accept(passiveCallback);
                     Log.d(CallActivity.class.getSimpleName(), "call accepted");
                     findViewById(R.id.callDecline).setOnClickListener(this);
+                    startSensor();
                 } catch (Exception e) {
                     e.printStackTrace();
                     stopDelayed("Error accepting call");
@@ -80,6 +99,16 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             findViewById(R.id.callAccept).setOnClickListener(optionsListener);
             findViewById(R.id.callDecline).setOnClickListener(optionsListener);
         }
+
+    }
+
+    void startSensor(){
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        Sensor s = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
+
+        powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     }
 
     @Override
@@ -93,6 +122,10 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         super.onDestroy();
         if (binder != null) {
             unbindService(connection);
+        }
+        sensorManager.unregisterListener(this);
+        if(wakeLock != null && wakeLock.isHeld()){
+                wakeLock.release();
         }
     }
 
@@ -174,5 +207,22 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             currentCall.end();
             finish();
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Log.d("CallActivity", "sensor changed: " + sensorEvent.values[0]);
+        if(sensorEvent.values[0] == 0.0f) {
+            wakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+            wakeLock.acquire();
+        }else{
+            wakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+            wakeLock.acquire();
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

@@ -98,7 +98,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         TextView tw = new TextView(this);
-        tw.setText("What should be your name?");
+        tw.setText(R.string.name_prompt);
         tw.setTextColor(Color.BLACK);
         tw.setTextSize(20);
         tw.setGravity(Gravity.CENTER_HORIZONTAL);

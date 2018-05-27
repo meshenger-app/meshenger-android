@@ -1,6 +1,7 @@
 package d.d.meshenger;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -51,6 +53,28 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
             startActivity(new Intent(this, QRPresenterActivity.class));
             finish();
         });
+        findViewById(R.id.fabManualInput).setOnClickListener(view -> {
+            startManualInput();
+        });
+    }
+
+    private void startManualInput(){
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        EditText et = new EditText(this);
+        b.setTitle("Paste data here")
+                .setPositiveButton("ok", (dialogInterface, i) -> {
+                    try {
+                        handleJson(et.getText().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "invalid data", 0).show();
+                    }
+                    finish();
+                })
+                .setNegativeButton("cancel", (dialogInterface, i) -> dialogInterface.cancel())
+                .setView(et);
+        b.show();
+
     }
 
     @Override
@@ -69,19 +93,23 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
         //Toast.makeText(this, result.getText(), 0).show();
         String json = result.getText();
         try {
-            JSONObject object = new JSONObject(json);
-            binder.addContact(new Contact(
-                    object.getString("address"),
-                    object.getString("username"),
-                    "",
-                    object.getString("identifier")
-            ), object.getString("challenge"));
+            handleJson(json);
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(this, "invalid QR-Code", Toast.LENGTH_LONG).show();
         }
 
         finish();
+    }
+
+    private void handleJson(String json) throws JSONException{
+        JSONObject object = new JSONObject(json);
+        binder.addContact(new Contact(
+                object.getString("address"),
+                object.getString("username"),
+                "",
+                object.getString("identifier")
+        ), object.getString("challenge"));
     }
 
     @Override

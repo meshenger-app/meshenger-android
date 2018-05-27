@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
@@ -36,6 +37,7 @@ import java.util.Random;
 
 public class QRPresenterActivity extends AppCompatActivity implements ServiceConnection{
     MainService.MainBinder binder;
+    String json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,15 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
 
         findViewById(R.id.fabPresenter).setOnClickListener(view -> {
             startActivity(new Intent(this, QRScanActivity.class));
+            finish();
+        });
+
+
+        findViewById(R.id.fabShare).setOnClickListener(view -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.putExtra(Intent.EXTRA_TEXT, json);
+            i.setType("text/plain");
+            startActivity(i);
             finish();
         });
 
@@ -70,6 +81,23 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
     }
 
     private void generateQR() throws Exception {
+        json = generateJson();
+
+        Log.d(QRPresenterActivity.class.getSimpleName(), json);
+
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(json, BarcodeFormat.QR_CODE,1080,1080);
+            //TODO dynamic metrics
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String generateJson() throws JSONException{
         JSONObject object = new JSONObject();
 
         Log.d(QRPresenterActivity.class.getSimpleName(), "generateQR " + (this.binder == null));
@@ -85,18 +113,7 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
         object.put("challenge", this.binder.generateChallenge());
         object.put("identifier", Utils.getMac());
 
-        Log.d(QRPresenterActivity.class.getSimpleName(), object.toString());
-
-        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-        try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(object.toString(), BarcodeFormat.QR_CODE,1080,1080);
-            //TODO dynamic metrics
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
+        return object.toString();
     }
 
     /*private String getAddress() throws Exception{

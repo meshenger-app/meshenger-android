@@ -11,6 +11,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/QRView"/>
 
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_menu_share"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimary"
+        android:layout_above="@id/fabPresenter"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabPresenter"
         android:layout_width="wrap_content"

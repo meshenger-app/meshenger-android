@@ -323,7 +323,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Contact c = mainBinder.getContacts().get(i);
-        Intent intent = new Intent(this, CallActivityWebRTC.class);
+        Intent intent = new Intent(this, CallActivity.class);
         intent.setAction("ACTION_START_CALL");
         intent.putExtra("EXTRA_CONTACT", c);
         intent.putExtra("EXTRA_IDENTIFIER", mainBinder.getIdentifier());

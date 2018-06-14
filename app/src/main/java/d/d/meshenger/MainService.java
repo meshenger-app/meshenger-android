@@ -41,8 +41,7 @@ public class MainService extends Service implements Runnable {
     private String userName;
     HashMap<String, Long> challenges;
 
-    String currentRemoteDescription;
-    Socket currentRTCSocket;
+    private Call currentCall = null;
 
     @Override
     public void onCreate() {
@@ -132,15 +131,17 @@ public class MainService extends Service implements Runnable {
                     log("action: " + action);
 
                     switch (action) {
-                        case "call":{
-                            os.write("{\"action\":\"ringing\"}\n".getBytes());
-                            this.currentRemoteDescription = request.getString("offer");
-                            this.currentRTCSocket = client;
-                            Intent intent = new Intent(this, CallActivityWebRTC.class);
+                        case "call": {
+                            String response = "{\"action\":\"ringing\"}\n";
+                            os.write(response.getBytes());
+
+                            this.currentCall = new Call(client);
+                            Intent intent = new Intent(this, CallActivity.class);
                             intent.setAction("ACTION_ACCEPT_CALL");
                             intent.putExtra("EXTRA_USERNAME", request.getString("username"));
                             startActivity(intent);
-                            break;
+
+                            return;
                         }
                         case "ping": {
                             setClientState(identifier, Contact.State.ONLINE);
@@ -216,13 +217,12 @@ public class MainService extends Service implements Runnable {
     }
 
     class MainBinder extends Binder {
-
-        Socket getCurrentRTCSocket(){
-            return currentRTCSocket;
+        d.d.meshenger.Call startCall(Contact contact, String identifier, String username, d.d.meshenger.Call.OnStateChangeListener listener)  {
+            return d.d.meshenger.Call.startCall(contact, username, identifier, listener);
         }
 
-        String getRemoteDescription(){
-            return currentRemoteDescription;
+        Call getCurrentCall(){
+            return currentCall;
         }
 
         String getIdentifier(){

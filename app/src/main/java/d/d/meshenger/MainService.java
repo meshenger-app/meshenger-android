@@ -13,7 +13,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -41,7 +40,7 @@ public class MainService extends Service implements Runnable {
     private String userName;
     HashMap<String, Long> challenges;
 
-    private Call currentCall = null;
+    private RTCCall currentCall = null;
 
     @Override
     public void onCreate() {
@@ -132,10 +131,11 @@ public class MainService extends Service implements Runnable {
 
                     switch (action) {
                         case "call": {
+                            log("ringing...");
                             String response = "{\"action\":\"ringing\"}\n";
                             os.write(response.getBytes());
 
-                            this.currentCall = new Call(client);
+                            this.currentCall = new RTCCall(client, this, request.getString("offer"));
                             Intent intent = new Intent(this, CallActivity.class);
                             intent.setAction("ACTION_ACCEPT_CALL");
                             intent.putExtra("EXTRA_USERNAME", request.getString("username"));
@@ -217,11 +217,11 @@ public class MainService extends Service implements Runnable {
     }
 
     class MainBinder extends Binder {
-        d.d.meshenger.Call startCall(Contact contact, String identifier, String username, d.d.meshenger.Call.OnStateChangeListener listener)  {
-            return d.d.meshenger.Call.startCall(contact, username, identifier, listener);
+        RTCCall startCall(Contact contact, String identifier, String username, RTCCall.OnStateChangeListener listener)  {
+            return RTCCall.startCall(contact, username, identifier, listener, MainService.this);
         }
 
-        Call getCurrentCall(){
+        RTCCall getCurrentCall(){
             return currentCall;
         }
 

@@ -1,11 +1,8 @@
 package d.d.meshenger;
 
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,16 +12,9 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.FitWindowsLinearLayout;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -34,7 +24,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     MainService.MainBinder binder = null;
     ServiceConnection connection;
 
-    Call currentCall;
+    RTCCall currentCall;
+
 
     SensorManager sensorManager;
     PowerManager powerManager;
@@ -52,6 +43,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         if ("ACTION_START_CALL".equals(action)) {
+            Log.d("CallActivity", "starting call...");
             connection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -79,7 +71,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             setStatusText("calling...");
             View.OnClickListener optionsListener = view -> {
                 if (view.getId() == R.id.callDecline) {
-                    Log.d(Call.class.getSimpleName(), "declining call...");
+                    Log.d(RTCCall.class.getSimpleName(), "declining call...");
                     currentCall.decline();
                     finish();
                     return;
@@ -123,13 +115,22 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         if (binder != null) {
             unbindService(connection);
         }
-        sensorManager.unregisterListener(this);
+        if(sensorManager != null)
+            sensorManager.unregisterListener(this);
         if(wakeLock != null && wakeLock.isHeld()){
                 wakeLock.release();
         }
+
+        if(currentCall != null && currentCall.commSocket != null && currentCall.commSocket.isConnected() && !currentCall.commSocket.isClosed()){
+            try {
+                currentCall.commSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    d.d.meshenger.Call.OnStateChangeListener activeCallback = callState -> {
+    RTCCall.OnStateChangeListener activeCallback = callState -> {
 
         switch (callState) {
             case CONNECTING: {
@@ -157,7 +158,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         }
     };
 
-    d.d.meshenger.Call.OnStateChangeListener passiveCallback = callState -> {
+    RTCCall.OnStateChangeListener passiveCallback = callState -> {
         switch (callState) {
             case CONNECTED: {
                 setStatusText("connected.");
@@ -204,7 +205,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         Log.d(CallActivity.class.getSimpleName(), "OnClick");
         if (view.getId() == R.id.callDecline) {
             Log.d(CallActivity.class.getSimpleName(), "endCall() 1");
-            currentCall.end();
+            currentCall.hangUp();
             finish();
         }
     }

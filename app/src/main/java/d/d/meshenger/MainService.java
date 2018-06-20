@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONObject;
+import org.webrtc.SurfaceViewRenderer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -217,7 +218,7 @@ public class MainService extends Service implements Runnable {
     }
 
     class MainBinder extends Binder {
-        RTCCall startCall(Contact contact, String identifier, String username, RTCCall.OnStateChangeListener listener)  {
+        RTCCall startCall(Contact contact, String identifier, String username, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer)  {
             return RTCCall.startCall(contact, username, identifier, listener, MainService.this);
         }
 

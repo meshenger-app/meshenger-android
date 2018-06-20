@@ -10,67 +10,81 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="40dp">
+        <org.webrtc.SurfaceViewRenderer
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/remoteRenderer"
+            android:background="@android:color/white"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/callName"
-            android:textColor="@android:color/black"
-            android:textSize="30dp"
-            android:text="CallerName"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/callStatus"
-            android:textColor="@android:color/black"
-            android:textSize="20dp"
-            android:text="Status text"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/callOptions"
-        android:paddingBottom="30dp">
+        <org.webrtc.SurfaceViewRenderer
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:id="@+id/localRenderer"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/acceptLayout"
-            android:visibility="gone">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-            <Button
+            <TextView
+                android:id="@+id/callName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="accept"
-                android:background="#FF00FF00"
-                android:id="@+id/callAccept"/>
+                android:text="CallerName"
+                android:textColor="@android:color/black"
+                android:textSize="30dp" />
 
-            <Space
-                android:layout_width="30dp"
-                android:layout_height="0dp" />
+            <TextView
+                android:id="@+id/callStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Status text"
+                android:textColor="@android:color/black"
+                android:textSize="20dp" />
 
         </LinearLayout>
 
-
-        <Button
+        <LinearLayout
+            android:id="@+id/callOptions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="decline"
-            android:background="#FFFF0000"
-            android:id="@+id/callDecline"/>
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="30dp">
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/acceptLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/callAccept"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#FF00FF00"
+                    android:text="accept" />
+
+                <Space
+                    android:layout_width="30dp"
+                    android:layout_height="0dp" />
+
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/callDecline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFF0000"
+                android:text="decline" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

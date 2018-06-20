@@ -52,7 +52,9 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                             (Contact) extras.get("EXTRA_CONTACT"),
                             extras.getString("EXTRA_IDENTIFIER"),
                             extras.getString("EXTRA_USERNAME"),
-                            activeCallback);
+                            activeCallback,
+                            findViewById(R.id.localRenderer));
+                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                 }
 
                 @Override
@@ -60,6 +62,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
 
                 }
             };
+            nameTextView.setText(((Contact) extras.get("EXTRA_CONTACT")).getName());
             bindService(new Intent(this, MainService.class), connection, 0);
             findViewById(R.id.callDecline).setOnClickListener(this);
             startSensor();
@@ -77,6 +80,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                     return;
                 }
                 try {
+                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
+                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                     currentCall.accept(passiveCallback);
                     Log.d(CallActivity.class.getSimpleName(), "call accepted");
                     findViewById(R.id.callDecline).setOnClickListener(this);
@@ -128,6 +133,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 e.printStackTrace();
             }
         }
+
+        currentCall.release();
     }
 
     RTCCall.OnStateChangeListener activeCallback = callState -> {

@@ -2,29 +2,31 @@ package d.d.meshenger;
 
 
 import android.content.Context;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.MediaRecorder;
+import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
+import org.webrtc.Camera1Enumerator;
+import org.webrtc.CameraEnumerator;
+import org.webrtc.EglBase;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
-import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
+import org.webrtc.SurfaceViewRenderer;
+import org.webrtc.VideoCapturer;
+import org.webrtc.VideoTrack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Collections;
-
-import javax.security.auth.DestroyFailedException;
 
 public class RTCCall {
     enum CallState {CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR}
@@ -39,6 +41,23 @@ public class RTCCall {
 
     String offer;
 
+
+    SurfaceViewRenderer remoteRenderer, localRenderer;
+
+    EglBase.Context sharedContext;
+
+    VideoTrack localCameraTrack = null;
+    VideoCapturer capturer;
+
+
+    public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
+        this.remoteRenderer = remoteRenderer;
+    }
+
+    public void setLocalRenderer(SurfaceViewRenderer localRenderer) {
+        this.localRenderer = localRenderer;
+        //initLocalRenderer();
+    }
 
     private RTCCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
         log("starting call to " + target.getAddress());
@@ -99,16 +118,19 @@ public class RTCCall {
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
                     log("change " + iceConnectionState.name());
                     super.onIceConnectionChange(iceConnectionState);
-                    if(iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED){
+                    if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED);
                     }
                 }
+
+                @Override
+                public void onAddStream(MediaStream mediaStream) {
+                    super.onAddStream(mediaStream);
+                    handleMediaStream(mediaStream);
+                }
             });
             log("PeerConnection created");
-            MediaStream stream = factory.createLocalMediaStream("stream2");
-            AudioTrack track = factory.createAudioTrack("audio2", factory.createAudioSource(new MediaConstraints()));
-            stream.addTrack(track);
-            connection.addStream(stream);
+            connection.addStream(createStream());
             connection.createOffer(new DefaultSdpObserver() {
                 @Override
                 public void onCreateSuccess(SessionDescription sessionDescription) {
@@ -117,6 +139,63 @@ public class RTCCall {
                 }
             }, constraints);
         }).start();
+    }
+
+    private void initLocalRenderer() {
+        if (this.localRenderer == null) return;
+        log("really initng " + (this.sharedContext == null));
+        this.localRenderer.init(this.sharedContext, null);
+        this.localCameraTrack.addSink(localRenderer);
+        this.capturer.startCapture(500, 500, 30);
+    }
+
+    private void initVideoTrack() {
+        this.sharedContext = EglBase.create().getEglBaseContext();
+        this.capturer = createCapturer(true);
+        this.localCameraTrack = factory.createVideoTrack("video1", factory.createVideoSource(capturer));
+    }
+
+    VideoCapturer createCapturer(boolean front) {
+        CameraEnumerator enumerator = new Camera1Enumerator();
+        for (String name : enumerator.getDeviceNames()) {
+            if ((front && enumerator.isFrontFacing(name)) || (!front && enumerator.isBackFacing(name))) {
+                return enumerator.createCapturer(name, null);
+            }
+        }
+        return null;
+    }
+
+    public void release() {
+        try {
+            this.capturer.stopCapture();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (this.remoteRenderer != null)
+            this.remoteRenderer.release();
+        if (this.localRenderer != null)
+            this.localRenderer.release();
+    }
+
+    private void handleMediaStream(MediaStream stream) {
+        log("Video streams: " + stream.videoTracks.size());
+
+        if (this.remoteRenderer == null || stream.videoTracks.size() == 0) return;
+        new Handler(Looper.getMainLooper()).post(() -> {
+            log("adding sink, main thread: " + (Thread.currentThread() != Looper.getMainLooper().getThread()));
+            remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
+            remoteRenderer.init(this.sharedContext, null);
+            stream.videoTracks.get(0).addSink(remoteRenderer);
+        });
+    }
+
+    private MediaStream createStream() {
+        MediaStream stream = factory.createLocalMediaStream("stream1");
+        AudioTrack audio = factory.createAudioTrack("audio1", factory.createAudioSource(new MediaConstraints()));
+        stream.addTrack(audio);
+        stream.addTrack(this.localCameraTrack);
+        this.capturer.startCapture(500, 500, 30);
+        return stream;
     }
 
     private void initRTC(Context c) {
@@ -129,6 +208,8 @@ public class RTCCall {
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
+        
+        initVideoTrack();
     }
 
     static public RTCCall startCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
@@ -143,7 +224,7 @@ public class RTCCall {
 
     void handleAnswer(String remoteDesc) {
         log("setting remote desc");
-        connection.setRemoteDescription(new DefaultSdpObserver(){
+        connection.setRemoteDescription(new DefaultSdpObserver() {
             @Override
             public void onSetSuccess() {
                 super.onSetSuccess();
@@ -192,16 +273,18 @@ public class RTCCall {
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
                     log("change");
                     super.onIceConnectionChange(iceConnectionState);
-                    if(iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED){
+                    if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED);
                     }
                 }
-            });
 
-            MediaStream stream = factory.createLocalMediaStream("stream1");
-            AudioTrack audio = factory.createAudioTrack("audio1", factory.createAudioSource(new MediaConstraints()));
-            stream.addTrack(audio);
-            connection.addStream(stream);
+                @Override
+                public void onAddStream(MediaStream mediaStream) {
+                    super.onAddStream(mediaStream);
+                    handleMediaStream(mediaStream);
+                }
+            });
+            connection.addStream(createStream());
 
             log("setting remote description");
             connection.setRemoteDescription(new DefaultSdpObserver() {

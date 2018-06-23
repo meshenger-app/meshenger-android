@@ -84,6 +84,13 @@
                 android:background="#FFFF0000"
                 android:text="decline" />
 
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/videoStreamSwitch"
+                android:visibility="gone"
+                android:layout_toRightOf="@id/callDecline"/>
+
         </LinearLayout>
 
     </RelativeLayout>

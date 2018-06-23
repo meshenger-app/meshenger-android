@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -81,7 +83,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 }
                 try {
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
-                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
+                    //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                     currentCall.accept(passiveCallback);
                     Log.d(CallActivity.class.getSimpleName(), "call accepted");
                     findViewById(R.id.callDecline).setOnClickListener(this);
@@ -96,6 +98,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             findViewById(R.id.callAccept).setOnClickListener(optionsListener);
             findViewById(R.id.callDecline).setOnClickListener(optionsListener);
         }
+
+        ((Switch) findViewById(R.id.videoStreamSwitch)).setOnCheckedChangeListener((compoundButton, b) -> currentCall.setVideoEnabled(b));
 
     }
 
@@ -145,7 +149,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 break;
             }
             case CONNECTED: {
-                //new Handler(getMainLooper()).post(() -> findViewById(R.id.callOptions).setVisibility(View.GONE));
+                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitch).setVisibility(View.VISIBLE));
                 setStatusText("connected.");
                 break;
             }
@@ -170,6 +174,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             case CONNECTED: {
                 setStatusText("connected.");
                 runOnUiThread(() -> findViewById(R.id.acceptLayout).setVisibility(View.GONE));
+                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitch).setVisibility(View.VISIBLE));
                 break;
             }
             case RINGING: {

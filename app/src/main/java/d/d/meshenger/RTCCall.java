@@ -7,15 +7,19 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
 import org.webrtc.Camera1Enumerator;
 import org.webrtc.CameraEnumerator;
+import org.webrtc.DataChannel;
 import org.webrtc.EglBase;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamTrack;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
+import org.webrtc.RtpReceiver;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
@@ -26,10 +30,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.Collections;
 
-public class RTCCall {
+public class RTCCall implements DataChannel.Observer{
+
     enum CallState {CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR}
+    final String StateChangeMessage = "StateChange";
+    final String CameraDisabledMessage = "CameraDisabled";
+    final String CameraEnabledMessage = "CameraEnabled";
 
     OnStateChangeListener listener;
 
@@ -45,18 +54,12 @@ public class RTCCall {
     SurfaceViewRenderer remoteRenderer, localRenderer;
 
     EglBase.Context sharedContext;
-
-    VideoTrack localCameraTrack = null;
     VideoCapturer capturer;
 
+    DataChannel dataChannel;
 
     public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
         this.remoteRenderer = remoteRenderer;
-    }
-
-    public void setLocalRenderer(SurfaceViewRenderer localRenderer) {
-        this.localRenderer = localRenderer;
-        //initLocalRenderer();
     }
 
     private RTCCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
@@ -128,9 +131,18 @@ public class RTCCall {
                     super.onAddStream(mediaStream);
                     handleMediaStream(mediaStream);
                 }
+
+                @Override
+                public void onDataChannel(DataChannel dataChannel) {
+                    super.onDataChannel(dataChannel);
+                    RTCCall.this.dataChannel = dataChannel;
+                    dataChannel.registerObserver(RTCCall.this);
+                }
             });
             log("PeerConnection created");
             connection.addStream(createStream());
+            this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
+            this.dataChannel.registerObserver(this);
             connection.createOffer(new DefaultSdpObserver() {
                 @Override
                 public void onCreateSuccess(SessionDescription sessionDescription) {
@@ -141,19 +153,76 @@ public class RTCCall {
         }).start();
     }
 
-    private void initLocalRenderer() {
+
+    @Override
+    public void onBufferedAmountChange(long l) {
+
+    }
+
+    @Override
+    public void onStateChange() {
+
+    }
+
+    @Override
+    public void onMessage(DataChannel.Buffer buffer) {
+        byte[] data = new byte[buffer.data.remaining()];
+        buffer.data.get(data);
+        String s = new String(data);
+        JSONObject object = null;
+        try {
+            object = new JSONObject(s);
+            if(object.has(StateChangeMessage)){
+                String state = object.getString(StateChangeMessage);
+                switch (state){
+                    case CameraEnabledMessage:
+                    case CameraDisabledMessage:{
+                        setRemoteVideoEnabled(state.equals(CameraEnabledMessage));
+                        break;
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void setRemoteVideoEnabled(boolean enabled){
+        log("setting remote video enabled: " + enabled);
+        new Handler(Looper.getMainLooper()).post(() -> {this.remoteRenderer.setBackgroundColor(enabled ? Color.TRANSPARENT : Color.WHITE);});
+    }
+
+    public void setVideoEnabled(boolean b) {
+        try {
+            if(b){
+                this.capturer.startCapture(500, 500, 30);
+            }else{
+                this.capturer.stopCapture();
+            }
+            JSONObject object = new JSONObject();
+            object.put(StateChangeMessage, b ? CameraEnabledMessage : CameraDisabledMessage);
+            dataChannel.send(new DataChannel.Buffer(ByteBuffer.wrap(object.toString().getBytes()), false));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*private void initLocalRenderer() {
         if (this.localRenderer == null) return;
         log("really initng " + (this.sharedContext == null));
         this.localRenderer.init(this.sharedContext, null);
         this.localCameraTrack.addSink(localRenderer);
         this.capturer.startCapture(500, 500, 30);
-    }
+    }*/
 
-    private void initVideoTrack() {
+    /*private void initVideoTrack() {
         this.sharedContext = EglBase.create().getEglBaseContext();
         this.capturer = createCapturer(true);
         this.localCameraTrack = factory.createVideoTrack("video1", factory.createVideoSource(capturer));
-    }
+    }*/
 
     VideoCapturer createCapturer(boolean front) {
         CameraEnumerator enumerator = new Camera1Enumerator();
@@ -166,10 +235,12 @@ public class RTCCall {
     }
 
     public void release() {
-        try {
-            this.capturer.stopCapture();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(this.capturer != null) {
+            try {
+                this.capturer.stopCapture();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         if (this.remoteRenderer != null)
             this.remoteRenderer.release();
@@ -178,12 +249,10 @@ public class RTCCall {
     }
 
     private void handleMediaStream(MediaStream stream) {
-        log("Video streams: " + stream.videoTracks.size());
-
+        log("handling video stream");
         if (this.remoteRenderer == null || stream.videoTracks.size() == 0) return;
         new Handler(Looper.getMainLooper()).post(() -> {
-            log("adding sink, main thread: " + (Thread.currentThread() != Looper.getMainLooper().getThread()));
-            remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
+            //remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
             remoteRenderer.init(this.sharedContext, null);
             stream.videoTracks.get(0).addSink(remoteRenderer);
         });
@@ -193,9 +262,14 @@ public class RTCCall {
         MediaStream stream = factory.createLocalMediaStream("stream1");
         AudioTrack audio = factory.createAudioTrack("audio1", factory.createAudioSource(new MediaConstraints()));
         stream.addTrack(audio);
-        stream.addTrack(this.localCameraTrack);
-        this.capturer.startCapture(500, 500, 30);
+        stream.addTrack(getVideoTrack());
+        //this.capturer.startCapture(500, 500, 30);
         return stream;
+    }
+
+    private VideoTrack getVideoTrack(){
+        this.capturer = createCapturer(true);
+        return factory.createVideoTrack("video1", factory.createVideoSource(this.capturer));
     }
 
     private void initRTC(Context c) {
@@ -209,7 +283,7 @@ public class RTCCall {
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
         
-        initVideoTrack();
+        //initVideoTrack();
     }
 
     static public RTCCall startCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
@@ -280,11 +354,22 @@ public class RTCCall {
 
                 @Override
                 public void onAddStream(MediaStream mediaStream) {
+                    log("onAddStream");
                     super.onAddStream(mediaStream);
                     handleMediaStream(mediaStream);
                 }
+
+
+                @Override
+                public void onDataChannel(DataChannel dataChannel) {
+                    super.onDataChannel(dataChannel);
+                    RTCCall.this.dataChannel = dataChannel;
+                    dataChannel.registerObserver(RTCCall.this);
+                }
+
             });
             connection.addStream(createStream());
+            //this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
 
             log("setting remote description");
             connection.setRemoteDescription(new DefaultSdpObserver() {

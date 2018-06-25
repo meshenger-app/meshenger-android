@@ -12,14 +12,13 @@ import org.json.JSONObject;
 import org.webrtc.AudioTrack;
 import org.webrtc.Camera1Enumerator;
 import org.webrtc.CameraEnumerator;
+import org.webrtc.CameraVideoCapturer;
 import org.webrtc.DataChannel;
 import org.webrtc.EglBase;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
-import org.webrtc.MediaStreamTrack;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
-import org.webrtc.RtpReceiver;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
@@ -33,9 +32,10 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 
-public class RTCCall implements DataChannel.Observer{
+public class RTCCall implements DataChannel.Observer {
 
     enum CallState {CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR}
+
     final String StateChangeMessage = "StateChange";
     final String CameraDisabledMessage = "CameraDisabled";
     final String CameraEnabledMessage = "CameraEnabled";
@@ -54,7 +54,7 @@ public class RTCCall implements DataChannel.Observer{
     SurfaceViewRenderer remoteRenderer, localRenderer;
 
     EglBase.Context sharedContext;
-    VideoCapturer capturer;
+    CameraVideoCapturer capturer;
 
     DataChannel dataChannel;
 
@@ -154,6 +154,11 @@ public class RTCCall implements DataChannel.Observer{
     }
 
 
+    public void setFrontFacing(boolean frontFacing) {
+        if (this.capturer == null) return;
+        this.capturer.switchCamera(null);
+    }
+
     @Override
     public void onBufferedAmountChange(long l) {
 
@@ -172,11 +177,11 @@ public class RTCCall implements DataChannel.Observer{
         JSONObject object = null;
         try {
             object = new JSONObject(s);
-            if(object.has(StateChangeMessage)){
+            if (object.has(StateChangeMessage)) {
                 String state = object.getString(StateChangeMessage);
-                switch (state){
+                switch (state) {
                     case CameraEnabledMessage:
-                    case CameraDisabledMessage:{
+                    case CameraDisabledMessage: {
                         setRemoteVideoEnabled(state.equals(CameraEnabledMessage));
                         break;
                     }
@@ -188,20 +193,22 @@ public class RTCCall implements DataChannel.Observer{
 
     }
 
-    private void setRemoteVideoEnabled(boolean enabled){
+    private void setRemoteVideoEnabled(boolean enabled) {
         log("setting remote video enabled: " + enabled);
-        new Handler(Looper.getMainLooper()).post(() -> {this.remoteRenderer.setBackgroundColor(enabled ? Color.TRANSPARENT : Color.WHITE);});
+        new Handler(Looper.getMainLooper()).post(() -> {
+            this.remoteRenderer.setBackgroundColor(enabled ? Color.TRANSPARENT : Color.WHITE);
+        });
     }
 
-    public void setVideoEnabled(boolean b) {
+    public void setVideoEnabled(boolean enabled) {
         try {
-            if(b){
+            if (enabled) {
                 this.capturer.startCapture(500, 500, 30);
-            }else{
+            } else {
                 this.capturer.stopCapture();
             }
             JSONObject object = new JSONObject();
-            object.put(StateChangeMessage, b ? CameraEnabledMessage : CameraDisabledMessage);
+            object.put(StateChangeMessage, enabled ? CameraEnabledMessage : CameraDisabledMessage);
             dataChannel.send(new DataChannel.Buffer(ByteBuffer.wrap(object.toString().getBytes()), false));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -224,7 +231,7 @@ public class RTCCall implements DataChannel.Observer{
         this.localCameraTrack = factory.createVideoTrack("video1", factory.createVideoSource(capturer));
     }*/
 
-    VideoCapturer createCapturer(boolean front) {
+    CameraVideoCapturer createCapturer(boolean front) {
         CameraEnumerator enumerator = new Camera1Enumerator();
         for (String name : enumerator.getDeviceNames()) {
             if ((front && enumerator.isFrontFacing(name)) || (!front && enumerator.isBackFacing(name))) {
@@ -234,8 +241,8 @@ public class RTCCall implements DataChannel.Observer{
         return null;
     }
 
-    public void release() {
-        if(this.capturer != null) {
+    public void releaseCamera() {
+        if (this.capturer != null) {
             try {
                 this.capturer.stopCapture();
             } catch (InterruptedException e) {
@@ -267,7 +274,7 @@ public class RTCCall implements DataChannel.Observer{
         return stream;
     }
 
-    private VideoTrack getVideoTrack(){
+    private VideoTrack getVideoTrack() {
         this.capturer = createCapturer(true);
         return factory.createVideoTrack("video1", factory.createVideoSource(this.capturer));
     }
@@ -282,7 +289,7 @@ public class RTCCall implements DataChannel.Observer{
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
-        
+
         //initVideoTrack();
     }
 

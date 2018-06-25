@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -38,8 +37,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
 
-        statusTextView = (TextView)findViewById(R.id.callStatus);
-        nameTextView = (TextView)findViewById(R.id.callName);
+        statusTextView = (TextView) findViewById(R.id.callStatus);
+        nameTextView = (TextView) findViewById(R.id.callName);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -99,11 +98,17 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             findViewById(R.id.callDecline).setOnClickListener(optionsListener);
         }
 
-        ((Switch) findViewById(R.id.videoStreamSwitch)).setOnCheckedChangeListener((compoundButton, b) -> currentCall.setVideoEnabled(b));
+        ((Switch) findViewById(R.id.videoStreamSwitch)).setOnCheckedChangeListener((compoundButton, b) -> {
+            currentCall.setVideoEnabled(b);
+            findViewById(R.id.frontFacingSwitch).setVisibility(b ? View.VISIBLE : View.GONE);
+        });
+        ((Switch) findViewById(R.id.frontFacingSwitch)).setOnCheckedChangeListener((compoundButton, b) -> {
+            currentCall.setFrontFacing(b);
+        });
 
     }
 
-    void startSensor(){
+    void startSensor() {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         Sensor s = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -124,13 +129,13 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         if (binder != null) {
             unbindService(connection);
         }
-        if(sensorManager != null)
+        if (sensorManager != null)
             sensorManager.unregisterListener(this);
-        if(wakeLock != null && wakeLock.isHeld()){
-                wakeLock.release();
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
         }
 
-        if(currentCall != null && currentCall.commSocket != null && currentCall.commSocket.isConnected() && !currentCall.commSocket.isClosed()){
+        if (currentCall != null && currentCall.commSocket != null && currentCall.commSocket.isConnected() && !currentCall.commSocket.isClosed()) {
             try {
                 currentCall.commSocket.close();
             } catch (IOException e) {
@@ -138,7 +143,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             }
         }
 
-        currentCall.release();
+        currentCall.releaseCamera();
     }
 
     RTCCall.OnStateChangeListener activeCallback = callState -> {
@@ -225,11 +230,11 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Log.d("CallActivity", "sensor changed: " + sensorEvent.values[0]);
-        if(sensorEvent.values[0] == 0.0f) {
-            wakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+        if (sensorEvent.values[0] == 0.0f) {
+            wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
             wakeLock.acquire();
-        }else{
-            wakeLock = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+        } else {
+            wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
             wakeLock.acquire();
         }
     }

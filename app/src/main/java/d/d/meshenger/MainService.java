@@ -33,13 +33,13 @@ public class MainService extends Service implements Runnable {
     private ArrayList<Contact> contacts;
 
     public static final int serverPort = 10001;
-    ServerSocket server;
+    private ServerSocket server;
     private final String mac = Utils.getMac();
 
     private volatile boolean run = true, interrupted = false;
 
     private String userName;
-    HashMap<String, Long> challenges;
+    private HashMap<String, Long> challenges;
 
     private RTCCall currentCall = null;
 
@@ -274,7 +274,7 @@ public class MainService extends Service implements Runnable {
         private List<Contact> contacts;
         ContactPingListener listener;
 
-        public PingRunnable(List<Contact> contacts, ContactPingListener listener) {
+        PingRunnable(List<Contact> contacts, ContactPingListener listener) {
             this.contacts = contacts;
             this.listener = listener;
         }
@@ -328,7 +328,7 @@ public class MainService extends Service implements Runnable {
         private String challenge;
         private String identifier;
 
-        public ConnectRunnable(Contact contact, String challenge) {
+        ConnectRunnable(Contact contact, String challenge) {
             this.address = contact.getAddress();
             this.username = userName;
             this.challenge = challenge;
@@ -364,7 +364,7 @@ public class MainService extends Service implements Runnable {
         }
     }
 
-    BroadcastReceiver settingsReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver settingsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()){

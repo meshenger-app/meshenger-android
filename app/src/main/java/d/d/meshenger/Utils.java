@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-public class Utils {
+class Utils {
 
 
     public static String getMac() {

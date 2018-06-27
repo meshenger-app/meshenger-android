@@ -6,7 +6,7 @@ import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.RtpReceiver;
 
-public class DefaultObserver implements PeerConnection.Observer {
+class DefaultObserver implements PeerConnection.Observer {
     @Override
     public void onSignalingChange(PeerConnection.SignalingState signalingState) {
 

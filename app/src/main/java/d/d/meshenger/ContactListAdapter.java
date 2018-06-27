@@ -20,11 +20,11 @@ import android.widget.TextView;
 import java.util.List;
 
 
-public class ContactListAdapter extends ArrayAdapter<Contact> {
+class ContactListAdapter extends ArrayAdapter<Contact> {
     private List<Contact> contacts;
     private Context context;
 
-    LayoutInflater inflater;
+    private LayoutInflater inflater;
 
     public ContactListAdapter(@NonNull Context context, int resource, @NonNull List<Contact> objects) {
         super(context, resource, objects);

@@ -36,27 +36,28 @@ public class RTCCall implements DataChannel.Observer {
 
     enum CallState {CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR}
 
-    final String StateChangeMessage = "StateChange";
-    final String CameraDisabledMessage = "CameraDisabled";
-    final String CameraEnabledMessage = "CameraEnabled";
+    private final String StateChangeMessage = "StateChange";
+    private final String CameraDisabledMessage = "CameraDisabled";
+    private final String CameraEnabledMessage = "CameraEnabled";
 
-    OnStateChangeListener listener;
+    private OnStateChangeListener listener;
 
-    protected Socket commSocket;
-    PeerConnectionFactory factory;
-    PeerConnection connection;
+    Socket commSocket;
+    private PeerConnectionFactory factory;
+    private PeerConnection connection;
 
-    MediaConstraints constraints;
+    private MediaConstraints constraints;
 
-    String offer;
+    private String offer;
 
 
-    SurfaceViewRenderer remoteRenderer, localRenderer;
+    private SurfaceViewRenderer remoteRenderer;
+    private SurfaceViewRenderer localRenderer;
 
-    EglBase.Context sharedContext;
-    CameraVideoCapturer capturer;
+    private EglBase.Context sharedContext;
+    private CameraVideoCapturer capturer;
 
-    DataChannel dataChannel;
+    private DataChannel dataChannel;
 
     public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
         this.remoteRenderer = remoteRenderer;
@@ -231,10 +232,10 @@ public class RTCCall implements DataChannel.Observer {
         this.localCameraTrack = factory.createVideoTrack("video1", factory.createVideoSource(capturer));
     }*/
 
-    CameraVideoCapturer createCapturer(boolean front) {
+    private CameraVideoCapturer createCapturer() {
         CameraEnumerator enumerator = new Camera1Enumerator();
         for (String name : enumerator.getDeviceNames()) {
-            if ((front && enumerator.isFrontFacing(name)) || (!front && enumerator.isBackFacing(name))) {
+            if (enumerator.isFrontFacing(name)) {
                 return enumerator.createCapturer(name, null);
             }
         }
@@ -275,7 +276,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private VideoTrack getVideoTrack() {
-        this.capturer = createCapturer(true);
+        this.capturer = createCapturer();
         return factory.createVideoTrack("video1", factory.createVideoSource(this.capturer));
     }
 
@@ -303,7 +304,7 @@ public class RTCCall implements DataChannel.Observer {
         this.offer = offer;
     }
 
-    void handleAnswer(String remoteDesc) {
+    private void handleAnswer(String remoteDesc) {
         log("setting remote desc");
         connection.setRemoteDescription(new DefaultSdpObserver() {
             @Override
@@ -418,8 +419,9 @@ public class RTCCall implements DataChannel.Observer {
     public void hangUp() {
         new Thread(() -> {
             try {
-                commSocket.close();
-                connection.close();
+                if(commSocket != null) commSocket.close();
+
+                if(connection != null) connection.close();
                 reportStateChange(CallState.ENDED);
             } catch (IOException e) {
                 e.printStackTrace();

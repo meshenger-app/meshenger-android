@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ContactSqlHelper extends SQLiteOpenHelper {
+class ContactSqlHelper extends SQLiteOpenHelper {
     private Context context;
     private SQLiteDatabase database = null;
 

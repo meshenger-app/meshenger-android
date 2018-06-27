@@ -4,7 +4,7 @@ package d.d.meshenger;
 import java.io.Serializable;
 
 public class Contact implements Serializable{
-    enum State{ONLINE, OFFLINE, PENDING};
+    enum State{ONLINE, OFFLINE, PENDING}
 
     private long id;
     private String address;

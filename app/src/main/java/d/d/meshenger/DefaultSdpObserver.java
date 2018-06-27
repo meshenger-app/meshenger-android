@@ -3,7 +3,7 @@ package d.d.meshenger;
 import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
 
-public class DefaultSdpObserver implements SdpObserver {
+class DefaultSdpObserver implements SdpObserver {
     @Override
     public void onCreateSuccess(SessionDescription sessionDescription) {
 

@@ -11,18 +11,18 @@
         android:layout_height="match_parent">
 
         <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/remoteRenderer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/remoteRenderer"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white" />
 
         <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/localRenderer"
             android:layout_width="150dp"
             android:layout_height="200dp"
-            android:id="@+id/localRenderer"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,40 +63,44 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone">
 
-                <Button
+                <ImageButton
                     android:id="@+id/callAccept"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#FF00FF00"
-                    android:text="accept" />
+                    android:layout_width="@dimen/accept_button_size"
+                    android:layout_height="@dimen/accept_button_size"
+                    android:background="@drawable/accept_button_round"
+                    android:src="@drawable/baseline_phone_black_48"
+                    android:scaleType="fitXY"
+                    android:padding="5dp"/>
 
                 <Space
-                    android:layout_width="30dp"
+                    android:layout_width="80dp"
                     android:layout_height="0dp" />
 
             </LinearLayout>
 
 
-            <Button
+            <ImageButton
                 android:id="@+id/callDecline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#FFFF0000"
-                android:text="decline" />
+                android:layout_width="@dimen/accept_button_size"
+                android:layout_height="@dimen/accept_button_size"
+                android:background="@drawable/accept_button_round"
+                android:src="@drawable/baseline_phone_missed_black_48"
+                android:scaleType="fitXY"
+                android:padding="5dp"/>
 
             <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/videoStreamSwitch"
-                android:visibility="gone"
-                android:layout_toRightOf="@id/callDecline"/>
-
-            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/callDecline"
+                android:visibility="gone" />
+
+            <Switch
                 android:id="@+id/frontFacingSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/videoStreamSwitch"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
 

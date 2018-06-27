@@ -20,25 +20,26 @@ import android.widget.TextView;
 import java.io.IOException;
 
 public class CallActivity extends AppCompatActivity implements ServiceConnection, View.OnClickListener, SensorEventListener {
-    TextView statusTextView, nameTextView;
+    private TextView statusTextView;
+    private TextView nameTextView;
 
-    MainService.MainBinder binder = null;
-    ServiceConnection connection;
+    private MainService.MainBinder binder = null;
+    private ServiceConnection connection;
 
-    RTCCall currentCall;
+    private RTCCall currentCall;
 
 
-    SensorManager sensorManager;
-    PowerManager powerManager;
-    PowerManager.WakeLock wakeLock;
+    private SensorManager sensorManager;
+    private PowerManager powerManager;
+    private PowerManager.WakeLock wakeLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
 
-        statusTextView = (TextView) findViewById(R.id.callStatus);
-        nameTextView = (TextView) findViewById(R.id.callName);
+        statusTextView = findViewById(R.id.callStatus);
+        nameTextView = findViewById(R.id.callName);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -108,7 +109,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
 
     }
 
-    void startSensor() {
+    private void startSensor() {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         Sensor s = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -146,7 +147,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         currentCall.releaseCamera();
     }
 
-    RTCCall.OnStateChangeListener activeCallback = callState -> {
+    private RTCCall.OnStateChangeListener activeCallback = callState -> {
 
         switch (callState) {
             case CONNECTING: {
@@ -174,7 +175,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         }
     };
 
-    RTCCall.OnStateChangeListener passiveCallback = callState -> {
+    private RTCCall.OnStateChangeListener passiveCallback = callState -> {
         switch (callState) {
             case CONNECTED: {
                 setStatusText("connected.");

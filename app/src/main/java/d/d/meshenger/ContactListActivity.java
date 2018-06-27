@@ -191,7 +191,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         }
     }
 
-    BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             refreshContactList();

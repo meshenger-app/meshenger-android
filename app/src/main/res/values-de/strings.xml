@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Einstellungen</string>
+    <string name="name_prompt">Wie wollen sie gennant werden?</string>
+    <string name="scan_invitation">Diesen code scannen</string>
+    <string name="paste_invitation">Hier Daten einfügen</string>
+    <string name="invalid_data">ungültige Daten</string>
+    <string name="cancel">abbrechen</string>
+    <string name="camera_permission_request">Benötige Erlaubniss, um Kamera zu benutzen</string>
+    <string name="invalid_qr">Ungültiger QR-Code</string>
+    <string name="network_connect_invitation">Keine Netzwerkinformation verfügbar</string>
+</resources>

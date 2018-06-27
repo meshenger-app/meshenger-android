@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class QRScanActivity extends AppCompatActivity implements BarcodeCallback, ServiceConnection{
@@ -61,17 +62,17 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
     private void startManualInput(){
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText et = new EditText(this);
-        b.setTitle("Paste data here")
+        b.setTitle(R.string.paste_invitation)
                 .setPositiveButton("ok", (dialogInterface, i) -> {
                     try {
                         handleJson(et.getText().toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Toast.makeText(this, "invalid data", 0).show();
+                        Toast.makeText(this, R.string.invalid_data, 0).show();
                     }
                     finish();
                 })
-                .setNegativeButton("cancel", (dialogInterface, i) -> dialogInterface.cancel())
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                 .setView(et);
         b.show();
 
@@ -83,7 +84,7 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
         if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
         }else{
-            Toast.makeText(this, "Camera permission needed to scan Codes", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show();
             finish();
         }
     }
@@ -96,7 +97,7 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
             handleJson(json);
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(this, "invalid QR-Code", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.invalid_qr, Toast.LENGTH_LONG).show();
         }
 
         finish();
@@ -142,7 +143,7 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
 
         barcodeView = findViewById(R.id.barcodeScannerView);
 
-        Collection<BarcodeFormat> formats = Arrays.asList(BarcodeFormat.QR_CODE);
+        Collection<BarcodeFormat> formats = Collections.singletonList(BarcodeFormat.QR_CODE);
         barcodeView.getBarcodeView().setDecoderFactory(new DefaultDecoderFactory(formats));
         barcodeView.decodeContinuous(this);
 

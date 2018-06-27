@@ -36,15 +36,15 @@ import java.util.List;
 import java.util.Random;
 
 public class QRPresenterActivity extends AppCompatActivity implements ServiceConnection{
-    MainService.MainBinder binder;
-    String json;
+    private MainService.MainBinder binder;
+    private String json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrpresenter);
 
-        setTitle("Scan this code");
+        setTitle(getString(R.string.scan_invitation));
         bindService();
 
         findViewById(R.id.fabPresenter).setOnClickListener(view -> {
@@ -106,7 +106,7 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
         object.put("username", prefs.getString("username", "Unknown"));
         String address = Utils.getAddress();
         if(address == null){
-            Toast.makeText(this, "No information available, please connect to a network", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
             finish();
         }
         object.put("address", address);
@@ -147,7 +147,7 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
         binder = null;
     }
 
-    BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             finish();

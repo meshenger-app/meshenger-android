@@ -1,8 +1,10 @@
 package d.d.meshenger;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,6 +12,9 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +23,7 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -36,6 +42,9 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     private PowerManager.WakeLock wakeLock;
 
     private final long buttonAnimationDuration = 400;
+    private final int CAMERA_PERMISSION_REQUEST_CODE =  2;
+
+    boolean permissionRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,59 +113,79 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         }
 
         (findViewById(R.id.videoStreamSwitch)).setOnClickListener((button) -> {
-            currentCall.setVideoEnabled(!currentCall.isVideoEnabled());
-            ScaleAnimation animation = new ScaleAnimation(1.0f, 0.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-            animation.setDuration(buttonAnimationDuration / 2);
-            animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    ((ImageButton) button).setImageResource(currentCall.isVideoEnabled() ? R.drawable.baseline_camera_alt_black_off_48 : R.drawable.baseline_camera_alt_black_48);
-                    Animation a = new ScaleAnimation(0.0f, 1.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                    a.setDuration(buttonAnimationDuration / 2);
-                    button.startAnimation(a);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-            View frontSwitch = findViewById(R.id.frontFacingSwitch);
-            if(currentCall.isVideoEnabled()){
-                frontSwitch.setVisibility(View.VISIBLE);
-                Animation scale = new ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                scale.setDuration(buttonAnimationDuration);
-                frontSwitch.startAnimation(scale);
-            }else{
-                Animation scale = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                scale.setDuration(buttonAnimationDuration);
-                scale.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        findViewById(R.id.frontFacingSwitch).setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                frontSwitch.startAnimation(scale);
-            }
-            button.startAnimation(animation);
+           switchVideoEnabled((ImageButton)button);
         });
         (findViewById(R.id.frontFacingSwitch)).setOnClickListener((button) -> {
             currentCall.switchFrontFacing();
         });
+    }
 
+    private void switchVideoEnabled(ImageButton button){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+            permissionRequested = true;
+            return;
+        }
+        currentCall.setVideoEnabled(!currentCall.isVideoEnabled());
+        ScaleAnimation animation = new ScaleAnimation(1.0f, 0.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(buttonAnimationDuration / 2);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                button.setImageResource(currentCall.isVideoEnabled() ? R.drawable.baseline_camera_alt_black_off_48 : R.drawable.baseline_camera_alt_black_48);
+                Animation a = new ScaleAnimation(0.0f, 1.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                a.setDuration(buttonAnimationDuration / 2);
+                button.startAnimation(a);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        View frontSwitch = findViewById(R.id.frontFacingSwitch);
+        if(currentCall.isVideoEnabled()){
+            frontSwitch.setVisibility(View.VISIBLE);
+            Animation scale = new ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            scale.setDuration(buttonAnimationDuration);
+            frontSwitch.startAnimation(scale);
+        }else{
+            Animation scale = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            scale.setDuration(buttonAnimationDuration);
+            scale.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    findViewById(R.id.frontFacingSwitch).setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            frontSwitch.startAnimation(scale);
+        }
+        button.startAnimation(animation);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == CAMERA_PERMISSION_REQUEST_CODE){
+            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Camera permission needed in order to start video", 0).show();
+                return;
+            }
+            switchVideoEnabled(findViewById(R.id.videoStreamSwitch));
+        }
     }
 
     private void startSensor() {
@@ -171,6 +200,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onPause() {
         super.onPause();
+        if(permissionRequested) return;
+        permissionRequested = false;
         finish();
     }
 
@@ -205,9 +236,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 break;
             }
             case CONNECTED: {
-                new Handler(getMainLooper()).post(() -> {
-                    findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
-                });
+                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
                 setStatusText("connected.");
                 break;
             }
@@ -232,9 +261,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             case CONNECTED: {
                 setStatusText("connected.");
                 runOnUiThread(() -> findViewById(R.id.callAccept).setVisibility(View.GONE));
-                new Handler(getMainLooper()).post(() -> {
-                    findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
-                });
+                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
                 break;
             }
             case RINGING: {
@@ -249,9 +276,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     };
 
     private void setStatusText(String text) {
-        new Handler(getMainLooper()).post(() -> {
-            statusTextView.setText(text);
-        });
+        new Handler(getMainLooper()).post(() -> statusTextView.setText(text));
     }
 
     private void stopDelayed(String message) {

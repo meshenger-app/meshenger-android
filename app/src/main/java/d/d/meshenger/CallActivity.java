@@ -14,7 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Switch;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -32,6 +34,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     private SensorManager sensorManager;
     private PowerManager powerManager;
     private PowerManager.WakeLock wakeLock;
+
+    private final long buttonAnimationDuration = 400;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +76,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             connection = this;
             bindService(new Intent(this, MainService.class), this, 0);
             nameTextView.setText(intent.getStringExtra("EXTRA_USERNAME"));
-            findViewById(R.id.acceptLayout).setVisibility(View.VISIBLE);
+            findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
             setStatusText("calling...");
             View.OnClickListener optionsListener = view -> {
                 if (view.getId() == R.id.callDecline) {
@@ -91,7 +95,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 } catch (Exception e) {
                     e.printStackTrace();
                     stopDelayed("Error accepting call");
-                    findViewById(R.id.acceptLayout).setVisibility(View.GONE);
+                    findViewById(R.id.callAccept).setVisibility(View.GONE);
                 }
 
             };
@@ -99,12 +103,58 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             findViewById(R.id.callDecline).setOnClickListener(optionsListener);
         }
 
-        ((Switch) findViewById(R.id.videoStreamSwitch)).setOnCheckedChangeListener((compoundButton, b) -> {
-            currentCall.setVideoEnabled(b);
-            findViewById(R.id.frontFacingSwitch).setVisibility(b ? View.VISIBLE : View.GONE);
+        (findViewById(R.id.videoStreamSwitch)).setOnClickListener((button) -> {
+            currentCall.setVideoEnabled(!currentCall.isVideoEnabled());
+            ScaleAnimation animation = new ScaleAnimation(1.0f, 0.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            animation.setDuration(buttonAnimationDuration / 2);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    ((ImageButton) button).setImageResource(currentCall.isVideoEnabled() ? R.drawable.baseline_camera_alt_black_off_48 : R.drawable.baseline_camera_alt_black_48);
+                    Animation a = new ScaleAnimation(0.0f, 1.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    a.setDuration(buttonAnimationDuration / 2);
+                    button.startAnimation(a);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            View frontSwitch = findViewById(R.id.frontFacingSwitch);
+            if(currentCall.isVideoEnabled()){
+                frontSwitch.setVisibility(View.VISIBLE);
+                Animation scale = new ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                scale.setDuration(buttonAnimationDuration);
+                frontSwitch.startAnimation(scale);
+            }else{
+                Animation scale = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                scale.setDuration(buttonAnimationDuration);
+                scale.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        findViewById(R.id.frontFacingSwitch).setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                frontSwitch.startAnimation(scale);
+            }
+            button.startAnimation(animation);
         });
-        ((Switch) findViewById(R.id.frontFacingSwitch)).setOnCheckedChangeListener((compoundButton, b) -> {
-            currentCall.setFrontFacing(b);
+        (findViewById(R.id.frontFacingSwitch)).setOnClickListener((button) -> {
+            currentCall.switchFrontFacing();
         });
 
     }
@@ -155,7 +205,9 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 break;
             }
             case CONNECTED: {
-                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitch).setVisibility(View.VISIBLE));
+                new Handler(getMainLooper()).post(() -> {
+                    findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
+                });
                 setStatusText("connected.");
                 break;
             }
@@ -179,8 +231,10 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         switch (callState) {
             case CONNECTED: {
                 setStatusText("connected.");
-                runOnUiThread(() -> findViewById(R.id.acceptLayout).setVisibility(View.GONE));
-                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitch).setVisibility(View.VISIBLE));
+                runOnUiThread(() -> findViewById(R.id.callAccept).setVisibility(View.GONE));
+                new Handler(getMainLooper()).post(() -> {
+                    findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
+                });
                 break;
             }
             case RINGING: {

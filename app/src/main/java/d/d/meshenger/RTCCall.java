@@ -59,6 +59,8 @@ public class RTCCall implements DataChannel.Observer {
 
     private DataChannel dataChannel;
 
+    private boolean videoEnabled;
+
     public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
         this.remoteRenderer = remoteRenderer;
     }
@@ -155,7 +157,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
 
-    public void setFrontFacing(boolean frontFacing) {
+    public void switchFrontFacing() {
         if (this.capturer == null) return;
         this.capturer.switchCamera(null);
     }
@@ -201,7 +203,12 @@ public class RTCCall implements DataChannel.Observer {
         });
     }
 
+    public boolean isVideoEnabled(){
+        return this.videoEnabled;
+    }
+
     public void setVideoEnabled(boolean enabled) {
+        this.videoEnabled = enabled;
         try {
             if (enabled) {
                 this.capturer.startCapture(500, 500, 30);

@@ -9,14 +9,10 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -29,11 +25,6 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.NetworkInterface;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 public class QRPresenterActivity extends AppCompatActivity implements ServiceConnection{
     private MainService.MainBinder binder;
@@ -104,19 +95,19 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
 
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         object.put("username", prefs.getString("username", "Unknown"));
-        String address = Utils.getAddress();
+        String address = Utils.getLinkLocalAddress();
         if(address == null){
             Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
             finish();
         }
         object.put("address", address);
         object.put("challenge", this.binder.generateChallenge());
-        object.put("identifier", Utils.getMac());
+        object.put("identifier", Utils.formatAddress(Utils.getMacAddress()));
 
         return object.toString();
     }
 
-    /*private String getAddress() throws Exception{
+    /*private String getLinkLocalAddress() throws Exception{
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo info = wm.getConnectionInfo();
         if(info == null){

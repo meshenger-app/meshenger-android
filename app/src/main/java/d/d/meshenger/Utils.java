@@ -13,33 +13,41 @@ import java.util.List;
 class Utils {
 
 
-    public static String getMac() {
+    public static byte[] getMacAddress() {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
 
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
-                }
+                return nif.getHardwareAddress();
 
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    res1.append(String.format("%02X:",b));
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
             }
         } catch (Exception ex) {
         }
-        return "02:00:00:00:00:00";
+        return new byte[]{0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
     }
 
-    public static String getAddress() {
+    public static String formatAddress(byte[] macBytes){
+        StringBuilder res1 = new StringBuilder();
+        for (byte b : macBytes) {
+            res1.append(String.format("%02X:",b));
+        }
+
+        if (res1.length() > 0) {
+            res1.deleteCharAt(res1.length() - 1);
+        }
+        return res1.toString();
+    }
+
+    public static byte[] getEUI64(byte[] mac){
+        return new byte[]{(byte)(mac[0] | 2), mac[1], mac[2], (byte)0xFF, (byte)0xFE, mac[3], mac[4], mac[5]};
+    }
+
+    public static byte[] getEUI64(){
+        return getEUI64(getMacAddress());
+    }
+
+    public static String getLinkLocalAddress() {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {

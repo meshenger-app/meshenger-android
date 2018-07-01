@@ -34,7 +34,7 @@ public class MainService extends Service implements Runnable {
 
     public static final int serverPort = 10001;
     private ServerSocket server;
-    private final String mac = Utils.getMac();
+    private final String mac = Utils.formatAddress(Utils.getMacAddress());
 
     private volatile boolean run = true, interrupted = false;
 
@@ -332,7 +332,7 @@ public class MainService extends Service implements Runnable {
             this.address = contact.getAddress();
             this.username = userName;
             this.challenge = challenge;
-            this.identifier = Utils.getMac();
+            this.identifier = Utils.formatAddress(Utils.getMacAddress());
         }
 
         @Override

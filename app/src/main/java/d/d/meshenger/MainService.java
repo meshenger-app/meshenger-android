@@ -358,7 +358,7 @@ public class MainService extends Service implements Runnable {
                 loop:
                 for (InterfaceAddress address : addresses) {
                     if (address.getAddress().isLoopbackAddress()) continue;
-                    if (!Utils.isIPv4(address.getAddress().getHostAddress())) {
+                    if (address.getAddress() instanceof Inet6Address) {
                         byte[] bytes = address.getAddress().getAddress();
                         for (int i = 0; i < 8; i++) {
                             if (bytes[i + 8] != eui64[i]) continue loop;

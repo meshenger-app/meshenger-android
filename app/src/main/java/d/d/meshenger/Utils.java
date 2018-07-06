@@ -27,10 +27,6 @@ class Utils {
         return new byte[]{0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
     }
 
-    public static boolean isIPv4(String address){
-        return address.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}");
-    }
-
     public static String formatAddress(byte[] macBytes){
         StringBuilder res1 = new StringBuilder();
         for (byte b : macBytes) {

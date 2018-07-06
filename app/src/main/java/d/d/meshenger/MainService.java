@@ -313,10 +313,11 @@ public class MainService extends Service implements Runnable {
             log("ping");
             List<String> targets = getAddressPermutations(c);
             log("targets: " + targets.size());
+            Socket s = null;
             for (String target : targets) {
                 try {
                     log("opening socket to " + target);
-                    Socket s = new Socket(target, serverPort);
+                    s = new Socket(target, serverPort);
                     OutputStream os = s.getOutputStream();
                     os.write(("{\"action\":\"ping\",\"identifier\":\"" + mac + "\"}\n").getBytes());
 
@@ -340,6 +341,12 @@ public class MainService extends Service implements Runnable {
                     return;
                 } catch (Exception e) {
                     continue;
+                } finally {
+                    if(s != null){
+                        try {
+                            s.close();
+                        }catch (Exception e){}
+                    }
                 }
             }
 

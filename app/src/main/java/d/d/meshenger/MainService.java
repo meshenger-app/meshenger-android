@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,9 +21,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -67,14 +75,15 @@ public class MainService extends Service implements Runnable {
                 request.put("identifier", mac);
                 request.put("action", "status_change");
                 request.put("status", "offline");
-                for(Contact c : contacts){
-                    if(c.getState() == Contact.State.ONLINE){
-                        try{
+                for (Contact c : contacts) {
+                    if (c.getState() == Contact.State.ONLINE) {
+                        try {
                             Socket s = new Socket(c.getAddress(), serverPort);
                             s.getOutputStream().write((request.toString() + "\n").getBytes());
                             s.getOutputStream().flush();
                             s.close();
-                        }catch (Exception e){}
+                        } catch (Exception e) {
+                        }
                     }
                 }
                 server.close();
@@ -174,7 +183,7 @@ public class MainService extends Service implements Runnable {
                             }
                             break;
                         }
-                        case "status_change":{
+                        case "status_change": {
                             setClientState(identifier, Contact.State.OFFLINE);
                         }
                     }
@@ -189,14 +198,14 @@ public class MainService extends Service implements Runnable {
         }
     }
 
-    private void setClientState(String identifier, Contact.State state){
-            for(Contact c : contacts){
-                if(c.getIdentifier().equals(identifier)){
-                    c.setState(Contact.State.ONLINE);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
-                    break;
-                }
+    private void setClientState(String identifier, Contact.State state) {
+        for (Contact c : contacts) {
+            if (c.getIdentifier().equals(identifier)) {
+                c.setState(Contact.State.ONLINE);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
+                break;
             }
+        }
     }
 
     private void log(String data) {
@@ -218,19 +227,19 @@ public class MainService extends Service implements Runnable {
     }
 
     class MainBinder extends Binder {
-        RTCCall startCall(Contact contact, String identifier, String username, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer)  {
+        RTCCall startCall(Contact contact, String identifier, String username, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer) {
             return RTCCall.startCall(contact, username, identifier, listener, MainService.this);
         }
 
-        RTCCall getCurrentCall(){
+        RTCCall getCurrentCall() {
             return currentCall;
         }
 
-        String getIdentifier(){
+        String getIdentifier() {
             return mac;
         }
 
-        String getUsername(){
+        String getUsername() {
             return userName;
         }
 
@@ -289,6 +298,7 @@ public class MainService extends Service implements Runnable {
                 } catch (Exception e) {
                     c.setState(Contact.State.OFFLINE);
                     log("client " + c.getAddress() + " offline");
+                    //e.printStackTrace();
                 } finally {
                     if (listener != null) {
                         listener.OnContactPingResult(c);
@@ -297,29 +307,110 @@ public class MainService extends Service implements Runnable {
                     }
                 }
             }
-
         }
 
         private void ping(Contact c) throws Exception {
-            Socket s = new Socket(c.getAddress(), serverPort);
-            OutputStream os = s.getOutputStream();
-            os.write(("{\"action\":\"ping\",\"identifier\":\"" + mac + "\"}\n").getBytes());
+            log("ping");
+            List<String> targets = getAddressPermutations(c);
+            log("targets: " + targets.size());
+            for (String target : targets) {
+                try {
+                    log("opening socket to " + target);
+                    Socket s = new Socket(target, serverPort);
+                    OutputStream os = s.getOutputStream();
+                    os.write(("{\"action\":\"ping\",\"identifier\":\"" + mac + "\"}\n").getBytes());
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            String line = reader.readLine();
-            JSONObject object = new JSONObject(line);
-            String responseMac = object.getString("identifier");
-            if (!responseMac.equals(c.getIdentifier())) {
-                throw new Exception("Foreign contact");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    String line = reader.readLine();
+                    JSONObject object = new JSONObject(line);
+                    String responseMac = object.getString("identifier");
+                    if (!responseMac.equals(c.getIdentifier())) {
+                        throw new Exception("foreign contact");
+                    }
+                    String username = object.getString("username");
+                    if (!username.equals(c.getName())) {
+                        c.setName(new JSONObject(line).getString("username"));
+                        sqlHelper.updateContact(c);
+                    }
+                    //(log("ping: " + line);
+                    s.close();
+
+                    c.setAddress(target);
+
+                    return;
+                } catch (Exception e) {
+                    continue;
+                }
             }
-            String username = object.getString("username");
-            if (!username.equals(c.getName())) {
-                c.setName(new JSONObject(line).getString("username"));
-                sqlHelper.updateContact(c);
-            }
-            //(log("ping: " + line);
-            s.close();
+
+            throw new Exception("contact not reachable");
         }
+    }
+
+    private List<String> getAddressPermutations(Contact c) {
+        ArrayList<InetAddress> mutationAdresses = new ArrayList<>();
+        byte[] eui64 = Utils.getEUI64();
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface networkInterface : all) {
+                if (!networkInterface.getName().equalsIgnoreCase("wlan0")) continue;
+                List<InterfaceAddress> addresses = networkInterface.getInterfaceAddresses();
+                loop:
+                for (InterfaceAddress address : addresses) {
+                    if (address.getAddress().isLoopbackAddress()) continue;
+                    if (!Utils.isIPv4(address.getAddress().getHostAddress())) {
+                        byte[] bytes = address.getAddress().getAddress();
+                        for (int i = 0; i < 8; i++) {
+                            if (bytes[i + 8] != eui64[i]) continue loop;
+                        }
+                        mutationAdresses.add(address.getAddress());
+                        Log.d(BuildConfig.APPLICATION_ID, "found matching address: " + address.getAddress().getHostAddress());
+                    }
+                }
+                break;
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        log("loop ended");
+        byte[] targetEUI = addressToEUI64(c.getIdentifier());
+        log("target: " + Utils.formatAddress(targetEUI));
+        ArrayList<String> result = new ArrayList<>();
+        int i = 0;
+        for (InetAddress address : mutationAdresses) {
+            log("mutating address: " + address.getHostAddress());
+            byte[] add = address.getAddress();
+            System.arraycopy(targetEUI, 0, add, 8, 8);
+            try {
+                address = Inet6Address.getByAddress(address.getHostAddress(), add, ((Inet6Address) address).getScopeId());
+            } catch (UnknownHostException e) {
+                continue;
+            }
+            log("mutated address: " + address.getHostAddress());
+            result.add(address.getHostAddress());
+        }
+
+        if (!result.contains(c.getAddress())) {
+            result.add(c.getAddress());
+        }else{
+            log("address duplicate");
+        }
+        return result;
+    }
+
+    private byte[] addressToEUI64(String address) {
+        String[] hexes = address.split(":");
+        byte[] bytes = new byte[]{
+                (byte) (Integer.decode("0x" + hexes[0]).byteValue() | 2),
+                Integer.decode("0x" + hexes[1]).byteValue(),
+                Integer.decode("0x" + hexes[2]).byteValue(),
+                (byte) 0xFF,
+                (byte) 0xFE,
+                Integer.decode("0x" + hexes[3]).byteValue(),
+                Integer.decode("0x" + hexes[4]).byteValue(),
+                Integer.decode("0x" + hexes[5]).byteValue(),
+        };
+        return bytes;
     }
 
     class ConnectRunnable implements Runnable {
@@ -367,11 +458,11 @@ public class MainService extends Service implements Runnable {
     private BroadcastReceiver settingsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()){
-                case "settings_changed":{
+            switch (intent.getAction()) {
+                case "settings_changed": {
                     String subject = intent.getStringExtra("subject");
-                    switch (subject){
-                        case "username":{
+                    switch (subject) {
+                        case "username": {
                             userName = intent.getStringExtra("username");
                             break;
                         }

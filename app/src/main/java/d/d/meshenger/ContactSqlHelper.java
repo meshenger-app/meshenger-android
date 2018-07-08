@@ -57,19 +57,19 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    public void insertContact(Contact c) {
+    public void insertContact(Contact c) throws ContactAlreadyAddedException{
         ContentValues values = new ContentValues(3);
         //values.put(columnID, c.getId());
+        values.put(columnIdentifier, c.getIdentifier());
         values.put(columnIP, c.getAddress());
         values.put(columnName, c.getName());
         values.put(columnPhoto, c.getPhoto());
-        values.put(columnIdentifier, c.getIdentifier());
 
         Cursor cur = database.query(tableName, new String[]{columnID}, columnIdentifier + "=\"" + c.getIdentifier() + "\"", null, "", "", "");
         int length = cur.getCount();
         cur.close();
         if(length > 0){
-            return;
+            throw new ContactAlreadyAddedException();
         }
 
 
@@ -112,5 +112,12 @@ class ContactSqlHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+
+    class ContactAlreadyAddedException extends Exception{
+        @Override
+        public String getMessage() {
+            return "Contact already added";
+        }
     }
 }

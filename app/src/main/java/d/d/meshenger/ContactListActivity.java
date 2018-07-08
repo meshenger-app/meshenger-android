@@ -40,6 +40,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -264,8 +265,26 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         new Handler(getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                contactListView.setAdapter(new ContactListAdapter(ContactListActivity.this, R.layout.contact_item, mainBinder.getContacts()));
+                List<Contact> contacts = mainBinder.getContacts();
+                contactListView.setAdapter(new ContactListAdapter(ContactListActivity.this, R.layout.contact_item, contacts));
                 contactListView.setOnItemClickListener(ContactListActivity.this);
+                contactListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
+                        menu.getMenu().add("delete");
+                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                mainBinder.deleteContact(contacts.get(i));
+                                refreshContactList();
+                                return false;
+                            }
+                        });
+                        menu.show();
+                        return true;
+                    }
+                });
             }
         });
     }

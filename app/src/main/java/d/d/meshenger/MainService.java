@@ -171,8 +171,10 @@ public class MainService extends Service implements Runnable {
                                             "",
                                             identifier
                                     );
-                                    sqlHelper.insertContact(c);
-                                    contacts.add(c);
+                                    try {
+                                        sqlHelper.insertContact(c);
+                                        contacts.add(c);
+                                    }catch (ContactSqlHelper.ContactAlreadyAddedException e){}
                                     JSONObject response = new JSONObject();
                                     response.put("username", userName);
                                     os.write((response.toString() + "\n").getBytes());
@@ -259,11 +261,21 @@ public class MainService extends Service implements Runnable {
         }
 
         void addContact(Contact c, String challenge) {
-            sqlHelper.insertContact(c);
-            contacts.add(c);
-            log("adding contact " + c.getName() + "  " + c.getId());
 
+            try {
+                sqlHelper.insertContact(c);
+                contacts.add(c);
+                log("adding contact " + c.getName() + "  " + c.getId());
+
+            } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
+                Toast.makeText(MainService.this, "Contact already added", 0).show();
+            }
             new Thread(new ConnectRunnable(c, challenge)).start();
+        }
+
+        void deleteContact(Contact c){
+            sqlHelper.deleteContact(c);
+            refreshContacts();
         }
 
         void pingContacts(List<Contact> c, ContactPingListener listener) {

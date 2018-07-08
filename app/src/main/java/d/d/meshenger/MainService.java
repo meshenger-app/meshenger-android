@@ -78,7 +78,7 @@ public class MainService extends Service implements Runnable {
                 for (Contact c : contacts) {
                     if (c.getState() == Contact.State.ONLINE) {
                         try {
-                            Socket s = new Socket(c.getAddress(), serverPort);
+                            Socket s = new Socket(c.getAddress().replace("%zone", "%wlan0"), serverPort);
                             s.getOutputStream().write((request.toString() + "\n").getBytes());
                             s.getOutputStream().flush();
                             s.close();
@@ -329,7 +329,7 @@ public class MainService extends Service implements Runnable {
             for (String target : targets) {
                 try {
                     log("opening socket to " + target);
-                    s = new Socket(target, serverPort);
+                    s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
                     OutputStream os = s.getOutputStream();
                     os.write(("{\"action\":\"ping\",\"identifier\":\"" + mac + "\"}\n").getBytes());
 
@@ -448,7 +448,7 @@ public class MainService extends Service implements Runnable {
         @Override
         public void run() {
             try {
-                Socket s = new Socket(address, serverPort);
+                Socket s = new Socket(address.replace("%zone", "%wlan0"), serverPort);
                 OutputStream os = s.getOutputStream();
                 JSONObject object = new JSONObject();
 

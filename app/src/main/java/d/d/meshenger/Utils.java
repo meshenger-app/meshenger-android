@@ -56,7 +56,7 @@ class Utils {
                 String fallBackAddress = null;
                 for(InterfaceAddress a : nif.getInterfaceAddresses()) {
                     if(a.getAddress().isLinkLocalAddress()){
-                        return a.getAddress().getHostAddress();
+                        return a.getAddress().getHostAddress().replaceFirst("%.*", "%zone");
                     }else{
                         fallBackAddress = a.getAddress().getHostAddress();
                     }

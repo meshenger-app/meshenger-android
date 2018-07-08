@@ -53,15 +53,15 @@ class Utils {
             for (NetworkInterface nif : all) {
                 if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
 
-                String fallBackAdress = null;
+                String fallBackAddress = null;
                 for(InterfaceAddress a : nif.getInterfaceAddresses()) {
                     if(a.getAddress().isLinkLocalAddress()){
-                        return a.getAddress().toString().substring(1);
+                        return a.getAddress().getHostAddress();
                     }else{
-                        fallBackAdress = a.getAddress().toString().substring(1);
+                        fallBackAddress = a.getAddress().getHostAddress();
                     }
                 }
-                return fallBackAdress;
+                return fallBackAddress;
             }
         } catch (Exception ex) {
         }

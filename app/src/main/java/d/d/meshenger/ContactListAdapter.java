@@ -41,11 +41,12 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
         if(convertView == null) {
             convertView = inflater.inflate(R.layout.contact_item, null);
         }
+        String address = c.getAddress().replaceFirst("%.*", "");
         ((TextView)convertView.findViewById(R.id.contact_item_name)).setText(c.getName());
-        ((TextView)convertView.findViewById(R.id.contact_item_address)).setText(c.getAddress());
+        ((TextView)convertView.findViewById(R.id.contact_item_address)).setText(address);
 
         if(c.getState() != Contact.State.PENDING){
-            Log.d(ContactListActivity.class.getSimpleName(), c.getAddress() + " online");
+            Log.d(ContactListActivity.class.getSimpleName(), address + " online");
             convertView.findViewById(R.id.contact_item_waiting).setVisibility(View.GONE);
             ImageView state = convertView.findViewById(R.id.contact_item_state);
             state.setVisibility(View.VISIBLE);
@@ -56,7 +57,7 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
             canvas.drawCircle(100, 100, 100, p);
             state.setImageBitmap(bitmap);
         }else{
-            Log.d(ContactListActivity.class.getSimpleName(), c.getAddress() + " offline");
+            Log.d(ContactListActivity.class.getSimpleName(), address + " offline");
         }
 
         if(c.recent){

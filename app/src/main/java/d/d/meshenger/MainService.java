@@ -1,5 +1,6 @@
 package d.d.meshenger;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -149,6 +150,7 @@ public class MainService extends Service implements Runnable {
                             Intent intent = new Intent(this, CallActivity.class);
                             intent.setAction("ACTION_ACCEPT_CALL");
                             intent.putExtra("EXTRA_USERNAME", request.getString("username"));
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
 
                             return;

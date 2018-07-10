@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -273,11 +274,16 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                         PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
                         menu.getMenu().add("delete");
+                        menu.getMenu().add("rename");
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                mainBinder.deleteContact(contacts.get(i));
-                                refreshContactList();
+                                if(menuItem.getTitle().equals("delete")) {
+                                    mainBinder.deleteContact(contacts.get(i));
+                                    refreshContactList();
+                                }else{
+                                    showContactEditDialog(contacts.get(i));
+                                }
                                 return false;
                             }
                         });
@@ -287,6 +293,28 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                 });
             }
         });
+    }
+
+    private void showContactEditDialog(Contact c){
+        EditText et = new EditText(this);
+        et.setText(c.getName());
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Edit contact")
+                .setView(et)
+                .setNegativeButton("cancel", null)
+                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String name = et.getText().toString();
+                        if(name.isEmpty()){
+                            Toast.makeText(ContactListActivity.this, "Name must not be empty", 0).show();
+                            return;
+                        }
+                        c.setName(name);
+                        mainBinder.updateContact(c);
+                        refreshContactList();
+                    }
+                }).show();
     }
 
     @Override

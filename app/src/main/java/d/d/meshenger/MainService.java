@@ -280,6 +280,11 @@ public class MainService extends Service implements Runnable {
             refreshContacts();
         }
 
+        void updateContact(Contact c){
+            sqlHelper.updateContact(c);
+            refreshContacts();
+        }
+
         void pingContacts(List<Contact> c, ContactPingListener listener) {
             new Thread(new PingRunnable(c, listener)).start();
         }

@@ -3,6 +3,7 @@ package d.d.meshenger;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -65,7 +66,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         values.put(columnName, c.getName());
         values.put(columnPhoto, c.getPhoto());
 
-        Cursor cur = database.query(tableName, new String[]{columnID}, columnIdentifier + "=\"" + c.getIdentifier() + "\"", null, "", "", "");
+        Cursor cur = database.query(tableName, new String[]{columnID}, columnIdentifier + "=\"" + DatabaseUtils.sqlEscapeString(c.getIdentifier()) + "\"", null, "", "", "");
         int length = cur.getCount();
         cur.close();
         if(length > 0){
@@ -83,11 +84,12 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         values.put(columnName, c.getName());
         values.put(columnIdentifier, c.getIdentifier());
 
-        database.update(tableName, values, columnID + "=" + c.getId(), null);
+        database.update(tableName, values, columnID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(c.getId())), null);
     }
 
     public void deleteContact(Contact c){
-        database.delete(tableName, columnID + "=" + c.getId(), null);
+        database.delete(tableName, columnID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(c.getId()))
+                , null);
     }
 
     private void createDatabase() {

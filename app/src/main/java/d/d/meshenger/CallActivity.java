@@ -36,6 +36,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
 
     private RTCCall currentCall;
 
+    boolean callAccepted = false;
+
 
     private SensorManager sensorManager;
     private PowerManager powerManager;
@@ -208,6 +210,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        currentCall.decline();
+
         if (binder != null) {
             unbindService(connection);
         }

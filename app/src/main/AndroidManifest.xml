@@ -52,6 +52,7 @@
         <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>

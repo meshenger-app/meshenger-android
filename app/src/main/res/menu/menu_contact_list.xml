@@ -3,22 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="d.d.meshenger.ContactListActivity">
 
-    <!-- <item
-        android:id="@+id/action_scan_qr"
-        app:showAsAction="always"
-        android:icon="@drawable/qr_glass1"
-        android:title="Scan QR Code"/>
+    <item
+        android:id="@+id/action_settings"
+        app:showAsAction="never"
+        android:title="Settings"/>
 
     <item
-        android:id="@+id/action_generate_qr"
-        app:showAsAction="always"
-        android:icon="@drawable/qr"
-        android:title="Generate QR Code"/> -->
-
-    <!-- <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" /> -->
+        android:id="@+id/action_about"
+        app:showAsAction="never"
+        android:title="About"/>
 
 </menu>

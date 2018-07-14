@@ -77,6 +77,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         checkInit();
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -297,7 +298,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
 
     private void showContactEditDialog(Contact c){
         EditText et = new EditText(this);
-        et.setText(c.getName());
+        et.setText(c.getInfo());
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Edit contact")
                 .setView(et)
@@ -305,12 +306,8 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String name = et.getText().toString();
-                        if(name.isEmpty()){
-                            Toast.makeText(ContactListActivity.this, "Name must not be empty", 0).show();
-                            return;
-                        }
-                        c.setName(name);
+                        String info = et.getText().toString();
+                        c.setInfo(info);
                         mainBinder.updateContact(c);
                         refreshContactList();
                     }
@@ -327,19 +324,10 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        /*if (id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-
-        if (id == R.id.action_generate_qr) {
-            startActivity(new Intent(this, QRPresenterActivity.class));
-            return true;
-        }
-
-        if (id == R.id.action_scan_qr) {
-            startActivity(new Intent(this, QRScanActivity.class));
-            return true;
-        }*/
 
         return super.onOptionsItemSelected(item);
     }

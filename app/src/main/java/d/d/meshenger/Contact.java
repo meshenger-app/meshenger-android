@@ -11,25 +11,28 @@ public class Contact implements Serializable{
     private String name;
     private String photo;
     private String identifier;
+    private String info;
 
     public boolean recent = false;
 
     private State state = State.PENDING;
 
-    public Contact(int id, String address, String name, String photo, String identifier) {
+    public Contact(int id, String address, String name, String info, String photo, String identifier) {
         this.id = id;
         this.address = address;
         this.name = name;
         this.photo = photo;
         this.identifier = identifier;
+        this.info = info;
     }
 
-    public Contact(String address, String name, String photo, String identifier) {
+    public Contact(String address, String name, String info, String photo, String identifier) {
         this.id = -1;
         this.address = address;
         this.name = name;
         this.photo = photo;
         this.identifier = identifier;
+        this.info = info;
     }
 
     public State getState() {
@@ -74,5 +77,13 @@ public class Contact implements Serializable{
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

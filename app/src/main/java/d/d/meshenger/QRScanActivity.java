@@ -109,6 +109,7 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
                 object.getString("address"),
                 object.getString("username"),
                 "",
+                "",
                 object.getString("identifier")
         ), object.getString("challenge"));
     }

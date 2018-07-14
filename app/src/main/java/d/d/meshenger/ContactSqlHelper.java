@@ -21,6 +21,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
     private final String columnName = "name";
     private final String columnPhoto = "photo";
     private final String columnIdentifier = "identifier";
+    private final String columnInfo = "info";
 
     public ContactSqlHelper(Context context) {
         super(context, "Contacts.db", null, 1);
@@ -29,47 +30,50 @@ class ContactSqlHelper extends SQLiteOpenHelper {
     }
 
     public List<Contact> getContacts() {
-        Cursor cursor = this.database.query(tableName, new String[]{columnID, columnIP, columnPhoto, columnName, columnIdentifier}, "", null, "", "", "");
+        Cursor cursor = this.database.query(tableName, new String[]{"*"}, "", null, "", "", "");
         ArrayList<Contact> contacts = new ArrayList<>(cursor.getCount());
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             final int posID = cursor.getColumnIndex(columnID);
             final int posIP = cursor.getColumnIndex(columnIP);
             final int posName = cursor.getColumnIndex(columnName);
             final int posPhoto = cursor.getColumnIndex(columnPhoto);
             final int posIdentifier = cursor.getColumnIndex(columnIdentifier);
-            do{
+            final int posInfo = cursor.getColumnIndex(columnInfo);
+            do {
                 contacts.add(new Contact(
                         cursor.getInt(posID),
                         cursor.getString(posIP),
                         cursor.getString(posName),
+                        cursor.getString(posInfo),
                         cursor.getString(posPhoto),
                         cursor.getString(posIdentifier)
                 ));
-            }while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         cursor.close();
 
         return contacts;
     }
 
-    public void close(){
+    public void close() {
         super.close();
         database.close();
     }
 
-    public void insertContact(Contact c) throws ContactAlreadyAddedException{
-        ContentValues values = new ContentValues(3);
+    public void insertContact(Contact c) throws ContactAlreadyAddedException {
+        ContentValues values = new ContentValues(5);
         //values.put(columnID, c.getId());
         values.put(columnIdentifier, c.getIdentifier());
         values.put(columnIP, c.getAddress());
         values.put(columnName, c.getName());
         values.put(columnPhoto, c.getPhoto());
+        values.put(columnInfo, c.getInfo());
 
         Cursor cur = database.query(tableName, new String[]{columnID}, columnIdentifier + "=\"" + DatabaseUtils.sqlEscapeString(c.getIdentifier()) + "\"", null, "", "", "");
         int length = cur.getCount();
         cur.close();
-        if(length > 0){
+        if (length > 0) {
             throw new ContactAlreadyAddedException();
         }
 
@@ -78,16 +82,17 @@ class ContactSqlHelper extends SQLiteOpenHelper {
     }
 
     public void updateContact(Contact c) {
-        ContentValues values = new ContentValues(2);
+        ContentValues values = new ContentValues(5);
         values.put(columnIP, c.getAddress());
         values.put(columnPhoto, c.getPhoto());
         values.put(columnName, c.getName());
         values.put(columnIdentifier, c.getIdentifier());
+        values.put(columnInfo, c.getInfo());
 
         database.update(tableName, values, columnID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(c.getId())), null);
     }
 
-    public void deleteContact(Contact c){
+    public void deleteContact(Contact c) {
         database.delete(tableName, columnID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(c.getId()))
                 , null);
     }
@@ -102,7 +107,8 @@ class ContactSqlHelper extends SQLiteOpenHelper {
                 columnIP + " TEXT, " +
                 columnName + " TEXT," +
                 columnIdentifier + " TEXT," +
-                columnPhoto + " TEXT" +
+                columnPhoto + " TEXT," +
+                columnInfo + " TEXT" +
                 ");");
     }
 
@@ -116,7 +122,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
 
     }
 
-    class ContactAlreadyAddedException extends Exception{
+    class ContactAlreadyAddedException extends Exception {
         @Override
         public String getMessage() {
             return "Contact already added";

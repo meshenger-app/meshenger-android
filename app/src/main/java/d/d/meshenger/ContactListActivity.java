@@ -278,6 +278,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                         menu.getMenu().add("delete");
                         menu.getMenu().add("rename");
                         menu.getMenu().add("share");
+                        menu.getMenu().add("qr-ify");
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -286,8 +287,12 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                                     refreshContactList();
                                 }else if(menuItem.getTitle().equals("rename")){
                                     showContactEditDialog(contacts.get(i));
-                                }else{
+                                }else if(menuItem.getTitle().equals("share")){
                                     shareContact(contacts.get(i));
+                                }else{
+                                    Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
+                                    intent.putExtra("EXTRA_CONTACT", contacts.get(i));
+                                    startActivity(intent);
                                 }
                                 return false;
                             }

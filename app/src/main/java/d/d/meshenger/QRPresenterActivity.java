@@ -14,7 +14,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -30,10 +33,22 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
     private MainService.MainBinder binder;
     private String json;
 
+    private Contact contact = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrpresenter);
+
+        if(getIntent().hasExtra("EXTRA_CONTACT")){
+            this.contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
+            findViewById(R.id.fabPresenter).setVisibility(View.GONE);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+            params.bottomMargin = params.rightMargin = 80;
+            findViewById(R.id.fabShare).setLayoutParams(params);
+        }
 
         setTitle(getString(R.string.scan_invitation));
         bindService();
@@ -91,7 +106,13 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
     private String generateJson() throws JSONException{
         JSONObject object = new JSONObject();
 
-        Log.d(QRPresenterActivity.class.getSimpleName(), "generateQR " + (this.binder == null));
+        if(this.contact != null){
+            object.put("address", contact.getAddress());
+            object.put("identifier", contact.getIdentifier());
+            object.put("username", contact.getName());
+            object.put("challenge", this.binder.generateChallenge());
+            return object.toString();
+        }
 
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         object.put("username", prefs.getString("username", "Unknown"));

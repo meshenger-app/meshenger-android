@@ -70,7 +70,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         values.put(columnPhoto, c.getPhoto());
         values.put(columnInfo, c.getInfo());
 
-        Cursor cur = database.query(tableName, new String[]{columnID}, columnIdentifier + "=\"" + DatabaseUtils.sqlEscapeString(c.getIdentifier()) + "\"", null, "", "", "");
+        Cursor cur = database.query(tableName, new String[]{columnID}, columnIdentifier + "=" + DatabaseUtils.sqlEscapeString(c.getIdentifier()), null, "", "", "");
         int length = cur.getCount();
         cur.close();
         if (length > 0) {

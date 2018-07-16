@@ -36,12 +36,11 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
 
     private RTCCall currentCall;
 
-    boolean callAccepted = false;
-
+    private boolean calledWhileScreenOff = false;
 
     private SensorManager sensorManager;
     private PowerManager powerManager;
-    private PowerManager.WakeLock wakeLock;
+    private PowerManager.WakeLock wakeLock, passiveWakeLock = null;
 
     private final long buttonAnimationDuration = 400;
     private final int CAMERA_PERMISSION_REQUEST_CODE =  2;
@@ -84,6 +83,9 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             findViewById(R.id.callDecline).setOnClickListener(this);
             startSensor();
         } else if ("ACTION_ACCEPT_CALL".equals(action)) {
+            calledWhileScreenOff = !((PowerManager) getSystemService(POWER_SERVICE)).isScreenOn();
+            passiveWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "wakeup");
+            passiveWakeLock.acquire(10000);
             connection = this;
             bindService(new Intent(this, MainService.class), this, 0);
             nameTextView.setText(intent.getStringExtra("EXTRA_USERNAME"));
@@ -93,6 +95,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                 if (view.getId() == R.id.callDecline) {
                     Log.d(RTCCall.class.getSimpleName(), "declining call...");
                     currentCall.decline();
+                    if(passiveWakeLock != null && passiveWakeLock.isHeld()) passiveWakeLock.release();
                     finish();
                     return;
                 }
@@ -100,6 +103,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                     //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                     currentCall.accept(passiveCallback);
+                    if(passiveWakeLock != null && passiveWakeLock.isHeld()) passiveWakeLock.release();
                     Log.d(CallActivity.class.getSimpleName(), "call accepted");
                     findViewById(R.id.callDecline).setOnClickListener(this);
                     startSensor();
@@ -202,6 +206,10 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onPause() {
         super.onPause();
+        if(calledWhileScreenOff) {
+            calledWhileScreenOff = false;
+            return;
+        }
         if(permissionRequested) return;
         permissionRequested = false;
         finish();
@@ -210,6 +218,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("RTCCall", "destroyed");
         currentCall.decline();
 
         if (binder != null) {

@@ -46,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
@@ -276,14 +277,17 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                         PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
                         menu.getMenu().add("delete");
                         menu.getMenu().add("rename");
+                        menu.getMenu().add("share");
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 if(menuItem.getTitle().equals("delete")) {
                                     mainBinder.deleteContact(contacts.get(i));
                                     refreshContactList();
-                                }else{
+                                }else if(menuItem.getTitle().equals("rename")){
                                     showContactEditDialog(contacts.get(i));
+                                }else{
+                                    shareContact(contacts.get(i));
                                 }
                                 return false;
                             }
@@ -294,6 +298,22 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                 });
             }
         });
+    }
+
+    private void shareContact(Contact c){
+        try {
+            JSONObject object = new JSONObject();
+            object.put("username", c.getName());
+            object.put("address", c.getAddress());
+            object.put("identifier", c.getIdentifier());
+
+            Intent intent =  new Intent(Intent.ACTION_SEND);
+            intent.setType("text/json");
+            intent.putExtra(Intent.EXTRA_TEXT, object.toString());
+            startActivity(intent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showContactEditDialog(Contact c){

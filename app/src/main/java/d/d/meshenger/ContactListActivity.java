@@ -308,7 +308,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
             object.put("identifier", c.getIdentifier());
 
             Intent intent =  new Intent(Intent.ACTION_SEND);
-            intent.setType("text/json");
+            intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, object.toString());
             startActivity(intent);
         } catch (JSONException e) {

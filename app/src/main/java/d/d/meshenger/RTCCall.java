@@ -429,10 +429,13 @@ public class RTCCall implements DataChannel.Observer {
 
     public void cleanup(){
         if(this.upStream != null){
-            for(AudioTrack track : this.upStream.audioTracks) track.dispose();
-            for(VideoTrack track : this.upStream.videoTracks) track.dispose();
-            if(this.connection != null) this.connection.dispose();
-            factory.dispose();
+            /*for(AudioTrack track : this.upStream.audioTracks){
+                track.setEnabled(false);
+                track.dispose();
+            }
+            for(VideoTrack track : this.upStream.videoTracks) track.dispose();*/
+            if(this.connection != null) this.connection.close();
+            //factory.dispose();
         }
     }
 

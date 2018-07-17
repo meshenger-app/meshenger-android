@@ -223,10 +223,11 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("CallActivity", "state: " + currentCall.state);
         if(currentCall.state == RTCCall.CallState.CONNECTED) {
             currentCall.decline();
-            currentCall.cleanup();
         }
+        currentCall.cleanup();
 
         if (binder != null) {
             unbindService(connection);

@@ -57,9 +57,12 @@ public class RTCCall implements DataChannel.Observer {
     private EglBase.Context sharedContext;
     private CameraVideoCapturer capturer;
 
+    private MediaStream upStream;
     private DataChannel dataChannel;
 
     private boolean videoEnabled;
+
+    public CallState state;
 
     public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
         this.remoteRenderer = remoteRenderer;
@@ -274,12 +277,12 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private MediaStream createStream() {
-        MediaStream stream = factory.createLocalMediaStream("stream1");
+        upStream = factory.createLocalMediaStream("stream1");
         AudioTrack audio = factory.createAudioTrack("audio1", factory.createAudioSource(new MediaConstraints()));
-        stream.addTrack(audio);
-        stream.addTrack(getVideoTrack());
+        upStream.addTrack(audio);
+        upStream.addTrack(getVideoTrack());
         //this.capturer.startCapture(500, 500, 30);
-        return stream;
+        return upStream;
     }
 
     private VideoTrack getVideoTrack() {
@@ -329,6 +332,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void reportStateChange(CallState state) {
+        this.state = state;
         if (this.listener != null) {
             this.listener.OnStateChange(state);
         }
@@ -421,6 +425,15 @@ public class RTCCall implements DataChannel.Observer {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    public void cleanup(){
+        if(this.upStream != null){
+            for(AudioTrack track : this.upStream.audioTracks) track.dispose();
+            for(VideoTrack track : this.upStream.videoTracks) track.dispose();
+            if(this.connection != null) this.connection.dispose();
+            factory.dispose();
+        }
     }
 
     public void hangUp() {

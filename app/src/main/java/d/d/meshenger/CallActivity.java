@@ -210,16 +210,20 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             calledWhileScreenOff = false;
             return;
         }
-        if(permissionRequested) return;
-        permissionRequested = false;
+        if(permissionRequested){
+            permissionRequested = false;
+            return;
+        }
         finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("RTCCall", "destroyed");
-        currentCall.decline();
+        if(currentCall.state == RTCCall.CallState.CONNECTED) {
+            currentCall.decline();
+            currentCall.cleanup();
+        }
 
         if (binder != null) {
             unbindService(connection);

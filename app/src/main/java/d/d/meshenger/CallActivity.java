@@ -187,7 +187,7 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == CAMERA_PERMISSION_REQUEST_CODE){
             if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "Camera permission needed in order to start video", 0).show();
+                Toast.makeText(this, "Camera permission needed in order to start video", Toast.LENGTH_SHORT).show();
                 return;
             }
             switchVideoEnabled(findViewById(R.id.videoStreamSwitch));
@@ -195,12 +195,15 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void startSensor() {
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        //TODO implement for api < 21
+        //sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        Sensor s = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
+        //Sensor s = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        //sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
 
         powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "proximity");
+        wakeLock.acquire();
     }
 
     @Override
@@ -228,9 +231,11 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         if (binder != null) {
             unbindService(connection);
         }
-        if (sensorManager != null)
-            sensorManager.unregisterListener(this);
-        if (wakeLock != null && wakeLock.isHeld()) {
+        Log.d("CallActivity", "unregistering sensor");
+        //if (sensorManager != null)
+        //    Log.d("CallActivity", "unregistering sensor2");
+        //    sensorManager.unregisterListener(this);
+        if (wakeLock != null) {
             wakeLock.release();
         }
 

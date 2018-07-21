@@ -282,17 +282,26 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                if(menuItem.getTitle().equals("delete")) {
-                                    mainBinder.deleteContact(contacts.get(i));
-                                    refreshContactList();
-                                }else if(menuItem.getTitle().equals("rename")){
-                                    showContactEditDialog(contacts.get(i));
-                                }else if(menuItem.getTitle().equals("share")){
-                                    shareContact(contacts.get(i));
-                                }else{
-                                    Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
-                                    intent.putExtra("EXTRA_CONTACT", contacts.get(i));
-                                    startActivity(intent);
+                                switch (menuItem.getTitle().toString()){
+                                    case "delete": {
+                                        mainBinder.deleteContact(contacts.get(i));
+                                        refreshContactList();
+                                        break;
+                                    }
+                                    case "rename": {
+                                        showContactEditDialog(contacts.get(i));
+                                        break;
+                                    }
+                                    case "share": {
+                                        shareContact(contacts.get(i));
+                                        break;
+                                    }
+                                    case "qr-ify": {
+                                        Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
+                                        intent.putExtra("EXTRA_CONTACT", contacts.get(i));
+                                        startActivity(intent);
+                                        break;
+                                    }
                                 }
                                 return false;
                             }
@@ -305,14 +314,14 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         });
     }
 
-    private void shareContact(Contact c){
+    private void shareContact(Contact c) {
         try {
             JSONObject object = new JSONObject();
             object.put("username", c.getName());
             object.put("address", c.getAddress());
             object.put("identifier", c.getIdentifier());
 
-            Intent intent =  new Intent(Intent.ACTION_SEND);
+            Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, object.toString());
             startActivity(intent);
@@ -321,7 +330,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         }
     }
 
-    private void showContactEditDialog(Contact c){
+    private void showContactEditDialog(Contact c) {
         EditText et = new EditText(this);
         et.setText(c.getInfo());
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -349,11 +358,16 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
+        switch (id) {
+            case R.id.action_settings:{
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            }
+            case R.id.action_about:{
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -392,11 +406,10 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
     }
 
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Microphone permission needed to make calls", Toast.LENGTH_LONG).show();
             finish();
         }

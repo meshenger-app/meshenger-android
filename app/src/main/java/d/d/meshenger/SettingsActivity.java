@@ -1,6 +1,7 @@
 package d.d.meshenger;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.v7.app.AlertDialog;
@@ -59,6 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
                 config1.locale = locales[position];
 
                 getResources().updateConfiguration(config1, getResources().getDisplayMetrics());
+
+                finish();
+                startActivity(new Intent(getApplicationContext(), this.getClass()));
 
                 dialog.dismiss();
             });

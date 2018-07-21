@@ -43,7 +43,7 @@
                 android:id="@+id/callStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="connecting..."
+                android:text="@string/call_connecting"
                 android:textColor="@android:color/black"
                 android:textSize="20dp" />
 

@@ -99,18 +99,16 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             bindService(new Intent(this, MainService.class), this, 0);
             nameTextView.setText(intent.getStringExtra("EXTRA_USERNAME"));
             findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
-            setStatusText("calling...");
             ringPhone();
             View.OnClickListener optionsListener = view -> {
+                stopRingPhone();
                 if (view.getId() == R.id.callDecline) {
-                    stopRingPhone();
                     Log.d(RTCCall.class.getSimpleName(), "declining call...");
                     currentCall.decline();
                     if(passiveWakeLock != null && passiveWakeLock.isHeld()) passiveWakeLock.release();
                     finish();
                 }else {
                     try {
-                        stopRingPhone();
                         currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                         //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                         currentCall.accept(passiveCallback);

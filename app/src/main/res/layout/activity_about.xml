@@ -14,33 +14,33 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Source:"
+            android:text="@string/about_source"
             android:textSize="15dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="https://www.github.com/dakhnod/meshenger/"
+            android:text="@string/source_link"
             android:textSize="15dp"
             android:autoLink="web"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Author:"
+            android:text="@string/about_author"
             android:textSize="15dp"
             android:layout_marginTop="40dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Daniel Dakhno"
+            android:text="@string/about_author_name"
             android:textSize="15dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="dakhnod@gmail.com"
+            android:text="@string/about_author_email"
             android:textSize="15dp"
             android:id="@+id/mailText"/>
 
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="License:"
+            android:text="@string/about_license"
             android:textSize="15dp" />
 
         <ProgressBar

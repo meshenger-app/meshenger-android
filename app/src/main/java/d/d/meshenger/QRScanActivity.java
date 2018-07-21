@@ -68,7 +68,7 @@ public class QRScanActivity extends AppCompatActivity implements BarcodeCallback
                         handleJson(et.getText().toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Toast.makeText(this, R.string.invalid_data, 0).show();
+                        Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
                     }
                     finish();
                 })

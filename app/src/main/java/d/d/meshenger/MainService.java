@@ -146,6 +146,7 @@ public class MainService extends Service implements Runnable {
                             String response = "{\"action\":\"ringing\"}\n";
                             os.write(response.getBytes());
 
+                            //TODO
                             this.currentCall = new RTCCall(client, this, request.getString("offer"));
                             Intent intent = new Intent(this, CallActivity.class);
                             intent.setAction("ACTION_ACCEPT_CALL");
@@ -271,7 +272,7 @@ public class MainService extends Service implements Runnable {
                 log("adding contact " + c.getName() + "  " + c.getId());
 
             } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
-                Toast.makeText(MainService.this, "Contact already added", 0).show();
+                Toast.makeText(MainService.this, "Contact already added", Toast.LENGTH_SHORT).show();
             }
             new Thread(new ConnectRunnable(c, challenge)).start();
         }

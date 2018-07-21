@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +51,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class ContactListActivity extends AppCompatActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
     private ListView contactListView;
@@ -98,7 +100,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
 
     private void showUsernameDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle("Hello!");
+                .setTitle(R.string.hello);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         TextView tw = new TextView(this);
@@ -275,33 +277,30 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                         PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
-                        menu.getMenu().add("delete");
-                        menu.getMenu().add("rename");
-                        menu.getMenu().add("share");
-                        menu.getMenu().add("qr-ify");
+                        Resources res = getResources();
+                        String delete = res.getString(R.string.delete),
+                                rename = res.getString(R.string.rename),
+                                share = res.getString(R.string.share),
+                                qr = "qr-ify";
+                        menu.getMenu().add(delete);
+                        menu.getMenu().add(rename);
+                        menu.getMenu().add(share);
+                        menu.getMenu().add(qr);
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
-                                switch (menuItem.getTitle().toString()){
-                                    case "delete": {
-                                        mainBinder.deleteContact(contacts.get(i));
-                                        refreshContactList();
-                                        break;
-                                    }
-                                    case "rename": {
-                                        showContactEditDialog(contacts.get(i));
-                                        break;
-                                    }
-                                    case "share": {
-                                        shareContact(contacts.get(i));
-                                        break;
-                                    }
-                                    case "qr-ify": {
-                                        Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
-                                        intent.putExtra("EXTRA_CONTACT", contacts.get(i));
-                                        startActivity(intent);
-                                        break;
-                                    }
+                                String title = menuItem.getTitle().toString();
+                                if(title.equals(delete)){
+                                    mainBinder.deleteContact(contacts.get(i));
+                                    refreshContactList();
+                                }else if(title.equals(rename)){
+                                    showContactEditDialog(contacts.get(i));
+                                }else if(title.equals(share)){
+                                    shareContact(contacts.get(i));
+                                }else if(title.equals(qr)){
+                                    Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
+                                    intent.putExtra("EXTRA_CONTACT", contacts.get(i));
+                                    startActivity(intent);
                                 }
                                 return false;
                             }
@@ -334,9 +333,9 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         EditText et = new EditText(this);
         et.setText(c.getInfo());
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Edit contact")
+                .setTitle(R.string.contact_edit)
                 .setView(et)
-                .setNegativeButton("cancel", null)
+                .setNegativeButton(getResources().getString(R.string.cancel), null)
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -410,7 +409,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Microphone permission needed to make calls", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.permission_mic, Toast.LENGTH_LONG).show();
             finish();
         }
     }

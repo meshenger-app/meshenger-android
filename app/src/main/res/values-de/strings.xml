@@ -9,4 +9,18 @@
     <string name="camera_permission_request">Benötige Erlaubniss, um Kamera zu benutzen</string>
     <string name="invalid_qr">Ungültiger QR-Code</string>
     <string name="network_connect_invitation">Keine Netzwerkinformation verfügbar</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="menu_about">Über</string>
+    <string name="call_connecting">verbinde...</string>
+    <string name="settings_change_nick">Nutzernamen ändern</string>
+    <string name="settings_change_language">Sprache ändern</string>
+    <string name="about_source">Quellcode:</string>
+    <string name="about_author">Autor:</string>
+    <string name="about_license">Lizens:</string>
+    <string name="delete">löschen</string>
+    <string name="rename">umbenennen</string>
+    <string name="share">teilen</string>
+    <string name="contact_edit">Kontakt bearbeiten</string>
+    <string name="permission_mic">Dafür muss die App auf das Mikro zugreifen können.</string>
+    <string name="hello">Hallo!</string>
 </resources>

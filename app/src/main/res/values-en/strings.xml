@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Meshenger</string>
     <string name="action_settings">Settings</string>
     <string name="name_prompt">What should be your name?</string>
     <string name="scan_invitation">Scan this code</string>
@@ -15,10 +15,7 @@
     <string name="settings_change_nick">Change nick</string>
     <string name="settings_change_language">Change language</string>
     <string name="about_source">Source:</string>
-    <string name="source_link" translatable="false">https://www.github.com/dakhnod/meshenger/</string>
     <string name="about_author">Author:</string>
-    <string name="about_author_name" translatable="false">Daniel Dakhno</string>
-    <string name="about_author_email" translatable="false">dakhnod@gmail.com</string>
     <string name="about_license">License:</string>
     <string name="delete">delete</string>
     <string name="rename">rename</string>

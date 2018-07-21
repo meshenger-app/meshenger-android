@@ -9,9 +9,15 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -46,6 +52,9 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     private final int CAMERA_PERMISSION_REQUEST_CODE =  2;
 
     boolean permissionRequested = false;
+
+    private Vibrator vibrator = null;
+    private Ringtone ringtone = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,28 +100,31 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
             nameTextView.setText(intent.getStringExtra("EXTRA_USERNAME"));
             findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
             setStatusText("calling...");
+            ringPhone();
             View.OnClickListener optionsListener = view -> {
                 if (view.getId() == R.id.callDecline) {
+                    stopRingPhone();
                     Log.d(RTCCall.class.getSimpleName(), "declining call...");
                     currentCall.decline();
                     if(passiveWakeLock != null && passiveWakeLock.isHeld()) passiveWakeLock.release();
                     finish();
-                    return;
+                }else {
+                    try {
+                        stopRingPhone();
+                        currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
+                        //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
+                        currentCall.accept(passiveCallback);
+                        if (passiveWakeLock != null && passiveWakeLock.isHeld())
+                            passiveWakeLock.release();
+                        Log.d(CallActivity.class.getSimpleName(), "call accepted");
+                        findViewById(R.id.callDecline).setOnClickListener(this);
+                        startSensor();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        stopDelayed("Error accepting call");
+                        findViewById(R.id.callAccept).setVisibility(View.GONE);
+                    }
                 }
-                try {
-                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
-                    //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
-                    currentCall.accept(passiveCallback);
-                    if(passiveWakeLock != null && passiveWakeLock.isHeld()) passiveWakeLock.release();
-                    Log.d(CallActivity.class.getSimpleName(), "call accepted");
-                    findViewById(R.id.callDecline).setOnClickListener(this);
-                    startSensor();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    stopDelayed("Error accepting call");
-                    findViewById(R.id.callAccept).setVisibility(View.GONE);
-                }
-
             };
             findViewById(R.id.callAccept).setOnClickListener(optionsListener);
             findViewById(R.id.callDecline).setOnClickListener(optionsListener);
@@ -124,6 +136,35 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         (findViewById(R.id.frontFacingSwitch)).setOnClickListener((button) -> {
             currentCall.switchFrontFacing();
         });
+    }
+
+    private void ringPhone(){
+        int ringerMode = ((AudioManager) getSystemService(AUDIO_SERVICE)).getRingerMode();
+        if(ringerMode == AudioManager.RINGER_MODE_SILENT) return;
+
+        vibrator = ((Vibrator) getSystemService(VIBRATOR_SERVICE));
+        long[] pattern = {1500, 800, 800, 800};
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            VibrationEffect vibe = VibrationEffect.createWaveform(pattern, 0);
+            vibrator.vibrate(vibe);
+        }else{
+            vibrator.vibrate(pattern, 0);
+        }
+        if(ringerMode == AudioManager.RINGER_MODE_VIBRATE) return;
+
+        ringtone = RingtoneManager.getRingtone(this, RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE));
+        ringtone.play();
+    }
+
+    private void stopRingPhone(){
+        if(vibrator != null) {
+            vibrator.cancel();
+            vibrator = null;
+        }
+        if(ringtone != null){
+            ringtone.stop();
+            ringtone = null;
+        }
     }
 
     private void switchVideoEnabled(ImageButton button){

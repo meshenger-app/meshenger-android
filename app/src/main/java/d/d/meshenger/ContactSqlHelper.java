@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +80,14 @@ class ContactSqlHelper extends SQLiteOpenHelper {
 
 
         c.setId(database.insert(tableName, null, values));
+    }
+
+    public boolean contactSaved(String identifier){
+        Log.d("SQL", "searching " + identifier);
+        Cursor c = database.query(this.tableName, new String[]{columnID}, columnIdentifier + "=?", new String[]{identifier}, null, null, null);
+        boolean has = c.getCount() > 0;
+        c.close();
+        return has;
     }
 
     public void updateContact(Contact c) {

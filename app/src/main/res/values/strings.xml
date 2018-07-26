@@ -26,4 +26,5 @@
     <string name="contact_edit">Edit contact</string>
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
+    <string name="settings_ignore_unsaved">Ignore unsaved</string>
 </resources>

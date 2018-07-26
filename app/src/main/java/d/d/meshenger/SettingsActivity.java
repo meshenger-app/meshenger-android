@@ -4,10 +4,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.ObjectsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -32,6 +36,15 @@ public class SettingsActivity extends AppCompatActivity {
         nick = prefs.getString("username", "undefined");
 
         findViewById(R.id.changeNickLayout).setOnClickListener((v) -> changeNick());
+        CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
+        ignoreCB.setChecked(prefs.getBoolean("ignoreUnsaved", false));
+        ignoreCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefs.edit().putBoolean("ignoreUnsaved", b).apply();
+                syncSettings("ignoreUnsaved", b);
+            }
+        });
     }
 
     private void getLocale(){
@@ -80,10 +93,23 @@ public class SettingsActivity extends AppCompatActivity {
                 .setPositiveButton("ok", (dialogInterface, i) -> {
                     nick = et.getText().toString();
                     prefs.edit().putString("username", nick).apply();
+                    syncSettings("username", nick);
                     initViews();
                 })
                 .setNegativeButton(getResources().getText(R.string.cancel), null)
                 .show();
+    }
+
+    private void syncSettings(String what, boolean content){
+        Intent intent = new Intent("settings_changed");
+        intent.putExtra("subject", what);
+        intent.putExtra(what, content);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+    private void syncSettings(String what, String content){
+        Intent intent = new Intent("settings_changed");
+        intent.putExtra(what, content);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override

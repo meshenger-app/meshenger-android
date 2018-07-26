@@ -82,6 +82,7 @@ public class RTCCall implements DataChannel.Observer {
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
+                            //TODO
                             commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
                             OutputStream os = commSocket.getOutputStream();
                             reportStateChange(CallState.CONNECTING);
@@ -442,7 +443,10 @@ public class RTCCall implements DataChannel.Observer {
     public void hangUp() {
         new Thread(() -> {
             try {
-                if(commSocket != null) commSocket.close();
+                if(commSocket != null){
+                    commSocket.getOutputStream().write("{\"action\":\"dismissed\"}\n".getBytes());
+                    commSocket.close();
+                }
 
                 if(connection != null) connection.close();
                 reportStateChange(CallState.ENDED);

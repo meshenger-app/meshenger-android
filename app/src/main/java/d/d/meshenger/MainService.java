@@ -1,12 +1,11 @@
 package d.d.meshenger;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -51,6 +50,8 @@ public class MainService extends Service implements Runnable {
     private HashMap<String, Long> challenges;
 
     private RTCCall currentCall = null;
+
+    private boolean ignoreUnsaved;
 
     @Override
     public void onCreate() {
@@ -108,7 +109,9 @@ public class MainService extends Service implements Runnable {
 
     private void refreshContacts() {
         contacts = (ArrayList<Contact>) sqlHelper.getContacts();
-        userName = getSharedPreferences(getPackageName(), MODE_PRIVATE).getString("username", "Unknown");
+        SharedPreferences pregs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        userName = pregs.getString("username", "Unknown");
+        ignoreUnsaved = pregs.getBoolean("ignoreUnsaved", false);
     }
 
     private void mainLoop() throws IOException {
@@ -148,6 +151,10 @@ public class MainService extends Service implements Runnable {
 
                             //TODO
                             this.currentCall = new RTCCall(client, this, request.getString("offer"));
+                            if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
+                                currentCall.decline();
+                                continue;
+                            };
                             Intent intent = new Intent(this, CallActivity.class);
                             intent.setAction("ACTION_ACCEPT_CALL");
                             intent.putExtra("EXTRA_USERNAME", request.getString("username"));
@@ -492,6 +499,12 @@ public class MainService extends Service implements Runnable {
                     switch (subject) {
                         case "username": {
                             userName = intent.getStringExtra("username");
+                            Log.d("Service", "username: " + userName);
+                            break;
+                        }
+                        case "ignoreUnsaved":{
+                            ignoreUnsaved = intent.getBooleanExtra("ignoreUnsaved", false);
+                            Log.d("Service", "ignore: " + ignoreUnsaved);
                             break;
                         }
                     }

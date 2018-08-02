@@ -16,11 +16,11 @@ in order to establish a connection to another device.
 Lets call our users Daniel and Anika.
 Anika clicks a button in her app, which makes a qr-code appear on her screen:
 
-![QR-Code Offer](docs/qr_offer.png)
+![QR-Code Offer](./qr_offer.png)
 
 Daniel in return clicks a second button on his phone, which respectively opens a scanner:
 
-![QR-Code Scanner](docs/qr_scanner.png).
+![QR-Code Scanner](./qr_scanner.png).
 
 After the scanner has successfully scanned the code, the phones automatically exchange information like the username, 
 the mac-address, the link-local-address if possible, the IPv4 address as a fallbask, making Daniel appear in Annikas contact list and vice versa.

@@ -94,7 +94,6 @@ public class QRPresenterActivity extends AppCompatActivity implements ServiceCon
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(json, BarcodeFormat.QR_CODE,1080,1080);
-            //TODO dynamic metrics
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);

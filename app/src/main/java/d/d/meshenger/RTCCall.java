@@ -82,7 +82,6 @@ public class RTCCall implements DataChannel.Observer {
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
-                            //TODO
                             commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
                             OutputStream os = commSocket.getOutputStream();
                             reportStateChange(CallState.CONNECTING);

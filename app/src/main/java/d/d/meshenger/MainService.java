@@ -150,8 +150,6 @@ public class MainService extends Service implements Runnable {
                             log("ringing...");
                             String response = "{\"action\":\"ringing\"}\n";
                             os.write(response.getBytes());
-
-                            //TODO
                             this.currentCall = new RTCCall(client, this, request.getString("offer"));
                             if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
                                 currentCall.decline();

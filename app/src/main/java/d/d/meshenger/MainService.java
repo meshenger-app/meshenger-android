@@ -138,7 +138,9 @@ public class MainService extends Service implements Runnable {
             while ((line = reader.readLine()) != null) {
                 log("line: " + line);
                 JSONObject request = new JSONObject(line);
-                identifier = request.getString("identifier");
+                if(request.has("identifier")) {
+                    identifier = request.getString("identifier");
+                }
                 if (request.has("action")) {
                     String action = request.getString("action");
                     log("action: " + action);
@@ -161,7 +163,7 @@ public class MainService extends Service implements Runnable {
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
 
-                            return;
+                            //return;
                         }
                         case "ping": {
                             setClientState(identifier, Contact.State.ONLINE);
@@ -205,9 +207,11 @@ public class MainService extends Service implements Runnable {
             }
 
             log("client " + client.getInetAddress().getHostAddress() + " disconnected");
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("call_declined"));
         } catch (Exception e) {
             e.printStackTrace();
             log("client " + client.getInetAddress().getHostAddress() + " disconnected (exception)");
+            //currentCall.decline();
         }
     }
 

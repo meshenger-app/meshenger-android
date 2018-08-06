@@ -1,8 +1,11 @@
 package d.d.meshenger;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -21,6 +24,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -134,7 +138,16 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
         (findViewById(R.id.frontFacingSwitch)).setOnClickListener((button) -> {
             currentCall.switchFrontFacing();
         });
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(declineReceiver, new IntentFilter("call_declined"));
     }
+
+    BroadcastReceiver declineReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
 
     private void ringPhone(){
         int ringerMode = ((AudioManager) getSystemService(AUDIO_SERVICE)).getRingerMode();
@@ -263,6 +276,8 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     protected void onDestroy() {
         super.onDestroy();
         Log.d("CallActivity", "state: " + currentCall.state);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(declineReceiver);
+        stopRingPhone();
         if(currentCall.state == RTCCall.CallState.CONNECTED) {
             currentCall.decline();
         }

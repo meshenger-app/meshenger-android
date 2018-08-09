@@ -161,7 +161,7 @@ public class MainService extends Service implements Runnable {
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
 
-                            //return;
+                            return;
                         }
                         case "ping": {
                             setClientState(identifier, Contact.State.ONLINE);

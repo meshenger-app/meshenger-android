@@ -309,25 +309,28 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
 
         switch (callState) {
             case CONNECTING: {
-                setStatusText("connecting...");
+                setStatusText(getString(R.string.call_connecting));
                 break;
             }
             case CONNECTED: {
-                new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
-                setStatusText("connected.");
+                new Handler(getMainLooper()).post( () -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
+                setStatusText(getString(R.string.call_connected));
                 break;
             }
             case DISMISSED: {
-                //setStatusText("dismissed");
-                stopDelayed("call denied");
+                stopDelayed(getString(R.string.call_denied));
                 break;
             }
             case RINGING: {
-                setStatusText("ringing...");
+                setStatusText(getString(R.string.call_ringing));
                 break;
             }
             case ENDED: {
-                stopDelayed("call ended");
+                stopDelayed(getString(R.string.call_ended));
+                break;
+            }
+            case ERROR: {
+                stopDelayed(getString(R.string.call_error));
                 break;
             }
         }
@@ -336,17 +339,21 @@ public class CallActivity extends AppCompatActivity implements ServiceConnection
     private RTCCall.OnStateChangeListener passiveCallback = callState -> {
         switch (callState) {
             case CONNECTED: {
-                setStatusText("connected.");
+                setStatusText(getString(R.string.call_connected));
                 runOnUiThread(() -> findViewById(R.id.callAccept).setVisibility(View.GONE));
                 new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
                 break;
             }
             case RINGING: {
-                setStatusText("calling...");
+                setStatusText(getString(R.string.call_ringing));
                 break;
             }
             case ENDED: {
-                stopDelayed("call ended");
+                stopDelayed(getString(R.string.call_ended));
+                break;
+            }
+            case ERROR: {
+                stopDelayed(getString(R.string.call_error));
                 break;
             }
         }

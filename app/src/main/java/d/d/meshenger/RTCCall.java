@@ -428,7 +428,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     public void cleanup(){
-        if(this.upStream != null){
+        if(this.upStream != null && state == CallState.CONNECTED){
             /*for(AudioTrack track : this.upStream.audioTracks){
                 track.setEnabled(false);
                 track.dispose();
@@ -436,6 +436,13 @@ public class RTCCall implements DataChannel.Observer {
             for(VideoTrack track : this.upStream.videoTracks) track.dispose();*/
             if(this.connection != null) this.connection.close();
             //factory.dispose();
+        }
+        if(commSocket != null){
+            try {
+                commSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

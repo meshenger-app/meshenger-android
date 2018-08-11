@@ -24,4 +24,9 @@
     <string name="permission_mic">Dafür muss die App auf das Mikro zugreifen können.</string>
     <string name="hello">Hallo!</string>
     <string name="settings_ignore_unsaved">Ungespeicherte ignorieren</string>
+    <string name="call_connected">Verbunden</string>
+    <string name="call_denied">Abgelehnt</string>
+    <string name="call_ringing">klingelt...</string>
+    <string name="call_ended">beendet</string>
+    <string name="call_error">Verbindungsfehler</string>
 </resources>

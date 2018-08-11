@@ -27,4 +27,9 @@
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
     <string name="settings_ignore_unsaved">Ignore unsaved</string>
+    <string name="call_connected">Connected.</string>
+    <string name="call_denied">Declined</string>
+    <string name="call_ringing">ringing...</string>
+    <string name="call_ended">call ended</string>
+    <string name="call_error">error</string>
 </resources>

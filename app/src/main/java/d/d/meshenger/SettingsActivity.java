@@ -45,6 +45,8 @@ public class SettingsActivity extends AppCompatActivity {
                 syncSettings("ignoreUnsaved", b);
             }
         });
+
+        ((TextView) findViewById(R.id.versionTv)).setText("version: " + BuildConfig.VERSION_NAME);
     }
 
     private void getLocale(){

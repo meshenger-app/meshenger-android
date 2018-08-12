@@ -18,7 +18,7 @@ We decided to start coding for Android, since mobile devices are the most ubiqui
 ## Concept
 
 One of our goals was to be able to operate in networks without a IPv4 or IPv6 DHCP server, but with a focus on making use of IPv6. Since many community networks block Broadcast/Multicast, we also wanted to avoid using Broadcasts.
-WebRTC is used for Audio/Video transmission as it is supported on many platforms such as web browsers and promises a maximum of interoperability.
+[WebRTC](https://en.wikipedia.org/wiki/WebRTC) is used for Audio/Video transmission as it is supported on many platforms such as web browsers and promises a maximum of interoperability.
 
 To keep contact sharing as simple as possible, qr-codes are used to share contact information between devices.
 For a simple usage example we imagine two users users Daniel and Anika.
@@ -80,12 +80,12 @@ This means that we can expect this approach to work on many devices.
 ## WebRTC
 
 We decided to use WebRTC since it is a well-build, tested and mostly documented standard for video- and audio communication, which is exactly what we needed. 
-It handles reading the camera and microphone input, encodes that data and sends it to the other node the best way possible.
+It handles reading the camera and microphone input, encodes that data and tries to find the way with the lowest possible latency to send the data.
 Since, in most environments, due to NATs a direct connection is not possible, WebRTC handles NAT traversal, or even completely redirects the traffic over a TURN server.
-We tried to avoid both of these servers, since out application is designed to work P2P in local networks.
-To find the best possible route between two nodes a STUN server is used, since that normally needs an external server.
+We turned off both of these servers, since our application is designed to work P2P in local networks.
+Normally, to find the best possible route between two nodes a STUN server is used, since that normally needs an external server.
 Since WebRTC is used in many different mobile and web applications we have room for scalability, giving us the possibility to adapt to other projects and applications. The signalling, e.g. the exchange of relevant networking information has to be done by the application.
 In the case of Meshenger, an 'offer' is created by the WebRTC API of the initiating application.
-This offer is then encoded in a JSON object and transmittet to the receiver, which then creates an 'answer'.
-That answer is then transmittet back to the initiator, where it is then fed back to the WebRTC API.
+This offer is then encoded in a JSON object and transmitted to the receiver using IPv6 as explained above, which then creates an 'answer'.
+That answer is then transmitted back to the initiator, where it is then fed back to the WebRTC API.
 Upon this point, WebRTC takes over, creates a connection and starts transmitting audio and video.

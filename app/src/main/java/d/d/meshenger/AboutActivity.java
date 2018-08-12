@@ -36,6 +36,8 @@ public class AboutActivity extends AppCompatActivity {
         }).start();
         findViewById(R.id.mailText).setOnClickListener(v -> sendMail());
 
+
+        ((TextView) findViewById(R.id.versionTv)).setText("version: " + BuildConfig.VERSION_NAME);
     }
 
     public void sendMail(){

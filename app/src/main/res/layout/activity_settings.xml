@@ -84,24 +84,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/versionTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/urlTV"
-            android:layout_centerHorizontal="true"
-            android:textSize="15dp" />
-
-        <TextView
-            android:id="@+id/urlTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="@string/app_url"
-            android:textSize="15dp"
-            android:autoLink="web"
-            android:layout_marginTop="5dp"/>
 
     </RelativeLayout>
 

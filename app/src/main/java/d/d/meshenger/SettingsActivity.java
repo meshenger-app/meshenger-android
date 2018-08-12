@@ -49,7 +49,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        ((TextView) findViewById(R.id.versionTv)).setText("version: " + BuildConfig.VERSION_NAME);
     }
 
     private void getLocale(){

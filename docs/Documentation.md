@@ -83,6 +83,7 @@ We decided to use WebRTC since it is a well-build, tested and mostly documented 
 It handles reading the camera and microphone input, encodes that data and tries to find the way with the lowest possible latency to send the data.
 Since, in most environments, due to NATs a direct connection is not possible, WebRTC handles NAT traversal, or even completely redirects the traffic over a TURN server.
 We turned off both of these servers, since our application is designed to work P2P in local networks.
+
 Normally, to find the best possible route between two nodes a STUN server is used, since that normally needs an external server.
 Since WebRTC is used in many different mobile and web applications we have room for scalability, giving us the possibility to adapt to other projects and applications. The signalling, e.g. the exchange of relevant networking information has to be done by the application.
 In the case of Meshenger, an 'offer' is created by the WebRTC API of the initiating application.

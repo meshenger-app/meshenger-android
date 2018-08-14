@@ -1,26 +1,27 @@
 Meshenger documentation
-=============
+=======================
+
 ## Motivation
+
 Currently, the market of VoIP software is dominated by software owned by big companies and tied to central infrastructures in order to monetize the platform and control the data flow.
-Individuals and communities like Freifunk often try to establish decentralized 
-standards, which should provide a less-controlled, faster, and more independent internet without having any financial interests.
-Yet, the hotspots provided by e.g. Freifunk are often simply perceived as internet access points,
-thus we wanted to provide a proof-of-concept demonstrating the use of any network without having an internet connection.
-Of course, the use of such an app would not be restricted to Freifunk networks, it should also be applicable in disaster areas, where internet access is cut off, home networks, fairs etc.
+Individuals and community networks like Freifunk often try to establish decentralized networks, which provide a community infrastructure to provide Internet to areas not yet covered and to connect people with local pathways.
+Yet, the hotspots provided by e.g. Freifunk are often simply perceived as sole Internet access points.
+Thus we want to provide a proof-of-concept demonstrating for the use of any network without having an Internet connection or even a DCHP server present.
+Of course, the use of such an app would not be restricted to Freifunk networks, it should also be applicable in disaster areas, where Internet access is cut off, home or company networks and conventions.
 
-As practical as this approach may seem, as of now there are only a small number of practical applications
-which provide a serious alternative to established apps like WhatsApp, Facebook etc.
-Thus, our goal was to create an open-source, decentralized messenger supporting audio- as well as video calling through WebRTC,
-that makes it as easy to add a contact as scanning a qr-code on another phone.
+As practical as this approach may seem, as of now there are no VoIP applications that are not depended on Internet access.
+Thus, our goal was to create an Open Source, decentralized messenger supporting audio- as well as video calling through,
+that makes it as easy as to add a contact as scanning a qr-code on another phone.
 
-We decided to start coding for android, since there is a huge community, generally a lot of documentation, and Android is simply the most wide-spread platform.
-One of our goals was to be able to operate in networks without a DHCP server, more on that in the IPv6 part.
-Since many community networks block Broadcast/Multicast, we wanted to avoid using Broadcasts
+We decided to start coding for Android, since mobile devices are the most ubiquitous devices and Android is simply the most wide-spread platform in this segment with over 80% market share.
 
 ## Concept
-Speaking about scanning qr-codes, lets shortly address the process a user has to go through
-in order to establish a connection to another device.
-Let's call our users Daniel and Anika.
+
+One of our goals was to be able to operate in networks without a IPv4 or IPv6 DHCP server, but with a focus on making use of IPv6. Since many community networks block Broadcast/Multicast, we also wanted to avoid using Broadcasts.
+[WebRTC](https://en.wikipedia.org/wiki/WebRTC) is used for Audio/Video transmission as it is supported on many platforms such as web browsers and promises a maximum of interoperability.
+
+To keep contact sharing as simple as possible, qr-codes are used to share contact information between devices.
+For a simple usage example we imagine two users users Daniel and Anika.
 Anika clicks a button in her app, which makes a qr-code appear on her screen:
 
 ![QR-Code Offer](./qr_offer.png)
@@ -30,53 +31,62 @@ Daniel in return clicks a second button on his phone, which respectively opens a
 ![QR-Code Scanner](./qr_scanner.png).
 
 After the scanner has successfully scanned the code, the phones automatically exchange information like the username, 
-the mac-address, the link-local-address if possible, the IPv4 address as a fallback, making Daniel appear in Annikas contact list and vice versa.
+the mac-address, the IPv6 link-local-address if possible, the IPv4 address as a fallback, making Daniel appear in Annikas contact list and vice versa.
 
 Finally, when one clicks the name of the other contact, the app tries to reach that contact through the saved address.
 In case of failure the app tries to mutate that address considering its own network prefix and the mac-address of the target.
 Is this connection established, a handshake is transmitted and finally a call is established using the WebRTC-PeerConnection etc. classes.
 
+## Features
+
+Obviously, the app allows for video and audio communication, whereas the latter can be enabled/disabled during a call.
+To add a contact you simply scan his QR-code, but contacts can be shared through third-party communication channels asweell,
+by sending a JSON string containing his information over email, whatsapp or similar.
+Since several contacts may have similar names, each contact can have short additional information set in his name.
+
+<img src="./info.png" width="300px">
+
+Since we may have users from different regions, we internationalized as much as possible, although yet only German and English is supported.
+Adding a new language is as simple as adding a xml with all the translations.
+The language can be switched locally in the app, independant from the device language setting.
+
+## IPv6
+
+For the initial connection, we need a way to find the IP address of the other device.
+During the qt-code scan, the mac address of the wifi interface and an IPv6 or IPv4 address are transmitted.
+
+A device finds a contact by looking at the devices own IPv6 addresses and check if the own mac address is contained there. If this is the case, the mac address of the contact is inserted and the resulting address is used to send a ping message to the potential contact. If a replied is received the contact has been found.
+
+Assuming the mac address of a device is 01:23:45:56:78:90, then the link local address (fe80::/64) might look like this:
+```
+fe80::0123:4556:7890
+```
+
+The link local address is always present on an interface even if not network is connected.
+
+If a IPv6 prefix is transmitted from the router, e.g. fdef:1701:b5ee:4200/64:
+```
+fdef:1701:b5ee:4200:0123:45ff:fe56:7890
+```
+(notice the inserted ff:fe as part of the [EUI64](https://de.wikipedia.org/wiki/EUI-64) scheme)
+
+A possible problem with this approach could be the presence of activated IPv6 privacy extensions that are often activated on Android. This causes the IPv6 not to contain the mac-address, but random values after the prefix.
+
+In practice however, we have discovered, that every Android device we have checked have at least the link local IPv6 address that is based on its own mac address.
+Local IPv6 addresses (fc00::/7) also contain the mac address. But IPv6 privacy extensions seem to generate a second local address that are based on random values. This address is used for external connections.
+
+This means that we can expect this approach to work on many devices.
+
 ## WebRTC
-[WebRTC](https://en.wikipedia.org/wiki/WebRTC) is a standard for audio and videocommunication supported by many major browsers and platforms, allowing the development of VoIP applications without the need of additional plugins.
-It starts with a signalling part where the connecting nodes try to find each other/find the best way to reach each other.
-This is often done using STUN/TURN servers, which are a part of WebRTC aswell.
-Those servers are used to determine the external IP address of a node, as well to relay traffic if NATs or similar disallow a direct connection.
-The libraries and APIs provided by WebRTC also handle the audio and video recording as well as encoding tha data in the most efficient way possible.
-During the handshake, the nodes exchange accepted encoding formats, so that they know which encoding format best to use.
-All the application has to do is to transmit the handshake in both directions, once a connection is established WebRTC does the rest.
-WebRTC plays a huge role in the project, since one of the goals is to demonstrate a serverless use of WebRTC, 
-basically establishing a connection between two devices without using a centralized server instance.
-The reason this gets its own paragraph is the fact that all the major apps that utilize WebRTC use a centralized signalling server,
-thus most of the available tutorials on WebRTC include such a server as well.
 
-Such a server basically acts as a messenger between nodes, delivering handshake-messages between the devices
-as well as trying to establish a direct connection between these devices.
-Since our project is meant to be used mainly in closed networks and the nodes know every contacts address, there no need for such a server.
+We decided to use WebRTC since it is a well-build, tested and mostly documented standard for video- and audio communication, which is exactly what we needed. 
+It handles reading the camera and microphone input, encodes that data and tries to find the way with the lowest possible latency to send the data.
+Since, in most environments, due to NATs a direct connection is not possible, WebRTC handles NAT traversal, or even completely redirects the traffic over a TURN server.
+We turned off both of these servers, since our application is designed to work P2P in local networks.
 
-We hope our project could firstly act as proof of such a possibility, secondly as a motivation and maybe as a tutorial to similar projects.
-
-## some words about WebRTC and IPv6
-We decided to use WebRTC since it is a well-build, tested and mostly documented standard for video- and audio communication,
-which is exactly what we needed.
-Since WebRTC is used in many different mobile and web applications we have room for scalability, giving us the possibility to adapt to other projects and applications.
-The signalling, e.g. the exchange of relevant networking information is done in the application,
-but when the WebRTC-layer is given an appropriate communication channel (in this case an already connected Socket) it handles everything else required, including data-channels that can be used for e.g. file exchange, messaging, service messages etc.
-
-Firstly, we decided to use IPv6, since every device capable of IPv6 has its own link-local address ("fe80:..."), thus there is no need for a DHCP server. Additionaly, this link local address does almost never change, so the devices stay reachable even if the network is changed.
-IPv4 addresses often change, so even in the same network a node may get unreachable when its address changes.
-Since the address space of IPv6 is several times bigger, those addresses normally don't change.
-Secondly, an IPv6-address is build around the mac-address of the device.
-The best example for such a case is the link-local address of the device, which we try to exchange at first.
-Parallel to the link local address, in the Freifunk network addresses are build following EUI64, which means that the mac address of a device is wrapped with a fixed prefix.
-Privacy extensions may break the whole idea of having the mac address of a device in the IPv6 address, since their job is to shuffle that address, making it harder to track a certain device. Since privacy extensions are not enabled on Android by dewfault, this should not get an issue.
-If no IPv6 is available at all, the IPv4 address is used as a fallback.
-Of course, all of that only work when the devices connect and communicate without switching the network.
-In another networks the devices may get assigned another address, which they would have to exchange once again.
-To work around that issue, the application contains several algorithms that try to determine whether the device's local address contains its own mac address.
-If this is the case the application filters the network-prefix out of the IPv6 address currently assigned to the device, and builds the target address using the network-prefix and the target mac.
-Additionally, a device may have a global address, making it reachable from the outer world, although we did yet not focus on that topic.
-A connection payload, sent to pair one device with another one may look like this:
-{"action":"connect","username":"thisIsATestUser","identifier":"11:22:33:44:55:66","address":"fe80::1322:33ff:fe44:5566"}.
-
-
-All in all, Meshenger provides an audio and video communication application applicable for local networks like fairs, conventions etc.
+Normally, to find the best possible route between two nodes a STUN server is used, since that needs an external server.
+Since WebRTC is used in many different mobile and web applications we have room for scalability, giving us the possibility to adapt to other projects and applications. The signalling, e.g. the exchange of relevant networking information has to be done by the application.
+In the case of Meshenger, an 'offer' is created by the WebRTC API of the initiating application.
+This offer is then encoded in a JSON object and transmitted to the receiver using IPv6 as explained above, which then creates an 'answer'.
+That answer is then transmitted back to the initiator, where it is then fed back to the WebRTC API.
+Upon this point, WebRTC takes over, creates a connection and starts transmitting audio and video.

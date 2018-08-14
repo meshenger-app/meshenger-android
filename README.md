@@ -28,6 +28,7 @@ The development can be followed via the [Freifunk blog](https://blog.freifunk.ne
 * [Initial Project Description](https://projects.freifunk.net/#/projects?project=local_phone_app&lang=en)
 * [Meshenger Update 1](https://blog.freifunk.net/2018/06/10/meshenger-p2p-local-network-messenger-update-1/)
 * [Meshenger Update 2](https://blog.freifunk.net/2018/07/07/meshenger-p2p-local-network-messenger-update-2/)
+* [Meshenger final update](https://blog.freifunk.net/2018/08/14/meshenger-p2p-local-network-messenger-final-update/)
 
 ## Ideas/Future Plans
 

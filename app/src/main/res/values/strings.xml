@@ -15,7 +15,7 @@
     <string name="settings_change_nick">Change nick</string>
     <string name="settings_change_language">Change language</string>
     <string name="about_source">Source:</string>
-    <string name="source_link" translatable="false">https://www.github.com/dakhnod/meshenger/</string>
+    <string name="source_link" translatable="false">https://www.github.com/dakhnod/Meshenger/</string>
     <string name="about_author">Author:</string>
     <string name="about_author_name" translatable="false">Daniel Dakhno</string>
     <string name="about_author_email" translatable="false">dakhnod@gmail.com</string>
@@ -32,5 +32,4 @@
     <string name="call_ringing">ringing...</string>
     <string name="call_ended">call ended</string>
     <string name="call_error">error</string>
-    <string name="app_url">https://www.github.com/dakhnod/Meshenger/</string>
 </resources>

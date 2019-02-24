@@ -12,7 +12,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,7 +21,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,7 +30,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
@@ -49,11 +46,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.ResourceBundle;
 
-public class ContactListActivity extends AppCompatActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
+public class ContactListActivity extends MeshengerActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
     private ListView contactListView;
 
     private boolean fabExpanded = false;
@@ -105,7 +100,7 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         layout.setOrientation(LinearLayout.VERTICAL);
         TextView tw = new TextView(this);
         tw.setText(R.string.name_prompt);
-        tw.setTextColor(Color.BLACK);
+        //tw.setTextColor(Color.BLACK);
         tw.setTextSize(20);
         tw.setGravity(Gravity.CENTER_HORIZONTAL);
         layout.addView(tw);
@@ -174,8 +169,8 @@ public class ContactListActivity extends AppCompatActivity implements ServiceCon
         }
 
         setContentView(R.layout.activity_contact_list);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
         fabScan = findViewById(R.id.fabScan1);
         fabGen = findViewById(R.id.fabGenerate1);

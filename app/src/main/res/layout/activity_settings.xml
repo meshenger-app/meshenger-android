@@ -26,13 +26,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_change_nick"
-                    android:textColor="@android:color/black"
+                    android:textColor="?attr/primaryTextColor"
                     android:textSize="25dp" />
 
                 <TextView
                     android:id="@+id/nickTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/secondaryTextColor"
                     android:textSize="15dp" />
 
             </LinearLayout>
@@ -49,14 +50,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_change_language"
-                    android:textColor="@android:color/black"
-                    android:textSize="25dp" />
+                    android:textSize="25dp"
+                    android:textColor="?attr/primaryTextColor" />
 
                 <TextView
                     android:id="@+id/localeTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    android:textColor="?attr/secondaryTextColor" />
 
             </LinearLayout>
 
@@ -69,16 +71,39 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_ignore_unsaved"
-                    android:textColor="@android:color/black"
-                    android:textSize="25dp" />
+                    android:textSize="25dp"
+                    android:textColor="?attr/primaryTextColor" />
 
                 <CheckBox
                     android:id="@+id/checkBoxIgnoreUnsaved"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
-                    android:layout_margin="5dp" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="5dp"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_nightmode"
+                    android:textSize="25dp"
+                    android:textColor="?attr/primaryTextColor"  />
+
+                <CheckBox
+                    android:id="@+id/checkBoxNightMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="5dp"
+                    android:textColor="?attr/secondaryTextColor"  />
 
             </RelativeLayout>
 

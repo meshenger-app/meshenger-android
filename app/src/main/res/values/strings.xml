@@ -32,4 +32,6 @@
     <string name="call_ringing">ringing...</string>
     <string name="call_ended">call ended</string>
     <string name="call_error">error</string>
+    <string name="settings_nightmode">Night mode</string>
+    <string name="about_version">version:</string>
 </resources>

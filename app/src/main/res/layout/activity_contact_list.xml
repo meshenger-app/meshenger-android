@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="d.d.meshenger.ContactListActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <!-- <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -18,7 +18,7 @@
             android:background="@color/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </android.support.design.widget.AppBarLayout>
+    </android.support.design.widget.AppBarLayout> -->
 
     <include layout="@layout/content_contact_list" />
 

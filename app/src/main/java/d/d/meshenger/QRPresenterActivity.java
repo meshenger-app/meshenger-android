@@ -29,7 +29,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class QRPresenterActivity extends AppCompatActivity implements ServiceConnection{
+public class QRPresenterActivity extends MeshengerActivity implements ServiceConnection{
     private MainService.MainBinder binder;
     private String json;
 

@@ -10,6 +10,7 @@ import android.support.v4.util.ObjectsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +26,7 @@ import org.w3c.dom.Text;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends MeshengerActivity {
     String nick;
     SharedPreferences prefs;
 
@@ -41,12 +42,18 @@ public class SettingsActivity extends AppCompatActivity {
         findViewById(R.id.changeNickLayout).setOnClickListener((v) -> changeNick());
         CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
         ignoreCB.setChecked(prefs.getBoolean("ignoreUnsaved", false));
-        ignoreCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                prefs.edit().putBoolean("ignoreUnsaved", b).apply();
-                syncSettings("ignoreUnsaved", b);
-            }
+        ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
+            prefs.edit().putBoolean("ignoreUnsaved", b).apply();
+            syncSettings("ignoreUnsaved", b);
+        });
+
+
+        CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
+        nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
+        nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
+            AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+            // TODO sync settings
+            //syncSettings("ignoreUnsaved", b);
         });
 
     }
@@ -112,6 +119,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
     private void syncSettings(String what, String content){
         Intent intent = new Intent("settings_changed");
+        intent.putExtra("subject", what);
         intent.putExtra(what, content);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }

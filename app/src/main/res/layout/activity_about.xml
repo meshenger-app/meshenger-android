@@ -14,17 +14,26 @@
 
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_version"
+            android:textSize="15dp"
+            android:textColor="?attr/primaryTextColor" />
+
+        <TextView
             android:id="@+id/versionTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:textColor="?attr/secondaryTextColor"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/about_source"
             android:textSize="15dp"
-            android:layout_marginTop="40dp"/>
+            android:layout_marginTop="40dp"
+            android:textColor="?attr/primaryTextColor"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,27 +47,31 @@
             android:layout_height="wrap_content"
             android:text="@string/about_author"
             android:textSize="15dp"
-            android:layout_marginTop="40dp"/>
+            android:layout_marginTop="40dp"
+            android:textColor="?attr/primaryTextColor"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/about_author_name"
-            android:textSize="15dp"/>
+            android:textSize="15dp"
+            android:textColor="?attr/secondaryTextColor"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/about_author_email"
             android:textSize="15dp"
-            android:id="@+id/mailText"/>
+            android:id="@+id/mailText"
+            android:textColor="?attr/secondaryTextColor"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="@string/about_license"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:textColor="?attr/primaryTextColor" />
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -74,7 +87,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/licenceText"
-                android:textSize="10dp"/>
+                android:textSize="10dp"
+                android:textColor="?attr/secondaryTextColor"/>
 
         </ScrollView>
 

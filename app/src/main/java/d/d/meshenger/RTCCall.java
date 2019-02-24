@@ -2,10 +2,14 @@ package d.d.meshenger;
 
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorInt;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
+import android.util.TypedValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,6 +66,8 @@ public class RTCCall implements DataChannel.Observer {
 
     private boolean videoEnabled;
 
+    private Context context;
+
     public CallState state;
 
     public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
@@ -71,6 +77,8 @@ public class RTCCall implements DataChannel.Observer {
     private RTCCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
         log("starting call to " + target.getAddress());
         initRTC(context);
+        this.context = context;
+        context.setTheme(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
         log("init RTC done");
         this.listener = listener;
         new Thread(() -> {
@@ -202,7 +210,15 @@ public class RTCCall implements DataChannel.Observer {
     private void setRemoteVideoEnabled(boolean enabled) {
         log("setting remote video enabled: " + enabled);
         new Handler(Looper.getMainLooper()).post(() -> {
-            this.remoteRenderer.setBackgroundColor(enabled ? Color.TRANSPARENT : Color.WHITE);
+            if(enabled){
+                this.remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
+            }else{
+                TypedValue typedValue = new TypedValue();
+                Resources.Theme theme = this.context.getTheme();
+                theme.resolveAttribute(R.attr.backgroundCardColor, typedValue, true);
+                @ColorInt int color = typedValue.data;
+                this.remoteRenderer.setBackgroundColor(color);
+            }
         });
     }
 

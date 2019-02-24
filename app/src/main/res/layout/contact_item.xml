@@ -19,14 +19,15 @@
                 android:id="@+id/contact_item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:textSize="30dp" />
+                android:textSize="30dp"
+                android:textColor="?attr/primaryTextColor" />
 
             <TextView
                 android:id="@+id/contact_item_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="italic"
+                android:textColor="?attr/primaryTextColor"
                 android:textSize="30dp"
                 android:paddingStart="10dp"/>
 
@@ -38,7 +39,8 @@
             android:id="@+id/contact_item_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"/>
+            android:textSize="20dp"
+            android:textColor="?attr/secondaryTextColor"/>
 
     </LinearLayout>
 

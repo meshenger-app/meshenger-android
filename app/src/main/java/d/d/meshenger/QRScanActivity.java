@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class QRScanActivity extends AppCompatActivity implements BarcodeCallback, ServiceConnection{
+public class QRScanActivity extends MeshengerActivity implements BarcodeCallback, ServiceConnection{
     private DecoratedBarcodeView barcodeView;
     private MainService.MainBinder binder;
 

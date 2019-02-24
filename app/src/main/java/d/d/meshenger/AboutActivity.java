@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends MeshengerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class AboutActivity extends AppCompatActivity {
         findViewById(R.id.mailText).setOnClickListener(v -> sendMail());
 
 
-        ((TextView) findViewById(R.id.versionTv)).setText("version: " + BuildConfig.VERSION_NAME);
+        ((TextView) findViewById(R.id.versionTv)).setText(BuildConfig.VERSION_NAME);
     }
 
     public void sendMail(){

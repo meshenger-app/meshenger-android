@@ -29,4 +29,6 @@
     <string name="call_ringing">klingelt...</string>
     <string name="call_ended">beendet</string>
     <string name="call_error">Verbindungsfehler</string>
+    <string name="settings_nightmode">Dunkler Modus</string>
+    <string name="about_version">Version:</string>
 </resources>

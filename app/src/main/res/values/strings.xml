@@ -26,7 +26,7 @@
     <string name="contact_edit">Edit contact</string>
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
-    <string name="settings_ignore_unsaved">Ignore unsaved</string>
+    <string name="settings_ignore_unsaved">Ignore unknown callers</string>
     <string name="call_connected">Connected.</string>
     <string name="call_denied">Declined</string>
     <string name="call_ringing">ringing...</string>

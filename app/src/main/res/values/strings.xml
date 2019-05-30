@@ -11,7 +11,7 @@
     <string name="network_connect_invitation">No information available, please connect to a network</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_about">About</string>
-    <string name="call_connecting">connecting...</string>
+    <string name="call_connecting">calling...</string>
     <string name="settings_change_nick">Change nick</string>
     <string name="settings_change_language">Change language</string>
     <string name="about_source">Source Code:</string>

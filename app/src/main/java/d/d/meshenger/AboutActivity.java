@@ -19,6 +19,7 @@ public class AboutActivity extends MeshengerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
+        setTitle(getResources().getString(R.string.menu_about));
         new Thread(() -> {
             try {
                 StringBuffer buffer = new StringBuffer();
@@ -35,6 +36,7 @@ public class AboutActivity extends MeshengerActivity {
             }
         }).start();
         findViewById(R.id.mailText).setOnClickListener(v -> sendMail());
+        findViewById(R.id.mailText2).setOnClickListener(v -> sendMail2());
 
 
         ((TextView) findViewById(R.id.versionTv)).setText(BuildConfig.VERSION_NAME);
@@ -45,6 +47,16 @@ public class AboutActivity extends MeshengerActivity {
         intent.setData(Uri.parse("mailto:dakhnod@gmail.com"));
         //intent.putExtra(Intent.EXTRA_EMAIL, "dakhnod@gmail.com");
         //intent.putExtra(Intent.EXTRA_SUBJECT, "Yo, crazy app!");
+        //intent.setType("message/rfc822");
+
+        startActivity(intent);
+    }
+
+    public void sendMail2(){
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:vasu.hvardhan@gmail.com"));
+        //intent.putExtra(Intent.EXTRA_EMAIL, "vasu.hvardhan@gmail.com");
+        //intent.putExtra(Intent.EXTRA_SUBJECT, "Hey, superb app!");
         //intent.setType("message/rfc822");
 
         startActivity(intent);

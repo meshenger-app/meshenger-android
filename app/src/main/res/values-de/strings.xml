@@ -15,7 +15,7 @@
     <string name="settings_change_nick">Nutzernamen ändern</string>
     <string name="settings_change_language">Sprache ändern</string>
     <string name="about_source">Quellcode:</string>
-    <string name="about_author">Autor:</string>
+    <string name="about_author">Entwickler:</string>
     <string name="about_license">Lizens:</string>
     <string name="delete">löschen</string>
     <string name="rename">umbenennen</string>
@@ -30,5 +30,9 @@
     <string name="call_ended">beendet</string>
     <string name="call_error">Verbindungsfehler</string>
     <string name="settings_nightmode">Dunkler Modus</string>
-    <string name="about_version">Version:</string>
+    <string name="about_version">App Ausführung:</string>
+    <string name="about_info">App Info:</string>
+    <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. in Community-Netzwerken oder sogar in Unternehmensnetzwerken.</string>
+
+
 </resources>

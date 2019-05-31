@@ -44,6 +44,8 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscan);
 
+        setTitle(getString(R.string.scan_invited));
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         }else {

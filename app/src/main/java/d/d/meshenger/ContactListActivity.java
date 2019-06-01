@@ -76,6 +76,25 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+
+
+            Intent intent1 = new Intent(ContactListActivity.this, ContactListActivity.class);
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+            startActivity(intent1);
+
+
+        }
+    };
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -83,6 +102,25 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         LocalBroadcastManager.getInstance(this).registerReceiver(refreshReceiver, new IntentFilter("contact_refresh"));
 
         bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
+
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("refresh"));
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshReceiver);
+        unbindService(ContactListActivity.this);
+
+        super.onDestroy();
+
     }
 
     private void checkInit() {
@@ -256,8 +294,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             fabGen.setY(fabGen.getY() + 200 * 2);
             fabExpanded = false;
         }
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshReceiver);
-        unbindService(this);
+
     }
 
     private void refreshContactList() {
@@ -285,14 +322,14 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 String title = menuItem.getTitle().toString();
-                                if(title.equals(delete)){
+                                if (title.equals(delete)) {
                                     mainBinder.deleteContact(contacts.get(i));
                                     refreshContactList();
-                                }else if(title.equals(rename)){
+                                } else if (title.equals(rename)) {
                                     showContactEditDialog(contacts.get(i));
-                                }else if(title.equals(share)){
+                                } else if (title.equals(share)) {
                                     shareContact(contacts.get(i));
-                                }else if(title.equals(qr)){
+                                } else if (title.equals(qr)) {
                                     Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
                                     intent.putExtra("EXTRA_CONTACT", contacts.get(i));
                                     startActivity(intent);
@@ -353,11 +390,16 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_settings:{
-                startActivity(new Intent(this, SettingsActivity.class));
+            case R.id.action_settings: {
+                Intent intent = new Intent(ContactListActivity.this, SettingsActivity.class);
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                startActivity(intent);
+
                 break;
             }
-            case R.id.action_about:{
+            case R.id.action_about: {
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             }
@@ -407,5 +449,12 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             Toast.makeText(this, R.string.permission_mic, Toast.LENGTH_LONG).show();
             finish();
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
     }
 }

@@ -63,7 +63,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
         startService(new Intent(this, MainService.class));
 
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
         }
@@ -75,7 +74,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         checkInit();
     }
 
-
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -83,17 +81,14 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             String message = intent.getStringExtra("message");
             Log.d("receiver", "Got message: " + message);
 
-
             Intent intent1 = new Intent(ContactListActivity.this, ContactListActivity.class);
 
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
             startActivity(intent1);
 
-
         }
     };
-
 
     @Override
     protected void onResume() {
@@ -103,16 +98,13 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
         bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
 
-
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("refresh"));
-
 
     }
 
     @Override
     protected void onDestroy() {
-
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
@@ -407,7 +399,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         Log.d(QRPresenterActivity.class.getSimpleName(), "onServiceConnected()");
@@ -441,7 +432,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         startActivity(intent);
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -450,7 +440,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             finish();
         }
     }
-
 
     @Override
     public void onBackPressed() {

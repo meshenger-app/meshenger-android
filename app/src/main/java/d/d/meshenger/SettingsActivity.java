@@ -47,16 +47,14 @@ public class SettingsActivity extends MeshengerActivity {
             syncSettings("ignoreUnsaved", b);
         });
 
-
         CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
         nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
         nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
             AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            // TODO sync settings
+
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
-
     }
 
     private void getLocale() {
@@ -93,7 +91,6 @@ public class SettingsActivity extends MeshengerActivity {
             });
         });
     }
-
 
     private void changeNick() {
         EditText et = new EditText(this);
@@ -137,7 +134,6 @@ public class SettingsActivity extends MeshengerActivity {
         super.onBackPressed();
 
         Intent intent1 = new Intent("refresh");
-        // You can also include some extra data.
         intent1.putExtra("message", "This is my message!");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
 
@@ -145,7 +141,6 @@ public class SettingsActivity extends MeshengerActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         startActivity(intent);
-
 
     }
 

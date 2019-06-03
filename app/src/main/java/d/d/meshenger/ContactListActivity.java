@@ -305,7 +305,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                         String delete = res.getString(R.string.delete),
                                 rename = res.getString(R.string.rename),
                                 share = res.getString(R.string.share),
-                                qr = "qr-ify";
+                                qr = "QR-ify";
                         menu.getMenu().add(delete);
                         menu.getMenu().add(rename);
                         menu.getMenu().add(share);

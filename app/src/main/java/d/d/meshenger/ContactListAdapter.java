@@ -44,7 +44,6 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
         String address = c.getAddress().replaceFirst("%.*", "");
         ((TextView)convertView.findViewById(R.id.contact_item_name)).setText(c.getName());
         ((TextView)convertView.findViewById(R.id.contact_item_info)).setText(c.getInfo());
-        ((TextView)convertView.findViewById(R.id.contact_item_address)).setText(address);
 
         if(c.getState() != Contact.State.PENDING){
             Log.d(ContactListActivity.class.getSimpleName(), address + " online");

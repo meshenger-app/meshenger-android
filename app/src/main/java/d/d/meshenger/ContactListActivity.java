@@ -86,7 +86,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
             startActivity(intent1);
-
         }
     };
 
@@ -100,19 +99,15 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("refresh"));
-
     }
 
     @Override
     protected void onDestroy() {
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshReceiver);
-        unbindService(ContactListActivity.this);
 
         super.onDestroy();
-
     }
 
     private void checkInit() {
@@ -286,7 +281,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             fabGen.setY(fabGen.getY() + 200 * 2);
             fabExpanded = false;
         }
-
     }
 
     private void refreshContactList() {

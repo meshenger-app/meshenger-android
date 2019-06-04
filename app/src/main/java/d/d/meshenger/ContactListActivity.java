@@ -281,6 +281,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             fabGen.setY(fabGen.getY() + 200 * 2);
             fabExpanded = false;
         }
+        unbindService(this);
     }
 
     private void refreshContactList() {

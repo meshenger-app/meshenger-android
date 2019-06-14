@@ -1,6 +1,7 @@
 package d.d.meshenger;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -58,6 +59,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     private Vibrator vibrator = null;
     private Ringtone ringtone = null;
 
+    @SuppressLint("InvalidWakeLockTag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -192,6 +194,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
             @Override
             public void onAnimationEnd(Animation animation) {
+
                 button.setImageResource(currentCall.isVideoEnabled() ? R.drawable.baseline_camera_alt_black_off_48 : R.drawable.baseline_camera_alt_black_48);
                 Animation a = new ScaleAnimation(0.0f, 1.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 a.setDuration(buttonAnimationDuration / 2);
@@ -244,6 +247,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     private void startSensor() {
         //TODO implement for api < 21
         //sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -299,7 +303,6 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                 e.printStackTrace();
             }
         }
-
         currentCall.releaseCamera();
     }
 
@@ -389,6 +392,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Log.d("CallActivity", "sensor changed: " + sensorEvent.values[0]);

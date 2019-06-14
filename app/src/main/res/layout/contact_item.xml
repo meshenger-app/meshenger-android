@@ -20,7 +20,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="30dp"
-                android:layout_marginTop="7.5dp"
+                android:layout_marginTop="5.5dp"
                 android:textColor="?attr/primaryTextColor" />
 
         </LinearLayout>
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:padding="9.5dp"
+        android:padding="6dp"
         android:id="@+id/contact_item_waiting"/>
 
     <ImageView
@@ -48,7 +48,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
-        android:layout_margin="9.5dp"
+        android:layout_margin="8dp"
         android:visibility="visible" />
 
 </RelativeLayout>

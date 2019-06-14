@@ -326,6 +326,7 @@ public class RTCCall implements DataChannel.Observer {
 
     public RTCCall(Socket commSocket, Context context, String offer) {
         this.commSocket = commSocket;
+        this.context = context;
         initRTC(context);
         this.offer = offer;
     }

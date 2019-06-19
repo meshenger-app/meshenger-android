@@ -42,13 +42,13 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qrscan);
 
+        setContentView(R.layout.activity_qrscan);
         setTitle(getString(R.string.scan_invited));
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-        }else {
+        } else {
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
         }
 
@@ -56,6 +56,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
             startActivity(new Intent(this, QRPresenterActivity.class));
             finish();
         });
+
         findViewById(R.id.fabManualInput).setOnClickListener(view -> {
             startManualInput();
         });
@@ -83,9 +84,9 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
-        }else{
+        } else {
             Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show();
             finish();
         }
@@ -125,7 +126,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     protected void onPause() {
         super.onPause();
 
-        if(barcodeView != null && binder != null) {
+        if (barcodeView != null && binder != null) {
             barcodeView.pause();
             finish();
         }

@@ -12,7 +12,6 @@ import java.util.List;
 
 class Utils {
 
-
     public static byte[] getMacAddress() {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -55,9 +54,9 @@ class Utils {
 
                 String fallBackAddress = null;
                 for(InterfaceAddress a : nif.getInterfaceAddresses()) {
-                    if(a.getAddress().isLinkLocalAddress()){
+                    if (a.getAddress().isLinkLocalAddress()){
                         return a.getAddress().getHostAddress().replaceFirst("%.*", "%zone");
-                    }else{
+                    } else {
                         fallBackAddress = a.getAddress().getHostAddress();
                     }
                 }

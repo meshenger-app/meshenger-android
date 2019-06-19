@@ -138,7 +138,7 @@ public class MainService extends Service implements Runnable {
             while ((line = reader.readLine()) != null) {
                 log("line: " + line);
                 JSONObject request = new JSONObject(line);
-                if(request.has("identifier")) {
+                if (request.has("identifier")) {
                     identifier = request.getString("identifier");
                 }
                 if (request.has("action")) {
@@ -151,7 +151,7 @@ public class MainService extends Service implements Runnable {
                             String response = "{\"action\":\"ringing\"}\n";
                             os.write(response.getBytes());
                             this.currentCall = new RTCCall(client, this, request.getString("offer"));
-                            if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
+                            if (ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
                                 currentCall.decline();
                                 continue;
                             };
@@ -160,7 +160,6 @@ public class MainService extends Service implements Runnable {
                             intent.putExtra("EXTRA_USERNAME", request.getString("username"));
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
-
                             return;
                         }
                         case "ping": {
@@ -372,7 +371,7 @@ public class MainService extends Service implements Runnable {
                 } catch (Exception e) {
                     continue;
                 } finally {
-                    if(s != null){
+                    if (s != null){
                         try {
                             s.close();
                         }catch (Exception e){}
@@ -429,7 +428,7 @@ public class MainService extends Service implements Runnable {
 
         if (!result.contains(c.getAddress())) {
             result.add(c.getAddress());
-        }else{
+        } else {
             log("address duplicate");
         }
         return result;

@@ -167,10 +167,10 @@ public class RTCCall implements DataChannel.Observer {
         }).start();
     }
 
-
     public void switchFrontFacing() {
-        if (this.capturer == null) return;
-        this.capturer.switchCamera(null);
+        if (this.capturer != null) {
+            this.capturer.switchCamera(null);
+        }
     }
 
     @Override
@@ -210,9 +210,9 @@ public class RTCCall implements DataChannel.Observer {
     private void setRemoteVideoEnabled(boolean enabled) {
         log("setting remote video enabled: " + enabled);
         new Handler(Looper.getMainLooper()).post(() -> {
-            if(enabled){
+            if (enabled){
                 this.remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
-            }else{
+            } else {
                 TypedValue typedValue = new TypedValue();
                 Resources.Theme theme = this.context.getTheme();
                 theme.resolveAttribute(R.attr.backgroundCardColor, typedValue, true);
@@ -245,11 +245,12 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     /*private void initLocalRenderer() {
-        if (this.localRenderer == null) return;
-        log("really initng " + (this.sharedContext == null));
-        this.localRenderer.init(this.sharedContext, null);
-        this.localCameraTrack.addSink(localRenderer);
-        this.capturer.startCapture(500, 500, 30);
+        if (this.localRenderer != null) {
+            log("really initng " + (this.sharedContext == null));
+            this.localRenderer.init(this.sharedContext, null);
+            this.localCameraTrack.addSink(localRenderer);
+            this.capturer.startCapture(500, 500, 30);
+        }
     }*/
 
     /*private void initVideoTrack() {
@@ -284,7 +285,10 @@ public class RTCCall implements DataChannel.Observer {
 
     private void handleMediaStream(MediaStream stream) {
         log("handling video stream");
-        if (this.remoteRenderer == null || stream.videoTracks.size() == 0) return;
+        if (this.remoteRenderer == null || stream.videoTracks.size() == 0) {
+            return;
+        }
+
         new Handler(Looper.getMainLooper()).post(() -> {
             //remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
             remoteRenderer.init(this.sharedContext, null);
@@ -445,16 +449,16 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     public void cleanup(){
-        if(this.upStream != null && state == CallState.CONNECTED){
+        if (this.upStream != null && state == CallState.CONNECTED){
             /*for(AudioTrack track : this.upStream.audioTracks){
                 track.setEnabled(false);
                 track.dispose();
             }
             for(VideoTrack track : this.upStream.videoTracks) track.dispose();*/
-            if(this.connection != null) this.connection.close();
+            if (this.connection != null) this.connection.close();
             //factory.dispose();
         }
-        if(commSocket != null){
+        if (commSocket != null){
             try {
                 commSocket.close();
             } catch (IOException e) {
@@ -466,12 +470,12 @@ public class RTCCall implements DataChannel.Observer {
     public void hangUp() {
         new Thread(() -> {
             try {
-                if(commSocket != null){
+                if (commSocket != null){
                     commSocket.getOutputStream().write("{\"action\":\"dismissed\"}\n".getBytes());
                     commSocket.close();
                 }
 
-                if(connection != null) connection.close();
+                if (connection != null) connection.close();
                 reportStateChange(CallState.ENDED);
             } catch (IOException e) {
                 e.printStackTrace();

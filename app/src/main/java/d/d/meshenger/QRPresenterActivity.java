@@ -40,7 +40,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrpresenter);
 
-        if(getIntent().hasExtra("EXTRA_CONTACT")){
+        if (getIntent().hasExtra("EXTRA_CONTACT")){
             this.contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
             findViewById(R.id.fabPresenter).setVisibility(View.GONE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -73,7 +73,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(binder != null) {
+        if (binder != null) {
             unbindService(this);
         }
 
@@ -105,7 +105,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private String generateJson() throws JSONException{
         JSONObject object = new JSONObject();
 
-        if(this.contact != null){
+        if (this.contact != null){
             object.put("address", contact.getAddress());
             object.put("identifier", contact.getIdentifier());
             object.put("username", contact.getName());
@@ -116,7 +116,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         object.put("username", prefs.getString("username", "Unknown"));
         String address = Utils.getLinkLocalAddress();
-        if(address == null){
+        if (address == null){
             Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
             finish();
         }
@@ -130,7 +130,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     /*private String getLinkLocalAddress() throws Exception{
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo info = wm.getConnectionInfo();
-        if(info == null){
+        if (info == null){
             throw new Exception("Device needs to be connected to WIFI");
         }
         String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());

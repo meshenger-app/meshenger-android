@@ -27,6 +27,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
@@ -62,6 +63,9 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
+
+        // keep screen on during call (prevents pausing the app and cancellation of the call)
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         statusTextView = findViewById(R.id.callStatus);
         nameTextView = findViewById(R.id.callName);

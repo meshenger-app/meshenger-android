@@ -131,6 +131,24 @@ public class RTCCall implements DataChannel.Observer {
                     }
                 }
 
+               /* public void encryptOffer() throws SodiumException {
+                    byte[] nonce = lazySodium.nonce(Box.NONCEBYTES);
+                    KeyPair encryptionKeyPair = new KeyPair(keyPair.getPubKey(), keyPair.getSecretKey());
+                    String cipherText = cryptoBoxLazy.cryptoBoxEasy(offer, nonce, encryptionKeyPair);
+
+                    try {
+            String cipherText = box.cryptoBoxEasy(
+                    editable.toString(),
+                    nonce,
+                    encryptionKeyPair
+            );
+             } catch (SodiumException e) {
+            e.printStackTrace();
+        }
+                }
+               */
+
+
                 @Override
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
                     log("change " + iceConnectionState.name());

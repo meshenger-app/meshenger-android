@@ -14,6 +14,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
+import com.goterl.lazycode.lazysodium.SodiumAndroid;
+import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
+import com.goterl.lazycode.lazysodium.interfaces.Box;
+import com.goterl.lazycode.lazysodium.utils.KeyPair;
+
 import org.json.JSONObject;
 import org.webrtc.SurfaceViewRenderer;
 
@@ -37,8 +43,17 @@ import java.util.Random;
 
 
 public class MainService extends Service implements Runnable {
-    private ContactSqlHelper sqlHelper;
     private ArrayList<Contact> contacts;
+
+    private Box.Lazy box;
+    private KeyPair keyPair;
+    protected LazySodiumAndroid ls;
+
+    private ContactSqlHelper sqlHelper;
+    AppData appData;
+
+    String publicKey;
+    String secretKey;
 
     public static final int serverPort = 10001;
     private ServerSocket server;
@@ -64,7 +79,43 @@ public class MainService extends Service implements Runnable {
         log("MainService started");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
+        Log.e("testvasu","runGen");
+
+        if(secretKey==null) {
+            generateKeyPair();
+        }
     }
+
+       public void generateKeyPair() {
+
+            ls = new LazySodiumAndroid(new SodiumAndroid());
+
+            box = (Box.Lazy) ls;
+
+            try {
+                // This is our keypair.
+                keyPair = box.cryptoBoxKeypair();
+
+                publicKey = keyPair.getPublicKey().getAsHexString();
+                secretKey = keyPair.getSecretKey().getAsHexString();
+
+                sqlHelper = new ContactSqlHelper(this);
+                appData= sqlHelper.getAppData();
+                if(appData==null){
+                    appData = new AppData();}
+
+                            appData.setPublicKey(publicKey);
+                            appData.setSecretKey(secretKey);
+
+                            sqlHelper.updateAppData(appData);
+
+                Log.e("publicKey", keyPair.getPublicKey().getAsHexString());
+                Log.e("secretKey", keyPair.getSecretKey().getAsHexString());
+
+            } catch (SodiumException e) {
+                e.printStackTrace();
+            }
+        }
 
     @Override
     public void onDestroy() {
@@ -109,10 +160,23 @@ public class MainService extends Service implements Runnable {
 
     private void refreshContacts() {
         contacts = (ArrayList<Contact>) sqlHelper.getContacts();
-        SharedPreferences pregs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        if (sqlHelper.getAppData() == null) {
+            userName = "Unknown";
+            ignoreUnsaved = false;
+        } else {
+            userName = sqlHelper.getAppData().getUsername();
+            if (sqlHelper.getAppData().getBlockUC() == 1) {
+                ignoreUnsaved = true;
+            } else {
+                ignoreUnsaved = false;
+            }
+        }
+    }
+
+    /*    SharedPreferences pregs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         userName = pregs.getString("username", "Unknown");
         ignoreUnsaved = pregs.getBoolean("ignoreUnsaved", false);
-    }
+        */
 
     private void mainLoop() throws IOException {
         while (run) {
@@ -179,7 +243,7 @@ public class MainService extends Service implements Runnable {
                                             client.getInetAddress().getHostAddress(),
                                             request.getString("username"),
                                             "",
-                                            "",
+                                            "pubKey",
                                             identifier
                                     );
                                     try {
@@ -213,9 +277,24 @@ public class MainService extends Service implements Runnable {
         }
     }
 
+    /* public void decryptOffer() throws SodiumException {
+        KeyPair decryptionKeyPair = new KeyPair(keyPair.getPublicKey(), keyPair.getSecretKey());
+        String decryptedMessage = cryptoBoxLazy.cryptoBoxOpenEasy(cipherText, nonce, decryptionKeyPair);
+               try {
+            String cipherText = box.cryptoBoxEasy(
+                    editable.toString(),
+                    nonce,
+                    decryptionKeyPair
+            );
+             } catch (SodiumException e) {
+            e.printStackTrace();
+        }
+                }
+               */
+
     private void setClientState(String identifier, Contact.State state) {
         for (Contact c : contacts) {
-            if (c.getIdentifier().equals(identifier)) {
+            if (c.getIdentifier().equals(identifier)) { //Contact POJO
                 c.setState(Contact.State.ONLINE);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
                 break;
@@ -355,7 +434,7 @@ public class MainService extends Service implements Runnable {
                     String line = reader.readLine();
                     JSONObject object = new JSONObject(line);
                     String responseMac = object.getString("identifier");
-                    if (!responseMac.equals(c.getIdentifier())) {
+                    if (!responseMac.equals(c.getIdentifier())) { //Contact POJO
                         throw new Exception("foreign contact");
                     }
                     String username = object.getString("username");
@@ -410,7 +489,7 @@ public class MainService extends Service implements Runnable {
             e.printStackTrace();
         }
         log("loop ended");
-        byte[] targetEUI = addressToEUI64(c.getIdentifier());
+        byte[] targetEUI = addressToEUI64(c.getIdentifier());  //Contact POJO
         log("target: " + Utils.formatAddress(targetEUI));
         ArrayList<String> result = new ArrayList<>();
         int i = 0;
@@ -454,11 +533,13 @@ public class MainService extends Service implements Runnable {
         private String address;
         private String username;
         private String challenge;
+      //  private String pubKey;
         private String identifier;
 
         ConnectRunnable(Contact contact, String challenge) {
             this.address = contact.getAddress();
             this.username = userName;
+         //   this.pubKey = pubKey;
             this.challenge = challenge;
             this.identifier = Utils.formatAddress(Utils.getMacAddress());
         }
@@ -472,6 +553,7 @@ public class MainService extends Service implements Runnable {
 
                 object.put("action", "connect");
                 object.put("username", username);
+               // object.put("pubKey", pubKey);
                 object.put("challenge", challenge);
                 object.put("identifier", identifier);
 

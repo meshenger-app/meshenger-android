@@ -43,6 +43,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +51,9 @@ import java.util.List;
 
 public class ContactListActivity extends MeshengerActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
     private ListView contactListView;
+
+   private ContactSqlHelper sqlHelper;
+   AppData appData;
 
     private boolean fabExpanded = false;
 
@@ -60,6 +64,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sqlHelper = new ContactSqlHelper(this);
 
         startService(new Intent(this, MainService.class));
 
@@ -111,11 +116,19 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
     private void checkInit() {
-        SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        if (!prefs.contains("username")) {
+
+       appData= sqlHelper.getAppData();
+        if(appData==null){
+            new AppData();
             showUsernameDialog();
             return;
         }
+
+      /*  SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        if (!prefs.contains("username")) {
+            showUsernameDialog();
+            return;
+        }*/
     }
 
     private void showUsernameDialog() {
@@ -145,7 +158,13 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         InputMethodManager imm = (InputMethodManager)
                 getSystemService(INPUT_METHOD_SERVICE);
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
-            getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putString("username", et.getText().toString()).apply();
+
+             appData= sqlHelper.getAppData();
+        if(appData==null){
+            ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
+        AppData appData = new AppData(1,1,"","", et.getText().toString(),"","",1,0 );
+        sqlHelper.insertAppData(appData);}
+           // getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putString("username", et.getText().toString()).apply();
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
             Intent intent = new Intent("settings_changed");
             intent.putExtra("subject", "username");
@@ -337,6 +356,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             JSONObject object = new JSONObject();
             object.put("username", c.getName());
             object.put("address", c.getAddress());
+            object.put("pubKey", c.getPubKey());                  //correct
             object.put("identifier", c.getIdentifier());
 
             Intent intent = new Intent(Intent.ACTION_SEND);

@@ -110,8 +110,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         binder.addContact(new Contact(
                 object.getString("address"),
                 object.getString("username"),
-                "",
-                "",
+                "","",                              //correct
                 object.getString("identifier")
         ), object.getString("challenge"));
     }

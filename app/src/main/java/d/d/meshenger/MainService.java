@@ -18,6 +18,8 @@ import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
 import com.goterl.lazycode.lazysodium.interfaces.Box;
+import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
+import com.goterl.lazycode.lazysodium.utils.Key;
 import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
 import org.json.JSONObject;
@@ -48,12 +50,12 @@ public class MainService extends Service implements Runnable {
     private Box.Lazy box;
     private KeyPair keyPair;
     protected LazySodiumAndroid ls;
+    //String encrypted;
+    String decrypted;
+    String nonce;
 
     private ContactSqlHelper sqlHelper;
     AppData appData;
-
-    String publicKey;
-    String secretKey;
 
     public static final int serverPort = 10001;
     private ServerSocket server;
@@ -79,10 +81,19 @@ public class MainService extends Service implements Runnable {
         log("MainService started");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
-        Log.e("testvasu","runGen");
+      //  Log.e("testvasu","runGen");
 
-        if(secretKey==null) {
+           // checkKeypair();
+        }
+
+
+  /*  public void checkKeypair() {
+
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
+            new AppData();
             generateKeyPair();
+            return;
         }
     }
 
@@ -96,18 +107,23 @@ public class MainService extends Service implements Runnable {
                 // This is our keypair.
                 keyPair = box.cryptoBoxKeypair();
 
-                publicKey = keyPair.getPublicKey().getAsHexString();
-                secretKey = keyPair.getSecretKey().getAsHexString();
-
                 sqlHelper = new ContactSqlHelper(this);
                 appData= sqlHelper.getAppData();
                 if(appData==null){
-                    appData = new AppData();}
+                    appData = new AppData(1,1,keyPair.getPublicKey().getAsHexString(),keyPair.getSecretKey().getAsHexString(),"","","",1,0);
+                    sqlHelper.insertAppData(appData);
+                }
 
-                            appData.setPublicKey(publicKey);
-                            appData.setSecretKey(secretKey);
+             /*   if(appData!=null) {
 
-                            sqlHelper.updateAppData(appData);
+                    String publicKey = keyPair.getPublicKey().getAsHexString();
+                    String secretKey = keyPair.getSecretKey().getAsHexString();
+
+                    appData.setPublicKey(publicKey);
+                    appData.setSecretKey(secretKey);
+
+                    sqlHelper.updateAppData(appData);
+                }
 
                 Log.e("publicKey", keyPair.getPublicKey().getAsHexString());
                 Log.e("secretKey", keyPair.getSecretKey().getAsHexString());
@@ -116,6 +132,7 @@ public class MainService extends Service implements Runnable {
                 e.printStackTrace();
             }
         }
+        */
 
     @Override
     public void onDestroy() {
@@ -214,7 +231,7 @@ public class MainService extends Service implements Runnable {
                             log("ringing...");
                             String response = "{\"action\":\"ringing\"}\n";
                             os.write(response.getBytes());
-                            this.currentCall = new RTCCall(client, this, request.getString("offer"));
+                            this.currentCall = new RTCCall(client, this, decryptOffer());
                             if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
                                 currentCall.decline();
                                 continue;
@@ -243,7 +260,7 @@ public class MainService extends Service implements Runnable {
                                             client.getInetAddress().getHostAddress(),
                                             request.getString("username"),
                                             "",
-                                            "pubKey",
+                                            "publicKey",
                                             identifier
                                     );
                                     try {
@@ -277,20 +294,17 @@ public class MainService extends Service implements Runnable {
         }
     }
 
-    /* public void decryptOffer() throws SodiumException {
-        KeyPair decryptionKeyPair = new KeyPair(keyPair.getPublicKey(), keyPair.getSecretKey());
-        String decryptedMessage = cryptoBoxLazy.cryptoBoxOpenEasy(cipherText, nonce, decryptionKeyPair);
-               try {
-            String cipherText = box.cryptoBoxEasy(
-                    editable.toString(),
-                    nonce,
-                    decryptionKeyPair
-            );
-             } catch (SodiumException e) {
-            e.printStackTrace();
-        }
-                }
-               */
+     public String decryptOffer() throws SodiumException {
+         ls = new LazySodiumAndroid(new SodiumAndroid());
+         box = (Box.Lazy) ls;
+         keyPair = box.cryptoBoxKeypair();
+         byte[] nonce = ls.nonce(Box.NONCEBYTES);
+         KeyPair decryptionKeyPair = new KeyPair(keyPair.getPublicKey(),keyPair.getSecretKey());
+         decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
+         return decrypted;
+     }
+
+
 
     private void setClientState(String identifier, Contact.State state) {
         for (Contact c : contacts) {

@@ -11,6 +11,13 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
+import com.goterl.lazycode.lazysodium.SodiumAndroid;
+import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
+import com.goterl.lazycode.lazysodium.interfaces.Box;
+import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
+import com.goterl.lazycode.lazysodium.utils.KeyPair;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
@@ -53,6 +60,12 @@ public class RTCCall implements DataChannel.Observer {
     private MediaConstraints constraints;
 
     private String offer;
+    String encrypted;
+    String nonce;
+    private Box.Lazy box;
+    private KeyPair keyPair;
+    protected LazySodiumAndroid ls;
+
 
 
     private SurfaceViewRenderer remoteRenderer;
@@ -96,9 +109,10 @@ public class RTCCall implements DataChannel.Observer {
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
                             object.put("username", username);
-                            object.put("identifier", identifier);
-                            object.put("offer", connection.getLocalDescription().description);
-                            os.write((object.toString() + "\n").getBytes());
+                            //object.put("identifier", identifier);    //does not make sense
+                            object.put("nonce" , nonce);
+                            object.put("offer", encryptOffer());
+                            os.write((object.toString() + "\n").getBytes());   //encrypt
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
                             String response = reader.readLine();
                             JSONObject responseObject = new JSONObject(response);
@@ -131,22 +145,16 @@ public class RTCCall implements DataChannel.Observer {
                     }
                 }
 
-               /* public void encryptOffer() throws SodiumException {
-                    byte[] nonce = lazySodium.nonce(Box.NONCEBYTES);
-                    KeyPair encryptionKeyPair = new KeyPair(keyPair.getPubKey(), keyPair.getSecretKey());
-                    String cipherText = cryptoBoxLazy.cryptoBoxEasy(offer, nonce, encryptionKeyPair);
+               public String encryptOffer() throws SodiumException {
+                   ls = new LazySodiumAndroid(new SodiumAndroid());
+                   box = (Box.Lazy) ls;
+                   keyPair = box.cryptoBoxKeypair();
 
-                    try {
-            String cipherText = box.cryptoBoxEasy(
-                    editable.toString(),
-                    nonce,
-                    encryptionKeyPair
-            );
-             } catch (SodiumException e) {
-            e.printStackTrace();
-        }
+                    byte[] nonce = ls.nonce(Box.NONCEBYTES);
+                    KeyPair encryptionKeyPair = new KeyPair(keyPair.getPublicKey(), keyPair.getSecretKey());
+                    encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
+               return encrypted;
                 }
-               */
 
 
                 @Override

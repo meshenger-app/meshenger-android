@@ -113,6 +113,7 @@ public class RTCCall implements DataChannel.Observer {
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
                             object.put("username", username);
+                            object.put("identifier", identifier);
                             ls = new LazySodiumAndroid(new SodiumAndroid());
                             box = (Box.Lazy) ls;
                             nonce = ls.nonce(Box.NONCEBYTES);

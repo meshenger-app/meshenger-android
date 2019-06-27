@@ -185,7 +185,7 @@ public class MainService extends Service implements Runnable {
 
                             nonce = hexStringToByteArray(request.getString("nonce"));
                             encrypted = request.getString("offer");
-                            offer = decryptOffer(identifier);
+                            offer = decrypted;
                             this.currentCall = new RTCCall(client, this, offer);
 
                             if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
@@ -274,14 +274,14 @@ public class MainService extends Service implements Runnable {
 */
 
     public String getPublicKey(String identifier) {
-        String pub_key="";
+        String pubkey="";
         for (Contact c : contacts) {
             if (c.getIdentifier().equals(identifier)) {
-                pub_key = c.pubKey;
+                pubkey = c.pubKey;
                 break;
             }
         }
-        return pub_key;
+        return pubkey;
     }
 
      public void decryptionKeys(String identifier) {
@@ -292,17 +292,17 @@ public class MainService extends Service implements Runnable {
 
          Key pub_key = Key.fromHexString(pubKey);
          decryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
+
      }
 
 
-     public String decryptOffer(String identifier) throws SodiumException {
+     public void decryptOffer(String identifier) throws SodiumException {
          ls = new LazySodiumAndroid(new SodiumAndroid());
          box = (Box.Lazy) ls;
          keyPair = box.cryptoBoxKeypair();
-
          decryptionKeys(identifier);
          decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
-         return decrypted;
+
      }
 
 

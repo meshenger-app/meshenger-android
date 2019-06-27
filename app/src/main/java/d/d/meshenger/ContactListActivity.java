@@ -44,6 +44,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
+import com.goterl.lazycode.lazysodium.SodiumAndroid;
+import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
+import com.goterl.lazycode.lazysodium.interfaces.Box;
+import com.goterl.lazycode.lazysodium.utils.KeyPair;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,6 +60,14 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
    private ContactSqlHelper sqlHelper;
    AppData appData;
+
+   String publicKey;
+   String secretKey;
+
+    private Box.Lazy box;
+    private KeyPair keyPair;
+    protected LazySodiumAndroid ls;
+
 
     private boolean fabExpanded = false;
 
@@ -77,6 +91,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         }
 
         checkInit();
+        checkKeypair();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -115,20 +130,46 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         super.onDestroy();
     }
 
+    public void checkKeypair() {
+
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
+            new AppData();
+            generateKeyPair();
+            return;
+        }
+    }
+
+    public void generateKeyPair() {
+
+        ls = new LazySodiumAndroid(new SodiumAndroid());
+
+        box = (Box.Lazy) ls;
+
+        try {
+            // This is our keypair.
+            keyPair = box.cryptoBoxKeypair();
+
+            publicKey = keyPair.getPublicKey().getAsHexString();
+            secretKey = keyPair.getSecretKey().getAsHexString();
+
+            Log.e("publicKey", keyPair.getPublicKey().getAsHexString());
+            Log.e("secretKey", keyPair.getSecretKey().getAsHexString());
+
+        } catch (SodiumException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void checkInit() {
 
-       appData= sqlHelper.getAppData();
-        if(appData==null){
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
             new AppData();
             showUsernameDialog();
             return;
         }
-
-      /*  SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        if (!prefs.contains("username")) {
-            showUsernameDialog();
-            return;
-        }*/
     }
 
     private void showUsernameDialog() {
@@ -159,12 +200,11 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 getSystemService(INPUT_METHOD_SERVICE);
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
 
-             appData= sqlHelper.getAppData();
+         appData= sqlHelper.getAppData();
         if(appData==null){
             ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
-        AppData appData = new AppData(1,1,"","", et.getText().toString(),"","",1,0 );
+        AppData appData = new AppData(1,1,secretKey,publicKey, et.getText().toString(),"","",1,0 );
         sqlHelper.insertAppData(appData);}
-           // getSharedPreferences(getPackageName(), MODE_PRIVATE).edit().putString("username", et.getText().toString()).apply();
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
             Intent intent = new Intent("settings_changed");
             intent.putExtra("subject", "username");
@@ -356,7 +396,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             JSONObject object = new JSONObject();
             object.put("username", c.getName());
             object.put("address", c.getAddress());
-            object.put("pubKey", c.getPubKey());                  //correct
+            object.put("publicKey", c.getPubKey());       //correct
             object.put("identifier", c.getIdentifier());
 
             Intent intent = new Intent(Intent.ACTION_SEND);

@@ -16,6 +16,7 @@ import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
 import com.goterl.lazycode.lazysodium.interfaces.Box;
 import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
+import com.goterl.lazycode.lazysodium.utils.Key;
 import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
 import org.json.JSONException;
@@ -41,6 +42,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class RTCCall implements DataChannel.Observer {
@@ -61,12 +63,14 @@ public class RTCCall implements DataChannel.Observer {
 
     private String offer;
     String encrypted;
-    String nonce;
     private Box.Lazy box;
     private KeyPair keyPair;
     protected LazySodiumAndroid ls;
+    public byte[] nonce;
+    KeyPair encryptionKeyPair;
 
-
+    private ContactSqlHelper sqlHelper;
+    private ArrayList<Contact> contacts;
 
     private SurfaceViewRenderer remoteRenderer;
     private SurfaceViewRenderer localRenderer;
@@ -109,10 +113,13 @@ public class RTCCall implements DataChannel.Observer {
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
                             object.put("username", username);
-                            //object.put("identifier", identifier);    //does not make sense
-                            object.put("nonce" , nonce);
-                            object.put("offer", encryptOffer());
-                            os.write((object.toString() + "\n").getBytes());   //encrypt
+                            ls = new LazySodiumAndroid(new SodiumAndroid());
+                            box = (Box.Lazy) ls;
+                            nonce = ls.nonce(Box.NONCEBYTES);
+                            object.put("nonce" , bytesToHex(nonce));
+                            Log.e("DEBUG","hcdadfjadfk");
+                            object.put("offer", encryptOffer(target.getIdentifier()));
+                            os.write((object.toString() + "\n").getBytes());
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
                             String response = reader.readLine();
                             JSONObject responseObject = new JSONObject(response);
@@ -144,18 +151,6 @@ public class RTCCall implements DataChannel.Observer {
                         }
                     }
                 }
-
-               public String encryptOffer() throws SodiumException {
-                   ls = new LazySodiumAndroid(new SodiumAndroid());
-                   box = (Box.Lazy) ls;
-                   keyPair = box.cryptoBoxKeypair();
-
-                    byte[] nonce = ls.nonce(Box.NONCEBYTES);
-                    KeyPair encryptionKeyPair = new KeyPair(keyPair.getPublicKey(), keyPair.getSecretKey());
-                    encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
-               return encrypted;
-                }
-
 
                 @Override
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
@@ -191,6 +186,56 @@ public class RTCCall implements DataChannel.Observer {
                 }
             }, constraints);
         }).start();
+    }
+
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+
+ /*  public void findIdentifier(String identifer){
+        for (Contact c : contacts) {
+            if (c.getIdentifier().equals(identifer)) {
+                sqlHelper = new ContactSqlHelper(this.context);
+                String pubKey = sqlHelper.getPublicKeyFromContacts(identifer);
+            }
+        }
+    }
+*/
+ public String getPublicKey(String identifier) {
+     for (Contact c : contacts) {
+         if(c.getIdentifier().equals(identifier)){
+             String pub_key = c.pubKey;
+         }
+     }
+     return getPublicKey(identifier);
+ }
+
+
+    public void encryptionKeys(String identifier){
+        Log.e("DEBUG"," rtc identifier ="+identifier);
+        sqlHelper=new ContactSqlHelper(context);
+        String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
+        Log.e("DEBUG"," RTC call Pub_key="+pubKey);
+       Key pub_key=Key.fromHexString(pubKey);
+         encryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
+
+    }
+
+    public String encryptOffer(String identifier) throws SodiumException {
+        ls = new LazySodiumAndroid(new SodiumAndroid());
+        box = (Box.Lazy) ls;
+        keyPair = box.cryptoBoxKeypair();
+        encryptionKeys(identifier);
+        encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
+        return encrypted;
     }
 
 

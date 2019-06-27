@@ -217,9 +217,25 @@ class ContactSqlHelper extends SQLiteOpenHelper {
 
     }
 
+    public String getPublicKeyFromContacts(String identifier){
+        String pubKey="";
+        String query = "SELECT * FROM " + tableName+ " WHERE " + columnIdentifier+"="+"'"+identifier+"'";
+        Cursor cursor = database.rawQuery(query,null);
+        if(cursor.moveToFirst()) {
+                pubKey = cursor.getString(cursor.getColumnIndex("pubKey"));
+                Log.e("pubkey=", pubKey);
+        }
+            return pubKey;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
+    }
+    @Override
+    protected void finalize() throws Throwable {
+        this.close();
+        super.finalize();
     }
 
     @Override

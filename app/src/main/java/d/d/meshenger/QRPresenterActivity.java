@@ -113,14 +113,12 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         if(this.contact != null){
             object.put("address", contact.getAddress());
             object.put("identifier", contact.getIdentifier());
-            object.put("pubKey", contact.getPubKey());    //CORRECT
+            object.put("publicKey", contact.getPubKey());
             object.put("username", contact.getName());
             object.put("challenge", this.binder.generateChallenge());
             return object.toString();
         }
 
-       // SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-       // object.put("username", prefs.getString("username", "Unknown"));
         sqlHelper = new ContactSqlHelper(this);
         appData= sqlHelper.getAppData();
         if(appData==null){
@@ -132,6 +130,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
             Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
             finish();
         }
+
         object.put("address", address);
         object.put("publicKey", sqlHelper.getAppData().getPublicKey());          //correct
         object.put("challenge", this.binder.generateChallenge());

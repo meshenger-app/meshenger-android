@@ -9,7 +9,7 @@ public class Contact implements Serializable{
     private long id;
     private String address;
     private String name;
-    private String pubKey;
+    public String pubKey;
     private String identifier;
     private String info;
 

@@ -45,8 +45,6 @@ public class SettingsActivity extends MeshengerActivity {
             new AppData();
         }
 
-       // prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-       // nick = prefs.getString("username", "undefined");
         nick=sqlHelper.getAppData().getUsername();
 
         findViewById(R.id.changeNickLayout).setOnClickListener(new View.OnClickListener() {
@@ -67,9 +65,7 @@ public class SettingsActivity extends MeshengerActivity {
             ignoreCB.setChecked(false);
 
         }
-       // ignoreCB.setChecked(prefs.getBoolean("ignoreUnsaved", false));
         ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
-         //   prefs.edit().putBoolean("ignoreUnsaved", b).apply();
             if(appData!=null){
                 if(b) {
                     appData.setBlockUC(1);

@@ -77,7 +77,6 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                 .setView(et);
         b.show();
-
     }
 
     @Override
@@ -138,8 +137,6 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         super.onDestroy();
         unbindService(this);
     }
-
-
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {

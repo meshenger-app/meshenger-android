@@ -52,17 +52,11 @@ import javax.crypto.spec.SecretKeySpec;
 public class MainService extends Service implements Runnable {
     private ArrayList<Contact> contacts;
 
-    private Box.Lazy box;
-    private KeyPair keyPair;
-    protected LazySodiumAndroid ls;
-    String decrypted;
+    KeyPair keyPair;
     String encrypted;
     byte[] nonce;
-    String offer;
-    KeyPair decryptionKeyPair;
 
     private ContactSqlHelper sqlHelper;
-    AppData appData;
 
     public static final int serverPort = 10001;
     private ServerSocket server;
@@ -185,7 +179,7 @@ public class MainService extends Service implements Runnable {
 
                             nonce = hexStringToByteArray(request.getString("nonce"));
                             encrypted = request.getString("offer");
-                            offer = decrypted;
+                            String offer = decryption(identifier);
                             this.currentCall = new RTCCall(client, this, offer);
 
                             if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
@@ -216,7 +210,7 @@ public class MainService extends Service implements Runnable {
                                             client.getInetAddress().getHostAddress(),
                                             request.getString("username"),
                                             "",
-                                            "publicKey",
+                                            request.getString("publicKey"),
                                             identifier
                                     );
                                     try {
@@ -260,19 +254,6 @@ public class MainService extends Service implements Runnable {
         return data;
     }
 
-
- /*   public String findIdentifier(String identifier){
-        String pubKey;
-        for (Contact c : contacts) {
-            if (c.getIdentifier().equals(identifier)) {
-                sqlHelper = new ContactSqlHelper(this);
-              pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
-            }
-        }
-        return pubKey;
-    }
-*/
-
     public String getPublicKey(String identifier) {
         String pubkey="";
         for (Contact c : contacts) {
@@ -284,27 +265,18 @@ public class MainService extends Service implements Runnable {
         return pubkey;
     }
 
-     public void decryptionKeys(String identifier) {
-         Log.e("DEBUG"," main identifier ="+identifier);
-
-         String pubKey = getPublicKey(identifier);
-         Log.e("DEBUG"," Main service Pub_key="+pubKey);
-
-         Key pub_key = Key.fromHexString(pubKey);
-         decryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
-
-     }
-
-
-     public void decryptOffer(String identifier) throws SodiumException {
+     public String decryption(String identifier) throws SodiumException {
+        Box.Lazy box;
+         LazySodiumAndroid ls;
          ls = new LazySodiumAndroid(new SodiumAndroid());
          box = (Box.Lazy) ls;
          keyPair = box.cryptoBoxKeypair();
-         decryptionKeys(identifier);
-         decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
-
+         String pubKey = getPublicKey(identifier);
+         Key pub_key = Key.fromHexString(pubKey);
+         KeyPair decryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
+         String decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
+         return decrypted;
      }
-
 
     private void setClientState(String identifier, Contact.State state) {
         for (Contact c : contacts) {
@@ -547,13 +519,11 @@ public class MainService extends Service implements Runnable {
         private String address;
         private String username;
         private String challenge;
-      //  private String pubKey;
         private String identifier;
 
         ConnectRunnable(Contact contact, String challenge) {
             this.address = contact.getAddress();
             this.username = userName;
-         //   this.pubKey = pubKey;
             this.challenge = challenge;
             this.identifier = Utils.formatAddress(Utils.getMacAddress());
         }
@@ -567,7 +537,6 @@ public class MainService extends Service implements Runnable {
 
                 object.put("action", "connect");
                 object.put("username", username);
-               // object.put("pubKey", pubKey);
                 object.put("challenge", challenge);
                 object.put("identifier", identifier);
 

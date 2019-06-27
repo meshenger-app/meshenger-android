@@ -64,16 +64,11 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
    String publicKey;
    String secretKey;
 
-    private Box.Lazy box;
-    private KeyPair keyPair;
-    protected LazySodiumAndroid ls;
+   private boolean fabExpanded = false;
 
+   private FloatingActionButton fabScan, fabGen, fab;
 
-    private boolean fabExpanded = false;
-
-    private FloatingActionButton fabScan, fabGen, fab;
-
-    private MainService.MainBinder mainBinder;
+   private MainService.MainBinder mainBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,12 +137,14 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     public void generateKeyPair() {
 
-        ls = new LazySodiumAndroid(new SodiumAndroid());
+        Box.Lazy box;
+        KeyPair keyPair;
+        LazySodiumAndroid ls;
 
+        ls = new LazySodiumAndroid(new SodiumAndroid());
         box = (Box.Lazy) ls;
 
         try {
-            // This is our keypair.
             keyPair = box.cryptoBoxKeypair();
 
             publicKey = keyPair.getPublicKey().getAsHexString();
@@ -160,7 +157,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             e.printStackTrace();
         }
     }
-
 
     private void checkInit() {
 
@@ -201,10 +197,11 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
 
          appData= sqlHelper.getAppData();
-        if(appData==null){
-            ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
+         if(appData==null){
+        ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
         AppData appData = new AppData(1,1,secretKey,publicKey, et.getText().toString(),"","",1,0 );
         sqlHelper.insertAppData(appData);}
+
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
             Intent intent = new Intent("settings_changed");
             intent.putExtra("subject", "username");
@@ -396,7 +393,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             JSONObject object = new JSONObject();
             object.put("username", c.getName());
             object.put("address", c.getAddress());
-            object.put("publicKey", c.getPubKey());       //correct
+            object.put("publicKey", c.getPubKey());
             object.put("identifier", c.getIdentifier());
 
             Intent intent = new Intent(Intent.ACTION_SEND);

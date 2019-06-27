@@ -33,8 +33,6 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private MainService.MainBinder binder;
     private String json;
 
-    String identifier1;
-
     private ContactSqlHelper sqlHelper;
     AppData appData;
 
@@ -132,11 +130,11 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         }
 
         object.put("address", address);
-        object.put("publicKey", sqlHelper.getAppData().getPublicKey());          //correct
+        object.put("publicKey", sqlHelper.getAppData().getPublicKey());
         object.put("challenge", this.binder.generateChallenge());
 
         if(appData!=null) {
-            identifier1 = (Utils.formatAddress(Utils.getMacAddress()));
+            String identifier1 = (Utils.formatAddress(Utils.getMacAddress()));
             appData.setIdentifier1(identifier1);
             sqlHelper.updateAppData(appData);
         }

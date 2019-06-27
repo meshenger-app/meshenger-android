@@ -223,7 +223,6 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         Cursor cursor = database.rawQuery(query,null);
         if(cursor.moveToFirst()) {
                 pubKey = cursor.getString(cursor.getColumnIndex("pubKey"));
-                Log.e("pubkey=", pubKey);
         }
             return pubKey;
     }

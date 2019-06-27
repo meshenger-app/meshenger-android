@@ -62,7 +62,6 @@ public class RTCCall implements DataChannel.Observer {
     private MediaConstraints constraints;
 
     private String offer;
-    String encrypted;
     private Box.Lazy box;
     private KeyPair keyPair;
     protected LazySodiumAndroid ls;
@@ -118,7 +117,6 @@ public class RTCCall implements DataChannel.Observer {
                             box = (Box.Lazy) ls;
                             nonce = ls.nonce(Box.NONCEBYTES);
                             object.put("nonce" , bytesToHex(nonce));
-                            Log.e("DEBUG","hcdadfjadfk");
                             object.put("offer", encryptOffer(target.getIdentifier()));
                             os.write((object.toString() + "\n").getBytes());
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
@@ -200,33 +198,11 @@ public class RTCCall implements DataChannel.Observer {
         return new String(hexChars);
     }
 
-
- /*  public void findIdentifier(String identifer){
-        for (Contact c : contacts) {
-            if (c.getIdentifier().equals(identifer)) {
-                sqlHelper = new ContactSqlHelper(this.context);
-                String pubKey = sqlHelper.getPublicKeyFromContacts(identifer);
-            }
-        }
-    }
-*/
- public String getPublicKey(String identifier) {
-     for (Contact c : contacts) {
-         if(c.getIdentifier().equals(identifier)){
-             String pub_key = c.pubKey;
-         }
-     }
-     return getPublicKey(identifier);
- }
-
-
     public void encryptionKeys(String identifier){
-        Log.e("DEBUG"," rtc identifier ="+identifier);
-        sqlHelper=new ContactSqlHelper(context);
-        String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
-        Log.e("DEBUG"," RTC call Pub_key="+pubKey);
+       sqlHelper=new ContactSqlHelper(context);
+       String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
        Key pub_key=Key.fromHexString(pubKey);
-         encryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
+       encryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
 
     }
 
@@ -235,7 +211,7 @@ public class RTCCall implements DataChannel.Observer {
         box = (Box.Lazy) ls;
         keyPair = box.cryptoBoxKeypair();
         encryptionKeys(identifier);
-        encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
+        String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
         return encrypted;
     }
 

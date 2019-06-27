@@ -29,8 +29,7 @@ import java.util.Locale;
 
 public class SettingsActivity extends MeshengerActivity {
     String nick;
-   // SharedPreferences prefs;
-   private ContactSqlHelper sqlHelper;
+    private ContactSqlHelper sqlHelper;
     AppData appData;
 
     @Override
@@ -59,11 +58,9 @@ public class SettingsActivity extends MeshengerActivity {
         }
         else if(appData!=null && appData.getBlockUC()==1){
             ignoreCB.setChecked(true);
-
         }
         else {
             ignoreCB.setChecked(false);
-
         }
         ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
             if(appData!=null){
@@ -78,7 +75,6 @@ public class SettingsActivity extends MeshengerActivity {
             syncSettings("ignoreUnsaved", b);
         });
 
-
         CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
         if(appData!=null && appData.getMode()==1){
             nightMode.setChecked(false);
@@ -88,7 +84,6 @@ public class SettingsActivity extends MeshengerActivity {
         }
         else {
             nightMode.setChecked(false);
-
         }
         nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
         nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -96,11 +91,9 @@ public class SettingsActivity extends MeshengerActivity {
             if(appData!=null){
                 if(compoundButton.isChecked()) {
                     appData.setMode(AppCompatDelegate.MODE_NIGHT_YES);
-
                 }
                 else {
                     appData.setMode(AppCompatDelegate.MODE_NIGHT_NO);
-
                 }
                 sqlHelper.updateAppData(appData);
             }

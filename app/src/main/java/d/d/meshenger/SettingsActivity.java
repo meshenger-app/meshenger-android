@@ -39,12 +39,12 @@ public class SettingsActivity extends MeshengerActivity {
         setTitle(getResources().getString(R.string.menu_settings));
 
         sqlHelper = new ContactSqlHelper(this);
-        appData= sqlHelper.getAppData();
-        if(appData==null){
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
             new AppData();
         }
 
-        nick=sqlHelper.getAppData().getUsername();
+        nick = sqlHelper.getAppData().getUsername();
 
         findViewById(R.id.changeNickLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,21 +53,21 @@ public class SettingsActivity extends MeshengerActivity {
             }
         });
         CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
-        if(appData!=null && appData.getBlockUC()==0){
+        if (appData != null && appData.getBlockUC() == 0) {
             ignoreCB.setChecked(false);
         }
-        else if(appData!=null && appData.getBlockUC()==1){
+        else if (appData != null && appData.getBlockUC() == 1) {
             ignoreCB.setChecked(true);
         }
         else {
             ignoreCB.setChecked(false);
         }
         ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
-            if(appData!=null){
+            if (appData != null) {
                 if(b) {
                     appData.setBlockUC(1);
                 }
-                else{
+                else {
                     appData.setBlockUC(0);
                 }
                 sqlHelper.updateAppData(appData);
@@ -76,10 +76,10 @@ public class SettingsActivity extends MeshengerActivity {
         });
 
         CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
-        if(appData!=null && appData.getMode()==1){
+        if (appData != null && appData.getMode() == 1) {
             nightMode.setChecked(false);
         }
-        else if(appData!=null && appData.getMode()==2){
+        else if (appData != null && appData.getMode() == 2) {
             nightMode.setChecked(true);
         }
         else {
@@ -88,8 +88,8 @@ public class SettingsActivity extends MeshengerActivity {
         nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
         nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
             AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            if(appData!=null){
-                if(compoundButton.isChecked()) {
+            if (appData != null) {
+                if (compoundButton.isChecked()) {
                     appData.setMode(AppCompatDelegate.MODE_NIGHT_YES);
                 }
                 else {
@@ -106,7 +106,7 @@ public class SettingsActivity extends MeshengerActivity {
         Configuration config = getResources().getConfiguration();
         Locale locale = config.locale;
         ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
-        if(appData!=null) {
+        if (appData != null) {
             appData.setLanguage(locale.getDisplayLanguage());
             sqlHelper.updateAppData(appData);
         }
@@ -150,8 +150,7 @@ public class SettingsActivity extends MeshengerActivity {
                 .setView(et)
                 .setPositiveButton("ok", (dialogInterface, i) -> {
                     nick = et.getText().toString();
-                  //  prefs.edit().putString("username", nick).apply();
-                    if(appData!=null){
+                    if (appData != null) {
                         appData.setUsername(nick);
                         sqlHelper.updateAppData(appData);
                     }

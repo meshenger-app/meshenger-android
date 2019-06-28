@@ -76,7 +76,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(binder != null) {
+        if (binder != null) {
             unbindService(this);
         }
 
@@ -108,7 +108,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private String generateJson() throws JSONException{
         JSONObject object = new JSONObject();
 
-        if(this.contact != null){
+        if (this.contact != null) {
             object.put("address", contact.getAddress());
             object.put("identifier", contact.getIdentifier());
             object.put("publicKey", contact.getPubKey());
@@ -118,13 +118,13 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         }
 
         sqlHelper = new ContactSqlHelper(this);
-        appData= sqlHelper.getAppData();
-        if(appData==null){
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
             new AppData();
         }
         object.put("username", sqlHelper.getAppData().getUsername());
         String address = Utils.getLinkLocalAddress();
-        if(address == null){
+        if (address == null) {
             Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
             finish();
         }
@@ -133,7 +133,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         object.put("publicKey", sqlHelper.getAppData().getPublicKey());
         object.put("challenge", this.binder.generateChallenge());
 
-        if(appData!=null) {
+        if (appData != null) {
             String identifier1 = (Utils.formatAddress(Utils.getMacAddress()));
             appData.setIdentifier1(identifier1);
             sqlHelper.updateAppData(appData);

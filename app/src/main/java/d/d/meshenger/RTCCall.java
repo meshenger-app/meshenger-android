@@ -190,7 +190,7 @@ public class RTCCall implements DataChannel.Observer {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
+        for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
@@ -199,9 +199,9 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     public void encryptionKeys(String identifier){
-       sqlHelper=new ContactSqlHelper(context);
+       sqlHelper = new ContactSqlHelper(context);
        String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
-       Key pub_key=Key.fromHexString(pubKey);
+       Key pub_key = Key.fromHexString(pubKey);
        encryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
 
     }
@@ -258,9 +258,9 @@ public class RTCCall implements DataChannel.Observer {
     private void setRemoteVideoEnabled(boolean enabled) {
         log("setting remote video enabled: " + enabled);
         new Handler(Looper.getMainLooper()).post(() -> {
-            if(enabled){
+            if (enabled) {
                 this.remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
-            }else{
+            } else {
                 TypedValue typedValue = new TypedValue();
                 Resources.Theme theme = this.context.getTheme();
                 theme.resolveAttribute(R.attr.backgroundCardColor, typedValue, true);
@@ -493,7 +493,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     public void cleanup(){
-        if(this.upStream != null && state == CallState.CONNECTED){
+        if (this.upStream != null && state == CallState.CONNECTED) {
             /*for(AudioTrack track : this.upStream.audioTracks){
                 track.setEnabled(false);
                 track.dispose();
@@ -502,7 +502,7 @@ public class RTCCall implements DataChannel.Observer {
             if(this.connection != null) this.connection.close();
             //factory.dispose();
         }
-        if(commSocket != null){
+        if (commSocket != null) {
             try {
                 commSocket.close();
             } catch (IOException e) {
@@ -514,12 +514,12 @@ public class RTCCall implements DataChannel.Observer {
     public void hangUp() {
         new Thread(() -> {
             try {
-                if(commSocket != null){
+                if (commSocket != null) {
                     commSocket.getOutputStream().write("{\"action\":\"dismissed\"}\n".getBytes());
                     commSocket.close();
                 }
 
-                if(connection != null) connection.close();
+                if (connection != null) connection.close();
                 reportStateChange(CallState.ENDED);
             } catch (IOException e) {
                 e.printStackTrace();

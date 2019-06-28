@@ -72,7 +72,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
 
     public AppData getAppData() {
         Cursor cursor = this.database.query(tableName2, new String[]{"*"}, "", null, "", "", "");
-        AppData appData=null;
+        AppData appData = null;
 
         if (cursor.moveToFirst()) {
             final int posId = cursor.getColumnIndex(columnId);
@@ -86,7 +86,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
             final int posLanguage = cursor.getColumnIndex(columnLanguage);
 
             do {
-                appData= new AppData(
+                appData = new AppData(
                         cursor.getInt(posId),
                         cursor.getInt(posDbVer),
                         cursor.getString(posSecretKey),
@@ -218,10 +218,10 @@ class ContactSqlHelper extends SQLiteOpenHelper {
     }
 
     public String getPublicKeyFromContacts(String identifier){
-        String pubKey="";
-        String query = "SELECT * FROM " + tableName+ " WHERE " + columnIdentifier+"="+"'"+identifier+"'";
+        String pubKey = "";
+        String query = " SELECT * FROM " + tableName + " WHERE " + columnIdentifier + " = " + "'" + identifier + "'";
         Cursor cursor = database.rawQuery(query,null);
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
                 pubKey = cursor.getString(cursor.getColumnIndex("pubKey"));
         }
             return pubKey;

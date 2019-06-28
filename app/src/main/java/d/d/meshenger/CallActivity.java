@@ -151,28 +151,28 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     private void ringPhone(){
         int ringerMode = ((AudioManager) getSystemService(AUDIO_SERVICE)).getRingerMode();
-        if(ringerMode == AudioManager.RINGER_MODE_SILENT) return;
+        if (ringerMode == AudioManager.RINGER_MODE_SILENT) return;
 
         vibrator = ((Vibrator) getSystemService(VIBRATOR_SERVICE));
         long[] pattern = {1500, 800, 800, 800};
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             VibrationEffect vibe = VibrationEffect.createWaveform(pattern, 0);
             vibrator.vibrate(vibe);
-        }else{
+        } else {
             vibrator.vibrate(pattern, 0);
         }
-        if(ringerMode == AudioManager.RINGER_MODE_VIBRATE) return;
+        if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) return;
 
         ringtone = RingtoneManager.getRingtone(this, RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE));
         ringtone.play();
     }
 
     private void stopRingPhone(){
-        if(vibrator != null) {
+        if (vibrator != null) {
             vibrator.cancel();
             vibrator = null;
         }
-        if(ringtone != null){
+        if (ringtone != null) {
             ringtone.stop();
             ringtone = null;
         }
@@ -238,8 +238,8 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == CAMERA_PERMISSION_REQUEST_CODE){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Camera permission needed in order to start video", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -263,11 +263,11 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     protected void onPause() {
         super.onPause();
-        if(calledWhileScreenOff) {
+        if (calledWhileScreenOff) {
             calledWhileScreenOff = false;
             return;
         }
-        if(permissionRequested){
+        if (permissionRequested) {
             permissionRequested = false;
             return;
         }
@@ -280,7 +280,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         Log.d("CallActivity", "state: " + currentCall.state);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(declineReceiver);
         stopRingPhone();
-        if(currentCall.state == RTCCall.CallState.CONNECTED) {
+        if (currentCall.state == RTCCall.CallState.CONNECTED) {
             currentCall.decline();
         }
         currentCall.cleanup();

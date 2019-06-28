@@ -196,12 +196,12 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 getSystemService(INPUT_METHOD_SERVICE);
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
 
-         appData= sqlHelper.getAppData();
-         if(appData==null){
+         appData = sqlHelper.getAppData();
+         if (appData == null) {
         ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
         AppData appData = new AppData(1,1,secretKey,publicKey, et.getText().toString(),"","",1,0 );
-        sqlHelper.insertAppData(appData);}
-
+        sqlHelper.insertAppData(appData);
+        }
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
             Intent intent = new Intent("settings_changed");
             intent.putExtra("subject", "username");

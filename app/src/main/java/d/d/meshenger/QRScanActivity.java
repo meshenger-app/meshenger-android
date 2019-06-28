@@ -82,7 +82,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
         }else{
             Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show();
@@ -125,7 +125,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     protected void onPause() {
         super.onPause();
 
-        if(barcodeView != null && binder != null) {
+        if (barcodeView != null && binder != null) {
 
             barcodeView.pause();
             finish();

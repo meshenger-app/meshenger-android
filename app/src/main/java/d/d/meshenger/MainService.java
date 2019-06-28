@@ -54,6 +54,7 @@ public class MainService extends Service implements Runnable {
 
     KeyPair keyPair;
     String encrypted;
+    String decrypted;
     byte[] nonce;
 
     private ContactSqlHelper sqlHelper;
@@ -164,7 +165,7 @@ public class MainService extends Service implements Runnable {
             while ((line = reader.readLine()) != null) {
                 log("line: " + line);
                 JSONObject request = new JSONObject(line);
-                if(request.has("identifier")) {
+                if (request.has("identifier")) {
                     identifier = request.getString("identifier");
                 }
                 if (request.has("action")) {
@@ -180,9 +181,9 @@ public class MainService extends Service implements Runnable {
                             nonce = hexStringToByteArray(request.getString("nonce"));
                             encrypted = request.getString("offer");
                             String offer = decryption(identifier);
-                            this.currentCall = new RTCCall(client, this, offer);
+                            this.currentCall = new RTCCall(client, this, decrypted);
 
-                            if(ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
+                            if (ignoreUnsaved && !sqlHelper.contactSaved(identifier)) {
                                 currentCall.decline();
                                 continue;
                             };
@@ -216,7 +217,7 @@ public class MainService extends Service implements Runnable {
                                     try {
                                         sqlHelper.insertContact(c);
                                         contacts.add(c);
-                                    }catch (ContactSqlHelper.ContactAlreadyAddedException e){}
+                                    } catch (ContactSqlHelper.ContactAlreadyAddedException e){}
                                     JSONObject response = new JSONObject();
                                     response.put("username", userName);
                                     os.write((response.toString() + "\n").getBytes());
@@ -255,7 +256,7 @@ public class MainService extends Service implements Runnable {
     }
 
     public String getPublicKey(String identifier) {
-        String pubkey="";
+        String pubkey = "";
         for (Contact c : contacts) {
             if (c.getIdentifier().equals(identifier)) {
                 pubkey = c.pubKey;
@@ -274,7 +275,7 @@ public class MainService extends Service implements Runnable {
          String pubKey = getPublicKey(identifier);
          Key pub_key = Key.fromHexString(pubKey);
          KeyPair decryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
-         String decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
+         decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
          return decrypted;
      }
 
@@ -437,7 +438,7 @@ public class MainService extends Service implements Runnable {
                 } catch (Exception e) {
                     continue;
                 } finally {
-                    if(s != null){
+                    if (s != null) {
                         try {
                             s.close();
                         }catch (Exception e){}

@@ -14,7 +14,7 @@ public class AppData implements Serializable {
     private int mode;
     private int blockUC;
 
-    public AppData(){}
+   public AppData(){}
 
    public AppData(int id, long dbVer, String secretKey, String publicKey, String username, String identifier1, String language, int mode, int blockUC) {
         this.id = id;

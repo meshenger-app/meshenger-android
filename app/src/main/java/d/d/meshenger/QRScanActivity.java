@@ -113,7 +113,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
                 "",
                 object.getString("publicKey"),
                 object.getString("identifier")
-        ), object.getString("challenge"));
+        ), object.getString("publicKey"));
     }
 
     @Override

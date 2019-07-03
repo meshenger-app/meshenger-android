@@ -90,7 +90,7 @@ public class RTCCall implements DataChannel.Observer {
         this.remoteRenderer = remoteRenderer;
     }
 
-    private RTCCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
+    private RTCCall(Contact target, String username, String publicKey, String identifier, OnStateChangeListener listener, Context context) {
         log("starting call to " + target.getAddress());
         initRTC(context);
         this.context = context;
@@ -113,6 +113,7 @@ public class RTCCall implements DataChannel.Observer {
                             object.put("action", "call");
                             object.put("username", username);
                             object.put("identifier", identifier);
+                            object.put("publicKey", publicKey);
                             ls = new LazySodiumAndroid(new SodiumAndroid());
                             box = (Box.Lazy) ls;
                             nonce = ls.nonce(Box.NONCEBYTES);
@@ -368,8 +369,8 @@ public class RTCCall implements DataChannel.Observer {
         //initVideoTrack();
     }
 
-    static public RTCCall startCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
-        return new RTCCall(target, username, identifier, listener, context);
+    static public RTCCall startCall(Contact target, String username, String publicKey, String identifier, OnStateChangeListener listener, Context context) {
+        return new RTCCall(target, username, publicKey, identifier, listener, context);
     }
 
     public RTCCall(Socket commSocket, Context context, String offer) {

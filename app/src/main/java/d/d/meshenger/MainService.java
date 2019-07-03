@@ -66,7 +66,6 @@ public class MainService extends Service implements Runnable {
     private volatile boolean run = true, interrupted = false;
 
     private String userName;
-    private HashMap<String, Long> challenges;
 
     private RTCCall currentCall = null;
 
@@ -157,6 +156,7 @@ public class MainService extends Service implements Runnable {
 
     private void handleClient(Socket client) {
         String identifier = null;
+        String publicKey = null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
             OutputStream os = client.getOutputStream();
@@ -165,8 +165,9 @@ public class MainService extends Service implements Runnable {
             while ((line = reader.readLine()) != null) {
                 log("line: " + line);
                 JSONObject request = new JSONObject(line);
-                if (request.has("identifier")) {
+                if (request.has("identifier") || request.has("publicKey")) {
                     identifier = request.getString("identifier");
+                    publicKey = request.getString("publicKey");
                 }
                 if (request.has("action")) {
                     String action = request.getString("action");
@@ -180,10 +181,10 @@ public class MainService extends Service implements Runnable {
 
                             nonce = hexStringToByteArray(request.getString("nonce"));
                             encrypted = request.getString("offer");
-                            String offer = decryption(identifier);
-                            this.currentCall = new RTCCall(client, this, decrypted);
+                            String offer = decryption(publicKey);
+                            this.currentCall = new RTCCall(client, this, offer);
 
-                            if (ignoreUnsaved && !sqlHelper.contactSaved(identifier)) {
+                            if (ignoreUnsaved && !sqlHelper.contactSaved(publicKey)) {
                                 currentCall.decline();
                                 continue;
                             };
@@ -204,9 +205,9 @@ public class MainService extends Service implements Runnable {
                             break;
                         }
                         case "connect": {
-                            String challenge = request.has("challenge") ? request.getString("challenge") : null;
-                            if (challenge != null) {
-                                if (true/*challenges.containsKey(challenge) && challenges.get(challenge) <= System.currentTimeMillis()*/) {
+                            publicKey = request.has("publicKey") ? request.getString("publicKey") : null;
+                            if (publicKey != null) {
+                                if (true) {
                                     Contact c = new Contact(
                                             client.getInetAddress().getHostAddress(),
                                             request.getString("username"),
@@ -255,10 +256,10 @@ public class MainService extends Service implements Runnable {
         return data;
     }
 
-    public String getPublicKey(String identifier) {
+    public String getPublicKey(String publicKey) {
         String pubkey = "";
         for (Contact c : contacts) {
-            if (c.getIdentifier().equals(identifier)) {
+            if (c.getPubKey().equals(publicKey)) {
                 pubkey = c.pubKey;
                 break;
             }
@@ -266,13 +267,14 @@ public class MainService extends Service implements Runnable {
         return pubkey;
     }
 
-     public String decryption(String identifier) throws SodiumException {
+
+     public String decryption(String publicKey) throws SodiumException {
         Box.Lazy box;
          LazySodiumAndroid ls;
          ls = new LazySodiumAndroid(new SodiumAndroid());
          box = (Box.Lazy) ls;
          keyPair = box.cryptoBoxKeypair();
-         String pubKey = getPublicKey(identifier);
+         String pubKey = getPublicKey(publicKey);
          Key pub_key = Key.fromHexString(pubKey);
          KeyPair decryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
          decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
@@ -308,8 +310,8 @@ public class MainService extends Service implements Runnable {
     }
 
     class MainBinder extends Binder {
-        RTCCall startCall(Contact contact, String identifier, String username, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer) {
-            return RTCCall.startCall(contact, username, identifier, listener, MainService.this);
+        RTCCall startCall(Contact contact, String identifier, String publicKey, String username, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer) {
+            return RTCCall.startCall(contact, username, publicKey, identifier, listener, MainService.this);
         }
 
         RTCCall getCurrentCall() {
@@ -324,22 +326,7 @@ public class MainService extends Service implements Runnable {
             return userName;
         }
 
-        String generateChallenge() {
-            final int challengeLength = 16;
-            Random generator = new Random();
-            byte[] content = new byte[challengeLength];
-            for (int i = 0; i < challengeLength; i++) {
-                content[i] = (byte) (generator.nextInt('Z' - 'A') + 'A');
-            }
-            String challenge = new String(content);
-            if (challenges == null) {
-                challenges = new HashMap<>();
-            }
-            challenges.put(challenge, System.currentTimeMillis() + 60000);
-            return new String(content);
-        }
-
-        void addContact(Contact c, String challenge) {
+        void addContact(Contact c, String publicKey) {
 
             try {
                 sqlHelper.insertContact(c);
@@ -349,7 +336,7 @@ public class MainService extends Service implements Runnable {
             } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
                 Toast.makeText(MainService.this, "Contact already added", Toast.LENGTH_SHORT).show();
             }
-            new Thread(new ConnectRunnable(c, challenge)).start();
+            new Thread(new ConnectRunnable(c, publicKey)).start();
         }
 
         void deleteContact(Contact c){
@@ -476,7 +463,7 @@ public class MainService extends Service implements Runnable {
             e.printStackTrace();
         }
         log("loop ended");
-        byte[] targetEUI = addressToEUI64(c.getIdentifier());  //Contact POJO
+        byte[] targetEUI = addressToEUI64(c.getIdentifier());
         log("target: " + Utils.formatAddress(targetEUI));
         ArrayList<String> result = new ArrayList<>();
         int i = 0;
@@ -519,13 +506,11 @@ public class MainService extends Service implements Runnable {
     class ConnectRunnable implements Runnable {
         private String address;
         private String username;
-        private String challenge;
         private String identifier;
 
-        ConnectRunnable(Contact contact, String challenge) {
+        ConnectRunnable(Contact contact, String publicKey) {
             this.address = contact.getAddress();
             this.username = userName;
-            this.challenge = challenge;
             this.identifier = Utils.formatAddress(Utils.getMacAddress());
         }
 
@@ -538,7 +523,6 @@ public class MainService extends Service implements Runnable {
 
                 object.put("action", "connect");
                 object.put("username", username);
-                object.put("challenge", challenge);
                 object.put("identifier", identifier);
 
                 log("request: " + object.toString());

@@ -113,7 +113,6 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
             object.put("identifier", contact.getIdentifier());
             object.put("publicKey", contact.getPubKey());
             object.put("username", contact.getName());
-            object.put("challenge", this.binder.generateChallenge());
             return object.toString();
         }
 
@@ -131,7 +130,6 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
 
         object.put("address", address);
         object.put("publicKey", sqlHelper.getAppData().getPublicKey());
-        object.put("challenge", this.binder.generateChallenge());
 
         if (appData != null) {
             String identifier1 = (Utils.formatAddress(Utils.getMacAddress()));

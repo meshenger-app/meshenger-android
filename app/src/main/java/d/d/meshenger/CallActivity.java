@@ -79,8 +79,6 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                     binder = (MainService.MainBinder) iBinder;
                     currentCall = binder.startCall(
                             (Contact) extras.get("EXTRA_CONTACT"),
-                            extras.getString("EXTRA_IDENTIFIER"),
-                            extras.getString("EXTRA_USERNAME"),
                             activeCallback,
                             findViewById(R.id.localRenderer));
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));

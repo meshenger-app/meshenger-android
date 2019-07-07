@@ -40,4 +40,5 @@ dependencies {
     implementation 'org.webrtc:google-webrtc:1.0.24064'
     implementation "com.goterl.lazycode:lazysodium-android:3.6.3@aar"
     implementation "net.java.dev.jna:jna:4.5.2@aar"
+    implementation 'com.google.code.gson:gson:2.8.2'
 }

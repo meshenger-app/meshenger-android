@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.google.gson.Gson;
 import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
@@ -88,8 +89,8 @@ public class RTCCall implements DataChannel.Observer {
         this.remoteRenderer = remoteRenderer;
     }
 
-    private RTCCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
-        log("starting call to " + target.getAddress());
+    private RTCCall(Contact target, OnStateChangeListener listener, Context context) {
+        log("starting call to " + target.getPubKey());
         initRTC(context);
         this.context = context;
         context.setTheme(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
@@ -104,17 +105,17 @@ public class RTCCall implements DataChannel.Observer {
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
-                            commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
+                            commSocket = target.createSocket();
+                            // commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
                             OutputStream os = commSocket.getOutputStream();
                             reportStateChange(CallState.CONNECTING);
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
-                            object.put("username", username);
-                            object.put("identifier", identifier);
+                            object.put("publicKey", target.pubKey);
                             ls = new LazySodiumAndroid(new SodiumAndroid());
                             nonce = ls.nonce(Box.NONCEBYTES);
                             object.put("nonce" , bytesToHex(nonce));
-                            object.put("offer", encryptOffer(target.getIdentifier()));
+                            object.put("offer", encryption(new Gson().toJson(target.getConnectionData())));
                             os.write((object.toString() + "\n").getBytes());
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
                             String response = reader.readLine();
@@ -195,18 +196,18 @@ public class RTCCall implements DataChannel.Observer {
         return new String(hexChars);
     }
 
-    public void encryptionKeys(String identifier){
+    public void encryptionKeys(String target){
         sqlHelper = new ContactSqlHelper(context);
-        String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
+        String pubKey = sqlHelper.getPublicKeyFromContacts(target);
         String secretKey = sqlHelper.getAppData().getSecretKey();
         Key secret_key = Key.fromHexString(secretKey);
         Key pub_key = Key.fromHexString(pubKey);
         encryptionKeyPair = new KeyPair(pub_key, secret_key);
     }
 
-    public String encryptOffer(String identifier) throws SodiumException {
+    public String encryption(String target) throws SodiumException {
         ls = new LazySodiumAndroid(new SodiumAndroid());
-        encryptionKeys(identifier);
+        encryptionKeys(target);
         String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
         return encrypted;
     }
@@ -368,8 +369,8 @@ public class RTCCall implements DataChannel.Observer {
         //initVideoTrack();
     }
 
-    static public RTCCall startCall(Contact target, String username, String identifier, OnStateChangeListener listener, Context context) {
-        return new RTCCall(target, username, identifier, listener, context);
+    static public RTCCall startCall(Contact target, OnStateChangeListener listener, Context context) {
+        return new RTCCall(target, listener, context);
     }
 
     public RTCCall(Socket commSocket, Context context, String offer) {

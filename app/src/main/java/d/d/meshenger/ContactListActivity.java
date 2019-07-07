@@ -43,7 +43,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
@@ -51,8 +50,8 @@ import com.goterl.lazycode.lazysodium.interfaces.Box;
 import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactListActivity extends MeshengerActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
@@ -69,6 +68,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     private FloatingActionButton fabScan, fabGen, fab;
 
     private MainService.MainBinder mainBinder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,7 +197,12 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             appData = sqlHelper.getAppData();
             if (appData == null) {
                 ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
-                AppData appData = new AppData(1, 1, secretKey, publicKey, et.getText().toString(), "", "", 1, 0);
+                AppData.LinkLocal linkLocal = new AppData.LinkLocal(Utils.formatAddress(Utils.getMacAddress()),10001);
+                AppData.Hostname hostname = new AppData.Hostname(Utils.getLinkLocalAddress());
+                ArrayList<AppData.ConnectData> connectData = new ArrayList<>();
+                connectData.add(linkLocal);
+                connectData.add(hostname);
+                AppData appData = new AppData(1, secretKey, publicKey, et.getText().toString(), "", 1, 0, connectData);
                 sqlHelper.insertAppData(appData);
             }
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -388,6 +393,16 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     private void shareContact(Contact c) {
         try {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, Contact.exportJSON(c));
+            startActivity(intent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    /*private void shareContact(Contact c) {
+        try {
             JSONObject object = new JSONObject();
             object.put("username", c.getName());
             object.put("address", c.getAddress());
@@ -402,7 +417,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             e.printStackTrace();
         }
     }
-
+*/
     private void showContactEditDialog(Contact c) {
         EditText et = new EditText(this);
         et.setText(c.getInfo());
@@ -478,7 +493,8 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         Intent intent = new Intent(this, CallActivity.class);
         intent.setAction("ACTION_START_CALL");
         intent.putExtra("EXTRA_CONTACT", c);
-        intent.putExtra("EXTRA_IDENTIFIER", mainBinder.getIdentifier());
+      //  intent.putExtra("EXTRA_IDENTIFIER", mainBinder.getIdentifier());
+        intent.putExtra("EXTRA_PUBLICKEY", mainBinder.getPublicKey());
         intent.putExtra("EXTRA_USERNAME", mainBinder.getUsername());
         startActivity(intent);
     }

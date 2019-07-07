@@ -52,9 +52,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class MainService extends Service implements Runnable {
     private ArrayList<Contact> contacts;
 
-    KeyPair keyPair;
     String encrypted;
-    String decrypted;
     byte[] nonce;
 
     private ContactSqlHelper sqlHelper;
@@ -198,7 +196,6 @@ public class MainService extends Service implements Runnable {
                         case "ping": {
                             setClientState(identifier, Contact.State.ONLINE);
                             JSONObject response = new JSONObject();
-                            response.put("username", userName);
                             response.put("identifier", mac);
                             os.write((response.toString() + "\n").getBytes());
                             break;
@@ -255,7 +252,7 @@ public class MainService extends Service implements Runnable {
         return data;
     }
 
-    /*
+
      public String getPublicKey(String publicKey) {
         String pubkey = "";
         for (Contact c : contacts) {
@@ -266,19 +263,17 @@ public class MainService extends Service implements Runnable {
         }
         return pubkey;
     }
-    */
+
 
      public String decryption(String identifier) throws SodiumException {
-        Box.Lazy box;
          LazySodiumAndroid ls;
          ls = new LazySodiumAndroid(new SodiumAndroid());
-         box = (Box.Lazy) ls;
-         keyPair = box.cryptoBoxKeypair();
-         sqlHelper = new ContactSqlHelper(this);
-         String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
+         String pubKey = getPublicKey(identifier);
          Key pub_key = Key.fromHexString(pubKey);
-         KeyPair decryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
-         decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
+         String secretKey = sqlHelper.getAppData().getSecretKey();
+         Key secret_key = Key.fromHexString(secretKey);
+         KeyPair decryptionKeyPair = new KeyPair(pub_key, secret_key);
+         String decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
          return decrypted;
      }
 
@@ -412,12 +407,7 @@ public class MainService extends Service implements Runnable {
                     if (!responseMac.equals(c.getIdentifier())) {
                         throw new Exception("foreign contact");
                     }
-                    String username = object.getString("username");
-                    if (!username.equals(c.getName())) {
-                        c.setName(new JSONObject(line).getString("username"));
-                        sqlHelper.updateContact(c);
-                    }
-                    //(log("ping: " + line);
+
                     s.close();
 
                     c.setAddress(target);

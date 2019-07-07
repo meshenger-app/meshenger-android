@@ -62,8 +62,6 @@ public class RTCCall implements DataChannel.Observer {
     private MediaConstraints constraints;
 
     private String offer;
-    private Box.Lazy box;
-    private KeyPair keyPair;
     protected LazySodiumAndroid ls;
     public byte[] nonce;
     KeyPair encryptionKeyPair;
@@ -112,7 +110,6 @@ public class RTCCall implements DataChannel.Observer {
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
                             ls = new LazySodiumAndroid(new SodiumAndroid());
-                            box = (Box.Lazy) ls;
                             nonce = ls.nonce(Box.NONCEBYTES);
                             object.put("nonce" , bytesToHex(nonce));
                             object.put("offer", encryptOffer(target.getIdentifier()));
@@ -197,17 +194,16 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     public void encryptionKeys(String identifier){
-       sqlHelper = new ContactSqlHelper(context);
-       String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
-       Key pub_key = Key.fromHexString(pubKey);
-       encryptionKeyPair = new KeyPair(pub_key, keyPair.getSecretKey());
-
+        sqlHelper = new ContactSqlHelper(context);
+        String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
+        String secretKey = sqlHelper.getAppData().getSecretKey();
+        Key secret_key = Key.fromHexString(secretKey);
+        Key pub_key = Key.fromHexString(pubKey);
+        encryptionKeyPair = new KeyPair(pub_key, secret_key);
     }
 
     public String encryptOffer(String identifier) throws SodiumException {
         ls = new LazySodiumAndroid(new SodiumAndroid());
-        box = (Box.Lazy) ls;
-        keyPair = box.cryptoBoxKeypair();
         encryptionKeys(identifier);
         String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
         return encrypted;

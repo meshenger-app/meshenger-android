@@ -96,7 +96,8 @@ public class MainService extends Service implements Runnable {
                 for (Contact c : contacts) {
                     if (c.getState() == Contact.State.ONLINE) {
                         try {
-                            Socket s = new Socket(c.getAddress().replace("%zone", "%wlan0"), serverPort);
+                            Socket s = c.createSocket();
+                            //  Socket s = new Socket(c.getAddress().replace("%zone", "%wlan0"), serverPort);
                             s.getOutputStream().write((request.toString() + "\n").getBytes());
                             s.getOutputStream().flush();
                             s.close();
@@ -178,7 +179,7 @@ public class MainService extends Service implements Runnable {
 
                             nonce = hexStringToByteArray(request.getString("nonce"));
                             encrypted = request.getString("offer");
-                            String offer = decryption(mac);
+                            String offer = decryption();
                             this.currentCall = new RTCCall(client, this, offer);
 
                             if (ignoreUnsaved && !sqlHelper.contactSaved(mac)) {
@@ -204,13 +205,16 @@ public class MainService extends Service implements Runnable {
                             identifier = request.optString("identifier", null);
                             if (identifier != null) {
                                 if (true) {
+                                    String hostaddress = client.getInetAddress().getHostAddress();
                                     Contact c = new Contact(
-                                            client.getInetAddress().getHostAddress(),
+                                            //client.getInetAddress().getHostAddress(),
                                             request.getString("username"),
                                             "",
-                                            request.getString("publicKey"),
-                                            identifier
+                                            request.getString("publicKey")
+                                           // identifier
                                     );
+                                    c.addConnectionData(new Contact.LinkLocal(identifier, 10001));
+                                    c.addConnectionData(new Contact.Hostname(client.getInetAddress().getHostAddress()));
                                     try {
                                         sqlHelper.insertContact(c);
                                         contacts.add(c);
@@ -252,34 +256,27 @@ public class MainService extends Service implements Runnable {
         return data;
     }
 
-
-     public String getPublicKey(String publicKey) {
-        String pubkey = "";
-        for (Contact c : contacts) {
-            if (c.getPubKey().equals(publicKey)) {
-                pubkey = c.pubKey;
-                break;
-            }
-        }
-        return pubkey;
-    }
-
-
-     public String decryption(String identifier) throws SodiumException {
+     public String decryption() throws SodiumException {
          LazySodiumAndroid ls;
          ls = new LazySodiumAndroid(new SodiumAndroid());
-         String pubKey = getPublicKey(identifier);
-         Key pub_key = Key.fromHexString(pubKey);
+         String decrypted = null;
+         contacts = (ArrayList<Contact>) sqlHelper.getContacts();
          String secretKey = sqlHelper.getAppData().getSecretKey();
          Key secret_key = Key.fromHexString(secretKey);
+         for (Contact c : contacts) {
+         Key pub_key = Key.fromHexString(c.getPubKey());
          KeyPair decryptionKeyPair = new KeyPair(pub_key, secret_key);
-         String decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
-         return decrypted;
+         decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
+             if ( decrypted != null ) {
+                 return decrypted;
+             }
+         }
+         return null;
      }
 
     private void setClientState(String identifier, Contact.State state) {
         for (Contact c : contacts) {
-            if (c.getIdentifier().equals(identifier)) {
+            if (c.matchEndpoint(identifier)) {
                 c.setState(Contact.State.ONLINE);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
                 break;
@@ -373,10 +370,10 @@ public class MainService extends Service implements Runnable {
                 try {
                     ping(c);
                     c.setState(Contact.State.ONLINE);
-                    log("client " + c.getAddress() + " online");
+                    log("client " + c.getName() + " online");
                 } catch (Exception e) {
                     c.setState(Contact.State.OFFLINE);
-                    log("client " + c.getAddress() + " offline");
+                    log("client " + c.getName() + " offline");
                     //e.printStackTrace();
                 } finally {
                     if (listener != null) {
@@ -390,46 +387,47 @@ public class MainService extends Service implements Runnable {
 
         private void ping(Contact c) throws Exception {
             log("ping");
-            List<String> targets = getAddressPermutations(c);
-            log("targets: " + targets.size());
+          //  List<String> targets = getAddressPermutations(c);
+          //  log("targets: " + targets.size());
             Socket s = null;
-            for (String target : targets) {
+            //for (String target : targets) {
                 try {
-                    log("opening socket to " + target);
-                    s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
+                   // log("opening socket to " + target);
+                    // s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
+                    log("opening socket to " + c.getName());
                     OutputStream os = s.getOutputStream();
                     os.write(("{\"action\":\"ping\",\"identifier\":\"" + mac + "\"}\n").getBytes());
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
                     String line = reader.readLine();
                     JSONObject object = new JSONObject(line);
-                    String responseMac = object.getString("identifier");
+                 /*   String responseMac = object.getString("identifier");
                     if (!responseMac.equals(c.getIdentifier())) {
                         throw new Exception("foreign contact");
                     }
-
+                */
                     s.close();
 
-                    c.setAddress(target);
+                 //   c.setAddress(target);
 
                     return;
                 } catch (Exception e) {
-                    continue;
+                 //   continue;
                 } finally {
                     if (s != null) {
                         try {
                             s.close();
-                        }catch (Exception e){}
+                        } catch (Exception e){}
                     }
                 }
-            }
+           // }
 
             throw new Exception("contact not reachable");
         }
     }
 
-    private List<String> getAddressPermutations(Contact c) {
-        ArrayList<InetAddress> mutationAdresses = new ArrayList<>();
+   /* private List<String> getAddressPermutations(Contact c) {
+        ArrayList<InetAddress> mutationAddresses = new ArrayList<>();
         byte[] eui64 = Utils.getEUI64();
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -444,7 +442,7 @@ public class MainService extends Service implements Runnable {
                         for (int i = 0; i < 8; i++) {
                             if (bytes[i + 8] != eui64[i]) continue loop;
                         }
-                        mutationAdresses.add(address.getAddress());
+                        mutationAddresses.add(address.getAddress());
                         Log.d(BuildConfig.APPLICATION_ID, "found matching address: " + address.getAddress().getHostAddress());
                     }
                 }
@@ -458,7 +456,7 @@ public class MainService extends Service implements Runnable {
         log("target: " + Utils.formatAddress(targetEUI));
         ArrayList<String> result = new ArrayList<>();
         int i = 0;
-        for (InetAddress address : mutationAdresses) {
+        for (InetAddress address : mutationAddresses) {
             log("mutating address: " + address.getHostAddress());
             byte[] add = address.getAddress();
             System.arraycopy(targetEUI, 0, add, 8, 8);
@@ -471,8 +469,8 @@ public class MainService extends Service implements Runnable {
             result.add(address.getHostAddress());
         }
 
-        if (!result.contains(c.getAddress())) {
-            result.add(c.getAddress());
+        if (!result.contains(c.getName())) {
+            result.add(c.getName());
         }else{
             log("address duplicate");
         }
@@ -493,9 +491,17 @@ public class MainService extends Service implements Runnable {
         };
         return bytes;
     }
+    */
 
     class ConnectRunnable implements Runnable {
-        private String address;
+        private Contact contact;
+
+        ConnectRunnable(Contact contact) {
+            this.contact = contact;
+        }
+
+
+  /*      private String address;
         private String username;
         private String identifier;
 
@@ -504,17 +510,21 @@ public class MainService extends Service implements Runnable {
             this.username = userName;
             this.identifier = Utils.formatAddress(Utils.getMacAddress());
         }
+        */
+
 
         @Override
         public void run() {
             try {
-                Socket s = new Socket(address.replace("%zone", "%wlan0"), serverPort);
+              //  Socket s = new Socket(address.replace("%zone", "%wlan0"), serverPort);
+                Socket s = this.contact.createSocket();
                 OutputStream os = s.getOutputStream();
                 JSONObject object = new JSONObject();
 
                 object.put("action", "connect");
-                object.put("username", username);
-                object.put("identifier", identifier);
+                //object.put("username", username);
+                //object.put("identifier", identifier);
+                object.put("data", Contact.exportJSON(this.contact));
 
                 log("request: " + object.toString());
 

@@ -108,13 +108,18 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private String generateJson() throws JSONException{
         JSONObject object = new JSONObject();
 
-        if (this.contact != null) {
+        if(this.contact != null){
+            return Contact.exportJSON(this.contact);
+        }
+
+        /* if (this.contact != null) {
             object.put("address", contact.getAddress());
             object.put("identifier", contact.getIdentifier());
             object.put("publicKey", contact.getPubKey());
             object.put("username", contact.getName());
             return object.toString();
         }
+        */
 
         sqlHelper = new ContactSqlHelper(this);
         appData = sqlHelper.getAppData();

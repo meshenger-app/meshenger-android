@@ -89,7 +89,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private RTCCall(Contact target, OnStateChangeListener listener, Context context) {
-        log("starting call to " + target.getAddress());
+        log("starting call to " + target.getName());
         initRTC(context);
         this.context = context;
         context.setTheme(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
@@ -104,7 +104,8 @@ public class RTCCall implements DataChannel.Observer {
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
-                            commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
+                            commSocket = target.createSocket();
+                            // commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
                             OutputStream os = commSocket.getOutputStream();
                             reportStateChange(CallState.CONNECTING);
                             JSONObject object = new JSONObject();
@@ -112,7 +113,7 @@ public class RTCCall implements DataChannel.Observer {
                             ls = new LazySodiumAndroid(new SodiumAndroid());
                             nonce = ls.nonce(Box.NONCEBYTES);
                             object.put("nonce" , bytesToHex(nonce));
-                            object.put("offer", encryptOffer(target.getIdentifier()));
+                            object.put("offer", encryption());
                             os.write((object.toString() + "\n").getBytes());
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
                             String response = reader.readLine();
@@ -193,7 +194,27 @@ public class RTCCall implements DataChannel.Observer {
         return new String(hexChars);
     }
 
-    public void encryptionKeys(String identifier){
+    public String encryption() throws SodiumException {
+        LazySodiumAndroid ls;
+        ls = new LazySodiumAndroid(new SodiumAndroid());
+        String encrypted = null;
+        contacts = (ArrayList<Contact>) sqlHelper.getContacts();
+        String secretKey = sqlHelper.getAppData().getSecretKey();
+        Key secret_key = Key.fromHexString(secretKey);
+        for (Contact c : contacts) {
+            Key pub_key = Key.fromHexString(c.getPubKey());
+            KeyPair encryptionKeyPair = new KeyPair(pub_key, secret_key);
+            encrypted = ls.cryptoBoxOpenEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
+            if ( encrypted != null ) {
+                return encrypted;
+            }
+        }
+        return null;
+    }
+
+
+
+    /*  public void encryptionKeys(String identifier){
         sqlHelper = new ContactSqlHelper(context);
         String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
         String secretKey = sqlHelper.getAppData().getSecretKey();
@@ -208,7 +229,7 @@ public class RTCCall implements DataChannel.Observer {
         String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
         return encrypted;
     }
-
+*/
 
     public void switchFrontFacing() {
         if (this.capturer == null) return;

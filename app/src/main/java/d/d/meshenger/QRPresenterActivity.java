@@ -105,10 +105,9 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         }
     }
 
-    private String generateJson() throws JSONException{
-        JSONObject object = new JSONObject();
+    private String generateJson() throws JSONException {
 
-        if(this.contact != null){
+        if (this.contact != null) {
             return Contact.exportJSON(this.contact);
         }
 
@@ -120,8 +119,15 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
             return object.toString();
         }
         */
-
         sqlHelper = new ContactSqlHelper(this);
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
+            new AppData();
+        }
+        return AppData.exportJSON(this.appData);
+    }
+
+     /*   sqlHelper = new ContactSqlHelper(this);
         appData = sqlHelper.getAppData();
         if (appData == null) {
             new AppData();
@@ -144,6 +150,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         object.put("identifier", sqlHelper.getAppData().getIdentifier1());
         return object.toString();
     }
+    */
 
     /*private String getLinkLocalAddress() throws Exception{
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);

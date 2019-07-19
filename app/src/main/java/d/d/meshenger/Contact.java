@@ -79,7 +79,7 @@ public class Contact implements Serializable {
                     + ":" + bytes[2] + "ff"
                     + ":" + "fe" + bytes[3]
                     + ":" + bytes[4] + bytes[5]
-                    + "%wlan0";
+                    + "%zone";
 
             return new Socket(address, 10001);
         }
@@ -93,13 +93,13 @@ public class Contact implements Serializable {
         }
     }
 
-    // Contact a client over the Internet using some kind of chat server
-    static class CustomChatServer implements ConnectionData {
+    // Contact a client over the Internet using some kind of signaling server
+    static class SignalingServer implements ConnectionData {
         // host name or IP address
-        public String chat_server;
+        public String signaling_server;
 
-        CustomChatServer(String chat_server) {
-            this.chat_server = chat_server;
+        SignalingServer(String signaling_server) {
+            this.signaling_server = signaling_server;
         }
 
         public Socket createSocket() throws Exception {
@@ -109,8 +109,8 @@ public class Contact implements Serializable {
         public JSONObject toJsonObject() throws JSONException {
 
             JSONObject object = new JSONObject();
-            object.put("type", "CustomChatServer");
-            object.put("chat_server", chat_server);
+            object.put("type", "SignalingServer");
+            object.put("signaling_server", signaling_server);
 
             return object;
         }
@@ -126,7 +126,7 @@ public class Contact implements Serializable {
 
     private State state = State.PENDING;
 
-    public Contact(int id, String name, String info, String photo, List<ConnectionData> connection_data) {
+    public Contact(int id, String name, String info, String pubKey, List<ConnectionData> connection_data) {
         this.id = id;
         this.name = name;
         this.pubKey = pubKey;
@@ -264,10 +264,10 @@ public class Contact implements Serializable {
                                 10001
                         )
                 );
-            } else if (type.equals("CustomChatServer")) {
+            } else if (type.equals("SignalingServer")) {
                 c.addConnectionData(
-                        new CustomChatServer(
-                                item.getString("chat_server")
+                        new SignalingServer(
+                                item.getString("signaling_server")
                         ));
             } else {
                 throw new JSONException("Unknown connection data type: " + type);

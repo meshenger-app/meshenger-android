@@ -53,22 +53,23 @@ import com.goterl.lazycode.lazysodium.utils.KeyPair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactListActivity extends MeshengerActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
     private ListView contactListView;
 
-   private ContactSqlHelper sqlHelper;
-   AppData appData;
+    private ContactSqlHelper sqlHelper;
+    AppData appData;
 
-   String publicKey;
-   String secretKey;
+    String publicKey;
+    String secretKey;
 
-   private boolean fabExpanded = false;
+    private boolean fabExpanded = false;
 
-   private FloatingActionButton fabScan, fabGen, fab;
+    private FloatingActionButton fabScan, fabGen, fab;
 
-   private MainService.MainBinder mainBinder;
+    private MainService.MainBinder mainBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,12 +197,12 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 getSystemService(INPUT_METHOD_SERVICE);
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
 
-         appData = sqlHelper.getAppData();
-         if (appData == null) {
-        ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
-        AppData appData = new AppData(1,1,secretKey,publicKey, et.getText().toString(),"","",1,0 );
-        sqlHelper.insertAppData(appData);
-        }
+            appData = sqlHelper.getAppData();
+            if (appData == null) {
+                ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
+                AppData appData = new AppData(1,secretKey,publicKey, et.getText().toString(),"",1,0,new ArrayList<>());
+                sqlHelper.insertAppData(appData);
+            }
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
             Intent intent = new Intent("settings_changed");
             intent.putExtra("subject", "username");

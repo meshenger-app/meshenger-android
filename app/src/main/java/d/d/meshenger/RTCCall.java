@@ -64,7 +64,6 @@ public class RTCCall implements DataChannel.Observer {
     private String offer;
     protected LazySodiumAndroid ls;
     public byte[] nonce;
-    KeyPair encryptionKeyPair;
 
     private ContactSqlHelper sqlHelper;
     private ArrayList<Contact> contacts;
@@ -204,7 +203,7 @@ public class RTCCall implements DataChannel.Observer {
         for (Contact c : contacts) {
             Key pub_key = Key.fromHexString(c.getPubKey());
             KeyPair encryptionKeyPair = new KeyPair(pub_key, secret_key);
-            encrypted = ls.cryptoBoxOpenEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
+            encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
             if ( encrypted != null ) {
                 return encrypted;
             }

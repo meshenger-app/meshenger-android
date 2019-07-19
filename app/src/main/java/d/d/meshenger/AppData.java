@@ -79,7 +79,7 @@ public class AppData implements Serializable {
                     + ":" + bytes[2] + "ff"
                     + ":" + "fe" + bytes[3]
                     + ":" + bytes[4] + bytes[5]
-                    + "%wlan0";
+                    + "%zone";
 
             return new Socket(address, 10001);
         }
@@ -93,13 +93,13 @@ public class AppData implements Serializable {
         }
     }
 
-    // Contact a client over the Internet using some kind of chat server
-    static class CustomChatServer implements ConnectData {
+    // Contact a client over the Internet using some kind of signaling server
+    static class SignalingServer implements ConnectData {
         // host name or IP address
-        public String chat_server;
+        public String signaling_server;
 
-        CustomChatServer(String chat_server) {
-            this.chat_server = chat_server;
+        SignalingServer(String signaling_server) {
+            this.signaling_server = signaling_server;
         }
 
         public Socket createSocket() throws Exception {
@@ -109,23 +109,23 @@ public class AppData implements Serializable {
         public JSONObject toJsonObject() throws JSONException {
 
             JSONObject object = new JSONObject();
-            object.put("type", "CustomChatServer");
-            object.put("chat_server", chat_server);
+            object.put("type", "SignalingServer");
+            object.put("signaling_server", signaling_server);
 
             return object;
         }
     }
 
-        private long id;
-        private long dbVer;
-        private String secretKey;
-        private String publicKey;
-        private String username;
-        private String identifier1;
-        private String language;
-        private int mode;
-        private int blockUC;
-        private List<ConnectData> connect_data;
+    private long id;
+    private long dbVer;
+    private String secretKey;
+    private String publicKey;
+    private String username;
+    private String identifier1;
+    private String language;
+    private int mode;
+    private int blockUC;
+    private List<ConnectData> connect_data;
 
     public boolean recent = false;
 
@@ -133,26 +133,24 @@ public class AppData implements Serializable {
 
     public AppData() {}
 
-    public AppData(int id, long dbVer, String secretKey, String publicKey, String username, String identifier1, String language, int mode, int blockUC, List<ConnectData> connect_data) {
+    public AppData(int id, long dbVer, String secretKey, String publicKey, String username, String language, int mode, int blockUC, List<ConnectData> connect_data) {
         this.id = id;
         this.dbVer = dbVer;
         this.secretKey = secretKey;
         this.publicKey = publicKey;
         this.username = username;
-        this.identifier1 = identifier1;
         this.language = language;
         this.mode = mode;
         this.blockUC = blockUC;
         this.connect_data = connect_data;
     }
 
-    public AppData(long dbVer, String secretKey, String publicKey, String username, String identifier1, String language, int mode, int blockUC, List<ConnectData> connect_data) {
+    public AppData(long dbVer, String secretKey, String publicKey, String username, String language, int mode, int blockUC, List<ConnectData> connect_data) {
         this.id = -1;
         this.dbVer = dbVer;
         this.secretKey = secretKey;
         this.publicKey = publicKey;
         this.username = username;
-        this.identifier1 = identifier1;
         this.language = language;
         this.mode = mode;
         this.blockUC = blockUC;
@@ -197,14 +195,6 @@ public class AppData implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getIdentifier1() {
-        return identifier1;
-    }
-
-    public void setIdentifier1(String identifier1) {
-        this.identifier1 = identifier1;
     }
 
     public String getLanguage() {
@@ -318,10 +308,10 @@ public class AppData implements Serializable {
                                 10001
                         )
                 );
-            } else if (type.equals("CustomChatServer")) {
+            } else if (type.equals("SignalingServer")) {
                 a.addConnectData(
-                        new CustomChatServer(
-                                item.getString("chat_server")
+                        new SignalingServer(
+                                item.getString("signaling_server")
                         ));
             } else {
                 throw new JSONException("Unknown connection data type: " + type);

@@ -192,9 +192,9 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         this.database.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + "(" +
                 columnID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 columnName + " TEXT," +
+                columnListData + " TEXT," +
                 columnPubKey + " TEXT," +
-                columnInfo + " TEXT," +
-                columnListData + " TEXT" +
+                columnInfo + " TEXT" +
                 ");");
 
         this.database.execSQL("CREATE TABLE IF NOT EXISTS " + tableName2 + "(" +
@@ -208,6 +208,16 @@ class ContactSqlHelper extends SQLiteOpenHelper {
                 columnLanguage + " TEXT," +
                 columnListData + " TEXT" +
                 ");");
+    }
+
+    public String getPublicKeyFromContacts(String listData){
+        String pubKey = "";
+        String query = " SELECT * FROM " + tableName + " WHERE " + columnListData + " = " + "'" + listData + "'";
+        Cursor cursor = database.rawQuery(query,null);
+        if (cursor.moveToFirst()) {
+            pubKey = cursor.getString(cursor.getColumnIndex(columnPubKey));
+        }
+        return pubKey;
     }
 
     @Override

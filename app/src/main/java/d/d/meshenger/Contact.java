@@ -33,7 +33,7 @@ public class Contact implements Serializable {
         }
 
         public Socket createSocket() throws Exception {
-            URI uri = new URI("my://" + this.host_address);
+            URI uri = new URI("my://" + this.host_address); //http:/localhost:3200
             String host = uri.getHost();
             int port = uri.getPort();
 
@@ -230,13 +230,12 @@ public class Contact implements Serializable {
         JSONObject object = new JSONObject();
         JSONArray array = new JSONArray();
 
-        object.put("name", contact.name);
-        object.put("publickey", contact.pubKey);
+        object.put("username", contact.name);
+        object.put("publicKey", contact.pubKey);
 
         for (int i = 0; i < contact.connection_data.size(); i += 1) {
             array.put(i, contact.connection_data.get(i).toJsonObject());
         }
-
         object.put("connection_data", array);
 
         return object.toString();
@@ -244,11 +243,11 @@ public class Contact implements Serializable {
 
     public static Contact importJSON(String contact) throws JSONException {
         JSONObject object = new JSONObject(contact);
-        String name = object.getString("name");
-        String publickey = object.getString("publickey");
+        String name = object.getString("username");
+        String pubKey = object.getString("publicKey");
         List<ConnectionData> cdata = new ArrayList<ConnectionData>();
         JSONArray data_array = object.getJSONArray("connection_data");
-        Contact c = new Contact(name, "",publickey);
+        Contact c = new Contact(name, "",pubKey);
 
         for (int i = 0; i < data_array.length(); i += 1) {
             JSONObject item = data_array.getJSONObject(i);

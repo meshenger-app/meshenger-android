@@ -79,8 +79,9 @@ public class AppData implements Serializable {
                     + ":" + bytes[2] + "ff"
                     + ":" + "fe" + bytes[3]
                     + ":" + bytes[4] + bytes[5]
-                    + "%zone";
-
+                    + "%wlan";
+//This line is broken. Please look at the other place where the "fe80:.." is constructed.
+ //use addressToEUI64() here
             return new Socket(address, 10001);
         }
 
@@ -121,7 +122,6 @@ public class AppData implements Serializable {
     private String secretKey;
     private String publicKey;
     private String username;
-    private String identifier1;
     private String language;
     private int mode;
     private int blockUC;
@@ -273,7 +273,7 @@ public class AppData implements Serializable {
         JSONObject object = new JSONObject();
         JSONArray array = new JSONArray();
 
-        object.put("name", appData.username);
+        object.put("username", appData.username);
         object.put("publicKey", appData.publicKey);
 
         for (int i = 0; i < appData.connect_data.size(); i += 1) {
@@ -287,8 +287,8 @@ public class AppData implements Serializable {
 
     public static AppData importJSON(String appData) throws JSONException {
         JSONObject object = new JSONObject(appData);
-        String name = object.getString("name");
-        String publickey = object.getString("publickey");
+        String username = object.getString("username");
+        String publickey = object.getString("publicKey");
 
         List<ConnectData> adata = new ArrayList<ConnectData>();
         JSONArray data_array = object.getJSONArray("connection_data");

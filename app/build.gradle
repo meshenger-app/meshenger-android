@@ -41,4 +41,8 @@ dependencies {
     implementation "com.goterl.lazycode:lazysodium-android:3.6.3@aar"
     implementation "net.java.dev.jna:jna:4.5.2@aar"
     implementation 'com.google.code.gson:gson:2.8.2'
+    implementation('io.socket:socket.io-client:0.8.3') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 }

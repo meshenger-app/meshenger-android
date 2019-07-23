@@ -5,9 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -15,14 +13,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
-import com.goterl.lazycode.lazysodium.interfaces.Box;
-import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
 import com.goterl.lazycode.lazysodium.utils.Key;
 import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.SurfaceViewRenderer;
 
@@ -30,23 +30,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
+import io.socket.client.IO;
 
 
 public class MainService extends Service implements Runnable {
@@ -54,7 +44,6 @@ public class MainService extends Service implements Runnable {
 
     String encrypted;
     byte[] nonce;
-
     private ContactSqlHelper sqlHelper;
 
     public static final int serverPort = 10001;
@@ -63,11 +52,13 @@ public class MainService extends Service implements Runnable {
 
     private volatile boolean run = true, interrupted = false;
 
-    private String userName;
+    private String userName, pubkeyData;
 
     private RTCCall currentCall = null;
 
     private boolean ignoreUnsaved;
+
+    public static io.socket.client.Socket socket = null;
 
     @Override
     public void onCreate() {
@@ -80,6 +71,38 @@ public class MainService extends Service implements Runnable {
         log("MainService started");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
+
+        try {
+            socket = IO.socket("https://06408c37.ngrok.io");
+            //socket = IO.socket(Constant.ROOT_URL);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        socket.connect();
+
+        socket.on(io.socket.client.Socket.EVENT_CONNECT, args -> {
+            try {
+                JSONObject data = new JSONObject();
+                data.put("userName", userName);
+                socket.send(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+
+        socket.on("online", args -> {
+            String data = (String) args[0];
+            Log.d("user online",data);
+        });
+
+        try{
+            JSONObject data = new JSONObject();
+            data.put("userName", userName);
+            socket.emit("new_message", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -90,7 +113,7 @@ public class MainService extends Service implements Runnable {
         if (server != null && server.isBound() && !server.isClosed()) {
             try {
                 JSONObject request = new JSONObject();
-                request.put("identifier", mac);
+                request.put("publicKey", pubkeyData);
                 request.put("action", "status_change");
                 request.put("status", "offline");
                 for (Contact c : contacts) {
@@ -154,7 +177,7 @@ public class MainService extends Service implements Runnable {
     }
 
     private void handleClient(Socket client) {
-        String identifier = null;
+        String publickey = null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
             OutputStream os = client.getOutputStream();
@@ -163,8 +186,8 @@ public class MainService extends Service implements Runnable {
             while ((line = reader.readLine()) != null) {
                 log("line: " + line);
                 JSONObject request = new JSONObject(line);
-                if(request.has("identifier")) {
-                    identifier = request.getString("identifier");
+                if(request.has("publicKey")) {
+                    publickey = request.getString("publicKey");
                 }
 
                 if (request.has("action")) {
@@ -195,25 +218,35 @@ public class MainService extends Service implements Runnable {
                             return;
                         }
                         case "ping": {
-                            setClientState(identifier, Contact.State.ONLINE);
+                            setClientState(publickey, Contact.State.ONLINE);
                             JSONObject response = new JSONObject();
-                            response.put("identifier", mac);
+                            response.put("publicKey", pubkeyData);
                             os.write((response.toString() + "\n").getBytes());
                             break;
                         }
                         case "connect": {
-                            identifier = request.optString("identifier", null);
-                            if (identifier != null) {
+                            publickey = request.optString("publicKey", null);
+                            if (publickey != null) {
                                 String hostaddress = client.getInetAddress().getHostAddress();
                                 Contact c = new Contact(
-                                        //client.getInetAddress().getHostAddress(),
+                                       // client.getInetAddress().getHostAddress(),
                                         request.getString("username"),
                                         "",
                                         request.getString("publicKey")
                                         // identifier
                                 );
-                                c.addConnectionData(new Contact.LinkLocal(identifier, 10001));
-                                c.addConnectionData(new Contact.Hostname(client.getInetAddress().getHostAddress()));
+                                if (request.getJSONArray("connection_data") == null) {
+                                    return;
+                                }
+                                JSONArray connectionData= request.getJSONArray("connection_data");
+                                JSONObject linkLocal = null;
+                                for (int i = 0; i < connectionData.length(); i++) {
+                                    if (connectionData.getJSONObject(i).getString("type").equalsIgnoreCase("LinkLocal")) {
+                                        linkLocal = connectionData.getJSONObject(i);
+                                    }
+                                }
+                                c.addConnectionData(new Contact.LinkLocal(linkLocal.getString("mac_address"), 10001));
+                                c.addConnectionData(new Contact.Hostname(hostaddress));
                                 try {
                                     sqlHelper.insertContact(c);
                                     contacts.add(c);
@@ -228,7 +261,7 @@ public class MainService extends Service implements Runnable {
                             break;
                         }
                         case "status_change": {
-                            setClientState(identifier, Contact.State.OFFLINE);
+                            setClientState(publickey, Contact.State.OFFLINE);
                         }
                     }
 
@@ -254,7 +287,7 @@ public class MainService extends Service implements Runnable {
         return data;
     }
 
-    public String decryption() throws SodiumException {
+     public String decryption() throws SodiumException {
         LazySodiumAndroid ls;
         ls = new LazySodiumAndroid(new SodiumAndroid());
         String decrypted = null;
@@ -272,9 +305,9 @@ public class MainService extends Service implements Runnable {
         return null;
     }
 
-    private void setClientState(String identifier, Contact.State state) {
+    private void setClientState(String publickey, Contact.State state) {
         for (Contact c : contacts) {
-            if (c.matchEndpoint(identifier)) {
+            if (c.matchEndpoint(publickey)) {
                 c.setState(Contact.State.ONLINE);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
                 break;
@@ -309,9 +342,13 @@ public class MainService extends Service implements Runnable {
             return currentCall;
         }
 
-        String getIdentifier() {
-            return mac;
+        String getPublicKey() {
+            if(pubkeyData==null){
+                pubkeyData = sqlHelper.getAppData().getPublicKey();
+            }
+            return pubkeyData;
         }
+
 
         String getUsername() {
             return userName;
@@ -322,7 +359,7 @@ public class MainService extends Service implements Runnable {
             try {
                 sqlHelper.insertContact(c);
                 contacts.add(c);
-                log("adding contact " + c.getName() + "  " + c.getId());
+                log("adding contact " + c.getPubKey() + "  " + c.getId());
 
             } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
                 Toast.makeText(MainService.this, "Contact already added", Toast.LENGTH_SHORT).show();
@@ -368,10 +405,10 @@ public class MainService extends Service implements Runnable {
                 try {
                     ping(c);
                     c.setState(Contact.State.ONLINE);
-                    log("client " + c.getName() + " online");
+                    log("client " + c.getPubKey() + " online");
                 } catch (Exception e) {
                     c.setState(Contact.State.OFFLINE);
-                    log("client " + c.getName() + " offline");
+                    log("client " + c.getPubKey() + " offline");
                     //e.printStackTrace();
                 } finally {
                     if (listener != null) {
@@ -392,9 +429,9 @@ public class MainService extends Service implements Runnable {
             try {
                 // log("opening socket to " + target);
                 // s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
-                log("opening socket to " + c.getName());
+                log("opening socket to " + c.getPubKey());
                 OutputStream os = s.getOutputStream();
-                os.write(("{\"action\":\"ping\",\"identifier\":\"" + mac + "\"}\n").getBytes());
+                os.write(("{\"action\":\"ping\",\"publicKey\":\"" + pubkeyData + "\"}\n").getBytes());
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 String line = reader.readLine();

@@ -58,6 +58,7 @@ public class MainService extends Service implements Runnable {
 
     private boolean ignoreUnsaved;
 
+
     public static io.socket.client.Socket socket = null;
 
     @Override
@@ -73,14 +74,14 @@ public class MainService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
 
         try {
-            socket = IO.socket("https://06408c37.ngrok.io");
+            socket = IO.socket("https://e52ca624.ngrok.io");
             //socket = IO.socket(Constant.ROOT_URL);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
+//
         socket.connect();
-
+        
         socket.on(io.socket.client.Socket.EVENT_CONNECT, args -> {
             try {
                 JSONObject data = new JSONObject();
@@ -92,14 +93,30 @@ public class MainService extends Service implements Runnable {
         });
 
         socket.on("online", args -> {
-            String data = (String) args[0];
-            Log.d("user online",data);
+         //   String data = (String) args[0];
+            JSONArray data=(JSONArray) args[0];
+            for (Contact c : contacts) {
+                c.setState(Contact.State.OFFLINE);
+                for (int i  = 0 ;i<data.length();i++){
+                    try {
+                        Log.d("user online",data.getJSONObject(i).getString("userName"));
+                        if (c.getName().equalsIgnoreCase(data.getJSONObject(i).getString("userName"))) {
+                            c.setState(Contact.State.ONLINE);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
         });
 
         try{
             JSONObject data = new JSONObject();
             data.put("userName", userName);
-            socket.emit("new_message", data);
+            socket.emit("ping", data);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -110,6 +127,7 @@ public class MainService extends Service implements Runnable {
         super.onDestroy();
         log("onDestroy()");
         sqlHelper.close();
+        socket.emit(io.socket.client.Socket.EVENT_DISCONNECT,userName);
         if (server != null && server.isBound() && !server.isClosed()) {
             try {
                 JSONObject request = new JSONObject();
@@ -224,6 +242,7 @@ public class MainService extends Service implements Runnable {
                             os.write((response.toString() + "\n").getBytes());
                             break;
                         }
+
                         case "connect": {
                             publickey = request.optString("publicKey", null);
                             if (publickey != null) {
@@ -343,7 +362,7 @@ public class MainService extends Service implements Runnable {
         }
 
         String getPublicKey() {
-            if(pubkeyData==null){
+            if (pubkeyData == null) {
                 pubkeyData = sqlHelper.getAppData().getPublicKey();
             }
             return pubkeyData;
@@ -401,7 +420,7 @@ public class MainService extends Service implements Runnable {
 
         @Override
         public void run() {
-            for (Contact c : contacts) {
+      /*      for (Contact c : contacts) {
                 try {
                     ping(c);
                     c.setState(Contact.State.ONLINE);
@@ -418,46 +437,61 @@ public class MainService extends Service implements Runnable {
                     }
                 }
             }
+            */
+            ping();
         }
+//        private void ping(Contact c) throws Exception {
+//            log("ping");
+//            //  List<String> targets = getAddressPermutations(c);
+//            //  log("targets: " + targets.size());
+//            //Socket s = null;
+//            //for (String target : targets) {
+//            try {
+//                // log("opening socket to " + target);
+//                // s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
+//                log("opening socket to " + c.getPubKey());
+//                OutputStream os = s.getOutputStream();  //crash
+//                os.write(("{\"action\":\"ping\",\"publicKey\":\"" + pubkeyData + "\"}\n").getBytes());
+//
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//                String line = reader.readLine();
+//                JSONObject object = new JSONObject(line);
+//                 /*   String responseMac = object.getString("identifier");
+//                    if (!responseMac.equals(c.getIdentifier())) {
+//                        throw new Exception("foreign contact");
+//                    }
+//                */
+//                s.close();
+//
+//                //   c.setAddress(target);
+//
+//                return;
+//            } catch (Exception e) {
+//                //   continue;
+//            } finally {
+//                if (s != null) {
+//                    try {
+//                        s.close();
+//                    } catch (Exception e){}
+//                }
+//            }
+//            // }
+//
+//            throw new Exception("contact not reachable");
+//        }
 
-        private void ping(Contact c) throws Exception {
-            log("ping");
-            //  List<String> targets = getAddressPermutations(c);
-            //  log("targets: " + targets.size());
-            Socket s = null;
-            //for (String target : targets) {
-            try {
-                // log("opening socket to " + target);
-                // s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
-                log("opening socket to " + c.getPubKey());
-                OutputStream os = s.getOutputStream();
-                os.write(("{\"action\":\"ping\",\"publicKey\":\"" + pubkeyData + "\"}\n").getBytes());
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                String line = reader.readLine();
-                JSONObject object = new JSONObject(line);
-                 /*   String responseMac = object.getString("identifier");
-                    if (!responseMac.equals(c.getIdentifier())) {
-                        throw new Exception("foreign contact");
-                    }
-                */
-                s.close();
-
-                //   c.setAddress(target);
-
-                return;
-            } catch (Exception e) {
-                //   continue;
-            } finally {
-                if (s != null) {
-                    try {
-                        s.close();
-                    } catch (Exception e){}
-                }
+        private void ping(){
+            if(socket!=null && !socket.connected()){
+                socket.connect();
             }
-            // }
 
-            throw new Exception("contact not reachable");
+            try{
+                JSONObject data = new JSONObject();
+                data.put("userName", userName);
+                socket.emit("ping", data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

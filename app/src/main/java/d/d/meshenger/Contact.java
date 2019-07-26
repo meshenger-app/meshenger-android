@@ -134,7 +134,7 @@ public class Contact implements Serializable {
         this.connection_data = connection_data;
     }
 
-    public Contact(String name, String info, String photo) {
+    public Contact(String name, String info, String pubKey) {
         this.id = -1;
         this.name = name;
         this.info = info;
@@ -247,7 +247,7 @@ public class Contact implements Serializable {
         String pubKey = object.getString("publicKey");
         List<ConnectionData> cdata = new ArrayList<ConnectionData>();
         JSONArray data_array = object.getJSONArray("connection_data");
-        Contact c = new Contact(name, "",pubKey);
+        Contact c = new Contact(name, "", pubKey);
 
         for (int i = 0; i < data_array.length(); i += 1) {
             JSONObject item = data_array.getJSONObject(i);

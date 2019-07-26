@@ -80,8 +80,7 @@ public class AppData implements Serializable {
                     + ":" + "fe" + bytes[3]
                     + ":" + bytes[4] + bytes[5]
                     + "%wlan";
-//This line is broken. Please look at the other place where the "fe80:.." is constructed.
- //use addressToEUI64() here
+
             return new Socket(address, 10001);
         }
 

@@ -14,7 +14,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
@@ -74,52 +73,40 @@ public class MainService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
 
         try {
-            socket = IO.socket("https://e52ca624.ngrok.io");
+            socket = IO.socket("https://3542dcfb.ngrok.io");
             //socket = IO.socket(Constant.ROOT_URL);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-//
+
         socket.connect();
         
         socket.on(io.socket.client.Socket.EVENT_CONNECT, args -> {
             try {
                 JSONObject data = new JSONObject();
                 data.put("userName", userName);
-                socket.send(data);
+                socket.emit("ping1", data);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         });
 
         socket.on("online", args -> {
-         //   String data = (String) args[0];
-            JSONArray data=(JSONArray) args[0];
+            ArrayList data = new Gson().fromJson((String) args[0],ArrayList.class);
             for (Contact c : contacts) {
                 c.setState(Contact.State.OFFLINE);
-                for (int i  = 0 ;i<data.length();i++){
-                    try {
-                        Log.d("user online",data.getJSONObject(i).getString("userName"));
-                        if (c.getName().equalsIgnoreCase(data.getJSONObject(i).getString("userName"))) {
-                            c.setState(Contact.State.ONLINE);
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                for (int i  = 0 ;i<data.size();i++){
+                    Log.d("user online",data.get(i).toString());
+                    if (c.getName().equalsIgnoreCase(String.valueOf(data.get(i)))) {
+                        c.setState(Contact.State.ONLINE);
                     }
 
                 }
             }
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
+            Log.d("online1", args[0].toString());
         });
 
-        try{
-            JSONObject data = new JSONObject();
-            data.put("userName", userName);
-            socket.emit("ping", data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -127,7 +114,9 @@ public class MainService extends Service implements Runnable {
         super.onDestroy();
         log("onDestroy()");
         sqlHelper.close();
-        socket.emit(io.socket.client.Socket.EVENT_DISCONNECT,userName);
+        if(socket!=null){
+            socket.emit(io.socket.client.Socket.EVENT_DISCONNECT,userName);
+        }
         if (server != null && server.isBound() && !server.isClosed()) {
             try {
                 JSONObject request = new JSONObject();
@@ -338,6 +327,8 @@ public class MainService extends Service implements Runnable {
         Log.d("MainService", data);
     }
 
+
+
     @Override
     public void run() {
         try {
@@ -488,7 +479,7 @@ public class MainService extends Service implements Runnable {
             try{
                 JSONObject data = new JSONObject();
                 data.put("userName", userName);
-                socket.emit("ping", data);
+                socket.emit("ping1", data);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

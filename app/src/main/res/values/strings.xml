@@ -14,11 +14,13 @@
     <string name="call_connecting">calling...</string>
     <string name="settings_change_nick">Change nick</string>
     <string name="settings_change_language">Change language</string>
-    <string name="about_source">Source:</string>
-    <string name="source_link" translatable="false">https://www.github.com/dakhnod/Meshenger/</string>
-    <string name="about_author">Author:</string>
+    <string name="about_source">Source Code:</string>
+    <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
+    <string name="about_author">Developers:</string>
     <string name="about_author_name" translatable="false">Daniel Dakhno</string>
     <string name="about_author_email" translatable="false">dakhnod@gmail.com</string>
+    <string name="about_author_name2" translatable="false">Vasu Harshvardhan</string>
+    <string name="about_author_email2" translatable="false">vasu.hvardhan@gmail.com</string>
     <string name="about_license">License:</string>
     <string name="delete">delete</string>
     <string name="rename">rename</string>
@@ -33,5 +35,7 @@
     <string name="call_ended">call ended</string>
     <string name="call_error">error</string>
     <string name="settings_nightmode">Night mode</string>
-    <string name="about_version">version:</string>
+    <string name="about_version">App Version:</string>
+    <string name="about_info">App Info:</string>
+    <string name="app_info">Meshenger app allows voice and video communication without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks such as community networks or even company networks.</string>
 </resources>

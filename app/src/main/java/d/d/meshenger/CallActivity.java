@@ -153,6 +153,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     private void ringPhone(){
         int ringerMode = ((AudioManager) getSystemService(AUDIO_SERVICE)).getRingerMode();
+
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return;
         }
@@ -179,6 +180,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             vibrator.cancel();
             vibrator = null;
         }
+
         if (ringtone != null){
             ringtone.stop();
             ringtone = null;
@@ -244,8 +246,9 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE){
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED){
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Camera permission needed in order to start video", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -272,6 +275,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             calledWhileScreenOff = false;
             return;
         }
+
         if (permissionRequested){
             permissionRequested = false;
             return;

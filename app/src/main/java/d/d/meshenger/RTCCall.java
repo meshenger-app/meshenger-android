@@ -210,7 +210,7 @@ public class RTCCall implements DataChannel.Observer {
     private void setRemoteVideoEnabled(boolean enabled) {
         log("setting remote video enabled: " + enabled);
         new Handler(Looper.getMainLooper()).post(() -> {
-            if (enabled){
+            if (enabled) {
                 this.remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
             } else {
                 TypedValue typedValue = new TypedValue();
@@ -449,7 +449,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     public void cleanup(){
-        if (this.upStream != null && state == CallState.CONNECTED){
+        if (this.upStream != null && state == CallState.CONNECTED) {
             /*for(AudioTrack track : this.upStream.audioTracks){
                 track.setEnabled(false);
                 track.dispose();
@@ -458,7 +458,8 @@ public class RTCCall implements DataChannel.Observer {
             if (this.connection != null) this.connection.close();
             //factory.dispose();
         }
-        if (commSocket != null){
+
+        if (commSocket != null) {
             try {
                 commSocket.close();
             } catch (IOException e) {
@@ -470,7 +471,7 @@ public class RTCCall implements DataChannel.Observer {
     public void hangUp() {
         new Thread(() -> {
             try {
-                if (commSocket != null){
+                if (commSocket != null) {
                     commSocket.getOutputStream().write("{\"action\":\"dismissed\"}\n".getBytes());
                     commSocket.close();
                 }

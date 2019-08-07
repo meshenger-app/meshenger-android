@@ -78,13 +78,13 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                 .setView(et);
         b.show();
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
         } else {
             Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show();
@@ -137,8 +137,6 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         super.onDestroy();
         unbindService(this);
     }
-
-
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {

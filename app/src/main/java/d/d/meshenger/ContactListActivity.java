@@ -97,7 +97,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         super.onResume();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(refreshReceiver, new IntentFilter("contact_refresh"));
-
         bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
@@ -107,11 +106,9 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshReceiver);
 
         super.onDestroy();
-
     }
 
     private void checkInit() {
@@ -304,7 +301,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                         String delete = res.getString(R.string.delete),
                                 rename = res.getString(R.string.rename),
                                 share = res.getString(R.string.share),
-                                qr = "qr-ify";
+                                qr = "QR-ify";
                         menu.getMenu().add(delete);
                         menu.getMenu().add(rename);
                         menu.getMenu().add(share);

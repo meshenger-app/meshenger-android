@@ -38,7 +38,6 @@ public class AboutActivity extends MeshengerActivity {
         findViewById(R.id.mailText).setOnClickListener(v -> sendMail());
         findViewById(R.id.mailText2).setOnClickListener(v -> sendMail2());
 
-
         ((TextView) findViewById(R.id.versionTv)).setText(BuildConfig.VERSION_NAME);
     }
 

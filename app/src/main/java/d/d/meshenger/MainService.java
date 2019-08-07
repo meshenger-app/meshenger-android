@@ -184,7 +184,7 @@ public class MainService extends Service implements Runnable {
                                     try {
                                         sqlHelper.insertContact(c);
                                         contacts.add(c);
-                                    }catch (ContactSqlHelper.ContactAlreadyAddedException e){}
+                                    } catch (ContactSqlHelper.ContactAlreadyAddedException e){}
                                     JSONObject response = new JSONObject();
                                     response.put("username", userName);
                                     os.write((response.toString() + "\n").getBytes());
@@ -371,7 +371,7 @@ public class MainService extends Service implements Runnable {
                 } catch (Exception e) {
                     continue;
                 } finally {
-                    if (s != null){
+                    if (s != null) {
                         try {
                             s.close();
                         }catch (Exception e){}

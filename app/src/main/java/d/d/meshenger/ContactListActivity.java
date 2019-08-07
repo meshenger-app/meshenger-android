@@ -109,7 +109,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshReceiver);
-        unbindService(ContactListActivity.this);
 
         super.onDestroy();
 

@@ -313,14 +313,14 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                             @Override
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 String title = menuItem.getTitle().toString();
-                                if(title.equals(delete)){
+                                if (title.equals(delete)) {
                                     mainBinder.deleteContact(contacts.get(i));
                                     refreshContactList();
-                                }else if(title.equals(rename)){
+                                } else if (title.equals(rename)) {
                                     showContactEditDialog(contacts.get(i));
-                                }else if(title.equals(share)){
+                                } else if (title.equals(share)) {
                                     shareContact(contacts.get(i));
-                                }else if(title.equals(qr)){
+                                } else if (title.equals(qr)) {
                                     Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
                                     intent.putExtra("EXTRA_CONTACT", contacts.get(i));
                                     startActivity(intent);
@@ -390,7 +390,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
                 break;
             }
-            case R.id.action_about:{
+            case R.id.action_about: {
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             }

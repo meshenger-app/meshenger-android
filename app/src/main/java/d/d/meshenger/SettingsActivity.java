@@ -59,7 +59,7 @@ public class SettingsActivity extends MeshengerActivity {
 
     }
 
-    private void getLocale(){
+    private void getLocale() {
         Configuration config = getResources().getConfiguration();
         Locale locale = config.locale;
         ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
@@ -68,12 +68,12 @@ public class SettingsActivity extends MeshengerActivity {
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
             RadioGroup group = new RadioGroup(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            for(int i = 0; i < locales.length; i++){
+            for (int i = 0; i < locales.length; i++) {
                 Locale l = locales[i];
                 RadioButton button = new RadioButton(this);
                 button.setId(i);
                 button.setText(l.getDisplayLanguage());
-                if(l.getISO3Language().equals(locale.getISO3Language())) button.setChecked(true);
+                if (l.getISO3Language().equals(locale.getISO3Language())) button.setChecked(true);
                 group.addView(button);
             }
             builder.setView(group);
@@ -95,7 +95,7 @@ public class SettingsActivity extends MeshengerActivity {
     }
 
 
-    private void changeNick(){
+    private void changeNick() {
         EditText et = new EditText(this);
         et.setText(nick);
         et.setSelection(nick.length());
@@ -112,13 +112,14 @@ public class SettingsActivity extends MeshengerActivity {
                 .show();
     }
 
-    private void syncSettings(String what, boolean content){
+    private void syncSettings(String what, boolean content) {
         Intent intent = new Intent("settings_changed");
         intent.putExtra("subject", what);
         intent.putExtra(what, content);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
-    private void syncSettings(String what, String content){
+
+    private void syncSettings(String what, String content) {
         Intent intent = new Intent("settings_changed");
         intent.putExtra("subject", what);
         intent.putExtra(what, content);

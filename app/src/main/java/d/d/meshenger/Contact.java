@@ -9,7 +9,7 @@ public class Contact implements Serializable{
     private long id;
     private String address;
     private String name;
-    private String photo;
+    public String pubKey;
     private String identifier;
     private String info;
 
@@ -17,20 +17,20 @@ public class Contact implements Serializable{
 
     private State state = State.PENDING;
 
-    public Contact(int id, String address, String name, String info, String photo, String identifier) {
+    public Contact(int id, String address, String name, String info, String pubKey, String identifier) {
         this.id = id;
         this.address = address;
         this.name = name;
-        this.photo = photo;
+        this.pubKey = pubKey;
         this.identifier = identifier;
         this.info = info;
     }
 
-    public Contact(String address, String name, String info, String photo, String identifier) {
+    public Contact(String address, String name, String info, String pubKey, String identifier) {
         this.id = -1;
         this.address = address;
         this.name = name;
-        this.photo = photo;
+        this.pubKey = pubKey;
         this.identifier = identifier;
         this.info = info;
     }
@@ -51,17 +51,15 @@ public class Contact implements Serializable{
         return address;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getPubKey() {
+        return pubKey;
     }
 
     public void setAddress(String address) {
         this.address = address;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
+    public void setPubKey(String pubKey) { this.pubKey = pubKey; }
 
     public void setId(long id) {
         this.id = id;

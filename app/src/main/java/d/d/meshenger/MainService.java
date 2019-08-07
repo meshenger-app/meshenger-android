@@ -7,12 +7,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
+import com.goterl.lazycode.lazysodium.SodiumAndroid;
+import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
+import com.goterl.lazycode.lazysodium.interfaces.Box;
+import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
+import com.goterl.lazycode.lazysodium.utils.Key;
+import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
 import org.json.JSONObject;
 import org.webrtc.SurfaceViewRenderer;
@@ -30,15 +39,23 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 
 public class MainService extends Service implements Runnable {
-    private ContactSqlHelper sqlHelper;
     private ArrayList<Contact> contacts;
+
+    String encrypted;
+    byte[] nonce;
+
+    private ContactSqlHelper sqlHelper;
 
     public static final int serverPort = 10001;
     private ServerSocket server;
@@ -109,9 +126,17 @@ public class MainService extends Service implements Runnable {
 
     private void refreshContacts() {
         contacts = (ArrayList<Contact>) sqlHelper.getContacts();
-        SharedPreferences pregs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        userName = pregs.getString("username", "Unknown");
-        ignoreUnsaved = pregs.getBoolean("ignoreUnsaved", false);
+        if (sqlHelper.getAppData() == null) {
+            userName = "Unknown";
+            ignoreUnsaved = false;
+        } else {
+            userName = sqlHelper.getAppData().getUsername();
+            if (sqlHelper.getAppData().getBlockUC() == 1) {
+                ignoreUnsaved = true;
+            } else {
+                ignoreUnsaved = false;
+            }
+        }
     }
 
     private void mainLoop() throws IOException {
@@ -150,8 +175,13 @@ public class MainService extends Service implements Runnable {
                             log("ringing...");
                             String response = "{\"action\":\"ringing\"}\n";
                             os.write(response.getBytes());
-                            this.currentCall = new RTCCall(client, this, request.getString("offer"));
-                            if (ignoreUnsaved && !sqlHelper.contactSaved(identifier)){
+
+                            nonce = hexStringToByteArray(request.getString("nonce"));
+                            encrypted = request.getString("offer");
+                            String offer = decryption(identifier);
+                            this.currentCall = new RTCCall(client, this, offer);
+
+                            if (ignoreUnsaved && !sqlHelper.contactSaved(identifier)) {
                                 currentCall.decline();
                                 continue;
                             };
@@ -178,7 +208,7 @@ public class MainService extends Service implements Runnable {
                                             client.getInetAddress().getHostAddress(),
                                             request.getString("username"),
                                             "",
-                                            "",
+                                            request.getString("publicKey"),
                                             identifier
                                     );
                                     try {
@@ -211,6 +241,39 @@ public class MainService extends Service implements Runnable {
             //currentCall.decline();
         }
     }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
+
+    public String getPublicKey(String identifier) {
+        String pubkey = "";
+        for (Contact c : contacts) {
+            if (c.getIdentifier().equals(identifier)) {
+                pubkey = c.pubKey;
+                break;
+            }
+        }
+        return pubkey;
+    }
+
+     public String decryption(String identifier) throws SodiumException {
+         LazySodiumAndroid ls;
+         ls = new LazySodiumAndroid(new SodiumAndroid());
+         String pubKey = getPublicKey(identifier);
+         Key pub_key = Key.fromHexString(pubKey);
+         String secretKey = sqlHelper.getAppData().getSecretKey();
+         Key secret_key = Key.fromHexString(secretKey);
+         KeyPair decryptionKeyPair = new KeyPair(pub_key, secret_key);
+         String decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
+         return decrypted;
+     }
 
     private void setClientState(String identifier, Contact.State state) {
         for (Contact c : contacts) {

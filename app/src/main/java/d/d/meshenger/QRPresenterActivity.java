@@ -33,6 +33,9 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private MainService.MainBinder binder;
     private String json;
 
+    private ContactSqlHelper sqlHelper;
+    AppData appData;
+
     private Contact contact = null;
 
     @Override
@@ -105,25 +108,38 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private String generateJson() throws JSONException{
         JSONObject object = new JSONObject();
 
-        if (this.contact != null){
+        if (this.contact != null) {
             object.put("address", contact.getAddress());
             object.put("identifier", contact.getIdentifier());
+            object.put("publicKey", contact.getPubKey());
             object.put("username", contact.getName());
             object.put("challenge", this.binder.generateChallenge());
             return object.toString();
         }
 
-        SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        object.put("username", prefs.getString("username", "Unknown"));
+        sqlHelper = new ContactSqlHelper(this);
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
+            new AppData();
+        }
+        object.put("username", sqlHelper.getAppData().getUsername());
         String address = Utils.getLinkLocalAddress();
-        if (address == null){
+
+        if (address == null) {
             Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
             finish();
         }
-        object.put("address", address);
-        object.put("challenge", this.binder.generateChallenge());
-        object.put("identifier", Utils.formatAddress(Utils.getMacAddress()));
 
+        object.put("address", address);
+        object.put("publicKey", sqlHelper.getAppData().getPublicKey());
+        object.put("challenge", this.binder.generateChallenge());
+
+        if (appData != null) {
+            String identifier1 = (Utils.formatAddress(Utils.getMacAddress()));
+            appData.setIdentifier1(identifier1);
+            sqlHelper.updateAppData(appData);
+        }
+        object.put("identifier", sqlHelper.getAppData().getIdentifier1());
         return object.toString();
     }
 

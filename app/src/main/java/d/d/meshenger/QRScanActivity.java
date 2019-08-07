@@ -108,11 +108,12 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     private void handleJson(String json) throws JSONException{
         JSONObject object = new JSONObject(json);
+
         binder.addContact(new Contact(
                 object.getString("address"),
                 object.getString("username"),
                 "",
-                "",
+                object.getString("publicKey"),
                 object.getString("identifier")
         ), object.getString("challenge"));
     }

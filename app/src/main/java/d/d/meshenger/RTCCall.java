@@ -11,6 +11,14 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
+import com.goterl.lazycode.lazysodium.SodiumAndroid;
+import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
+import com.goterl.lazycode.lazysodium.interfaces.Box;
+import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
+import com.goterl.lazycode.lazysodium.utils.Key;
+import com.goterl.lazycode.lazysodium.utils.KeyPair;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
@@ -34,6 +42,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class RTCCall implements DataChannel.Observer {
@@ -53,7 +62,12 @@ public class RTCCall implements DataChannel.Observer {
     private MediaConstraints constraints;
 
     private String offer;
+    protected LazySodiumAndroid ls;
+    public byte[] nonce;
+    KeyPair encryptionKeyPair;
 
+    private ContactSqlHelper sqlHelper;
+    private ArrayList<Contact> contacts;
 
     private SurfaceViewRenderer remoteRenderer;
     private SurfaceViewRenderer localRenderer;
@@ -97,7 +111,10 @@ public class RTCCall implements DataChannel.Observer {
                             object.put("action", "call");
                             object.put("username", username);
                             object.put("identifier", identifier);
-                            object.put("offer", connection.getLocalDescription().description);
+                            ls = new LazySodiumAndroid(new SodiumAndroid());
+                            nonce = ls.nonce(Box.NONCEBYTES);
+                            object.put("nonce" , bytesToHex(nonce));
+                            object.put("offer", encryptOffer(target.getIdentifier()));
                             os.write((object.toString() + "\n").getBytes());
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
                             String response = reader.readLine();
@@ -165,6 +182,33 @@ public class RTCCall implements DataChannel.Observer {
                 }
             }, constraints);
         }).start();
+    }
+
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    public void encryptionKeys(String identifier){
+        sqlHelper = new ContactSqlHelper(context);
+        String pubKey = sqlHelper.getPublicKeyFromContacts(identifier);
+        String secretKey = sqlHelper.getAppData().getSecretKey();
+        Key secret_key = Key.fromHexString(secretKey);
+        Key pub_key = Key.fromHexString(pubKey);
+        encryptionKeyPair = new KeyPair(pub_key, secret_key);
+    }
+
+    public String encryptOffer(String identifier) throws SodiumException {
+        ls = new LazySodiumAndroid(new SodiumAndroid());
+        encryptionKeys(identifier);
+        String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
+        return encrypted;
     }
 
     public void switchFrontFacing() {

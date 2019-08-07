@@ -23,36 +23,80 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
 public class SettingsActivity extends MeshengerActivity {
     String nick;
-    SharedPreferences prefs;
+    private ContactSqlHelper sqlHelper;
+    AppData appData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
         setTitle(getResources().getString(R.string.menu_settings));
-        prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        nick = prefs.getString("username", "undefined");
 
-        findViewById(R.id.changeNickLayout).setOnClickListener((v) -> changeNick());
+        sqlHelper = new ContactSqlHelper(this);
+        appData = sqlHelper.getAppData();
+        if (appData == null) {
+            new AppData();
+        }
+
+        nick = sqlHelper.getAppData().getUsername();
+
+        findViewById(R.id.changeNickLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeNick();
+            }
+        });
         CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
-        ignoreCB.setChecked(prefs.getBoolean("ignoreUnsaved", false));
+        if (appData != null && appData.getBlockUC() == 0) {
+            ignoreCB.setChecked(false);
+        }
+        else if (appData != null && appData.getBlockUC() == 1) {
+            ignoreCB.setChecked(true);
+        }
+        else {
+            ignoreCB.setChecked(false);
+        }
         ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
-            prefs.edit().putBoolean("ignoreUnsaved", b).apply();
+            if (appData != null) {
+                if(b) {
+                    appData.setBlockUC(1);
+                }
+                else {
+                    appData.setBlockUC(0);
+                }
+                sqlHelper.updateAppData(appData);
+            }
             syncSettings("ignoreUnsaved", b);
         });
 
-
         CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
+        if (appData != null && appData.getMode() == 1) {
+            nightMode.setChecked(false);
+        }
+        else if (appData != null && appData.getMode() == 2) {
+            nightMode.setChecked(true);
+        }
+        else {
+            nightMode.setChecked(false);
+        }
         nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
         nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
             AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            // TODO sync settings
+            if (appData != null) {
+                if (compoundButton.isChecked()) {
+                    appData.setMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                else {
+                    appData.setMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+                sqlHelper.updateAppData(appData);
+            }
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
@@ -63,6 +107,10 @@ public class SettingsActivity extends MeshengerActivity {
         Configuration config = getResources().getConfiguration();
         Locale locale = config.locale;
         ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
+        if (appData != null) {
+            appData.setLanguage(locale.getDisplayLanguage());
+            sqlHelper.updateAppData(appData);
+        }
 
         Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.GERMAN};
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
@@ -104,7 +152,10 @@ public class SettingsActivity extends MeshengerActivity {
                 .setView(et)
                 .setPositiveButton("ok", (dialogInterface, i) -> {
                     nick = et.getText().toString();
-                    prefs.edit().putString("username", nick).apply();
+                    if (appData != null) {
+                        appData.setUsername(nick);
+                        sqlHelper.updateAppData(appData);
+                    }
                     syncSettings("username", nick);
                     initViews();
                 })

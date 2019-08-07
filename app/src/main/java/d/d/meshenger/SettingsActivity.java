@@ -53,7 +53,8 @@ public class SettingsActivity extends MeshengerActivity {
         nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
             AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             // TODO sync settings
-            //syncSettings("ignoreUnsaved", b);
+            Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
+            startActivity(intent);
         });
 
     }
@@ -128,6 +129,21 @@ public class SettingsActivity extends MeshengerActivity {
     protected void onResume() {
         super.onResume();
         initViews();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent intent1 = new Intent("refresh");
+        // You can also include some extra data.
+        intent1.putExtra("message", "This is my message!");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
+
+        Intent intent = new Intent(SettingsActivity.this, ContactListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        startActivity(intent);
     }
 
     private void initViews(){

@@ -20,27 +20,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="30dp"
+                android:layout_marginTop="7.5dp"
                 android:textColor="?attr/primaryTextColor" />
-
-            <TextView
-                android:id="@+id/contact_item_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="italic"
-                android:textColor="?attr/primaryTextColor"
-                android:textSize="30dp"
-                android:paddingStart="10dp"/>
-
 
         </LinearLayout>
 
-
         <TextView
-            android:id="@+id/contact_item_address"
+            android:id="@+id/contact_item_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:textColor="?attr/secondaryTextColor"/>
+            android:textStyle="italic"
+            android:textColor="?attr/secondaryTextColor"
+            android:textSize="17dp"
+            android:paddingStart="10dp"/>
 
     </LinearLayout>
 
@@ -48,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:padding="20dp"
+        android:padding="9.5dp"
         android:id="@+id/contact_item_waiting"/>
 
     <ImageView
@@ -56,7 +48,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
-        android:layout_margin="20dp"
+        android:layout_margin="9.5dp"
         android:visibility="visible" />
 
 </RelativeLayout>

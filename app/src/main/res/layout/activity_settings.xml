@@ -38,7 +38,6 @@
 
             </LinearLayout>
 
-
             <LinearLayout
                 android:id="@+id/changeLocaleLayout"
                 android:layout_width="match_parent"
@@ -108,7 +107,6 @@
             </RelativeLayout>
 
         </LinearLayout>
-
 
     </RelativeLayout>
 

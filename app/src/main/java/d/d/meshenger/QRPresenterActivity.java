@@ -7,11 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,16 +25,12 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+
 
 public class QRPresenterActivity extends MeshengerActivity implements ServiceConnection{
+    private Contact contact = null;
     private MainService.MainBinder binder;
     private String json;
-
-    private ContactSqlHelper sqlHelper;
-    AppData appData;
-
-    private Contact contact = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +79,6 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
 
     private void bindService(){
         Intent serviceIntent = new Intent(this, MainService.class);
-
         bindService(serviceIntent, this, Service.BIND_AUTO_CREATE);
     }
 
@@ -96,7 +89,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(json, BarcodeFormat.QR_CODE,1080,1080);
+            BitMatrix bitMatrix = multiFormatWriter.encode(json, BarcodeFormat.QR_CODE, 1080, 1080);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
@@ -106,65 +99,21 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     }
 
     private String generateJson() throws JSONException {
-
-        if (this.contact != null) {
+        if (this.contact == null) {
+            // export own contact
+            ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
+            AppData appData = sqlHelper.getAppData();
+            if (appData == null) {
+                // why?
+                appData = new AppData();
+            }
+            Contact contact = appData.getOwnContact();
+            return Contact.exportJSON(contact);
+        } else {
+            // export from contact list
             return Contact.exportJSON(this.contact);
         }
-
-        /* if (this.contact != null) {
-            object.put("address", contact.getAddress());
-            object.put("identifier", contact.getIdentifier());
-            object.put("publicKey", contact.getPubKey());
-            object.put("username", contact.getName());
-            object.put("challenge", this.binder.generateChallenge());
-            return object.toString();
-        }
-        */
-        sqlHelper = new ContactSqlHelper(this);
-        appData = sqlHelper.getAppData();
-        if (appData == null) {
-            appData = new AppData();
-        }
-        return AppData.exportJSON(this.appData);
     }
-
-     /*   sqlHelper = new ContactSqlHelper(this);
-        appData = sqlHelper.getAppData();
-        if (appData == null) {
-            new AppData();
-        }
-        object.put("username", sqlHelper.getAppData().getUsername());
-        String address = Utils.getLinkLocalAddress();
-
-        if (address == null) {
-            Toast.makeText(this, R.string.network_connect_invitation, Toast.LENGTH_LONG).show();
-            finish();
-        }
-
-        object.put("address", address);
-        object.put("publicKey", sqlHelper.getAppData().getPublicKey());
-        object.put("challenge", this.binder.generateChallenge());
-
-        if (appData != null) {
-            String identifier1 = (Utils.formatAddress(Utils.getMacAddress()));
-            appData.setIdentifier1(identifier1);
-            sqlHelper.updateAppData(appData);
-        }
-        object.put("identifier", sqlHelper.getAppData().getIdentifier1());
-        return object.toString();
-    }
-    */
-
-    /*private String getLinkLocalAddress() throws Exception{
-        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        WifiInfo info = wm.getConnectionInfo();
-        if (info == null){
-            throw new Exception("Device needs to be connected to WIFI");
-        }
-        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-
-        return ip;
-    }*/
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {

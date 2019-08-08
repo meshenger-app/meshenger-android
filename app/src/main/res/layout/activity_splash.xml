@@ -11,7 +11,6 @@
         android:layout_weight="0.6"
         android:background="#FFEC3E3E">
 
-
         <ImageView
             android:layout_width="200dp"
             android:layout_height="200dp"

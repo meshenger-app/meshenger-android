@@ -13,8 +13,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
@@ -22,7 +20,6 @@ import com.goterl.lazycode.lazysodium.utils.Key;
 import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.SurfaceViewRenderer;
 
@@ -32,7 +29,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -207,8 +203,8 @@ public class MainService extends Service implements Runnable {
                                         linkLocal = connectionData.getJSONObject(i);
                                     }
                                 }
-                                c.addConnectionData(new Contact.LinkLocal(linkLocal.getString("mac_address"), 10001));
-                                c.addConnectionData(new Contact.Hostname(hostaddress));
+                                c.addConnectionData(new ConnectionData.LinkLocal(linkLocal.getString("mac_address"), 10001));
+                                c.addConnectionData(new ConnectionData.Hostname(hostaddress));
                                 try {
                                     sqlHelper.insertContact(c);
                                     contacts.add(c);

@@ -54,6 +54,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ContactListActivity extends MeshengerActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
     private ListView contactListView;
 
@@ -64,11 +65,10 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     String secretKey;
 
     private boolean fabExpanded = false;
-
-    private FloatingActionButton fabScan, fabGen, fab;
-
+    private FloatingActionButton fabScan;
+    private FloatingActionButton fabGen;
+    private FloatingActionButton fab;
     private MainService.MainBinder mainBinder;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         sqlHelper = new ContactSqlHelper(this);
 
         startService(new Intent(this, MainService.class));
-
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
@@ -89,7 +88,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         checkInit();
         checkKeypair();
     }
-
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -106,7 +104,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         }
     };
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -115,7 +112,8 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("refresh"));
+            new IntentFilter("refresh")
+        );
     }
 
     @Override
@@ -126,7 +124,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         super.onDestroy();
     }
 
-    public void checkKeypair() {
+    private void checkKeypair() {
         appData = sqlHelper.getAppData();
         if (appData == null) {
             new AppData();
@@ -135,7 +133,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         }
     }
 
-    public void generateKeyPair() {
+    private void generateKeyPair() {
         Box.Lazy box;
         KeyPair keyPair;
         LazySodiumAndroid ls;
@@ -144,13 +142,14 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         box = (Box.Lazy) ls;
 
         try {
+            Log.d("ContactListActivity", "Create own key pair");
             keyPair = box.cryptoBoxKeypair();
 
             publicKey = keyPair.getPublicKey().getAsHexString();
             secretKey = keyPair.getSecretKey().getAsHexString();
 
-            Log.e("publicKey", keyPair.getPublicKey().getAsHexString());
-            Log.e("secretKey", keyPair.getSecretKey().getAsHexString());
+            //Log.e("publicKey", keyPair.getPublicKey().getAsHexString());
+            //Log.e("secretKey", keyPair.getSecretKey().getAsHexString());
 
         } catch (SodiumException e) {
             e.printStackTrace();
@@ -190,19 +189,18 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         dialog.setNegativeButton("cancel", (dialogInterface, i) -> {
             finish();
         });
-        InputMethodManager imm = (InputMethodManager)
-                getSystemService(INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
             appData = sqlHelper.getAppData();
             if (appData == null) {
                 ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
-                AppData.LinkLocal linkLocal = new AppData.LinkLocal(Utils.formatAddress(Utils.getMacAddress()),10001);
-                AppData.Hostname hostname = new AppData.Hostname(Utils.getLinkLocalAddress());
-                ArrayList<AppData.ConnectData> connectData = new ArrayList<>();
-                connectData.add(linkLocal);
-                connectData.add(hostname);
-                AppData appData = new AppData(1, secretKey, publicKey, et.getText().toString(), "", 1, 0, connectData);
+                ConnectionData.LinkLocal linkLocal = new ConnectionData.LinkLocal(Utils.formatAddress(Utils.getMacAddress()), 10001);
+                ConnectionData.Hostname hostname = new ConnectionData.Hostname(Utils.getLinkLocalAddress());
+                ArrayList<ConnectionData> connectionData = new ArrayList<>();
+                connectionData.add(linkLocal);
+                connectionData.add(hostname);
+                AppData appData = new AppData(1, secretKey, publicKey, et.getText().toString(), "", 1, 0, connectionData);
                 sqlHelper.insertAppData(appData);
             }
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -232,6 +230,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                     okButton.setAlpha(editable.length() > 0 ? 1.0f : 0.5f);
                 }
             });
+
             okButton.setClickable(false);
             okButton.setAlpha(0.5f);
 
@@ -240,6 +239,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
         });
+
         finalDialog.show();
     }
 
@@ -284,7 +284,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     };
 
     private void runFabAnimation(View fab) {
-
         AnimationSet scanSet = new AnimationSet(this, null);
         AnimationSet generateSet = new AnimationSet(this, null);
 
@@ -356,10 +355,10 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                         PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
                         Resources res = getResources();
-                        String delete = res.getString(R.string.delete),
-                                rename = res.getString(R.string.rename),
-                                share = res.getString(R.string.share),
-                                qr = "QR-ify";
+                        String delete = res.getString(R.string.delete);
+                        String rename = res.getString(R.string.rename);
+                        String share = res.getString(R.string.share);
+                        String qr = "QR-ify";
                         menu.getMenu().add(delete);
                         menu.getMenu().add(rename);
                         menu.getMenu().add(share);
@@ -401,39 +400,23 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             e.printStackTrace();
         }
     }
-    /*private void shareContact(Contact c) {
-        try {
-            JSONObject object = new JSONObject();
-            object.put("username", c.getName());
-            object.put("address", c.getAddress());
-            object.put("publicKey", c.getPubKey());
-            object.put("identifier", c.getIdentifier());
 
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, object.toString());
-            startActivity(intent);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-*/
     private void showContactEditDialog(Contact c) {
         EditText et = new EditText(this);
         et.setText(c.getInfo());
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.contact_edit)
-                .setView(et)
-                .setNegativeButton(getResources().getString(R.string.cancel), null)
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String info = et.getText().toString();
-                        c.setInfo(info);
-                        mainBinder.updateContact(c);
-                        refreshContactList();
-                    }
-                }).show();
+            .setTitle(R.string.contact_edit)
+            .setView(et)
+            .setNegativeButton(getResources().getString(R.string.cancel), null)
+            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    String info = et.getText().toString();
+                    c.setInfo(info);
+                    mainBinder.updateContact(c);
+                    refreshContactList();
+                }
+            }).show();
     }
 
     @Override
@@ -449,11 +432,8 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         switch (id) {
             case R.id.action_settings: {
                 Intent intent = new Intent(ContactListActivity.this, SettingsActivity.class);
-
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
                 startActivity(intent);
-
                 break;
             }
             case R.id.action_about: {

@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+
 public class SettingsActivity extends MeshengerActivity {
-    String nick;
+    private String nick;
     private ContactSqlHelper sqlHelper;
-    AppData appData;
+    private AppData appData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +56,12 @@ public class SettingsActivity extends MeshengerActivity {
         CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
         if (appData != null && appData.getBlockUC() == 0) {
             ignoreCB.setChecked(false);
-        }
-        else if (appData != null && appData.getBlockUC() == 1) {
+        } else if (appData != null && appData.getBlockUC() == 1) {
             ignoreCB.setChecked(true);
-        }
-        else {
+        } else {
             ignoreCB.setChecked(false);
         }
+
         ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
             if (appData != null) {
                 if(b) {
@@ -78,21 +78,19 @@ public class SettingsActivity extends MeshengerActivity {
         CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
         if (appData != null && appData.getMode() == 1) {
             nightMode.setChecked(false);
-        }
-        else if (appData != null && appData.getMode() == 2) {
+        } else if (appData != null && appData.getMode() == 2) {
             nightMode.setChecked(true);
-        }
-        else {
+        } else {
             nightMode.setChecked(false);
         }
+
         nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
         nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
             AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             if (appData != null) {
                 if (compoundButton.isChecked()) {
                     appData.setMode(AppCompatDelegate.MODE_NIGHT_YES);
-                }
-                else {
+                } else {
                     appData.setMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
                 sqlHelper.updateAppData(appData);
@@ -100,13 +98,13 @@ public class SettingsActivity extends MeshengerActivity {
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
-
     }
 
     private void getLocale() {
         Configuration config = getResources().getConfiguration();
         Locale locale = config.locale;
         ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
+
         if (appData != null) {
             appData.setLanguage(locale.getDisplayLanguage());
             sqlHelper.updateAppData(appData);
@@ -116,14 +114,18 @@ public class SettingsActivity extends MeshengerActivity {
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
             RadioGroup group = new RadioGroup(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
             for (int i = 0; i < locales.length; i++) {
                 Locale l = locales[i];
                 RadioButton button = new RadioButton(this);
                 button.setId(i);
                 button.setText(l.getDisplayLanguage());
-                if (l.getISO3Language().equals(locale.getISO3Language())) button.setChecked(true);
+                if (l.getISO3Language().equals(locale.getISO3Language())) {
+                    button.setChecked(true);
+                }
                 group.addView(button);
             }
+
             builder.setView(group);
             AlertDialog dialog = builder.show();
             group.setOnCheckedChangeListener((a, position) -> {
@@ -142,25 +144,24 @@ public class SettingsActivity extends MeshengerActivity {
         });
     }
 
-
     private void changeNick() {
         EditText et = new EditText(this);
         et.setText(nick);
         et.setSelection(nick.length());
         new AlertDialog.Builder(this)
-                .setTitle(getResources().getString(R.string.settings_change_nick))
-                .setView(et)
-                .setPositiveButton("ok", (dialogInterface, i) -> {
-                    nick = et.getText().toString();
-                    if (appData != null) {
-                        appData.setUsername(nick);
-                        sqlHelper.updateAppData(appData);
-                    }
-                    syncSettings("username", nick);
-                    initViews();
-                })
-                .setNegativeButton(getResources().getText(R.string.cancel), null)
-                .show();
+            .setTitle(getResources().getString(R.string.settings_change_nick))
+            .setView(et)
+            .setPositiveButton("ok", (dialogInterface, i) -> {
+                nick = et.getText().toString();
+                if (appData != null) {
+                    appData.setUsername(nick);
+                    sqlHelper.updateAppData(appData);
+                }
+                syncSettings("username", nick);
+                initViews();
+            })
+            .setNegativeButton(getResources().getText(R.string.cancel), null)
+            .show();
     }
 
     private void syncSettings(String what, boolean content) {

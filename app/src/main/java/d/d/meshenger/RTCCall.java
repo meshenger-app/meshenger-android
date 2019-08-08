@@ -1,6 +1,5 @@
 package d.d.meshenger;
 
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -46,9 +45,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
 public class RTCCall implements DataChannel.Observer {
 
-    enum CallState {CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR}
+    enum CallState { CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR }
 
     private final String StateChangeMessage = "StateChange";
     private final String CameraDisabledMessage = "CameraDisabled";
@@ -63,9 +63,6 @@ public class RTCCall implements DataChannel.Observer {
     private MediaConstraints constraints;
 
     private String offer;
-    protected LazySodiumAndroid ls;
-    public byte[] nonce;
-    KeyPair encryptionKeyPair;
 
     private ContactSqlHelper sqlHelper;
     private ArrayList<Contact> contacts;
@@ -85,8 +82,15 @@ public class RTCCall implements DataChannel.Observer {
 
     public CallState state;
 
-    public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
-        this.remoteRenderer = remoteRenderer;
+    static public RTCCall startCall(Contact target, OnStateChangeListener listener, Context context) {
+        return new RTCCall(target, listener, context);
+    }
+
+    public RTCCall(Socket commSocket, Context context, String offer) {
+        this.commSocket = commSocket;
+        this.context = context;
+        initRTC(context);
+        this.offer = offer;
     }
 
     private RTCCall(Contact target, OnStateChangeListener listener, Context context) {
@@ -105,17 +109,19 @@ public class RTCCall implements DataChannel.Observer {
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
+                            LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
+                            byte[] nonce = ls.nonce(Box.NONCEBYTES);
                             commSocket = target.createSocket();
-                            // commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
-                            OutputStream os = commSocket.getOutputStream();
+                            // this.commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
                             reportStateChange(CallState.CONNECTING);
+
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
                             object.put("publicKey", target.pubKey);
-                            ls = new LazySodiumAndroid(new SodiumAndroid());
-                            nonce = ls.nonce(Box.NONCEBYTES);
-                            object.put("nonce" , bytesToHex(nonce));
-                            object.put("offer", encryption(new Gson().toJson(target.getConnectionData())));
+                            object.put("nonce", Utils.bytesToHex(nonce));
+                            object.put("offer", encryption(new Gson().toJson(target.getConnectionData()), nonce));
+
+                            OutputStream os = commSocket.getOutputStream();
                             os.write((object.toString() + "\n").getBytes());
                             BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
                             String response = reader.readLine();
@@ -185,29 +191,22 @@ public class RTCCall implements DataChannel.Observer {
         }).start();
     }
 
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
+    public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
+        this.remoteRenderer = remoteRenderer;
     }
 
-    public void encryptionKeys(String target){
+    public KeyPair encryptionKeys(String target){
         sqlHelper = new ContactSqlHelper(context);
         String pubKey = sqlHelper.getPublicKeyFromContacts(target);
         String secretKey = sqlHelper.getAppData().getSecretKey();
         Key secret_key = Key.fromHexString(secretKey);
         Key pub_key = Key.fromHexString(pubKey);
-        encryptionKeyPair = new KeyPair(pub_key, secret_key);
+        return new KeyPair(pub_key, secret_key);
     }
 
-    public String encryption(String target) throws SodiumException {
-        ls = new LazySodiumAndroid(new SodiumAndroid());
-        encryptionKeys(target);
+    public String encryption(String target, byte[] nonce) throws SodiumException {
+        LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
+        KeyPair encryptionKeyPair = encryptionKeys(target);
         String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
         return encrypted;
     }
@@ -220,12 +219,12 @@ public class RTCCall implements DataChannel.Observer {
 
     @Override
     public void onBufferedAmountChange(long l) {
-
+        // nothing to do
     }
 
     @Override
     public void onStateChange() {
-
+        // nothing to do
     }
 
     @Override
@@ -369,17 +368,6 @@ public class RTCCall implements DataChannel.Observer {
         //initVideoTrack();
     }
 
-    static public RTCCall startCall(Contact target, OnStateChangeListener listener, Context context) {
-        return new RTCCall(target, listener, context);
-    }
-
-    public RTCCall(Socket commSocket, Context context, String offer) {
-        this.commSocket = commSocket;
-        this.context = context;
-        initRTC(context);
-        this.offer = offer;
-    }
-
     private void handleAnswer(String remoteDesc) {
         log("setting remote desc");
         connection.setRemoteDescription(new DefaultSdpObserver() {
@@ -426,7 +414,6 @@ public class RTCCall implements DataChannel.Observer {
                         }
                     }
                 }
-
 
                 @Override
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
@@ -521,7 +508,9 @@ public class RTCCall implements DataChannel.Observer {
                     commSocket.close();
                 }
 
-                if (connection != null) connection.close();
+                if (connection != null) {
+                    connection.close();
+                }
                 reportStateChange(CallState.ENDED);
             } catch (IOException e) {
                 e.printStackTrace();

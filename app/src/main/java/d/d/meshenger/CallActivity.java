@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+
 public class CallActivity extends MeshengerActivity implements ServiceConnection, View.OnClickListener, SensorEventListener {
     private TextView statusTextView;
     private TextView nameTextView;
@@ -49,12 +50,13 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     private SensorManager sensorManager;
     private PowerManager powerManager;
-    private PowerManager.WakeLock wakeLock, passiveWakeLock = null;
+    private PowerManager.WakeLock wakeLock;
+    private PowerManager.WakeLock  passiveWakeLock = null;
 
     private final long buttonAnimationDuration = 400;
     private final int CAMERA_PERMISSION_REQUEST_CODE =  2;
 
-    boolean permissionRequested = false;
+    private boolean permissionRequested = false;
 
     private Vibrator vibrator = null;
     private Ringtone ringtone = null;
@@ -74,7 +76,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         if ("ACTION_START_CALL".equals(action)) {
-            Log.d("CallActivity", "starting call...");
+            log("starting call...");
             connection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -104,20 +106,24 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             nameTextView.setText(intent.getStringExtra("EXTRA_USERNAME"));
             findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
             ringPhone();
+
             View.OnClickListener optionsListener = view -> {
                 stopRingPhone();
                 if (view.getId() == R.id.callDecline) {
                     Log.d(RTCCall.class.getSimpleName(), "declining call...");
                     currentCall.decline();
-                    if (passiveWakeLock != null && passiveWakeLock.isHeld()) passiveWakeLock.release();
+                    if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
+                        passiveWakeLock.release();
+                    }
                     finish();
                 } else {
                     try {
                         currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                         //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                         currentCall.accept(passiveCallback);
-                        if (passiveWakeLock != null && passiveWakeLock.isHeld())
+                        if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
                             passiveWakeLock.release();
+                        }
                         Log.d(CallActivity.class.getSimpleName(), "call accepted");
                         findViewById(R.id.callDecline).setOnClickListener(this);
                         startSensor();
@@ -128,6 +134,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                     }
                 }
             };
+
             findViewById(R.id.callAccept).setOnClickListener(optionsListener);
             findViewById(R.id.callDecline).setOnClickListener(optionsListener);
         }
@@ -197,6 +204,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
+                // nothing to do
             }
 
             @Override
@@ -209,6 +217,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
             @Override
             public void onAnimationRepeat(Animation animation) {
+                // nothing to do
             }
         });
         View frontSwitch = findViewById(R.id.frontFacingSwitch);
@@ -223,7 +232,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             scale.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
+                    // nothing to do
                 }
 
                 @Override
@@ -233,7 +242,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {
-
+                    // nothing to do
                 }
             });
             frontSwitch.startAnimation(scale);
@@ -284,7 +293,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("CallActivity", "state: " + currentCall.state);
+        log("state: " + currentCall.state);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(declineReceiver);
         stopRingPhone();
         if (currentCall.state == RTCCall.CallState.CONNECTED) {
@@ -295,7 +304,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         if (binder != null) {
             unbindService(connection);
         }
-        Log.d("CallActivity", "unregistering sensor");
+        log("unregistering sensor");
         //if (sensorManager != null)
         //    Log.d("CallActivity", "unregistering sensor2");
         //    sensorManager.unregisterListener(this);
@@ -387,14 +396,14 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-
+        // nothing to do
     }
 
     @Override
     public void onClick(View view) {
         Log.d(CallActivity.class.getSimpleName(), "OnClick");
         if (view.getId() == R.id.callDecline) {
-            Log.d(CallActivity.class.getSimpleName(), "endCall() 1");
+            Log.d(CallActivity.class.getSimpleName(), "endCall()");
             currentCall.hangUp();
             finish();
         }
@@ -414,6 +423,10 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+        // nothing to do
+    }
 
+    private void log(String s) {
+        Log.d(RTCCall.class.getSimpleName(), s);
     }
 }

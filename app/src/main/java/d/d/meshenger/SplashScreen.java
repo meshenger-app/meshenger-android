@@ -15,7 +15,7 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        Typeface type = Typeface.createFromAsset(getAssets(),"rounds_black.otf");
+        Typeface type = Typeface.createFromAsset(getAssets(), "rounds_black.otf");
         ((TextView)findViewById(R.id.splashText)).setTypeface(type);
 
         new Handler().postDelayed(() -> {

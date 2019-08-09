@@ -16,7 +16,7 @@
             android:layout_height="200dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/icon_splash" />
+            android:src="@drawable/logo_splash" />
 
     </RelativeLayout>
 

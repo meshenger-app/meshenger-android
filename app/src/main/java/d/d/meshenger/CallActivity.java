@@ -82,15 +82,16 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     binder = (MainService.MainBinder) iBinder;
                     currentCall = binder.startCall(
-                            (Contact) extras.get("EXTRA_CONTACT"),
-                            activeCallback,
-                            findViewById(R.id.localRenderer));
+                        (Contact) extras.get("EXTRA_CONTACT"),
+                        activeCallback,
+                        findViewById(R.id.localRenderer)
+                    );
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName componentName) {
-
+                    // Nothing to do
                 }
             };
             nameTextView.setText(((Contact) extras.get("EXTRA_CONTACT")).getName());
@@ -99,7 +100,9 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             startSensor();
         } else if ("ACTION_ACCEPT_CALL".equals(action)) {
             calledWhileScreenOff = !((PowerManager) getSystemService(POWER_SERVICE)).isScreenOn();
-            passiveWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "wakeup");
+            passiveWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(
+                PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "wakeup"
+            );
             passiveWakeLock.acquire(10000);
             connection = this;
             bindService(new Intent(this, MainService.class), this, 0);
@@ -198,6 +201,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             permissionRequested = true;
             return;
         }
+
         currentCall.setVideoEnabled(!currentCall.isVideoEnabled());
         ScaleAnimation animation = new ScaleAnimation(1.0f, 0.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setDuration(buttonAnimationDuration / 2);

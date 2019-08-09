@@ -102,12 +102,14 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
         if (this.contact == null) {
             // export own contact
             ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
-            AppData appData = sqlHelper.getAppData();
+            Contact contact = sqlHelper.getAppData().getOwnContact();
+            /*
             if (appData == null) {
                 // why?
                 appData = new AppData();
             }
             Contact contact = appData.getOwnContact();
+            */
             return Contact.exportJSON(contact);
         } else {
             // export from contact list

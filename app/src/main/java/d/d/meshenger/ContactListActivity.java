@@ -21,7 +21,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -85,8 +84,8 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             return;
         }
 
-        checkInit();
-        checkKeypair();
+        showUsernameDialog();
+        generateKeyPair();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -124,26 +123,13 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         super.onDestroy();
     }
 
-    private void checkKeypair() {
-        appData = sqlHelper.getAppData();
-        if (appData == null) {
-            new AppData();
-            generateKeyPair();
-            return;
-        }
-    }
-
     private void generateKeyPair() {
-        Box.Lazy box;
-        KeyPair keyPair;
-        LazySodiumAndroid ls;
-
-        ls = new LazySodiumAndroid(new SodiumAndroid());
-        box = (Box.Lazy) ls;
+        LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
+        Box.Lazy box = (Box.Lazy) ls;
 
         try {
             Log.d("ContactListActivity", "Create own key pair");
-            keyPair = box.cryptoBoxKeypair();
+            KeyPair keyPair = box.cryptoBoxKeypair();
 
             publicKey = keyPair.getPublicKey().getAsHexString();
             secretKey = keyPair.getSecretKey().getAsHexString();
@@ -153,15 +139,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
         } catch (SodiumException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void checkInit() {
-        appData = sqlHelper.getAppData();
-        if (appData == null) {
-            new AppData();
-            showUsernameDialog();
-            return;
         }
     }
 
@@ -200,7 +177,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 ArrayList<ConnectionData> connectionData = new ArrayList<>();
                 connectionData.add(linkLocal);
                 connectionData.add(hostname);
-                AppData appData = new AppData(1, secretKey, publicKey, et.getText().toString(), "", 1, 0, connectionData);
+                AppData appData = new AppData(1, secretKey, publicKey, et.getText().toString(), "", 1, false, connectionData);
                 sqlHelper.insertAppData(appData);
             }
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);

@@ -1,30 +1,19 @@
 package d.d.meshenger;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.util.ObjectsCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 
@@ -41,9 +30,10 @@ public class SettingsActivity extends MeshengerActivity {
 
         sqlHelper = new ContactSqlHelper(this);
         appData = sqlHelper.getAppData();
-        if (appData == null) {
-            new AppData();
-        }
+
+        //if (appData == null) {
+        //    new AppData();
+        //}
 
         nick = sqlHelper.getAppData().getUsername();
 
@@ -53,10 +43,11 @@ public class SettingsActivity extends MeshengerActivity {
                 changeNick();
             }
         });
+
         CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
-        if (appData != null && appData.getBlockUC() == 0) {
+        if (appData != null && !appData.getBlockUC()) {
             ignoreCB.setChecked(false);
-        } else if (appData != null && appData.getBlockUC() == 1) {
+        } else if (appData != null && appData.getBlockUC()) {
             ignoreCB.setChecked(true);
         } else {
             ignoreCB.setChecked(false);
@@ -64,11 +55,10 @@ public class SettingsActivity extends MeshengerActivity {
 
         ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
             if (appData != null) {
-                if(b) {
-                    appData.setBlockUC(1);
-                }
-                else {
-                    appData.setBlockUC(0);
+                if (b) {
+                    appData.setBlockUC(true);
+                } else {
+                    appData.setBlockUC(false);
                 }
                 sqlHelper.updateAppData(appData);
             }
@@ -115,7 +105,7 @@ public class SettingsActivity extends MeshengerActivity {
             RadioGroup group = new RadioGroup(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            for (int i = 0; i < locales.length; i++) {
+            for (int i = 0; i < locales.length; i += 1) {
                 Locale l = locales[i];
                 RadioButton button = new RadioButton(this);
                 button.setId(i);

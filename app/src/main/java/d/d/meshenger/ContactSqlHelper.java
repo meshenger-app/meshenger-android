@@ -90,7 +90,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
                     cursor.getString(posUsername),
                     cursor.getString(posLanguage),
                     cursor.getInt(posMode),
-                    cursor.getInt(posBlockUC),
+                        (cursor.getInt(posBlockUC) != 0),
                     parseConnectionData(cursor.getString(posListData))
                 );
             } while (cursor.moveToNext());
@@ -132,14 +132,14 @@ class ContactSqlHelper extends SQLiteOpenHelper {
         values.put(columnUsername, a.getUsername());
         values.put(columnListData, new Gson().toJson(a.getConnectionData()));
         values.put(columnMode, a.getMode());
-        values.put(columnBlockUC, a.getBlockUC());
+        values.put(columnBlockUC, (a.getBlockUC() ? 1 : 0));
         values.put(columnLanguage, a.getLanguage());
 
         Cursor cur = database.query(AppDataTableName, new String[]{columnID}, columnLanguage + "=" + DatabaseUtils.sqlEscapeString(a.getLanguage()), null, "", "", "");
-        int length = cur.getCount();
+        //int length = cur.getCount();
         cur.close();
 
-        a.setId(database.insert(AppDataTableName, null, values));
+        a.setId(database.insert(AppDataTableName,null, values));
     }
 
     public boolean contactSaved(String publicKey){

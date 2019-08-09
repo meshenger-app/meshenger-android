@@ -64,9 +64,6 @@ public class RTCCall implements DataChannel.Observer {
 
     private String offer;
 
-    private ContactSqlHelper sqlHelper;
-    private ArrayList<Contact> contacts;
-
     private SurfaceViewRenderer remoteRenderer;
     private SurfaceViewRenderer localRenderer;
 
@@ -93,8 +90,8 @@ public class RTCCall implements DataChannel.Observer {
         this.offer = offer;
     }
 
-    private RTCCall(Contact target, OnStateChangeListener listener, Context context) {
-        log("starting call to " + target.getPubKey());
+    private RTCCall(Contact contact, OnStateChangeListener listener, Context context) {
+        log("starting call to " + contact.getPubKey());
         initRTC(context);
         this.context = context;
         context.setTheme(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
@@ -111,15 +108,18 @@ public class RTCCall implements DataChannel.Observer {
                         try {
                             LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
                             byte[] nonce = ls.nonce(Box.NONCEBYTES);
-                            commSocket = target.createSocket();
-                            // this.commSocket = new Socket(target.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
+                            commSocket = contact.createSocket();
+                            // this.commSocket = new Socket(contact.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
                             reportStateChange(CallState.CONNECTING);
+
+                            String offer = connection.getLocalDescription().description;
+                            String publicKey = contact.pubKey;
 
                             JSONObject object = new JSONObject();
                             object.put("action", "call");
-                            object.put("publicKey", target.pubKey);
-                            object.put("nonce", Utils.bytesToHex(nonce));
-                            object.put("offer", encryption(new Gson().toJson(target.getConnectionData()), nonce));
+                            object.put("publicKey", publicKey);
+                            object.put("nonce", Utils.byteArrayToHexString(nonce));
+                            object.put("offer", encrypt(publicKey, offer, nonce));
 
                             OutputStream os = commSocket.getOutputStream();
                             os.write((object.toString() + "\n").getBytes());
@@ -177,6 +177,7 @@ public class RTCCall implements DataChannel.Observer {
                     dataChannel.registerObserver(RTCCall.this);
                 }
             });
+
             log("PeerConnection created");
             connection.addStream(createStream());
             this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
@@ -195,20 +196,15 @@ public class RTCCall implements DataChannel.Observer {
         this.remoteRenderer = remoteRenderer;
     }
 
-    public KeyPair encryptionKeys(String target){
-        sqlHelper = new ContactSqlHelper(context);
-        String pubKey = sqlHelper.getPublicKeyFromContacts(target);
+    private String encrypt(String publicKey, String data, byte[] nonce) throws SodiumException {
+        ContactSqlHelper sqlHelper = new ContactSqlHelper(this.context);
         String secretKey = sqlHelper.getAppData().getSecretKey();
-        Key secret_key = Key.fromHexString(secretKey);
-        Key pub_key = Key.fromHexString(pubKey);
-        return new KeyPair(pub_key, secret_key);
-    }
-
-    public String encryption(String target, byte[] nonce) throws SodiumException {
         LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
-        KeyPair encryptionKeyPair = encryptionKeys(target);
-        String encrypted = ls.cryptoBoxEasy(connection.getLocalDescription().description, nonce, encryptionKeyPair);
-        return encrypted;
+        KeyPair encryptKeyPair = new KeyPair(
+            Key.fromHexString(publicKey),
+            Key.fromHexString(secretKey)
+        );
+        return ls.cryptoBoxEasy(data, nonce, encryptKeyPair);
     }
 
     public void switchFrontFacing() {

@@ -15,28 +15,11 @@ public class AppData implements Serializable {
     private String username;
     private String language;
     private int mode;
-    private int blockUC;
+    private boolean blockUC;
     private List<ConnectionData> connection_data;
 
-    public AppData() {
-
-    }
-
-    public AppData(int id, long dbVer, String secretKey, String publicKey, String username,
-            String language, int mode, int blockUC, List<ConnectionData> connection_data) {
-        this.id = id;
-        this.dbVer = dbVer;
-        this.secretKey = secretKey;
-        this.publicKey = publicKey;
-        this.username = username;
-        this.language = language;
-        this.mode = mode;
-        this.blockUC = blockUC;
-        this.connection_data = connection_data;
-    }
-
     public AppData(long dbVer, String secretKey, String publicKey, String username,
-            String language, int mode, int blockUC, List<ConnectionData> connection_data) {
+            String language, int mode, boolean blockUC, List<ConnectionData> connection_data) {
         this.id = -1;
         this.dbVer = dbVer;
         this.secretKey = secretKey;
@@ -45,7 +28,7 @@ public class AppData implements Serializable {
         this.language = language;
         this.mode = mode;
         this.blockUC = blockUC;
-        this.connection_data = new ArrayList<>();
+        this.connection_data = connection_data;
     }
 
     public long getId() {
@@ -104,11 +87,11 @@ public class AppData implements Serializable {
         this.mode = mode;
     }
 
-    public int getBlockUC() {
+    public boolean getBlockUC() {
         return blockUC;
     }
 
-    public void setBlockUC(int blockUC) {
+    public void setBlockUC(boolean blockUC) {
         this.blockUC = blockUC;
     }
 

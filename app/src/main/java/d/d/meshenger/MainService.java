@@ -34,23 +34,16 @@ import java.util.List;
 
 
 public class MainService extends Service implements Runnable {
-    private ArrayList<Contact> contacts;
-
-    String encrypted;
-    byte[] nonce;
     private ContactSqlHelper sqlHelper;
 
     public static final int serverPort = 10001;
     private ServerSocket server;
     private final String mac = Utils.formatAddress(Utils.getMacAddress());
 
-    private volatile boolean run = true, interrupted = false;
-
-    private String userName, pubkeyData;
+    private volatile boolean run = true;
+    private volatile boolean interrupted = false;
 
     private RTCCall currentCall = null;
-
-    private boolean ignoreUnsaved;
 
     @Override
     public void onCreate() {
@@ -69,7 +62,12 @@ public class MainService extends Service implements Runnable {
     public void onDestroy() {
         super.onDestroy();
         log("onDestroy()");
+        String pubkeyData = sqlHelper.getAppData().getPublicKey();
+        List<Contact> contacts = sqlHelper.getContacts();
+
         sqlHelper.close();
+
+        // shutdown listening socket
         if (server != null && server.isBound() && !server.isClosed()) {
             try {
                 JSONObject request = new JSONObject();
@@ -84,8 +82,7 @@ public class MainService extends Service implements Runnable {
                             s.getOutputStream().write((request.toString() + "\n").getBytes());
                             s.getOutputStream().flush();
                             s.close();
-                        } catch (Exception e) {
-                        }
+                        } catch (Exception e) {}
                     }
                 }
                 server.close();
@@ -93,6 +90,7 @@ public class MainService extends Service implements Runnable {
                 e.printStackTrace();
             }
         }
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(settingsReceiver);
         log("MainService stopped");
     }
@@ -108,18 +106,20 @@ public class MainService extends Service implements Runnable {
     }
 
     private void refreshContacts() {
-        contacts = (ArrayList<Contact>) sqlHelper.getContacts();
+        /*
+        ArrayList<Contact> contacts = (ArrayList<Contact>) sqlHelper.getContacts();
         if (sqlHelper.getAppData() == null) {
-            userName = "Unknown";
+            //userName = "Unknown";
             ignoreUnsaved = false;
         } else {
-            userName = sqlHelper.getAppData().getUsername();
+            //userName = sqlHelper.getAppData().getUsername();
             if (sqlHelper.getAppData().getBlockUC() == 1) {
                 ignoreUnsaved = true;
             } else {
                 ignoreUnsaved = false;
             }
         }
+        */
     }
 
     private void mainLoop() throws IOException {
@@ -137,92 +137,99 @@ public class MainService extends Service implements Runnable {
     }
 
     private void handleClient(Socket client) {
-        String publickey = null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
             OutputStream os = client.getOutputStream();
             String line;
+
             log("waiting for line...");
             while ((line = reader.readLine()) != null) {
                 log("line: " + line);
                 JSONObject request = new JSONObject(line);
-                if (request.has("publicKey")) {
-                    publickey = request.getString("publicKey");
-                }
-                if (request.has("action")) {
-                    String action = request.getString("action");
-                    log("action: " + action);
+                String action = request.optString("action", "");
+                log("action: " + action);
 
-                    switch (action) {
-                        case "call": {
-                            log("ringing...");
-                            String response = "{\"action\":\"ringing\"}\n";
-                            os.write(response.getBytes());
+                switch (action) {
+                    case "call": {
+                        // someone calls us
+                        log("ringing...");
+                        byte[] nonce = Utils.hexStringToByteArray(request.optString("nonce", ""));
+                        String encrypted = request.getString("offer");
+                        String offer = decrypt(encrypted, nonce);
+                        this.currentCall = new RTCCall(client, this, offer);
 
-                            nonce = hexStringToByteArray(request.getString("nonce"));
-                            encrypted = request.getString("offer");
-                            String offer = decryption();
-                            this.currentCall = new RTCCall(client, this, offer);
+                        if (sqlHelper.getAppData().getBlockUC() && !sqlHelper.contactSaved(mac)) {
+                            currentCall.decline();
+                            continue;
+                        };
 
-                            if (ignoreUnsaved && !sqlHelper.contactSaved(mac)) {
-                                currentCall.decline();
-                                continue;
-                            };
-                            Intent intent = new Intent(this, CallActivity.class);
-                            intent.setAction("ACTION_ACCEPT_CALL");
-                            intent.putExtra("EXTRA_USERNAME", request.getString("username"));
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            return;
-                        }
-                        case "ping": {
-                            setClientState(publickey, Contact.State.ONLINE);
-                            JSONObject response = new JSONObject();
-                            response.put("publicKey", pubkeyData);
-                            os.write((response.toString() + "\n").getBytes());
-                            break;
-                        }
-                        case "connect": {
-                            publickey = request.optString("publicKey", null);
-                            if (publickey != null) {
-                                String hostaddress = client.getInetAddress().getHostAddress();
-                                Contact c = new Contact(
-                                       // client.getInetAddress().getHostAddress(),
-                                        request.getString("username"),
-                                        "",
-                                        request.getString("publicKey")
-                                        // identifier
-                                );
-                                if (request.getJSONArray("connection_data") == null) {
-                                    return;
-                                }
-                                JSONArray connectionData= request.getJSONArray("connection_data");
-                                JSONObject linkLocal = null;
-                                for (int i = 0; i < connectionData.length(); i++) {
-                                    if (connectionData.getJSONObject(i).getString("type").equalsIgnoreCase("LinkLocal")) {
-                                        linkLocal = connectionData.getJSONObject(i);
-                                    }
-                                }
-                                c.addConnectionData(new ConnectionData.LinkLocal(linkLocal.getString("mac_address"), 10001));
-                                c.addConnectionData(new ConnectionData.Hostname(hostaddress));
-                                try {
-                                    sqlHelper.insertContact(c);
-                                    contacts.add(c);
-                                } catch (ContactSqlHelper.ContactAlreadyAddedException e){}
-                                JSONObject response = new JSONObject();
-                                response.put("username", userName);
-                                os.write((response.toString() + "\n").getBytes());
-                                Intent intent = new Intent("incoming_contact");
-                                //intent.putExtra("extra_identifier", request.getString("identifier"));
-                                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                        String response = "{\"action\":\"ringing\"}\n";
+                        os.write(response.getBytes());
+
+                        Intent intent = new Intent(this, CallActivity.class);
+                        intent.setAction("ACTION_ACCEPT_CALL");
+                        intent.putExtra("EXTRA_USERNAME", request.getString("username"));
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        return;
+                    }
+                    case "ping": {
+                        // someone wants to know if we are online
+                        String publickey = request.optString("publicKey", null);
+                        setClientState(publickey, Contact.State.ONLINE);
+                        JSONObject response = new JSONObject();
+                        AppData app = (new ContactSqlHelper(this)).getAppData();
+                        response.put("publicKey", app.getPublicKey());
+                        os.write((response.toString() + "\n").getBytes());
+                        break;
+                    }
+                    case "connect": {
+                        // transmit their public key after they scanned out QR code
+                        String publickey = request.optString("publicKey", null);
+                        if (publickey != null) {
+                            String hostaddress = client.getInetAddress().getHostAddress();
+                            Contact c = new Contact(
+                                   // client.getInetAddress().getHostAddress(),
+                                    request.getString("username"),
+                                    "",
+                                    request.getString("publicKey")
+                                    // identifier
+                            );
+                            if (request.getJSONArray("connection_data") == null) {
+                                return;
                             }
-                            break;
+                            JSONArray connectionData = request.getJSONArray("connection_data");
+                            JSONObject linkLocal = null;
+                            for (int i = 0; i < connectionData.length(); i += 1) {
+                                if (connectionData.getJSONObject(i).getString("type").equalsIgnoreCase("LinkLocal")) {
+                                    linkLocal = connectionData.getJSONObject(i);
+                                }
+                            }
+                            c.addConnectionData(new ConnectionData.LinkLocal(linkLocal.getString("mac_address"), 10001));
+                            c.addConnectionData(new ConnectionData.Hostname(hostaddress));
+                            try {
+                                sqlHelper.insertContact(c);
+                                //contacts.add(c);
+                            } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
+                                // ignore
+                            }
+                            //JSONObject response = new JSONObject();
+                            //response.put("username", userName);
+                            //os.write((response.toString() + "\n").getBytes());
+                            Intent intent = new Intent("incoming_contact");
+                            //intent.putExtra("extra_identifier", request.getString("identifier"));
+                            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         }
-                        case "status_change": {
+                        break;
+                    }
+                    case "status_change": {
+                        String publickey = request.optString("publicKey", "");
+                        if (request.optString("status", "").equals("offline")) {
                             setClientState(publickey, Contact.State.OFFLINE);
+                        } else {
+                            log("Received unknown status_change: " + request.optString("status", ""));
                         }
                     }
-
                 }
             }
 
@@ -235,28 +242,16 @@ public class MainService extends Service implements Runnable {
         }
     }
 
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
-    }
-
-     public String decryption() throws SodiumException {
-        LazySodiumAndroid ls;
-        ls = new LazySodiumAndroid(new SodiumAndroid());
-        String decrypted = null;
-        contacts = (ArrayList<Contact>) sqlHelper.getContacts();
+    public String decrypt(String encrypted, byte[] nonce) throws SodiumException {
+        LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
+        ArrayList<Contact> contacts = (ArrayList<Contact>) sqlHelper.getContacts();
         String secretKey = sqlHelper.getAppData().getSecretKey();
         Key secret_key = Key.fromHexString(secretKey);
         for (Contact c : contacts) {
             Key pub_key = Key.fromHexString(c.getPubKey());
-            KeyPair decryptionKeyPair = new KeyPair(pub_key, secret_key);
-            decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptionKeyPair);
-            if ( decrypted != null ) {
+            KeyPair decryptKeyPair = new KeyPair(pub_key, secret_key);
+            String decrypted = ls.cryptoBoxOpenEasy(encrypted, nonce, decryptKeyPair);
+            if (decrypted != null) {
                 return decrypted;
             }
         }
@@ -264,6 +259,7 @@ public class MainService extends Service implements Runnable {
     }
 
     private void setClientState(String publickey, Contact.State state) {
+        ArrayList<Contact> contacts = (ArrayList<Contact>) sqlHelper.getContacts();
         for (Contact c : contacts) {
             if (c.matchEndpoint(publickey)) {
                 c.setState(Contact.State.ONLINE);
@@ -301,20 +297,17 @@ public class MainService extends Service implements Runnable {
         }
 
         String getPublicKey() {
-            if(pubkeyData==null){
-                pubkeyData = sqlHelper.getAppData().getPublicKey();
-            }
-            return pubkeyData;
+            return sqlHelper.getAppData().getPublicKey();
         }
 
         String getUsername() {
-            return userName;
+            return sqlHelper.getAppData().getUsername();
         }
 
         void addContact(Contact c) {
             try {
                 sqlHelper.insertContact(c);
-                contacts.add(c);
+                //contacts.add(c);
                 log("adding contact " + c.getPubKey() + "  " + c.getId());
 
             } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
@@ -338,12 +331,13 @@ public class MainService extends Service implements Runnable {
         }
 
         public List<Contact> getContacts() {
-            return MainService.this.contacts;
+            return MainService.this.sqlHelper.getContacts();
+            //return MainService.this.contacts;
         }
+
         /*void setPingResultListener(ContactPingListener listener){
             MainService.this.pingListener = listener;
         }*/
-
     }
 
     class PingRunnable implements Runnable {
@@ -384,20 +378,20 @@ public class MainService extends Service implements Runnable {
             //for (String target : targets) {
             try {
                 // log("opening socket to " + target);
-                // s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
+                //s = new Socket(target.replace("%zone", "%wlan0"), serverPort);
                 log("opening socket to " + c.getPubKey());
-                OutputStream os = s.getOutputStream();
-                os.write(("{\"action\":\"ping\",\"publicKey\":\"" + pubkeyData + "\"}\n").getBytes());
+                //OutputStream os = s.getOutputStream();
+                //os.write(("{\"action\":\"ping\",\"publicKey\":\"" + pubkeyData + "\"}\n").getBytes());
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                String line = reader.readLine();
-                JSONObject object = new JSONObject(line);
+                //BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                //String line = reader.readLine();
+                //JSONObject object = new JSONObject(line);
                  /*   String responseMac = object.getString("identifier");
                     if (!responseMac.equals(c.getIdentifier())) {
                         throw new Exception("foreign contact");
                     }
                 */
-                s.close();
+                //s.close();
 
                 //   c.setAddress(target);
 
@@ -430,7 +424,7 @@ public class MainService extends Service implements Runnable {
                     if (address.getAddress().isLoopbackAddress()) continue;
                     if (address.getAddress() instanceof Inet6Address) {
                         byte[] bytes = address.getAddress().getAddress();
-                        for (int i = 0; i < 8; i++) {
+                        for (int i = 0; i < 8; i += 1) {
                             if (bytes[i + 8] != eui64[i]) continue loop;
                         }
                         mutationAddresses.add(address.getAddress());
@@ -539,6 +533,7 @@ public class MainService extends Service implements Runnable {
     private BroadcastReceiver settingsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            /*
             switch (intent.getAction()) {
                 case "settings_changed": {
                     String subject = intent.getStringExtra("subject");
@@ -555,7 +550,7 @@ public class MainService extends Service implements Runnable {
                         }
                     }
                 }
-            }
+            }*/
         }
     };
 

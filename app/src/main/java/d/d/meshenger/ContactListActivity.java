@@ -93,7 +93,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("message");
-            Log.d("receiver", "Got message: " + message);
+            log("Got message: " + message);
 
             Intent intent1 = new Intent(ContactListActivity.this, ContactListActivity.class);
 
@@ -128,7 +128,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         Box.Lazy box = (Box.Lazy) ls;
 
         try {
-            Log.d("ContactListActivity", "Create own key pair");
+            log("Create key pair");
             KeyPair keyPair = box.cryptoBoxKeypair();
 
             publicKey = keyPair.getPublicKey().getAsHexString();
@@ -320,7 +320,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
     private void refreshContactList() {
-        Log.d(ContactListActivity.class.getSimpleName(), "refreshing...");
+        log("refreshing...");
         new Handler(getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -424,7 +424,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Log.d(QRPresenterActivity.class.getSimpleName(), "onServiceConnected()");
+        log("onServiceConnected()");
         this.mainBinder = (MainService.MainBinder) iBinder;
 
         //mainBinder.setPingResultListener(this);
@@ -435,7 +435,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        Log.d(QRPresenterActivity.class.getSimpleName(), "onServiceDisconnected");
+        log("onServiceDisconnected");
         mainBinder = null;
     }
 
@@ -469,5 +469,9 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     public void onBackPressed() {
         super.onBackPressed();
         finishAffinity();
+    }
+
+    private void log(String s) {
+        Log.d(ContactListActivity.class.getSimpleName(), s);
     }
 }

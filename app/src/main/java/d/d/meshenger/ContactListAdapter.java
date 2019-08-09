@@ -45,7 +45,7 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
         ((TextView)convertView.findViewById(R.id.contact_item_info)).setText(c.getInfo());
 
         if (c.getState() != Contact.State.PENDING) {
-            Log.d(ContactListActivity.class.getSimpleName(), c.getName() + " online");
+            log(c.getName() + " online");
             convertView.findViewById(R.id.contact_item_waiting).setVisibility(View.GONE);
             ImageView state = convertView.findViewById(R.id.contact_item_state);
             state.setVisibility(View.VISIBLE);
@@ -56,7 +56,7 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
             canvas.drawCircle(100, 100, 100, p);
             state.setImageBitmap(bitmap);
         } else {
-            Log.d(ContactListActivity.class.getSimpleName(), c.getName() + " offline");
+            log(c.getName() + " offline");
         }
 
         if (c.recent) {
@@ -68,4 +68,9 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
 
         return convertView;
     }
+
+    private void log(String s) {
+        Log.d(ContactListAdapter.class.getSimpleName(), s);
+    }
+
 }

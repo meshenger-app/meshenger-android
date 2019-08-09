@@ -144,7 +144,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Log.d(QRScanActivity.class.getSimpleName(), "onServiceConnected " + (iBinder == null));
+        log("onServiceConnected " + (iBinder == null));
         this.binder = (MainService.MainBinder) iBinder;
 
         barcodeView = findViewById(R.id.barcodeScannerView);
@@ -158,7 +158,11 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        Log.d(QRScanActivity.class.getSimpleName(), "onServiceDisconnected");
+        log("onServiceDisconnected");
         binder = null;
+    }
+
+    private void log(String s) {
+        Log.d(QRScanActivity.class.getSimpleName(), s);
     }
 }

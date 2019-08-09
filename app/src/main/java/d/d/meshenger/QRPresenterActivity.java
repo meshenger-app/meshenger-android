@@ -85,7 +85,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private void generateQR() throws Exception {
         json = generateJson();
 
-        Log.d(QRPresenterActivity.class.getSimpleName(), json);
+        log("generated: " + json);
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
@@ -119,7 +119,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Log.d(QRPresenterActivity.class.getSimpleName(), "onServiceConnected " + (iBinder == null));
+        log("onServiceConnected " + (iBinder == null));
         this.binder = (MainService.MainBinder) iBinder;
 
         try {
@@ -133,7 +133,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        Log.d(QRPresenterActivity.class.getSimpleName(), "onServiceDisconnected");
+        log("onServiceDisconnected");
         binder = null;
     }
 
@@ -143,4 +143,8 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
             finish();
         }
     };
+
+    private void log(String s) {
+        Log.d(ContactListActivity.class.getSimpleName(), s);
+    }
 }

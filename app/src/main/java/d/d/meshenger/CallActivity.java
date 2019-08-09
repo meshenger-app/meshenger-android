@@ -113,7 +113,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             View.OnClickListener optionsListener = view -> {
                 stopRingPhone();
                 if (view.getId() == R.id.callDecline) {
-                    Log.d(RTCCall.class.getSimpleName(), "declining call...");
+                    log("declining call...");
                     currentCall.decline();
                     if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
                         passiveWakeLock.release();
@@ -127,7 +127,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                         if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
                             passiveWakeLock.release();
                         }
-                        Log.d(CallActivity.class.getSimpleName(), "call accepted");
+                        log("call accepted");
                         findViewById(R.id.callDecline).setOnClickListener(this);
                         startSensor();
                     } catch (Exception e) {
@@ -310,7 +310,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         }
         log("unregistering sensor");
         //if (sensorManager != null)
-        //    Log.d("CallActivity", "unregistering sensor2");
+        //    log("unregistering sensor2");
         //    sensorManager.unregisterListener(this);
         if (wakeLock != null) {
             wakeLock.release();
@@ -405,9 +405,9 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     @Override
     public void onClick(View view) {
-        Log.d(CallActivity.class.getSimpleName(), "OnClick");
+        log("OnClick");
         if (view.getId() == R.id.callDecline) {
-            Log.d(CallActivity.class.getSimpleName(), "endCall()");
+            log("endCall()");
             currentCall.hangUp();
             finish();
         }
@@ -415,7 +415,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Log.d("CallActivity", "sensor changed: " + sensorEvent.values[0]);
+        log("sensor changed: " + sensorEvent.values[0]);
         if (sensorEvent.values[0] == 0.0f) {
             wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
             wakeLock.acquire();
@@ -431,6 +431,6 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     }
 
     private void log(String s) {
-        Log.d(RTCCall.class.getSimpleName(), s);
+        Log.d(CallActivity.class.getSimpleName(), s);
     }
 }

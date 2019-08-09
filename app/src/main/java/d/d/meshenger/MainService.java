@@ -97,7 +97,7 @@ public class MainService extends Service implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        log("onStart()");
+        log("onStartCommand()");
         return START_STICKY;
     }
 
@@ -267,10 +267,6 @@ public class MainService extends Service implements Runnable {
                 break;
             }
         }
-    }
-
-    private void log(String data) {
-        Log.d("MainService", data);
     }
 
     @Override
@@ -540,12 +536,12 @@ public class MainService extends Service implements Runnable {
                     switch (subject) {
                         case "username": {
                             userName = intent.getStringExtra("username");
-                            Log.d("Service", "username: " + userName);
+                            log("username: " + userName);
                             break;
                         }
                         case "ignoreUnsaved":{
                             ignoreUnsaved = intent.getBooleanExtra("ignoreUnsaved", false);
-                            Log.d("Service", "ignore: " + ignoreUnsaved);
+                            log("ignore: " + ignoreUnsaved);
                             break;
                         }
                     }
@@ -563,5 +559,9 @@ public class MainService extends Service implements Runnable {
     public IBinder onBind(Intent intent) {
         log("onBind()");
         return new MainBinder();
+    }
+
+    private void log(String data) {
+        Log.d(MainService.class.getSimpleName(), data);
     }
 }

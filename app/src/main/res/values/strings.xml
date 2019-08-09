@@ -19,10 +19,12 @@
     <string name="about_source">Source Code:</string>
     <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
     <string name="about_author">Developers:</string>
-    <string name="about_author_name" translatable="false">Daniel Dakhno</string>
-    <string name="about_author_email" translatable="false">dakhnod@gmail.com</string>
+    <string name="about_author_name1" translatable="false">Daniel Dakhno</string>
+    <string name="about_author_email1" translatable="false">dakhnod@gmail.com</string>
     <string name="about_author_name2" translatable="false">Vasu Harshvardhan</string>
     <string name="about_author_email2" translatable="false">vasu.hvardhan@gmail.com</string>
+    <string name="about_author_name3" translatable="false">Moritz Warning</string>
+    <string name="about_author_email3" translatable="false">moritzwarning@web.de</string>
     <string name="about_license">License:</string>
     <string name="about_license_version">GPL-3.0-or-later</string>
     <string name="delete">Delete</string>

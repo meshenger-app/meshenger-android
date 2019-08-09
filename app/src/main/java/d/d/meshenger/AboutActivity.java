@@ -17,6 +17,7 @@ public class AboutActivity extends MeshengerActivity {
 
         findViewById(R.id.mailAddress1).setOnClickListener(v -> sendMail1());
         findViewById(R.id.mailAddress2).setOnClickListener(v -> sendMail2());
+        findViewById(R.id.mailAddress3).setOnClickListener(v -> sendMail3());
         findViewById(R.id.licenseVersion).setOnClickListener(v -> showLicense());
 
         ((TextView) findViewById(R.id.versionTv)).setText(BuildConfig.VERSION_NAME);
@@ -30,20 +31,18 @@ public class AboutActivity extends MeshengerActivity {
     private void sendMail1(){
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:dakhnod@gmail.com"));
-        //intent.putExtra(Intent.EXTRA_EMAIL, "dakhnod@gmail.com");
-        //intent.putExtra(Intent.EXTRA_SUBJECT, "Yo, crazy app!");
-        //intent.setType("message/rfc822");
-
         startActivity(intent);
     }
 
     private void sendMail2(){
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:vasu.hvardhan@gmail.com"));
-        //intent.putExtra(Intent.EXTRA_EMAIL, "vasu.hvardhan@gmail.com");
-        //intent.putExtra(Intent.EXTRA_SUBJECT, "Hey, superb app!");
-        //intent.setType("message/rfc822");
+        startActivity(intent);
+    }
 
+    private void sendMail3(){
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:moritzwarning@web.de"));
         startActivity(intent);
     }
 }

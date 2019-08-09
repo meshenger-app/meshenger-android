@@ -101,8 +101,8 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     private String generateJson() throws JSONException {
         if (this.contact == null) {
             // export own contact
-            ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
-            Contact contact = sqlHelper.getAppData().getOwnContact();
+            Database db = new Database(this);
+            Contact contact = db.getAppData().getOwnContact();
             /*
             if (appData == null) {
                 // why?

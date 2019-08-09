@@ -34,7 +34,7 @@ import java.util.List;
 
 
 public class MainService extends Service implements Runnable {
-    private ContactSqlHelper sqlHelper;
+    private Database db;
 
     public static final int serverPort = 10001;
     private ServerSocket server;
@@ -49,7 +49,7 @@ public class MainService extends Service implements Runnable {
     public void onCreate() {
         log("onCreate()");
         super.onCreate();
-        sqlHelper = new ContactSqlHelper(this);
+        db = new Database(this);
 
         new Thread(this).start();
 
@@ -62,10 +62,10 @@ public class MainService extends Service implements Runnable {
     public void onDestroy() {
         super.onDestroy();
         log("onDestroy()");
-        String pubkeyData = sqlHelper.getAppData().getPublicKey();
-        List<Contact> contacts = sqlHelper.getContacts();
+        String pubkeyData = db.getAppData().getPublicKey();
+        List<Contact> contacts = db.getContacts();
 
-        sqlHelper.close();
+        db.close();
 
         // shutdown listening socket
         if (server != null && server.isBound() && !server.isClosed()) {
@@ -107,13 +107,13 @@ public class MainService extends Service implements Runnable {
 
     private void refreshContacts() {
         /*
-        ArrayList<Contact> contacts = (ArrayList<Contact>) sqlHelper.getContacts();
-        if (sqlHelper.getAppData() == null) {
+        ArrayList<Contact> contacts = (ArrayList<Contact>) db.getContacts();
+        if (db.getAppData() == null) {
             //userName = "Unknown";
             ignoreUnsaved = false;
         } else {
-            //userName = sqlHelper.getAppData().getUsername();
-            if (sqlHelper.getAppData().getBlockUC() == 1) {
+            //userName = db.getAppData().getUsername();
+            if (db.getAppData().getBlockUC() == 1) {
                 ignoreUnsaved = true;
             } else {
                 ignoreUnsaved = false;
@@ -158,7 +158,7 @@ public class MainService extends Service implements Runnable {
                         String offer = decrypt(encrypted, nonce);
                         this.currentCall = new RTCCall(client, this, offer);
 
-                        if (sqlHelper.getAppData().getBlockUC() && !sqlHelper.contactSaved(mac)) {
+                        if (db.getAppData().getBlockUC() && !db.contactSaved(mac)) {
                             currentCall.decline();
                             continue;
                         };
@@ -178,7 +178,7 @@ public class MainService extends Service implements Runnable {
                         String publickey = request.optString("publicKey", null);
                         setClientState(publickey, Contact.State.ONLINE);
                         JSONObject response = new JSONObject();
-                        AppData app = (new ContactSqlHelper(this)).getAppData();
+                        AppData app = (new Database(this)).getAppData();
                         response.put("publicKey", app.getPublicKey());
                         os.write((response.toString() + "\n").getBytes());
                         break;
@@ -208,9 +208,9 @@ public class MainService extends Service implements Runnable {
                             c.addConnectionData(new ConnectionData.LinkLocal(linkLocal.getString("mac_address"), 10001));
                             c.addConnectionData(new ConnectionData.Hostname(hostaddress));
                             try {
-                                sqlHelper.insertContact(c);
+                                db.insertContact(c);
                                 //contacts.add(c);
-                            } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
+                            } catch (Database.ContactAlreadyAddedException e) {
                                 // ignore
                             }
                             //JSONObject response = new JSONObject();
@@ -244,8 +244,8 @@ public class MainService extends Service implements Runnable {
 
     public String decrypt(String encrypted, byte[] nonce) throws SodiumException {
         LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
-        ArrayList<Contact> contacts = (ArrayList<Contact>) sqlHelper.getContacts();
-        String secretKey = sqlHelper.getAppData().getSecretKey();
+        ArrayList<Contact> contacts = (ArrayList<Contact>) db.getContacts();
+        String secretKey = db.getAppData().getSecretKey();
         Key secret_key = Key.fromHexString(secretKey);
         for (Contact c : contacts) {
             Key pub_key = Key.fromHexString(c.getPubKey());
@@ -259,7 +259,7 @@ public class MainService extends Service implements Runnable {
     }
 
     private void setClientState(String publickey, Contact.State state) {
-        ArrayList<Contact> contacts = (ArrayList<Contact>) sqlHelper.getContacts();
+        ArrayList<Contact> contacts = (ArrayList<Contact>) db.getContacts();
         for (Contact c : contacts) {
             if (c.matchEndpoint(publickey)) {
                 c.setState(Contact.State.ONLINE);
@@ -297,32 +297,32 @@ public class MainService extends Service implements Runnable {
         }
 
         String getPublicKey() {
-            return sqlHelper.getAppData().getPublicKey();
+            return db.getAppData().getPublicKey();
         }
 
         String getUsername() {
-            return sqlHelper.getAppData().getUsername();
+            return db.getAppData().getUsername();
         }
 
         void addContact(Contact c) {
             try {
-                sqlHelper.insertContact(c);
+                db.insertContact(c);
                 //contacts.add(c);
                 log("adding contact " + c.getPubKey() + "  " + c.getId());
 
-            } catch (ContactSqlHelper.ContactAlreadyAddedException e) {
+            } catch (Database.ContactAlreadyAddedException e) {
                 Toast.makeText(MainService.this, "Contact already added", Toast.LENGTH_SHORT).show();
             }
             new Thread(new ConnectRunnable(c)).start();
         }
 
         void deleteContact(Contact c){
-            sqlHelper.deleteContact(c);
+            db.deleteContact(c);
             refreshContacts();
         }
 
         void updateContact(Contact c){
-            sqlHelper.updateContact(c);
+            db.updateContact(c);
             refreshContacts();
         }
 
@@ -331,7 +331,7 @@ public class MainService extends Service implements Runnable {
         }
 
         public List<Contact> getContacts() {
-            return MainService.this.sqlHelper.getContacts();
+            return MainService.this.db.getContacts();
             //return MainService.this.contacts;
         }
 

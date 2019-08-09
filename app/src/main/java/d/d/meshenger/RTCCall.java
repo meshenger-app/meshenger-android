@@ -197,8 +197,8 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private String encrypt(String publicKey, String data, byte[] nonce) throws SodiumException {
-        ContactSqlHelper sqlHelper = new ContactSqlHelper(this.context);
-        String secretKey = sqlHelper.getAppData().getSecretKey();
+        Database db = new Database(this.context);
+        String secretKey = db.getAppData().getSecretKey();
         LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
         KeyPair encryptKeyPair = new KeyPair(
             Key.fromHexString(publicKey),

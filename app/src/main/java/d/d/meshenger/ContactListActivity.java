@@ -57,7 +57,7 @@ import java.util.List;
 public class ContactListActivity extends MeshengerActivity implements ServiceConnection, MainService.ContactPingListener, AdapterView.OnItemClickListener {
     private ListView contactListView;
 
-    private ContactSqlHelper sqlHelper;
+    private Database db;
     AppData appData;
 
     String publicKey;
@@ -72,7 +72,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sqlHelper = new ContactSqlHelper(this);
+        db = new Database(this);
 
         startService(new Intent(this, MainService.class));
 
@@ -169,16 +169,16 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         dialog.setPositiveButton("next", (dialogInterface, i) -> {
-            appData = sqlHelper.getAppData();
+            appData = db.getAppData();
             if (appData == null) {
-                ContactSqlHelper sqlHelper = new ContactSqlHelper(this);
+                Database db = new Database(this);
                 ConnectionData.LinkLocal linkLocal = new ConnectionData.LinkLocal(Utils.formatAddress(Utils.getMacAddress()), 10001);
                 ConnectionData.Hostname hostname = new ConnectionData.Hostname(Utils.getLinkLocalAddress());
                 ArrayList<ConnectionData> connectionData = new ArrayList<>();
                 connectionData.add(linkLocal);
                 connectionData.add(hostname);
                 AppData appData = new AppData(1, secretKey, publicKey, et.getText().toString(), "", 1, false, connectionData);
-                sqlHelper.insertAppData(appData);
+                db.insertAppData(appData);
             }
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
             Intent intent = new Intent("settings_changed");
@@ -239,7 +239,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRPresenterActivity.class)));
         fab.setOnClickListener(this::runFabAnimation);
 
-        //sqlHelper = new ContactSqlHelper(this);
+        //db = new Database(this);
         contactListView = findViewById(R.id.contactList);
 
         return true;

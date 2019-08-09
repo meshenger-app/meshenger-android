@@ -19,7 +19,7 @@ import java.util.Locale;
 
 public class SettingsActivity extends MeshengerActivity {
     private String nick;
-    private ContactSqlHelper sqlHelper;
+    private Database db;
     private AppData appData;
 
     @Override
@@ -28,14 +28,14 @@ public class SettingsActivity extends MeshengerActivity {
         setContentView(R.layout.activity_settings);
         setTitle(getResources().getString(R.string.menu_settings));
 
-        sqlHelper = new ContactSqlHelper(this);
-        appData = sqlHelper.getAppData();
+        db = new Database(this);
+        appData = db.getAppData();
 
         //if (appData == null) {
         //    new AppData();
         //}
 
-        nick = sqlHelper.getAppData().getUsername();
+        nick = db.getAppData().getUsername();
 
         findViewById(R.id.changeNickLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class SettingsActivity extends MeshengerActivity {
                 } else {
                     appData.setBlockUC(false);
                 }
-                sqlHelper.updateAppData(appData);
+                db.updateAppData(appData);
             }
             syncSettings("ignoreUnsaved", b);
         });
@@ -83,7 +83,7 @@ public class SettingsActivity extends MeshengerActivity {
                 } else {
                     appData.setMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
-                sqlHelper.updateAppData(appData);
+                db.updateAppData(appData);
             }
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -97,7 +97,7 @@ public class SettingsActivity extends MeshengerActivity {
 
         if (appData != null) {
             appData.setLanguage(locale.getDisplayLanguage());
-            sqlHelper.updateAppData(appData);
+            db.updateAppData(appData);
         }
 
         Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.GERMAN};
@@ -145,7 +145,7 @@ public class SettingsActivity extends MeshengerActivity {
                 nick = et.getText().toString();
                 if (appData != null) {
                     appData.setUsername(nick);
-                    sqlHelper.updateAppData(appData);
+                    db.updateAppData(appData);
                 }
                 syncSettings("username", nick);
                 initViews();

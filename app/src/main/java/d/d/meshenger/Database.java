@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-class ContactSqlHelper extends SQLiteOpenHelper {
+class Database extends SQLiteOpenHelper {
     private Context context;
     private SQLiteDatabase database = null;
 
@@ -35,7 +35,7 @@ class ContactSqlHelper extends SQLiteOpenHelper {
     private final String columnLanguage = "language";
     private final String columnListData = "listData";
 
-    public ContactSqlHelper(Context context) {
+    public Database(Context context) {
         super(context, "Contacts.db", null, 2);
         this.context = context;
         createDatabase();

@@ -18,6 +18,7 @@
     <string name="about_source">Quellcode:</string>
     <string name="about_author">Entwickler:</string>
     <string name="about_license">Lizenz:</string>
+    <string name="about_license_version">GPL-3.0-or-later</string>
     <string name="delete">Löschen</string>
     <string name="rename">Umbenennen</string>
     <string name="share">Teilen</string>
@@ -33,7 +34,7 @@
     <string name="settings_nightmode">Dunkler Modus</string>
     <string name="about_version">App Ausführung:</string>
     <string name="about_info">App Info:</string>
-    <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. in Community-Netzwerken oder sogar in Unternehmensnetzwerken.</string>
+    <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
 
 
 </resources>

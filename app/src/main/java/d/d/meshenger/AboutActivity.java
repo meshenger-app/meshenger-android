@@ -21,28 +21,20 @@ public class AboutActivity extends MeshengerActivity {
         setContentView(R.layout.activity_about);
 
         setTitle(getResources().getString(R.string.menu_about));
-        new Thread(() -> {
-            try {
-                StringBuffer buffer = new StringBuffer();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(getAssets().open("license.txt")));
-                String line;
-                while((line = reader.readLine()) != null) buffer.append(line + "\n");
-                reader.close();
-                runOnUiThread(() ->{
-                    findViewById(R.id.licenseLoadingBar).setVisibility(View.GONE);
-                    ((TextView)findViewById(R.id.licenceText)).setText(buffer.toString());
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        findViewById(R.id.mailText).setOnClickListener(v -> sendMail());
-        findViewById(R.id.mailText2).setOnClickListener(v -> sendMail2());
+
+        findViewById(R.id.mailAddress1).setOnClickListener(v -> sendMail1());
+        findViewById(R.id.mailAddress2).setOnClickListener(v -> sendMail2());
+        findViewById(R.id.licenseVersion).setOnClickListener(v -> showLicense());
 
         ((TextView) findViewById(R.id.versionTv)).setText(BuildConfig.VERSION_NAME);
     }
 
-    public void sendMail(){
+    private void showLicense(){
+        Intent intent = new Intent(this, LicenseActivity.class);
+        startActivity(intent);
+    }
+
+    private void sendMail1(){
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:dakhnod@gmail.com"));
         //intent.putExtra(Intent.EXTRA_EMAIL, "dakhnod@gmail.com");
@@ -52,7 +44,7 @@ public class AboutActivity extends MeshengerActivity {
         startActivity(intent);
     }
 
-    public void sendMail2(){
+    private void sendMail2(){
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:vasu.hvardhan@gmail.com"));
         //intent.putExtra(Intent.EXTRA_EMAIL, "vasu.hvardhan@gmail.com");

@@ -55,6 +55,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".LicenseActivity"></activity>
     </application>
 
 </manifest>

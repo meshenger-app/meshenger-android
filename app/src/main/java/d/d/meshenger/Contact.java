@@ -159,7 +159,7 @@ public class Contact implements Serializable {
                 c.addConnectionData(
                     new ConnectionData.LinkLocal(
                         item.getString("mac_address"),
-                        10001
+                        MainService.serverPort
                     )
                 );
             } else if (type.equals("SignalingServer")) {

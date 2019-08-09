@@ -172,7 +172,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             appData = db.getAppData();
             if (appData == null) {
                 Database db = new Database(this);
-                ConnectionData.LinkLocal linkLocal = new ConnectionData.LinkLocal(Utils.formatAddress(Utils.getMacAddress()), 10001);
+                ConnectionData.LinkLocal linkLocal = new ConnectionData.LinkLocal(Utils.formatAddress(Utils.getMacAddress()), MainService.serverPort);
                 ConnectionData.Hostname hostname = new ConnectionData.Hostname(Utils.getLinkLocalAddress());
                 ArrayList<ConnectionData> connectionData = new ArrayList<>();
                 connectionData.add(linkLocal);

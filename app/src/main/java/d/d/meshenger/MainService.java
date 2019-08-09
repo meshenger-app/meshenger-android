@@ -205,7 +205,7 @@ public class MainService extends Service implements Runnable {
                                     linkLocal = connectionData.getJSONObject(i);
                                 }
                             }
-                            c.addConnectionData(new ConnectionData.LinkLocal(linkLocal.getString("mac_address"), 10001));
+                            c.addConnectionData(new ConnectionData.LinkLocal(linkLocal.getString("mac_address"), MainService.serverPort));
                             c.addConnectionData(new ConnectionData.Hostname(hostaddress));
                             try {
                                 db.insertContact(c);

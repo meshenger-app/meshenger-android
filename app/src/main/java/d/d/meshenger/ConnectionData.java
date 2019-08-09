@@ -31,7 +31,7 @@ public interface ConnectionData extends Serializable {
 
             // set default port
             if (uri.getPort() == -1) {
-                port = 10001;
+                port = MainService.serverPort;
             }
 
             if (uri.getHost() == null) {
@@ -74,7 +74,7 @@ public interface ConnectionData extends Serializable {
                     + "%zone";
 //This line is broken. Please look at the other place where the "fe80:.." is constructed.
  //use addressToEUI64() here
-            return new Socket(address, 10001);
+            return new Socket(address, MainService.serverPort);
         }
 
         public JSONObject toJsonObject() throws JSONException {

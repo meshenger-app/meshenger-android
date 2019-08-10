@@ -36,6 +36,5 @@ The development can be followed via the [Freifunk blog](https://blog.freifunk.ne
 
 ## Ideas/Future Plans
 
-* contact authentication via public key
 * optional global connection via Internet in case no local connection is available
 * optional direct connection via WiFi-Direct in case no AccessPoint is available

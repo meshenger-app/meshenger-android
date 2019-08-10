@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/changeNickLayout"
+                android:id="@+id/changeNameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -25,12 +25,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_change_nick"
+                    android:text="@string/settings_change_name"
                     android:textColor="?attr/primaryTextColor"
                     android:textSize="25dp" />
 
                 <TextView
-                    android:id="@+id/nickTv"
+                    android:id="@+id/nameTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/secondaryTextColor"
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp" />
 
             </RelativeLayout>
 
@@ -105,6 +105,50 @@
                     android:textColor="?attr/secondaryTextColor"  />
 
             </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/changeAddressLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_change_address"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="25dp" />
+
+                <TextView
+                    android:id="@+id/addressTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/changePasswordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_change_password"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="25dp" />
+
+                <TextView
+                    android:id="@+id/passwordTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

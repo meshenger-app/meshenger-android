@@ -1,3 +1,4 @@
 * add encrypted communication
+* add encrypted database
 * fix crash when dark mode is enabled 
 * screen does not turn off during calls anymore

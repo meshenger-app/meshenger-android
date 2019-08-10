@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="d.d.meshenger">
 
+    <!-- Backup Import/Export -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -55,6 +59,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".BackupActivity"></activity>
         <activity android:name=".LicenseActivity"></activity>
     </application>
 

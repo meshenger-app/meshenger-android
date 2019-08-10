@@ -8,8 +8,8 @@ android {
         applicationId "d.d.meshenger"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 200
+        versionName "2.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -38,7 +38,7 @@ dependencies {
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.2.0'
     implementation 'org.webrtc:google-webrtc:1.0.24064'
-    implementation "com.goterl.lazycode:lazysodium-android:3.6.3@aar"
-    implementation "net.java.dev.jna:jna:4.5.2@aar"
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.goterl.lazycode:lazysodium-android:3.6.3@aar'
+    implementation 'net.java.dev.jna:jna:4.5.2@aar'
+    implementation 'com.github.isabsent:filepicker:1.1.01'
 }

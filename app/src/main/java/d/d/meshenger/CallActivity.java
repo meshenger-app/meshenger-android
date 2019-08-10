@@ -72,9 +72,9 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         statusTextView = findViewById(R.id.callStatus);
         nameTextView = findViewById(R.id.callName);
 
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Bundle extras = intent.getExtras();
+        String action = getIntent().getAction();
+        Contact contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
+
         if ("ACTION_START_CALL".equals(action)) {
             log("starting call...");
             connection = new ServiceConnection() {
@@ -82,19 +82,17 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     binder = (MainService.MainBinder) iBinder;
                     currentCall = binder.startCall(
-                        (Contact) extras.get("EXTRA_CONTACT"),
-                        activeCallback,
-                        findViewById(R.id.localRenderer)
+                        contact, activeCallback, findViewById(R.id.localRenderer)
                     );
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName componentName) {
-                    // Nothing to do
+                    // nothing to do
                 }
             };
-            nameTextView.setText(((Contact) extras.get("EXTRA_CONTACT")).getName());
+            nameTextView.setText(contact.getName());
             bindService(new Intent(this, MainService.class), connection, 0);
             findViewById(R.id.callDecline).setOnClickListener(this);
             startSensor();
@@ -106,7 +104,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             passiveWakeLock.acquire(10000);
             connection = this;
             bindService(new Intent(this, MainService.class), this, 0);
-            nameTextView.setText(intent.getStringExtra("EXTRA_USERNAME"));
+            nameTextView.setText(contact.getName());
             findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
             ringPhone();
 
@@ -196,8 +194,8 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     }
 
     private void switchVideoEnabled(ImageButton button){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+        if (!Utils.hasCameraPermission(this)) {
+            Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE);
             permissionRequested = true;
             return;
         }
@@ -297,7 +295,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        log("state: " + currentCall.state);
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(declineReceiver);
         stopRingPhone();
         if (currentCall.state == RTCCall.CallState.CONNECTED) {
@@ -308,7 +306,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         if (binder != null) {
             unbindService(connection);
         }
-        log("unregistering sensor");
+
         //if (sensorManager != null)
         //    log("unregistering sensor2");
         //    sensorManager.unregisterListener(this);
@@ -395,7 +393,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         this.binder = (MainService.MainBinder) iBinder;
-        this.currentCall = binder.getCurrentCall();
+        this.currentCall = this.binder.getCurrentCall();
     }
 
     @Override

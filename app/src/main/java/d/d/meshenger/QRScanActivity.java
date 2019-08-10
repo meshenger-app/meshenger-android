@@ -25,6 +25,7 @@ import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,8 +43,8 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         setContentView(R.layout.activity_qrscan);
         setTitle(getString(R.string.scan_invited));
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+        if (!Utils.hasCameraPermission(this)) {
+            Utils.requestCameraPermission(this, 1);
         } else {
             bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
         }
@@ -64,7 +65,10 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         b.setTitle(R.string.paste_invitation)
                 .setPositiveButton("ok", (dialogInterface, i) -> {
                     try {
-                        handleJson(et.getText().toString());
+                        String data = et.getText().toString();
+                        JSONObject object = new JSONObject(data);
+                        Contact contact = Contact.importJSON(object);
+                        binder.addContact(contact);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
@@ -90,10 +94,11 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     @Override
     public void barcodeResult(BarcodeResult result) {
-        //Toast.makeText(this, result.getText(), 0).show();
-        String json = result.getText();
+        String data = result.getText();
         try {
-            handleJson(json);
+            JSONObject object = new JSONObject(data);
+            Contact contact = Contact.importJSON(object);
+            binder.addContact(contact);
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(this, R.string.invalid_qr, Toast.LENGTH_LONG).show();
@@ -102,28 +107,9 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         finish();
     }
 
-    private void handleJson(String json) throws JSONException{
-        Contact contact = Contact.importJSON(json);
-        binder.addContact(contact);
-    }
-
-    /*
-    private void handleJson(String json) throws JSONException{
-        JSONObject object = new JSONObject(json);
-
-        binder.addContact(new Contact(
-                object.getString("address"),
-                object.getString("username"),
-                "",
-                object.getString("publicKey"),
-                object.getString("identifier")
-        ), object.getString("challenge"));
-    }
-    */
-
     @Override
     public void possibleResultPoints(List<ResultPoint> resultPoints) {
-
+        // ignore
     }
 
     @Override
@@ -144,7 +130,6 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        log("onServiceConnected " + (iBinder == null));
         this.binder = (MainService.MainBinder) iBinder;
 
         barcodeView = findViewById(R.id.barcodeScannerView);
@@ -158,7 +143,6 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        log("onServiceDisconnected");
         binder = null;
     }
 

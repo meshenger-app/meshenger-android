@@ -10,14 +10,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
-import com.goterl.lazycode.lazysodium.SodiumAndroid;
-import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
-import com.goterl.lazycode.lazysodium.interfaces.Box;
-import com.goterl.lazycode.lazysodium.interfaces.SecretBox;
-import com.goterl.lazycode.lazysodium.utils.Key;
-import com.goterl.lazycode.lazysodium.utils.KeyPair;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
@@ -32,31 +24,26 @@ import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceViewRenderer;
-import org.webrtc.VideoCapturer;
+//import org.webrtc.VideoCapturer;
 import org.webrtc.VideoTrack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 
 public class RTCCall implements DataChannel.Observer {
-
     enum CallState { CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR }
 
     private final String StateChangeMessage = "StateChange";
     private final String CameraDisabledMessage = "CameraDisabled";
     private final String CameraEnabledMessage = "CameraEnabled";
 
-    private OnStateChangeListener listener;
-
-    Socket commSocket;
     private PeerConnectionFactory factory;
     private PeerConnection connection;
 
@@ -76,24 +63,39 @@ public class RTCCall implements DataChannel.Observer {
     private boolean videoEnabled;
 
     private Context context;
+    private Contact contact;
+    private String secretKey;
+    private OnStateChangeListener listener;
 
     public CallState state;
+    public Socket commSocket;
 
-    static public RTCCall startCall(Contact target, OnStateChangeListener listener, Context context) {
-        return new RTCCall(target, listener, context);
+    static public RTCCall startCall(Context context, Contact contact, OnStateChangeListener listener) {
+        return new RTCCall(context, contact, listener);
     }
 
-    public RTCCall(Socket commSocket, Context context, String offer) {
+    // called for incoming calls
+    public RTCCall(Context context, Contact contact, Socket commSocket, String offer) {
+        this.context = context;
+        this.contact = contact;
         this.commSocket = commSocket;
-        this.context = context;
-        initRTC(context);
+        this.listener = null;
+        this.secretKey = (new Database()).settings.getSecretKey();
         this.offer = offer;
+
+        initRTC(context);
     }
 
-    private RTCCall(Contact contact, OnStateChangeListener listener, Context context) {
-        log("starting call to " + contact.getPubKey());
-        initRTC(context);
+    // called for outgoing calls
+    private RTCCall(Context context, Contact contact, OnStateChangeListener listener) {
+        log("starting call to " + contact.getName());
         this.context = context;
+        this.contact = contact;
+        this.commSocket = null;
+        this.listener = listener;
+        this.secretKey = (new Database()).settings.getSecretKey();
+
+        initRTC(context);
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             context.setTheme(R.style.AppTheme_Dark);
@@ -102,7 +104,6 @@ public class RTCCall implements DataChannel.Observer {
         }
 
         log("init RTC done");
-        this.listener = listener;
         new Thread(() -> {
             log("creating PeerConnection");
             connection = factory.createPeerConnection(Collections.emptyList(), new DefaultObserver() {
@@ -112,50 +113,63 @@ public class RTCCall implements DataChannel.Observer {
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
-                            LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
-                            byte[] nonce = ls.nonce(Box.NONCEBYTES);
+                            Utils.printAddresses();
+
                             commSocket = contact.createSocket();
-                            // this.commSocket = new Socket(contact.getAddress().replace("%zone", "%wlan0"), MainService.serverPort);
-                            reportStateChange(CallState.CONNECTING);
 
-                            String offer = connection.getLocalDescription().description;
-                            String publicKey = contact.pubKey;
-
-                            JSONObject object = new JSONObject();
-                            object.put("action", "call");
-                            object.put("publicKey", publicKey);
-                            object.put("nonce", Utils.byteArrayToHexString(nonce));
-                            object.put("offer", encrypt(publicKey, offer, nonce));
-
-                            OutputStream os = commSocket.getOutputStream();
-                            os.write((object.toString() + "\n").getBytes());
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
-                            String response = reader.readLine();
-                            JSONObject responseObject = new JSONObject(response);
-                            if (!responseObject.getString("action").equals("ringing")) {
-                                commSocket.close();
+                            if (commSocket == null) {
                                 reportStateChange(CallState.ERROR);
                                 return;
                             }
-                            log("ringing...");
-                            reportStateChange(CallState.RINGING);
-                            response = reader.readLine();
-                            responseObject = new JSONObject(response);
 
-                            if (responseObject.getString("action").equals("connected")) {
-                                log("connected");
-                                reportStateChange(CallState.CONNECTED);
-                                log("answer: " + responseObject.getString("answer"));
-                                handleAnswer(responseObject.getString("answer"));
-                            } else if (responseObject.getString("action").equals("dismissed")) {
-                                reportStateChange(CallState.DISMISSED);
-                                commSocket.close();
-                            } else {
-                                reportStateChange(CallState.ERROR);
-                                commSocket.close();
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(commSocket.getInputStream()));
+                            reportStateChange(CallState.CONNECTING);
+
+                            {
+                                JSONObject obj = new JSONObject();
+                                obj.put("action", "call");
+                                obj.put("offer", connection.getLocalDescription().description);
+                                String encrypted = Crypto.encrypt(obj.toString(), contact.getPublicKey(), secretKey);
+                                OutputStream os = commSocket.getOutputStream();
+                                os.write(encrypted.getBytes());
+                            }
+
+                            {
+                                String response = reader.readLine();
+                                String decrypted = Crypto.decrypt(response, contact.getPublicKey(), secretKey);
+                                JSONObject obj = new JSONObject(decrypted);
+                                if (!obj.optString("action", "").equals("ringing")) {
+                                    commSocket.close();
+                                    reportStateChange(CallState.ERROR);
+                                    return;
+                                }
+                                log("ringing...");
+                                reportStateChange(CallState.RINGING);
+                            }
+
+                            {
+                                String response = reader.readLine();
+                                String decrypted = Crypto.decrypt(response, contact.getPublicKey(), secretKey);
+                                JSONObject obj = new JSONObject(decrypted);
+                                String action = obj.optString("action", "");
+
+                                if (action.equals("connected")) {
+                                    log("connected");
+                                    reportStateChange(CallState.CONNECTED);
+                                    handleAnswer(obj.getString("answer"));
+                                } else if (action.equals("dismissed")) {
+                                    log("dismissed");
+                                    reportStateChange(CallState.DISMISSED);
+                                    closeCommSocket();
+                                } else {
+                                    log("unknown action reply: " + action);
+                                    reportStateChange(CallState.ERROR);
+                                    closeCommSocket();
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            closeCommSocket();
                             reportStateChange(CallState.ERROR);
                         }
                     }
@@ -198,19 +212,30 @@ public class RTCCall implements DataChannel.Observer {
         }).start();
     }
 
-    public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
-        this.remoteRenderer = remoteRenderer;
+    private void closeCommSocket() {
+        if (this.commSocket != null) {
+            try {
+                this.commSocket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            this.commSocket = null;
+        }
     }
 
-    private String encrypt(String publicKey, String data, byte[] nonce) throws SodiumException {
-        Database db = new Database(this.context);
-        String secretKey = db.getAppData().getSecretKey();
-        LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
-        KeyPair encryptKeyPair = new KeyPair(
-            Key.fromHexString(publicKey),
-            Key.fromHexString(secretKey)
-        );
-        return ls.cryptoBoxEasy(data, nonce, encryptKeyPair);
+    private void closePeerConnection() {
+        if (this.connection != null) {
+            try {
+                this.connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            this.connection = null;
+        }
+    }
+
+    public void setRemoteRenderer(SurfaceViewRenderer remoteRenderer) {
+        this.remoteRenderer = remoteRenderer;
     }
 
     public void switchFrontFacing() {
@@ -325,6 +350,7 @@ public class RTCCall implements DataChannel.Observer {
         }
         if (this.remoteRenderer != null)
             this.remoteRenderer.release();
+
         if (this.localRenderer != null)
             this.localRenderer.release();
     }
@@ -402,12 +428,14 @@ public class RTCCall implements DataChannel.Observer {
                 public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
                     super.onIceGatheringChange(iceGatheringState);
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
-                        log("transferring answer");
+                        log("onIceGatheringChange");
                         try {
-                            JSONObject o = new JSONObject();
-                            o.put("action", "connected");
-                            o.put("answer", connection.getLocalDescription().description);
-                            commSocket.getOutputStream().write((o.toString() + "\n").getBytes());
+                            OutputStream os = commSocket.getOutputStream();
+                            JSONObject obj = new JSONObject();
+                            obj.put("action", "connected");
+                            obj.put("answer", connection.getLocalDescription().description);
+                            String encrypted = Crypto.encrypt(obj.toString(), contact.getPublicKey(), secretKey);
+                            os.write(encrypted.getBytes());
                             reportStateChange(CallState.CONNECTED);
                             //new Thread(new SpeakerRunnable(commSocket)).start();
                         } catch (Exception e) {
@@ -419,7 +447,7 @@ public class RTCCall implements DataChannel.Observer {
 
                 @Override
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-                    log("change");
+                    log("onIceConnectionChange");
                     super.onIceConnectionChange(iceConnectionState);
                     if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED);
@@ -432,7 +460,6 @@ public class RTCCall implements DataChannel.Observer {
                     super.onAddStream(mediaStream);
                     handleMediaStream(mediaStream);
                 }
-
 
                 @Override
                 public void onDataChannel(DataChannel dataChannel) {
@@ -474,31 +501,27 @@ public class RTCCall implements DataChannel.Observer {
         new Thread(() -> {
             try {
                 log("declining...");
-                commSocket.getOutputStream().write("{\"action\":\"dismissed\"}\n".getBytes());
-                commSocket.getOutputStream().flush();
+                OutputStream os = commSocket.getOutputStream();
+                String encrypted = Crypto.encrypt("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.secretKey);
+                os.write(encrypted.getBytes());
+                os.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
-    public void cleanup(){
+    public void cleanup() {
+        closeCommSocket();
+
         if (this.upStream != null && state == CallState.CONNECTED) {
             /*for(AudioTrack track : this.upStream.audioTracks){
                 track.setEnabled(false);
                 track.dispose();
             }
             for(VideoTrack track : this.upStream.videoTracks) track.dispose();*/
-            if (this.connection != null) this.connection.close();
+            closePeerConnection();
             //factory.dispose();
-        }
-
-        if (commSocket != null) {
-            try {
-                commSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -506,13 +529,15 @@ public class RTCCall implements DataChannel.Observer {
         new Thread(() -> {
             try {
                 if (commSocket != null) {
-                    commSocket.getOutputStream().write("{\"action\":\"dismissed\"}\n".getBytes());
-                    commSocket.close();
+                    OutputStream os = commSocket.getOutputStream();
+                    String encrypted = Crypto.encrypt("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.secretKey);
+                    os.write(encrypted.getBytes());
+                    os.flush();
                 }
 
-                if (connection != null) {
-                    connection.close();
-                }
+                closeCommSocket();
+                closePeerConnection();
+
                 reportStateChange(CallState.ENDED);
             } catch (IOException e) {
                 e.printStackTrace();

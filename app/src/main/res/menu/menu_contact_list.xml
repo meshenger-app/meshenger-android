@@ -9,6 +9,11 @@
         android:title="@string/menu_settings"/>
 
     <item
+        android:id="@+id/action_backup"
+        app:showAsAction="never"
+        android:title="@string/menu_backup"/>
+
+    <item
         android:id="@+id/action_about"
         app:showAsAction="never"
         android:title="@string/menu_about"/>

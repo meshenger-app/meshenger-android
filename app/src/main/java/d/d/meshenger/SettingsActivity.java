@@ -1,11 +1,18 @@
 package d.d.meshenger;
 
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -13,81 +20,135 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 
-public class SettingsActivity extends MeshengerActivity {
-    private String nick;
-    private Database db;
-    private AppData appData;
+public class SettingsActivity extends MeshengerActivity implements ServiceConnection {
+    private MainService.MainBinder binder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_settings);
         setTitle(getResources().getString(R.string.menu_settings));
 
-        db = new Database(this);
-        appData = db.getAppData();
+        bindService();
+        initViews();
+    }
 
-        //if (appData == null) {
-        //    new AppData();
-        //}
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (this.binder != null) {
+            unbindService(this);
+        }
+    }
 
-        nick = db.getAppData().getUsername();
+    private void bindService() {
+        // ask MainService to get us the binder object
+        Intent serviceIntent = new Intent(this, MainService.class);
+        bindService(serviceIntent, this, Service.BIND_AUTO_CREATE);
+    }
 
-        findViewById(R.id.changeNickLayout).setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        log("onServiceConnected");
+        this.binder = (MainService.MainBinder) iBinder;
+        initViews();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+        log("onServiceDisconnected");
+        this.binder = null;
+    }
+
+    private void initViews() {
+        log("initViews");
+
+        if (this.binder == null) {
+            log("this.binder is null");
+            return;
+        }
+
+        findViewById(R.id.changeNameLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeNick();
+                showChangeNameDialog();
             }
         });
 
-        CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
-        if (appData != null && !appData.getBlockUC()) {
-            ignoreCB.setChecked(false);
-        } else if (appData != null && appData.getBlockUC()) {
-            ignoreCB.setChecked(true);
-        } else {
-            ignoreCB.setChecked(false);
-        }
-
-        ignoreCB.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (appData != null) {
-                if (b) {
-                    appData.setBlockUC(true);
-                } else {
-                    appData.setBlockUC(false);
-                }
-                db.updateAppData(appData);
+        findViewById(R.id.changeAddressLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showChangeAddressDialog();
             }
-            syncSettings("ignoreUnsaved", b);
+        });
+
+        findViewById(R.id.changePasswordLayout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showChangePasswordDialog();
+            }
+        });
+
+        String username = this.binder.getSettings().getUsername();
+        ((TextView) findViewById(R.id.nameTv)).setText(
+            username.length() == 0 ? "None" : username
+        );
+
+        ArrayList<String> addresses = this.binder.getSettings().getAddresses();
+        ((TextView) findViewById(R.id.addressTv)).setText(
+            addresses.size() == 0 ? "None" : Utils.join(addresses)
+        );
+
+        String password = this.binder.getDatabasePassword();
+        ((TextView) findViewById(R.id.passwordTv)).setText(
+            password.isEmpty() ? "None" : "********"
+        );
+
+        CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
+        ignoreCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            this.binder.getSettings().setBlockUnknown(isChecked);
+            //this.db.updateSettings(settings);
+
+            syncSettings("ignoreUnsaved", isChecked);
         });
 
         CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
-        if (appData != null && appData.getMode() == 1) {
-            nightMode.setChecked(false);
-        } else if (appData != null && appData.getMode() == 2) {
-            nightMode.setChecked(true);
-        } else {
-            nightMode.setChecked(false);
-        }
-
         nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
-        nightMode.setOnCheckedChangeListener((compoundButton, b) -> {
-            AppCompatDelegate.setDefaultNightMode(compoundButton.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            if (appData != null) {
-                if (compoundButton.isChecked()) {
-                    appData.setMode(AppCompatDelegate.MODE_NIGHT_YES);
-                } else {
-                    appData.setMode(AppCompatDelegate.MODE_NIGHT_NO);
-                }
-                db.updateAppData(appData);
-            }
+        nightMode.setOnCheckedChangeListener((nightModeCheckBox, b) -> {
+            int mode = nightModeCheckBox.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+            AppCompatDelegate.setDefaultNightMode(mode);
+            this.binder.getSettings().setMode(mode);
+            //this.db.updateSettings(this.settings);
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
+
+        getLocale();
+    }
+
+    private ArrayList<String> getInvalidAddresses(ArrayList<String> addresses) {
+        ArrayList<String> invalid_addresses = new ArrayList<>();
+
+        for (String address : addresses) {
+            try {
+                if (Utils.isMAC(address)) {
+                    // ok - ignore
+                } else {
+                    Utils.parseInetSocketAddress(address, MainService.serverPort);
+                }
+            } catch (Exception e) {
+                invalid_addresses.add(address);
+            }
+        }
+
+        return invalid_addresses;
     }
 
     private void getLocale() {
@@ -95,10 +156,7 @@ public class SettingsActivity extends MeshengerActivity {
         Locale locale = config.locale;
         ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
 
-        if (appData != null) {
-            appData.setLanguage(locale.getDisplayLanguage());
-            db.updateAppData(appData);
-        }
+        this.binder.getSettings().setLanguage(locale.getDisplayLanguage());
 
         Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.GERMAN};
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
@@ -119,7 +177,7 @@ public class SettingsActivity extends MeshengerActivity {
             builder.setView(group);
             AlertDialog dialog = builder.show();
             group.setOnCheckedChangeListener((a, position) -> {
-                Log.d("Settings", "changed locale to " + locales[position].getLanguage());
+                log("changed locale to " + locales[position].getLanguage());
 
                 Configuration config1 = new Configuration();
                 config1.locale = locales[position];
@@ -134,24 +192,66 @@ public class SettingsActivity extends MeshengerActivity {
         });
     }
 
-    private void changeNick() {
+    private void showChangeNameDialog() {
+        String username = this.binder.getSettings().getUsername();
         EditText et = new EditText(this);
-        et.setText(nick);
-        et.setSelection(nick.length());
+        et.setText(username);
+        et.setSelection(username.length());
         new AlertDialog.Builder(this)
-            .setTitle(getResources().getString(R.string.settings_change_nick))
+            .setTitle(getResources().getString(R.string.settings_change_name))
             .setView(et)
             .setPositiveButton("ok", (dialogInterface, i) -> {
-                nick = et.getText().toString();
-                if (appData != null) {
-                    appData.setUsername(nick);
-                    db.updateAppData(appData);
-                }
-                syncSettings("username", nick);
+                String new_username = et.getText().toString();
+                this.binder.getSettings().setUsername(new_username);
+                syncSettings("username", new_username);
                 initViews();
             })
             .setNegativeButton(getResources().getText(R.string.cancel), null)
             .show();
+    }
+
+    private void showChangeAddressDialog() {
+        String addresses_string = Utils.join(this.binder.getSettings().getAddresses());
+        EditText et = new EditText(this);
+        et.setText(addresses_string);
+        et.setSelection(addresses_string.length());
+        new AlertDialog.Builder(this)
+                .setTitle(getResources().getString(R.string.settings_change_address))
+                .setView(et)
+                .setPositiveButton("ok", (dialogInterface, i) -> {
+                    ArrayList<String> new_addresses = Utils.split(et.getText().toString());
+                    ArrayList<String> invalid_addresses = getInvalidAddresses(new_addresses);
+                    if (invalid_addresses.isEmpty()) {
+                        this.binder.getSettings().setAddresses(new_addresses);
+                        syncSettings("address", Utils.join(new_addresses)); //needed?
+                    } else {
+                        // show invalid addresses
+                        for (String address : invalid_addresses) {
+                            Toast.makeText(this, getResources().getString(R.string.invalid_address) + ": " + address, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    initViews();
+                })
+                .setNegativeButton(getResources().getText(R.string.cancel), null)
+                .show();
+    }
+
+    private void showChangePasswordDialog() {
+        String password = this.binder.getDatabasePassword();
+        EditText et = new EditText(this);
+        et.setText(password);
+        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        et.setSelection(password.length());
+        new AlertDialog.Builder(this)
+                .setTitle(getResources().getString(R.string.settings_change_password))
+                .setView(et)
+                .setPositiveButton("ok", (dialogInterface, i) -> {
+                    String new_password = et.getText().toString();
+                    this.binder.setDatabasePassword(new_password);
+                    initViews();
+                })
+                .setNegativeButton(getResources().getText(R.string.cancel), null)
+                .show();
     }
 
     private void syncSettings(String what, boolean content) {
@@ -179,18 +279,15 @@ public class SettingsActivity extends MeshengerActivity {
         super.onBackPressed();
 
         Intent intent1 = new Intent("refresh");
-        // You can also include some extra data.
-        intent1.putExtra("message", "This is my message!");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
 
-        Intent intent = new Intent(SettingsActivity.this, ContactListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent intent2 = new Intent(SettingsActivity.this, ContactListActivity.class);
+        intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        startActivity(intent);
+        startActivity(intent2);
     }
 
-    private void initViews(){
-        ((TextView) findViewById(R.id.nickTv)).setText(nick);
-        getLocale();
+    private void log(String s) {
+        Log.d(SettingsActivity.class.getSimpleName(), s);
     }
 }

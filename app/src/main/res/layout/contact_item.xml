@@ -25,15 +25,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/contact_item_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="italic"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="17dp"
-            android:paddingStart="10dp"/>
-
     </LinearLayout>
 
     <ProgressBar

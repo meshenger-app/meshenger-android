@@ -25,9 +25,9 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
 
     private LayoutInflater inflater;
 
-    public ContactListAdapter(@NonNull Context context, int resource, @NonNull List<Contact> objects) {
-        super(context, resource, objects);
-        this.contacts = objects;
+    public ContactListAdapter(@NonNull Context context, int resource, @NonNull List<Contact> contacts) {
+        super(context, resource, contacts);
+        this.contacts = contacts;
         this.context = context;
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -36,41 +36,41 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Contact c = contacts.get(position);
+        Contact contact = contacts.get(position);
+
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.contact_item, null);
         }
 
-        ((TextView) convertView.findViewById(R.id.contact_item_name)).setText(c.getName());
-        ((TextView) convertView.findViewById(R.id.contact_item_info)).setText(c.getInfo());
+        ((TextView) convertView.findViewById(R.id.contact_item_name)).setText(contact.getName());
 
-        if (c.getState() != Contact.State.PENDING) {
-            log(c.getName() + " online");
+        if (contact.getState() != Contact.State.PENDING) {
             convertView.findViewById(R.id.contact_item_waiting).setVisibility(View.GONE);
             ImageView state = convertView.findViewById(R.id.contact_item_state);
             state.setVisibility(View.VISIBLE);
             Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             Paint p = new Paint();
-            p.setColor(c.getState() == Contact.State.ONLINE ? Color.GREEN : 0xFFEC3E3E);
+            if (contact.getState() == Contact.State.ONLINE) {
+                p.setColor(Color.GREEN);
+            } else {
+                p.setColor(0xFFEC3E3E);
+            }
             canvas.drawCircle(100, 100, 100, p);
             state.setImageBitmap(bitmap);
-        } else {
-            log(c.getName() + " offline");
         }
-
-        if (c.recent) {
-            c.recent = false;
+/*
+        if (contact.recent) {
+            contact.recent = false;
             ScaleAnimation anim = new ScaleAnimation(0f, 1f, 0f, 1f);
             anim.setDuration(1000);
             convertView.setAnimation(anim);
         }
-
+*/
         return convertView;
     }
 
     private void log(String s) {
         Log.d(ContactListAdapter.class.getSimpleName(), s);
     }
-
 }

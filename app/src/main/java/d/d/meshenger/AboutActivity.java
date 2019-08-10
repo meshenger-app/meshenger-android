@@ -20,27 +20,28 @@ public class AboutActivity extends MeshengerActivity {
         findViewById(R.id.mailAddress3).setOnClickListener(v -> sendMail3());
         findViewById(R.id.licenseVersion).setOnClickListener(v -> showLicense());
 
+        //TODO: use Database.version, VERSION_NAME is null when not build via VS..
         ((TextView) findViewById(R.id.versionTv)).setText(BuildConfig.VERSION_NAME);
     }
 
-    private void showLicense(){
+    private void showLicense() {
         Intent intent = new Intent(this, LicenseActivity.class);
         startActivity(intent);
     }
 
-    private void sendMail1(){
+    private void sendMail1() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:dakhnod@gmail.com"));
         startActivity(intent);
     }
 
-    private void sendMail2(){
+    private void sendMail2() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:vasu.hvardhan@gmail.com"));
         startActivity(intent);
     }
 
-    private void sendMail3(){
+    private void sendMail3() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:moritzwarning@web.de"));
         startActivity(intent);

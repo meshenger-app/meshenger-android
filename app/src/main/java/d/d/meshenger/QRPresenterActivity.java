@@ -27,10 +27,10 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import org.json.JSONException;
 
 
-public class QRPresenterActivity extends MeshengerActivity implements ServiceConnection{
+public class QRPresenterActivity extends MeshengerActivity implements ServiceConnection {
     private Contact contact = null;
     private MainService.MainBinder binder;
-    private String json;
+    private String data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +55,9 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
             finish();
         });
 
-
         findViewById(R.id.fabShare).setOnClickListener(view -> {
             Intent i = new Intent(Intent.ACTION_SEND);
-            i.putExtra(Intent.EXTRA_TEXT, json);
+            i.putExtra(Intent.EXTRA_TEXT, data);
             i.setType("text/plain");
             startActivity(i);
             finish();
@@ -70,50 +69,36 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (binder != null) {
+        if (this.binder != null) {
             unbindService(this);
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
-    private void bindService(){
+    private void bindService() {
         Intent serviceIntent = new Intent(this, MainService.class);
         bindService(serviceIntent, this, Service.BIND_AUTO_CREATE);
     }
 
     private void generateQR() throws Exception {
-        json = generateJson();
-
-        log("generated: " + json);
+        if (this.contact == null) {
+            // export own contact
+            Contact contact = this.binder.getSettings().getOwnContact();
+            data = Contact.exportJSON(contact).toString();
+        } else {
+            // export from contact list
+            data = Contact.exportJSON(this.contact).toString();
+        }
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(json, BarcodeFormat.QR_CODE, 1080, 1080);
+            BitMatrix bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
         } catch (WriterException e) {
             e.printStackTrace();
-        }
-    }
-
-    private String generateJson() throws JSONException {
-        if (this.contact == null) {
-            // export own contact
-            Database db = new Database(this);
-            Contact contact = db.getAppData().getOwnContact();
-            /*
-            if (appData == null) {
-                // why?
-                appData = new AppData();
-            }
-            Contact contact = appData.getOwnContact();
-            */
-            return Contact.exportJSON(contact);
-        } else {
-            // export from contact list
-            return Contact.exportJSON(this.contact);
         }
     }
 
@@ -134,7 +119,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         log("onServiceDisconnected");
-        binder = null;
+        this.binder = null;
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {

@@ -1,236 +1,55 @@
 package d.d.meshenger;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.google.gson.Gson;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 
-/*
-* Central Database
-*
-* All data structures from the database are deporary view of the data base.
-*/
-class Database extends SQLiteOpenHelper {
-    private SQLiteDatabase database = null;
-    private Context context;
+class Database {
+    final static String DATABASE_FILENAME = "database.bin";
 
-    private final String contactTableName = "contacts";
-    private final String columnID = "id";
-    private final String columnName = "name";
-    private final String columnPubKey = "pubKey";
-    private final String columnInfo = "info";
-    //private final String columnListData = "listData";
+    Settings settings;
+    ArrayList<Contact> contacts;
+    String version;
 
-    private final String appDataTableName = "appData";
-    private final String columnId = "id";
-    private final String columnDbVer = "dbVer";
-    private final String columnSecretKey = "secretKey";
-    private final String columnPublicKey = "publicKey";
-    private final String columnUsername = "username";
-    private final String columnMode = "mode";
-    private final String columnBlockUC = "blockUC";
-    private final String columnLanguage = "language";
-    private final String columnListData = "listData";
-
-    public Database(Context context) {
-        super(context, "Contacts.db", null, 2);
-        this.context = context;
-        createDatabase();
+    Database() {
+        this.contacts = new ArrayList<>();
+        this.settings = new Settings();
+        this.version = "";
     }
 
-    public List<Contact> getContacts() {
-        Cursor cursor = this.database.query(contactTableName, new String[]{"*"}, "", null, "", "", "");
-        ArrayList<Contact> contacts = new ArrayList<>(cursor.getCount());
-
-        if (cursor.moveToFirst()) {
-            final int posID = cursor.getColumnIndex(columnID);
-            final int posName = cursor.getColumnIndex(columnName);
-            final int posPubKey = cursor.getColumnIndex(columnPubKey);
-            final int posInfo = cursor.getColumnIndex(columnInfo);
-            final int posListData = cursor.getColumnIndex(columnListData);
-
-            do {
-                contacts.add(new Contact(
-                    cursor.getInt(posID),
-                    cursor.getString(posName),
-                    cursor.getString(posInfo),
-                    cursor.getString(posPubKey),
-                    parseConnectionData(cursor.getString(posListData))
-                ));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-
-        return contacts;
+    public boolean contactExists(String publicKey) {
+        return (this.findContact(publicKey) >= 0);
     }
 
-    public AppData getAppData() {
-        Cursor cursor = this.database.query(appDataTableName, new String[]{"*"}, "", null, "", "", "");
-        AppData appData = null;
-
-        if (cursor.moveToFirst()) {
-            final int posId = cursor.getColumnIndex(columnId);
-            final int posDbVer = cursor.getColumnIndex(columnDbVer);
-            final int posSecretKey = cursor.getColumnIndex(columnSecretKey);
-            final int posPublicKey = cursor.getColumnIndex(columnPublicKey);
-            final int posUsername  = cursor.getColumnIndex(columnUsername);
-            final int posMode = cursor.getColumnIndex(columnMode);
-            final int posBlockUC = cursor.getColumnIndex(columnBlockUC);
-            final int posLanguage = cursor.getColumnIndex(columnLanguage);
-            final int posListData = cursor.getColumnIndex(columnListData);
-
-            do {
-                appData = new AppData(
-                    cursor.getInt(posDbVer),
-                    cursor.getString(posSecretKey),
-                    cursor.getString(posPublicKey),
-                    cursor.getString(posUsername),
-                    cursor.getString(posLanguage),
-                    cursor.getInt(posMode),
-                        (cursor.getInt(posBlockUC) != 0),
-                    parseConnectionData(cursor.getString(posListData))
-                );
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-
-        return appData;
-    }
-
-    private static List<ConnectionData> parseConnectionData(String data) {
-        if (data.isEmpty()) {
-            return new ArrayList<>();
-        } else {
-            return new Gson().fromJson(data, List.class);
-        }
-    }
-
-    public void insertContact(Contact c) throws ContactAlreadyAddedException {
-        ContentValues values = new ContentValues(3);
-        values.put(columnName, c.getName());
-        values.put(columnPubKey, c.getPubKey());
-        values.put(columnInfo, c.getInfo());
-
-        Cursor cur = database.query(contactTableName, new String[]{columnID}, columnPubKey + "=" + DatabaseUtils.sqlEscapeString(c.getPubKey()), null, "", "", "");
-        int length = cur.getCount();
-        cur.close();
-
-        if (length > 0) {
+    public void addContact(Contact contact) throws ContactAlreadyAddedException {
+        if (this.contactExists(contact.getPublicKey())) {
             throw new ContactAlreadyAddedException();
+        } else {
+            this.contacts.add(contact);
         }
-
-        c.setId(database.insert(contactTableName, null, values));
     }
 
-    // TODO: remove old appdata! Do not use ID, but match with publicKey!!
-    public void insertAppData(AppData a) {
-        ContentValues values = new ContentValues(8);
-        values.put(columnDbVer, a.getDbVer());
-        values.put(columnSecretKey, a.getSecretKey());
-        values.put(columnPublicKey, a.getPublicKey());
-        values.put(columnUsername, a.getUsername());
-        values.put(columnListData, new Gson().toJson(a.getConnectionData()));
-        values.put(columnMode, a.getMode());
-        values.put(columnBlockUC, (a.getBlockUC() ? 1 : 0));
-        values.put(columnLanguage, a.getLanguage());
-
-        Cursor cur = database.query(appDataTableName, new String[]{columnID}, columnLanguage + "=" + DatabaseUtils.sqlEscapeString(a.getLanguage()), null, "", "", "");
-        int length = cur.getCount();
-        cur.close();
-
-        a.setId(database.insert(appDataTableName, null, values));
-    }
-
-    public boolean contactSaved(String publicKey) {
-        Log.d("SQL", "searching " + publicKey);
-        Cursor c = database.query(this.contactTableName, new String[]{columnID}, columnPubKey + "=?", new String[]{publicKey}, null, null, null);
-        boolean has = c.getCount() > 0;
-        c.close();
-        return has;
-    }
-
-    public void updateContact(Contact c) {
-        ContentValues values = new ContentValues(5);
-        values.put(columnId, c.getId());
-        values.put(columnPubKey, c.getPubKey());
-        values.put(columnName, c.getName());
-        values.put(columnInfo, c.getInfo());
-        values.put(columnListData, new Gson().toJson(c.getConnectionData()));
-
-        database.update(contactTableName, values, columnID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(c.getId())), null);
-    }
-
-    public void deleteContact(Contact c) {
-        database.delete(contactTableName, columnID + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(c.getId())), null);
-    }
-
-    public void updateAppData(AppData a) {
-        ContentValues values = new ContentValues(8);
-        values.put(columnDbVer, a.getDbVer());
-        values.put(columnPublicKey, a.getPublicKey());
-        values.put(columnSecretKey, a.getSecretKey());
-        values.put(columnUsername, a.getUsername());
-        values.put(columnListData, new Gson().toJson(a.getConnectionData()));
-        values.put(columnMode, a.getMode());
-        values.put(columnBlockUC, a.getBlockUC());
-        values.put(columnLanguage, a.getLanguage());
-
-        database.update(appDataTableName, values, columnId + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(a.getId())), null);
-    }
-
-    private void createDatabase() {
-        if (this.database != null) {
-            return;
+    public int findContact(String publicKey) {
+        for (int i = 0; i < this.contacts.size(); i += 1) {
+            if (this.contacts.get(i).getPublicKey().equalsIgnoreCase(publicKey)) {
+                return i;
+            }
         }
-
-        this.database = getWritableDatabase();
-
-        this.database.execSQL("CREATE TABLE IF NOT EXISTS " + contactTableName + "(" +
-            columnID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-            columnName + " TEXT," +
-            columnListData + " TEXT," +
-            columnPubKey + " TEXT," +
-            columnInfo + " TEXT" +
-            ");"
-        );
-
-        this.database.execSQL("CREATE TABLE IF NOT EXISTS " + appDataTableName + "(" +
-            columnId + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-            columnDbVer + " INTEGER," +
-            columnSecretKey + " TEXT, " +
-            columnPublicKey + " TEXT," +
-            columnUsername + " TEXT," +
-            columnMode + " INTEGER," +
-            columnBlockUC + " INTEGER," +
-            columnLanguage + " TEXT," +
-            columnListData + " TEXT" +
-            ");"
-        );
+        return -1;
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        // nothing to do
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        this.close();
-        super.finalize();
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        // nothing to do
+    public void deleteContact(String publicKey) {
+        int idx = this.findContact(publicKey);
+        if (idx >= 0) {
+            this.contacts.remove(idx);
+        }
     }
 
     class ContactAlreadyAddedException extends Exception {
@@ -238,5 +57,99 @@ class Database extends SQLiteOpenHelper {
         public String getMessage() {
             return "Contact already added";
         }
+    }
+
+    // check if the database is encrypted
+    public static boolean isEncrypted(Context context) {
+        try {
+            String path = context.getFilesDir() + "/" + DATABASE_FILENAME;
+            byte[] data = Utils.readExternalFile(path);
+            for (int i = 0; data != null && i < data.length; i += 1) {
+                if (data[i] < 0x20) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static Database load(Context context, String password) {
+        String path = context.getFilesDir() + "/" + DATABASE_FILENAME;
+        String version = Utils.getApplicationVersion(context);
+        try {
+            // read data
+            byte[] data = Utils.readExternalFile(path);
+
+            if (password != null & password.length() > 0) {
+                data = Crypto.decryptData(data, password.getBytes());
+            }
+
+            JSONObject obj = new JSONObject(
+                new String(data,  Charset.forName("UTF-8"))
+            );
+
+            if (!version.equals(obj.optString("version", ""))) {
+                // TODO: upgrade database
+            }
+
+            return Database.fromJSON(obj);
+        } catch (Exception e) {
+            Log.e("Database", "Database file not found: " + path);
+        }
+
+        return new Database();
+    }
+
+    public static void store(Context context, Database db, String password) {
+        try {
+            String path = context.getFilesDir() + "/" + DATABASE_FILENAME;
+            JSONObject obj = Database.toJSON(db);
+            byte[] data = obj.toString().getBytes();
+
+            if (password != null & password.length() > 0) {
+                data = Crypto.encryptData(data, password.getBytes());
+            }
+
+            Utils.writeExternalFile(path, data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static JSONObject toJSON(Database db) throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("version", db.version);
+        obj.put("settings", Settings.exportJSON(db.settings));
+
+        JSONArray contacts = new JSONArray();
+        for (Contact contact : db.contacts) {
+            contacts.put(Contact.exportJSON(contact));
+        }
+        obj.put("contacts", contacts);
+
+        return obj;
+    }
+
+    public static Database fromJSON(JSONObject obj) throws JSONException {
+        Database db = new Database();
+
+        // import version
+        db.version = obj.getString("version");
+
+        // import contacts
+        JSONArray array = obj.getJSONArray("contacts");
+        for (int i = 0; i < array.length(); i += 1) {
+            db.contacts.add(
+                Contact.importJSON(array.getJSONObject(i))
+            );
+        }
+
+        // import settings
+        JSONObject settings = obj.getJSONObject("settings");
+        db.settings = Settings.importJSON(settings);
+
+        return db;
     }
 }

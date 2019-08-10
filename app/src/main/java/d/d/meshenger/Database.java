@@ -14,17 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/*
+* Central Database
+*
+* All data structures from the database are deporary view of the data base.
+*/
 class Database extends SQLiteOpenHelper {
-    private Context context;
     private SQLiteDatabase database = null;
+    private Context context;
 
     private final String contactTableName = "contacts";
     private final String columnID = "id";
     private final String columnName = "name";
     private final String columnPubKey = "pubKey";
     private final String columnInfo = "info";
+    //private final String columnListData = "listData";
 
-    private final String AppDataTableName = "appData";
+    private final String appDataTableName = "appData";
     private final String columnId = "id";
     private final String columnDbVer = "dbVer";
     private final String columnSecretKey = "secretKey";
@@ -68,7 +74,7 @@ class Database extends SQLiteOpenHelper {
     }
 
     public AppData getAppData() {
-        Cursor cursor = this.database.query(AppDataTableName, new String[]{"*"}, "", null, "", "", "");
+        Cursor cursor = this.database.query(appDataTableName, new String[]{"*"}, "", null, "", "", "");
         AppData appData = null;
 
         if (cursor.moveToFirst()) {
@@ -100,12 +106,12 @@ class Database extends SQLiteOpenHelper {
         return appData;
     }
 
-    private List<ConnectionData> parseConnectionData(String data) {
+    private static List<ConnectionData> parseConnectionData(String data) {
         if (data.isEmpty()) {
             return new ArrayList<>();
+        } else {
+            return new Gson().fromJson(data, List.class);
         }
-
-        return new Gson().fromJson(data, List.class);
     }
 
     public void insertContact(Contact c) throws ContactAlreadyAddedException {
@@ -117,6 +123,7 @@ class Database extends SQLiteOpenHelper {
         Cursor cur = database.query(contactTableName, new String[]{columnID}, columnPubKey + "=" + DatabaseUtils.sqlEscapeString(c.getPubKey()), null, "", "", "");
         int length = cur.getCount();
         cur.close();
+
         if (length > 0) {
             throw new ContactAlreadyAddedException();
         }
@@ -124,6 +131,7 @@ class Database extends SQLiteOpenHelper {
         c.setId(database.insert(contactTableName, null, values));
     }
 
+    // TODO: remove old appdata! Do not use ID, but match with publicKey!!
     public void insertAppData(AppData a) {
         ContentValues values = new ContentValues(8);
         values.put(columnDbVer, a.getDbVer());
@@ -135,14 +143,14 @@ class Database extends SQLiteOpenHelper {
         values.put(columnBlockUC, (a.getBlockUC() ? 1 : 0));
         values.put(columnLanguage, a.getLanguage());
 
-        Cursor cur = database.query(AppDataTableName, new String[]{columnID}, columnLanguage + "=" + DatabaseUtils.sqlEscapeString(a.getLanguage()), null, "", "", "");
-        //int length = cur.getCount();
+        Cursor cur = database.query(appDataTableName, new String[]{columnID}, columnLanguage + "=" + DatabaseUtils.sqlEscapeString(a.getLanguage()), null, "", "", "");
+        int length = cur.getCount();
         cur.close();
 
-        a.setId(database.insert(AppDataTableName,null, values));
+        a.setId(database.insert(appDataTableName, null, values));
     }
 
-    public boolean contactSaved(String publicKey){
+    public boolean contactSaved(String publicKey) {
         Log.d("SQL", "searching " + publicKey);
         Cursor c = database.query(this.contactTableName, new String[]{columnID}, columnPubKey + "=?", new String[]{publicKey}, null, null, null);
         boolean has = c.getCount() > 0;
@@ -176,7 +184,7 @@ class Database extends SQLiteOpenHelper {
         values.put(columnBlockUC, a.getBlockUC());
         values.put(columnLanguage, a.getLanguage());
 
-        database.update(AppDataTableName, values, columnId + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(a.getId())), null);
+        database.update(appDataTableName, values, columnId + "=" + DatabaseUtils.sqlEscapeString(String.valueOf(a.getId())), null);
     }
 
     private void createDatabase() {
@@ -195,7 +203,7 @@ class Database extends SQLiteOpenHelper {
             ");"
         );
 
-        this.database.execSQL("CREATE TABLE IF NOT EXISTS " + AppDataTableName + "(" +
+        this.database.execSQL("CREATE TABLE IF NOT EXISTS " + appDataTableName + "(" +
             columnId + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
             columnDbVer + " INTEGER," +
             columnSecretKey + " TEXT, " +
@@ -207,16 +215,6 @@ class Database extends SQLiteOpenHelper {
             columnListData + " TEXT" +
             ");"
         );
-    }
-
-    public String getPublicKeyFromContacts(String listData){
-        String pubKey = "";
-        String query = " SELECT * FROM " + contactTableName + " WHERE " + columnListData + " = " + "'" + listData + "'";
-        Cursor cursor = database.rawQuery(query,null);
-        if (cursor.moveToFirst()) {
-            pubKey = cursor.getString(cursor.getColumnIndex(columnPubKey));
-        }
-        return pubKey;
     }
 
     @Override

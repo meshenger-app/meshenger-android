@@ -7,6 +7,7 @@
     <string name="paste_invitation">Paste Data Here</string>
     <string name="invalid_data">Invalid data</string>
     <string name="cancel">cancel</string>
+    <string name="next">next</string>
     <string name="camera_permission_request">Camera permission needed to scan codes</string>
     <string name="invalid_qr">Invalid QR-Code</string>
     <string name="network_connect_invitation">No information available, please connect to a network</string>

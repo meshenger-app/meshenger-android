@@ -80,12 +80,10 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
         }
 
-        if (!initViews()) {
-            return;
+        if (initViews()) {
+            showUsernameDialog();
+            generateKeyPair();
         }
-
-        showUsernameDialog();
-        generateKeyPair();
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -143,15 +141,18 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
     private void showUsernameDialog() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.hello);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle(R.string.hello);
+
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
+
         TextView tw = new TextView(this);
         tw.setText(R.string.name_prompt);
         //tw.setTextColor(Color.BLACK);
         tw.setTextSize(20);
         tw.setGravity(Gravity.CENTER_HORIZONTAL);
+
         layout.addView(tw);
 
         EditText et = new EditText(this);
@@ -193,12 +194,12 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             et.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                    // nothing to do
                 }
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                    // nothing to do
                 }
 
                 @Override
@@ -222,33 +223,29 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     private boolean initViews() {
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        if (!prefs.getBoolean("Splash_shown", false)) {
+        if (prefs.getBoolean("Splash_shown", false)) {
+            setContentView(R.layout.activity_contact_list);
+            fab = findViewById(R.id.fab);
+            fabScan = findViewById(R.id.fabScan1);
+            fabGen = findViewById(R.id.fabGenerate1);
+            fabScan.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRScanActivity.class)));
+            fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRPresenterActivity.class)));
+            fab.setOnClickListener(this::runFabAnimation);
+
+            contactListView = findViewById(R.id.contactList);
+            return true;
+        } else {
             prefs.edit().putBoolean("Splash_shown", true).apply();
+            // wil start ContactListActivity again after some time
             startActivity(new Intent(this, SplashScreen.class));
             finish();
             return false;
         }
-
-        setContentView(R.layout.activity_contact_list);
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-        fab = findViewById(R.id.fab);
-        fabScan = findViewById(R.id.fabScan1);
-        fabGen = findViewById(R.id.fabGenerate1);
-        fabScan.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRScanActivity.class)));
-        fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRPresenterActivity.class)));
-        fab.setOnClickListener(this::runFabAnimation);
-
-        //db = new Database(this);
-        contactListView = findViewById(R.id.contactList);
-
-        return true;
     }
 
     void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
         }
     }
@@ -440,7 +437,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
     @Override
-    public void OnContactPingResult(Contact c) {
+    public void onContactPingResult(Contact c) {
         refreshContactList();
     }
 

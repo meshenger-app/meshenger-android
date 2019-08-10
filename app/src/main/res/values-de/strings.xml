@@ -7,6 +7,7 @@
     <string name="paste_invitation">Hier Daten einfügen</string>
     <string name="invalid_data">Ungültige Daten</string>
     <string name="cancel">Abbrechen</string>
+    <string name="next">Weiter</string>
     <string name="camera_permission_request">Benötige Erlaubniss, um Kamera zu benutzen</string>
     <string name="invalid_qr">Ungültiger QR-Code</string>
     <string name="network_connect_invitation">Keine Netzwerkinformation verfügbar</string>

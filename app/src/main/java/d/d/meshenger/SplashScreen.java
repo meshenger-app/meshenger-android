@@ -16,7 +16,7 @@ public class SplashScreen extends Activity {
         setContentView(R.layout.activity_splash);
 
         Typeface type = Typeface.createFromAsset(getAssets(), "rounds_black.otf");
-        ((TextView)findViewById(R.id.splashText)).setTypeface(type);
+        ((TextView) findViewById(R.id.splashText)).setTypeface(type);
 
         new Handler().postDelayed(() -> {
             startActivity(new Intent(this, ContactListActivity.class));

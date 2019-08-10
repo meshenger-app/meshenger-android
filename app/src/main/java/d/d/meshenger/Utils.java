@@ -34,6 +34,21 @@ class Utils {
         return data;
     }
 
+    public static byte[] macAddressToEUI64(String address) {
+        String[] hexes = address.split(":");
+        byte[] bytes = new byte[]{
+                (byte) (Integer.decode("0x" + hexes[0]).byteValue() | 2),
+                Integer.decode("0x" + hexes[1]).byteValue(),
+                Integer.decode("0x" + hexes[2]).byteValue(),
+                (byte) 0xFF,
+                (byte) 0xFE,
+                Integer.decode("0x" + hexes[3]).byteValue(),
+                Integer.decode("0x" + hexes[4]).byteValue(),
+                Integer.decode("0x" + hexes[5]).byteValue(),
+        };
+        return bytes;
+    }
+
     public static byte[] getMacAddress() {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -44,11 +59,13 @@ class Utils {
 
             }
         } catch (Exception ex) {
+            // ignore
         }
-        return new byte[]{0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+        return new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     }
 
-    public static String formatAddress(byte[] macBytes){
+    public static String formatMacAddress(byte[] macBytes){
         StringBuilder res1 = new StringBuilder();
         for (byte b : macBytes) {
             res1.append(String.format("%02X:",b));
@@ -57,6 +74,7 @@ class Utils {
         if (res1.length() > 0) {
             res1.deleteCharAt(res1.length() - 1);
         }
+
         return res1.toString();
     }
 

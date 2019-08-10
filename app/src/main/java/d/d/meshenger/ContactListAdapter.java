@@ -41,8 +41,8 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
             convertView = inflater.inflate(R.layout.contact_item, null);
         }
 
-        ((TextView)convertView.findViewById(R.id.contact_item_name)).setText(c.getName());
-        ((TextView)convertView.findViewById(R.id.contact_item_info)).setText(c.getInfo());
+        ((TextView) convertView.findViewById(R.id.contact_item_name)).setText(c.getName());
+        ((TextView) convertView.findViewById(R.id.contact_item_info)).setText(c.getInfo());
 
         if (c.getState() != Contact.State.PENDING) {
             log(c.getName() + " online");

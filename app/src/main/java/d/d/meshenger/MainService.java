@@ -38,7 +38,6 @@ public class MainService extends Service implements Runnable {
 
     public static final int serverPort = 10001;
     private ServerSocket server;
-    private final String mac = Utils.formatAddress(Utils.getMacAddress());
 
     private volatile boolean run = true;
     private volatile boolean interrupted = false;
@@ -158,7 +157,8 @@ public class MainService extends Service implements Runnable {
                         String offer = decrypt(encrypted, nonce);
                         this.currentCall = new RTCCall(client, this, offer);
 
-                        if (db.getAppData().getBlockUC() && !db.contactSaved(mac)) {
+                        String publicKey = ""; //TODO
+                        if (db.getAppData().getBlockUC() && !db.contactSaved(publicKey)) {
                             currentCall.decline();
                             continue;
                         };
@@ -178,8 +178,7 @@ public class MainService extends Service implements Runnable {
                         String publickey = request.optString("publicKey", null);
                         setClientState(publickey, Contact.State.ONLINE);
                         JSONObject response = new JSONObject();
-                        AppData app = (new Database(this)).getAppData();
-                        response.put("publicKey", app.getPublicKey());
+                        response.put("publicKey", this.db.getAppData().getPublicKey());
                         os.write((response.toString() + "\n").getBytes());
                         break;
                     }
@@ -193,7 +192,6 @@ public class MainService extends Service implements Runnable {
                                     request.getString("username"),
                                     "",
                                     request.getString("publicKey")
-                                    // identifier
                             );
                             if (request.getJSONArray("connection_data") == null) {
                                 return;
@@ -331,7 +329,7 @@ public class MainService extends Service implements Runnable {
             //return MainService.this.contacts;
         }
 
-        /*void setPingResultListener(ContactPingListener listener){
+        /*void setPingResultListener(ContactPingListener listener) {
             MainService.this.pingListener = listener;
         }*/
     }
@@ -358,7 +356,7 @@ public class MainService extends Service implements Runnable {
                     //e.printStackTrace();
                 } finally {
                     if (listener != null) {
-                        listener.OnContactPingResult(c);
+                        listener.onContactPingResult(c);
                     } else {
                         log("no listener");
                     }
@@ -457,21 +455,6 @@ public class MainService extends Service implements Runnable {
         }
         return result;
     }
-
-    private byte[] addressToEUI64(String address) {
-        String[] hexes = address.split(":");
-        byte[] bytes = new byte[]{
-                (byte) (Integer.decode("0x" + hexes[0]).byteValue() | 2),
-                Integer.decode("0x" + hexes[1]).byteValue(),
-                Integer.decode("0x" + hexes[2]).byteValue(),
-                (byte) 0xFF,
-                (byte) 0xFE,
-                Integer.decode("0x" + hexes[3]).byteValue(),
-                Integer.decode("0x" + hexes[4]).byteValue(),
-                Integer.decode("0x" + hexes[5]).byteValue(),
-        };
-        return bytes;
-    }
     */
 
     class ConnectRunnable implements Runnable {
@@ -551,7 +534,7 @@ public class MainService extends Service implements Runnable {
     };
 
     public interface ContactPingListener {
-        void OnContactPingResult(Contact c);
+        void onContactPingResult(Contact c);
     }
 
     @Nullable

@@ -417,10 +417,12 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     public void onSensorChanged(SensorEvent sensorEvent) {
         log("sensor changed: " + sensorEvent.values[0]);
         if (sensorEvent.values[0] == 0.0f) {
-            wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+            wakeLock = ((PowerManager) getSystemService(POWER_SERVICE))
+                .newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
             wakeLock.acquire();
         } else {
-            wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+            wakeLock = ((PowerManager) getSystemService(POWER_SERVICE))
+                .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
             wakeLock.acquire();
         }
     }

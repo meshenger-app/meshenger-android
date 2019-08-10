@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.google.gson.Gson;
 import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
@@ -44,6 +43,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 
 public class RTCCall implements DataChannel.Observer {
@@ -94,7 +94,13 @@ public class RTCCall implements DataChannel.Observer {
         log("starting call to " + contact.getPubKey());
         initRTC(context);
         this.context = context;
-        context.setTheme(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            context.setTheme(R.style.AppTheme_Dark);
+        } else {
+            context.setTheme(R.style.AppTheme_Light);
+        }
+
         log("init RTC done");
         this.listener = listener;
         new Thread(() -> {

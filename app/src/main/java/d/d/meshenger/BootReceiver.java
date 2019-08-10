@@ -16,6 +16,6 @@ public class BootReceiver extends BroadcastReceiver {
     }
 
     private void log(String s) {
-        Log.d(ContactListActivity.class.getSimpleName(), s);
+        Log.d(BootReceiver.class.getSimpleName(), s);
     }
 }

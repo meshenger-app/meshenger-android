@@ -185,16 +185,17 @@ public class MainService extends Service implements Runnable {
 
                 JSONObject obj = new JSONObject(decrypted);
                 String action = obj.optString("action", "");
+                String secretKey = this.db.settings.getSecretKey();
 
                 switch (action) {
                     case "call": {
                         // someone calls us
                         log("call...");
                         String offer = obj.getString("offer");
-                        this.currentCall = new RTCCall(this, contact, client, offer);
+                        this.currentCall = new RTCCall(this, secretKey, contact, client, offer);
 
                         // respond that we accept the call
-                        String encrypted = Crypto.encrypt("{\"action\":\"ringing\"}", contact.getPublicKey(), this.db.settings.getSecretKey());
+                        String encrypted = Crypto.encrypt("{\"action\":\"ringing\"}", contact.getPublicKey(), secretKey);
                         os.write(encrypted.getBytes());
 
                         Intent intent = new Intent(this, CallActivity.class);
@@ -208,7 +209,7 @@ public class MainService extends Service implements Runnable {
                         log("ping...");
                         // someone wants to know if we are online
                         setClientState(contact, Contact.State.ONLINE);
-                        String encrypted = Crypto.encrypt("{\"action\":\"pong\"}", contact.getPublicKey(), this.db.settings.getSecretKey());
+                        String encrypted = Crypto.encrypt("{\"action\":\"pong\"}", contact.getPublicKey(), secretKey);
                         os.write(encrypted.getBytes());
                         break;
                     }
@@ -257,7 +258,7 @@ public class MainService extends Service implements Runnable {
     */
     class MainBinder extends Binder {
         RTCCall startCall(Contact contact, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer) {
-            return RTCCall.startCall(MainService.this, contact, listener);
+            return RTCCall.startCall(MainService.this, MainService.this.db.settings.getSecretKey(), contact, listener);
         }
 
         RTCCall getCurrentCall() {

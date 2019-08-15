@@ -70,30 +70,30 @@ public class RTCCall implements DataChannel.Observer {
     public CallState state;
     public Socket commSocket;
 
-    static public RTCCall startCall(Context context, Contact contact, OnStateChangeListener listener) {
-        return new RTCCall(context, contact, listener);
+    static public RTCCall startCall(Context context, String secretKey, Contact contact, OnStateChangeListener listener) {
+        return new RTCCall(context, secretKey, contact, listener);
     }
 
     // called for incoming calls
-    public RTCCall(Context context, Contact contact, Socket commSocket, String offer) {
+    public RTCCall(Context context, String secretKey, Contact contact, Socket commSocket, String offer) {
         this.context = context;
         this.contact = contact;
         this.commSocket = commSocket;
         this.listener = null;
-        this.secretKey = (new Database()).settings.getSecretKey();
+        this.secretKey = secretKey;
         this.offer = offer;
 
         initRTC(context);
     }
 
     // called for outgoing calls
-    private RTCCall(Context context, Contact contact, OnStateChangeListener listener) {
+    private RTCCall(Context context, String secretKey, Contact contact, OnStateChangeListener listener) {
         log("starting call to " + contact.getName());
         this.context = context;
         this.contact = contact;
         this.commSocket = null;
         this.listener = listener;
-        this.secretKey = (new Database()).settings.getSecretKey();
+        this.secretKey = secretKey;
 
         initRTC(context);
 

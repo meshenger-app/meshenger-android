@@ -93,7 +93,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             contactListView = findViewById(R.id.contactList);
 
             fabScan.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRScanActivity.class)));
-            fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRPresenterActivity.class)));
+            fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRShowActivity.class)));
             fab.setOnClickListener(this::runFabAnimation);
 
             if (this.binder.getSettings().getUsername().isEmpty()) {
@@ -380,7 +380,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                                 } else if (title.equals(share)) {
                                     shareContact(contact);
                                 } else if (title.equals(qr)) {
-                                    Intent intent = new Intent(ContactListActivity.this, QRPresenterActivity.class);
+                                    Intent intent = new Intent(ContactListActivity.this, QRShowActivity.class);
                                     intent.putExtra("EXTRA_CONTACT", contact);
                                     startActivity(intent);
                                 }

@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".QRPresenterActivity"
+            android:name=".QRShowActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity

@@ -27,7 +27,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import org.json.JSONException;
 
 
-public class QRPresenterActivity extends MeshengerActivity implements ServiceConnection {
+public class QRShowActivity extends MeshengerActivity implements ServiceConnection {
     private Contact contact = null;
     private MainService.MainBinder binder;
     private String data;
@@ -35,7 +35,7 @@ public class QRPresenterActivity extends MeshengerActivity implements ServiceCon
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qrpresenter);
+        setContentView(R.layout.activity_qrshow);
 
         if (getIntent().hasExtra("EXTRA_CONTACT")){
             this.contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");

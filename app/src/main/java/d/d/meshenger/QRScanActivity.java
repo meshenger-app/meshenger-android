@@ -50,7 +50,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         }
 
         findViewById(R.id.fabScan).setOnClickListener(view -> {
-            startActivity(new Intent(this, QRPresenterActivity.class));
+            startActivity(new Intent(this, QRShowActivity.class));
             finish();
         });
 

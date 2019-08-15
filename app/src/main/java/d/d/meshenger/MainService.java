@@ -53,8 +53,6 @@ public class MainService extends Service implements Runnable {
         new Thread(this).start();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
-
-        Crypto.test();
     }
 
     @Override

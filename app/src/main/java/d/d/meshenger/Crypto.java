@@ -19,15 +19,6 @@ import java.util.Arrays;
 
 class Crypto {
 
-    public static void test() {
-        byte[] data = "Hello World".getBytes();
-        byte[] password = "foo".getBytes();
-        byte[] encrypted = encryptData(data, password);
-        byte[] decrypted = decryptData(encrypted, password);
-
-        log("test result: " + ((decrypted == null) ? "null" : (new String(decrypted, Charset.forName("UTF-8")))));
-    }
-
     // decrypt data using a password
     public static byte[] decryptData(byte[] encrypted_message, byte[] password) {
         if (encrypted_message == null || password == null) {

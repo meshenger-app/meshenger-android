@@ -91,12 +91,12 @@ class Database {
             );
 
             if (!version.equals(obj.optString("version", ""))) {
-                // TODO: upgrade database
+                obj = upgradeDatabase(obj.optString("version", ""), version, obj);
             }
 
             return Database.fromJSON(obj);
         } catch (Exception e) {
-            Log.e("Database", "Database file not found: " + path);
+            e.printStackTrace();
         }
 
         return new Database();
@@ -116,6 +116,18 @@ class Database {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static JSONObject upgradeDatabase(String from, String to, JSONObject obj) {
+        // not much to do yet
+        try {
+            if (from.isEmpty()) {
+                obj.put("version", to);
+            }
+        } catch (Exception e) {
+            // ignore ...
+        }
+        return obj;
     }
 
     public static JSONObject toJSON(Database db) throws JSONException {

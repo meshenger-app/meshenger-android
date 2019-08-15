@@ -158,7 +158,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
 
         this.binder.getSettings().setLanguage(locale.getDisplayLanguage());
 
-        Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.GERMAN};
+        Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN};
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
             RadioGroup group = new RadioGroup(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

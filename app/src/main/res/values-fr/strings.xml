@@ -1,2 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="action_settings">Réglages</string>
+    <string name="name_prompt">Quel devrait être ton nom?</string>
+    <string name="scan_invitation">Scannez ce QR-Code</string>
+    <string name="scan_invited">Numérisation de code QR</string>
+    <string name="paste_invitation">Coller les données ici</string>
+    <string name="invalid_data">Données invalides</string>
+    <string name="cancel">annuler</string>
+    <string name="next">suivante</string>
+    <string name="camera_permission_request">La permission de la caméra est nécessaire pour scanner les codes QR</string>
+    <string name="invalid_qr">QR-Code invalide</string>
+    <string name="network_connect_invitation">Aucune information disponible, veuillez vous connecter à un réseau</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="menu_license">Licence</string>
+    <string name="menu_backup">Sauvegarde</string>
+    <string name="menu_about">À propos</string>
+    <string name="call_connecting">Appel...</string>
+    <string name="settings_change_name">Changer de nom</string>
+    <string name="settings_change_language">Changer de langue</string>
+    <string name="settings_change_address">Changement d'adresse</string>
+    <string name="settings_change_password">Changer le mot de passe</string>
+    <string name="settings_nightmode">Mode nuit</string>
+    <string name="settings_ignore_unsaved">Ignorer les appelants inconnus</string>
+    <string name="about_source">Code source:</string>
+    <string name="about_author">Développeurs:</string>
+    <string name="about_license">Licence:</string>
+    <string name="about_license_version">GPL-3.0-or-later</string>
+    <string name="delete">Effacer</string>
+    <string name="rename">Renommer</string>
+    <string name="share">Partager</string>
+    <string name="done">Terminé</string>
+    <string name="contact_edit">Modifier le contact</string>
+    <string name="permission_mic">La permission du microphone est nécessaire pour passer des appels</string>
+    <string name="hello">Bonjour!</string>
+    <string name="call_connected">Connecté.</string>
+    <string name="call_denied">Diminué</string>
+    <string name="call_ringing">Sonnerie...</string>
+    <string name="call_ended">Appel terminé</string>
+    <string name="call_error">Erreur</string>
+    <string name="button_select">Sélectionner</string>
+    <string name="button_import">Importation</string>
+    <string name="button_export">Exportation</string>
+    <string name="about_version">Version de l'application:</string>
+    <string name="about_info">Informations sur l'application:</string>
+    <string name="app_info">L'application Meshenger permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les contacts de chaque contact et de s’appeler. Cela fonctionne sur la plupart des réseaux, par exemple. à la maison, dans les réseaux communautaires ou au travail.</string>
+    <string name="empty_path">Chemin vide</string>
+    <string name="no_path_selected">Aucun chemin sélectionné</string>
+    <string name="invalid_path">Chemin invalide</string>
+    <string name="invalid_address">Adresse invalide</string>
+    <string name="no_file_name">Pas de nom de fichier</string>
+    <string name="contact_already_exists">Le contact existe déjà</string>
+    <string name="error">Erreur</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+</resources>

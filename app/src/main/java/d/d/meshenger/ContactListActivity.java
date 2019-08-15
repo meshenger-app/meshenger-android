@@ -61,7 +61,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     private FloatingActionButton fabGen;
     private FloatingActionButton fab;
     private MainService.MainBinder binder;
-    public static boolean splash_page_shown = false; //TODO: move into MainBinder!
+    private boolean splash_page_shown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +86,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         }
 
         if (this.splash_page_shown) {
-
             fab = findViewById(R.id.fab);
             fabScan = findViewById(R.id.fabScan1);
             fabGen = findViewById(R.id.fabGenerate1);
@@ -101,7 +100,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 showUsernameDialog();
             }
         } else {
-            log("show splash page");
             this.splash_page_shown = true;
 
             // will start ContactListActivity again after some time

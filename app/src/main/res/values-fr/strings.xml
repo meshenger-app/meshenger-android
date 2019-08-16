@@ -7,6 +7,7 @@
     <string name="invalid_data">Données invalides</string>
     <string name="cancel">annuler</string>
     <string name="next">suivante</string>
+    <string name="enter_password">Entrer le mot de passe</string>
     <string name="camera_permission_request">La permission de la caméra est nécessaire pour scanner les codes QR</string>
     <string name="invalid_qr">QR-Code invalide</string>
     <string name="network_connect_invitation">Aucune information disponible, veuillez vous connecter à un réseau</string>

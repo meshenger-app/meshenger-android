@@ -125,7 +125,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             int mode = nightModeCheckBox.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
             AppCompatDelegate.setDefaultNightMode(mode);
             this.binder.getSettings().setMode(mode);
-            this.binder.storeDatabase();
+            this.binder.saveDatabase();
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
@@ -157,7 +157,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
 
         this.binder.getSettings().setLanguage(locale.getDisplayLanguage());
-        this.binder.storeDatabase();
+        this.binder.saveDatabase();
 
         Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN};
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
@@ -204,7 +204,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .setPositiveButton("ok", (dialogInterface, i) -> {
                 String new_username = et.getText().toString();
                 this.binder.getSettings().setUsername(new_username);
-                this.binder.storeDatabase();
+                this.binder.saveDatabase();
                 syncSettings("username", new_username);
                 initViews();
             })
@@ -225,7 +225,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
                 ArrayList<String> invalid_addresses = getInvalidAddresses(new_addresses);
                 if (invalid_addresses.isEmpty()) {
                     this.binder.getSettings().setAddresses(new_addresses);
-                    this.binder.storeDatabase();
+                    this.binder.saveDatabase();
                     syncSettings("address", Utils.join(new_addresses)); //needed?
                 } else {
                     // show invalid addresses
@@ -251,7 +251,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .setPositiveButton("ok", (dialogInterface, i) -> {
                 String new_password = et.getText().toString();
                 this.binder.setDatabasePassword(new_password);
-                this.binder.storeDatabase();
+                this.binder.saveDatabase();
                 initViews();
             })
             .setNegativeButton(getResources().getText(R.string.cancel), null)

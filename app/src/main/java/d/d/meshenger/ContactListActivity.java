@@ -20,29 +20,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.goterl.lazycode.lazysodium.SodiumAndroid;
-import com.goterl.lazycode.lazysodium.interfaces.Box;
 
 import org.json.JSONException;
 
@@ -57,23 +46,11 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     private FloatingActionButton fabGen;
     private FloatingActionButton fab;
     private MainService.MainBinder binder;
-    private boolean splash_page_shown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        log("startService");
         setContentView(R.layout.activity_contact_list);
-
-        startService(new Intent(this, MainService.class));
-
-        // TODO: move to first phone call?
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
-        }
-
-        initViews();
     }
 
     private void initViews() {
@@ -81,26 +58,18 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             return;
         }
 
-        if (this.splash_page_shown) {
-            fab = findViewById(R.id.fab);
-            fabScan = findViewById(R.id.fabScan1);
-            fabGen = findViewById(R.id.fabGenerate1);
-            contactListView = findViewById(R.id.contactList);
+        fab = findViewById(R.id.fab);
+        fabScan = findViewById(R.id.fabScan1);
+        fabGen = findViewById(R.id.fabGenerate1);
+        contactListView = findViewById(R.id.contactList);
 
-            fabScan.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRScanActivity.class)));
-            fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRShowActivity.class)));
-            fab.setOnClickListener(this::runFabAnimation);
+        fabScan.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRScanActivity.class)));
+        fabGen.setOnClickListener(view -> startActivity(new Intent(ContactListActivity.this, QRShowActivity.class)));
+        fab.setOnClickListener(this::runFabAnimation);
 
-            if (this.binder.getSettings().getUsername().isEmpty()) {
-                // initialize database
-                showUsernameDialog();
-            }
-        } else {
-            this.splash_page_shown = true;
-
-            // will start ContactListActivity again after some time
-            startActivity(new Intent(this, SplashScreen.class));
-            finish();
+        // ask for audio recording permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
         }
 
         LocalBroadcastManager.getInstance(this).registerReceiver(refreshReceiver, new IntentFilter("contact_refresh"));
@@ -110,14 +79,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            String message = intent.getStringExtra("message");
-            log("Got message: " + message);
-
             Intent intent1 = new Intent(ContactListActivity.this, ContactListActivity.class);
-
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
             startActivity(intent1);
         }
     };
@@ -134,108 +96,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshReceiver);
 
         super.onDestroy();
-    }
-
-    private void initializeSettings(String username) {
-        // create key pair
-        SodiumAndroid sa = new SodiumAndroid();
-        byte[] publicKey = new byte[Box.PUBLICKEYBYTES];
-        byte[] secretKey = new byte[Box.SECRETKEYBYTES];
-        sa.crypto_box_keypair(publicKey, secretKey);
-
-        Settings settings = this.binder.getSettings();
-        settings.setUsername(username);
-        settings.setPublicKey(Utils.byteArrayToHexString(publicKey));
-        settings.setSecretKey(Utils.byteArrayToHexString(secretKey));
-
-        for (String mac : Utils.getMacAddresses()) {
-            settings.addAddress(mac);
-        }
-
-        this.binder.storeDatabase();
-    }
-
-    // initial dialog to set the username
-    private void showUsernameDialog() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle(R.string.hello);
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        TextView tw = new TextView(this);
-        tw.setText(R.string.name_prompt);
-        //tw.setTextColor(Color.BLACK);
-        tw.setTextSize(20);
-        tw.setGravity(Gravity.CENTER_HORIZONTAL);
-
-        layout.addView(tw);
-
-        EditText et = new EditText(this);
-        et.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        et.setSingleLine(true);
-
-        layout.addView(et);
-        layout.setPadding(40, 80, 40, 40);
-        //layout.setGravity(Gravity.CENTER_HORIZONTAL);
-
-        dialog.setView(layout);
-        dialog.setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-            finish();
-        });
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-
-        dialog.setPositiveButton(R.string.next, (dialogInterface, i) -> {
-            String username = et.getText().toString();
-            initializeSettings(username);
-
-            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-            Intent intent = new Intent("settings_changed");
-            intent.putExtra("subject", "username");
-            intent.putExtra("username", username);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        });
-
-        AlertDialog finalDialog = dialog.create();
-        finalDialog.setOnShowListener((newDialog) -> {
-            Button okButton = ((AlertDialog) newDialog).getButton(AlertDialog.BUTTON_POSITIVE);
-            et.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    // nothing to do
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    // nothing to do
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    okButton.setClickable(editable.length() > 0);
-                    okButton.setAlpha(editable.length() > 0 ? 1.0f : 0.5f);
-                }
-            });
-
-            okButton.setClickable(false);
-            okButton.setAlpha(0.5f);
-
-            if (et.requestFocus()) {
-                imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-                //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-            }
-        });
-
-        finalDialog.show();
-    }
-
-    void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
-        }
     }
 
     private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {

@@ -7,13 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 
 class Database {
-    final static String DATABASE_FILENAME = "database.bin";
-
     Settings settings;
     ArrayList<Contact> contacts;
     String version;
@@ -59,10 +58,10 @@ class Database {
         }
     }
 
+/*
     // check if the database is encrypted
-    public static boolean isEncrypted(Context context) {
+    public static boolean isEncrypted(String path) {
         try {
-            String path = context.getFilesDir() + "/" + DATABASE_FILENAME;
             byte[] data = Utils.readExternalFile(path);
             for (int i = 0; data != null && i < data.length; i += 1) {
                 if (data[i] < 0x20) {
@@ -74,48 +73,38 @@ class Database {
         }
         return false;
     }
+*/
+    public static Database load(String path, String password) throws IOException, JSONException {
+        String version = "2.0.0";
 
-    public static Database load(Context context, String password) {
-        String path = context.getFilesDir() + "/" + DATABASE_FILENAME;
-        String version = Utils.getApplicationVersion(context);
-        try {
-            // read data
-            byte[] data = Utils.readExternalFile(path);
+        // read data
+        byte[] data = Utils.readExternalFile(path);
 
-            if (password != null & password.length() > 0) {
-                data = Crypto.decryptData(data, password.getBytes());
-            }
-
-            JSONObject obj = new JSONObject(
-                new String(data,  Charset.forName("UTF-8"))
-            );
-
-            if (!version.equals(obj.optString("version", ""))) {
-                obj = upgradeDatabase(obj.optString("version", ""), version, obj);
-            }
-
-            return Database.fromJSON(obj);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (password != null & password.length() > 0) {
+            Log.d("Database", "use password for database: " + password);
+            data = Crypto.decryptData(data, password.getBytes());
         }
 
-        return new Database();
+        JSONObject obj = new JSONObject(
+                new String(data, Charset.forName("UTF-8"))
+        );
+
+        if (!version.equals(obj.optString("version", ""))) {
+            obj = upgradeDatabase(obj.optString("version", ""), version, obj);
+        }
+
+        return Database.fromJSON(obj);
     }
 
-    public static void store(Context context, Database db, String password) {
-        try {
-            String path = context.getFilesDir() + "/" + DATABASE_FILENAME;
-            JSONObject obj = Database.toJSON(db);
-            byte[] data = obj.toString().getBytes();
+    public static void store(String path, Database db, String password) throws IOException, JSONException {
+        JSONObject obj = Database.toJSON(db);
+        byte[] data = obj.toString().getBytes();
 
-            if (password != null & password.length() > 0) {
-                data = Crypto.encryptData(data, password.getBytes());
-            }
-
-            Utils.writeExternalFile(path, data);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (password != null & password.length() > 0) {
+            data = Crypto.encryptData(data, password.getBytes());
         }
+
+        Utils.writeExternalFile(path, data);
     }
 
     private static JSONObject upgradeDatabase(String from, String to, JSONObject obj) {

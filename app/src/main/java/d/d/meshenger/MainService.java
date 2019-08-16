@@ -2,15 +2,12 @@ package d.d.meshenger;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.service.autofill.Dataset;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -20,6 +17,7 @@ import org.json.JSONObject;
 import org.webrtc.SurfaceViewRenderer;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,27 +25,25 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainService extends Service implements Runnable {
-    private Database db;
+    private Database db = null;
+    private String database_path = "";
+    private String database_password = "";
 
     public static final int serverPort = 10001;
     private ServerSocket server;
 
     private volatile boolean run = true;
-    private volatile boolean interrupted = false;
-
     private RTCCall currentCall = null;
-    private String database_password = "";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        this.db = Database.load(this, this.database_password);
+        this.database_path = this.getFilesDir() + "/database.bin";
 
         // handle incoming connections
         new Thread(this).start();
@@ -55,14 +51,43 @@ public class MainService extends Service implements Runnable {
         LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
     }
 
+    private void loadDatabase() {
+        try {
+            if ((new File(this.database_path)).exists()) {
+                // open existing database
+                log("open existing database");
+                this.db = Database.load(this.database_path, this.database_password);
+            } else {
+                // create new database
+                log("create new database");
+                this.db = new Database();
+            }
+        } catch (Exception e) {
+            log("cannot open database");
+        }
+    }
+
+    private void saveDatabase() {
+        try {
+            Database.store(MainService.this.database_path, MainService.this.db, MainService.this.database_password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        this.run = false;
 
-        Database.store(this, this.db, this.database_password);
+        try {
+            Database.store(this.database_path, this.db, this.database_password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // shutdown listening socket and say goodbye
-        if (this.server != null && this.server.isBound() && !this.server.isClosed()) {
+        if (this.db != null && this.server != null && this.server.isBound() && !this.server.isClosed()) {
             try {
                 String message = "{\"action\": \"status_change\", \"status\", \"offline\"}";
 
@@ -72,6 +97,9 @@ public class MainService extends Service implements Runnable {
                     }
 
                     String encrypted = Crypto.encrypt(message, contact.getPublicKey(), this.db.settings.getSecretKey());
+                    if (encrypted == null) {
+                        continue;
+                    }
 
                     for (InetSocketAddress addr : contact.getAllSocketAddresses()) {
                         Socket socket = null;
@@ -109,10 +137,6 @@ public class MainService extends Service implements Runnable {
         return START_STICKY;
     }
 
-    private void initNetwork() throws IOException {
-        server = new ServerSocket(serverPort);
-    }
-
     private void refreshContacts() {
         /*
         ArrayList<Contact> contacts = (ArrayList<Contact>) db.getContacts();
@@ -130,21 +154,9 @@ public class MainService extends Service implements Runnable {
         */
     }
 
-    private void mainLoop() throws IOException {
-        while (run) {
-            try {
-                Socket socket = server.accept();
-                new Thread(() -> handleClient(socket)).start();
-            } catch (IOException e) {
-                if (!interrupted) {
-                    throw e;
-                }
-            }
-        }
-    }
-
     private void handleClient(Socket client) {
-        log("handClient");
+        log("handleClient");
+
         try {
             InputStream is = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -154,7 +166,7 @@ public class MainService extends Service implements Runnable {
 
             log("waiting for line...");
             while ((request = reader.readLine()) != null) {
-                String decrypted = "";
+                String decrypted = null;
 
                 if (contact == null) {
                     // look for contact that decrypts the message
@@ -165,15 +177,14 @@ public class MainService extends Service implements Runnable {
                             break;
                         }
                     }
-
-                    if (decrypted == null) {
-                        // unknown caller
-                        log("no contact found");
-                        return;
-                    }
                 } else {
                     // we know the contact
                     decrypted = Crypto.decrypt(request, contact.getPublicKey(), this.db.settings.getSecretKey());
+                }
+
+                if (decrypted == null) {
+                    // cannot decrypt / unknown caller
+                    break;
                 }
 
                 if (this.db.settings.getBlockUnknown() && !db.contactExists(contact.getPublicKey())) {
@@ -242,9 +253,26 @@ public class MainService extends Service implements Runnable {
     @Override
     public void run() {
         try {
-            initNetwork();
+            // wait until database is ready
+            while (this.db == null && this.run) {
+                log("wait for db to become ready");
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+
+            server = new ServerSocket(serverPort);
             refreshContacts();
-            mainLoop();
+            while (this.run) {
+                try {
+                    Socket socket = server.accept();
+                    new Thread(() -> handleClient(socket)).start();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
             new Handler(getMainLooper()).post(() -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show());
@@ -268,7 +296,7 @@ public class MainService extends Service implements Runnable {
         void addContact(Contact contact) {
             try {
                 db.addContact(contact);
-                storeDatabase();
+                saveDatabase();
                 refreshContacts();
             } catch (Database.ContactAlreadyAddedException e) {
                 Toast.makeText(MainService.this, getResources().getString(R.string.contact_already_exists), Toast.LENGTH_SHORT).show();
@@ -277,7 +305,7 @@ public class MainService extends Service implements Runnable {
 
         void deleteContact(String pubKey) {
             db.deleteContact(pubKey);
-            storeDatabase();
+            saveDatabase();
             refreshContacts();
         }
 
@@ -285,7 +313,7 @@ public class MainService extends Service implements Runnable {
             int idx = db.findContact(pubKey);
             if (idx >= 0) {
                 db.contacts.get(idx).setName(name);
-                storeDatabase();
+                saveDatabase();
                 refreshContacts();
             }
         }
@@ -302,9 +330,19 @@ public class MainService extends Service implements Runnable {
             return MainService.this.db;
         }
 
-        void setDatabase(Database db) {
-            MainService.this.db = db;
-            storeDatabase();
+        void loadDatabase() {
+            MainService.this.loadDatabase();
+        }
+
+        void replaceDatabase(Database db) {
+            if (db != null) {
+                if (MainService.this.db == null) {
+                    MainService.this.db = db;
+                } else {
+                    MainService.this.db = db;
+                    saveDatabase();
+                }
+            }
         }
 
         void pingContacts(ContactPingListener listener) {
@@ -312,8 +350,8 @@ public class MainService extends Service implements Runnable {
             new Thread(new PingRunnable(getContacts(), secretKey, listener)).start();
         }
 
-        void storeDatabase() {
-            Database.store(MainService.this, MainService.this.db, MainService.this.database_password);
+        void saveDatabase() {
+            MainService.this.saveDatabase();
         }
 
         Settings getSettings() {
@@ -348,7 +386,9 @@ public class MainService extends Service implements Runnable {
                     }
 
                     String encrypted = Crypto.encrypt("{\"action\":\"ping\"}", contact.getPublicKey(), secretKey);
-
+                    if (encrypted == null) {
+                        continue;
+                    }
                     OutputStream os = socket.getOutputStream();
                     os.write(encrypted.getBytes());
                     os.close();
@@ -358,6 +398,13 @@ public class MainService extends Service implements Runnable {
                     contact.setState(Contact.State.OFFLINE);
                     e.printStackTrace();
                 } finally {
+                    if (socket != null) {
+                        try {
+                            socket.close();
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
                     if (listener != null) {
                         listener.onContactPingResult(contact);
                     } else {

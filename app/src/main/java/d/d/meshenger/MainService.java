@@ -268,6 +268,7 @@ public class MainService extends Service implements Runnable {
         void addContact(Contact contact) {
             try {
                 db.addContact(contact);
+                storeDatabase();
                 refreshContacts();
             } catch (Database.ContactAlreadyAddedException e) {
                 Toast.makeText(MainService.this, getResources().getString(R.string.contact_already_exists), Toast.LENGTH_SHORT).show();
@@ -276,6 +277,7 @@ public class MainService extends Service implements Runnable {
 
         void deleteContact(String pubKey) {
             db.deleteContact(pubKey);
+            storeDatabase();
             refreshContacts();
         }
 
@@ -283,6 +285,7 @@ public class MainService extends Service implements Runnable {
             int idx = db.findContact(pubKey);
             if (idx >= 0) {
                 db.contacts.get(idx).setName(name);
+                storeDatabase();
                 refreshContacts();
             }
         }
@@ -301,6 +304,7 @@ public class MainService extends Service implements Runnable {
 
         void setDatabase(Database db) {
             MainService.this.db = db;
+            storeDatabase();
         }
 
         void pingContacts(ContactPingListener listener) {

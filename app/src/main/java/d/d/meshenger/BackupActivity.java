@@ -114,42 +114,52 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
     private void exportDatabase() {
         String path = pathEditText.getText().toString();
 
-        if (path.isEmpty()) {
-            showErrorMessage(getResources().getString(R.string.empty_path), getResources().getString(R.string.no_path_selected));
+        if (path == null || path.isEmpty()) {
+            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_path_selected));
             return;
         }
 
         if ((new File(path)).isDirectory() || path.endsWith("/")) {
-            showErrorMessage(getResources().getString(R.string.invalid_path), getResources().getString(R.string.no_file_name));
+            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_file_name));
+            return;
+        }
+
+        if ((new File(path)).exists()) {
+            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.file_already_exists));
             return;
         }
 
         try {
             Database db = this.binder.getDatabase();
             Database.store(path, db, null);
-            Toast.makeText(this, R.string.done, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            showErrorMessage("Error", e.toString());
+            showErrorMessage(getResources().getString(R.string.error), e.getMessage());
         }
     }
 
     private void importDatabase() {
         String path = pathEditText.getText().toString();
 
-        if (path.isEmpty()) {
-            showErrorMessage(getResources().getString(R.string.empty_path), getResources().getString(R.string.no_path_selected));
+        if (path == null || path.isEmpty()) {
+            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_path_selected));
             return;
         }
 
         if ((new File(path)).isDirectory() || path.endsWith("/")) {
-            showErrorMessage(getResources().getString(R.string.invalid_path), getResources().getString(R.string.no_file_name));
+            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_file_name));
+            return;
+        }
+
+        if (!(new File(path)).exists()) {
+            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.file_does_not_exist));
             return;
         }
 
         try {
             Database db = Database.load(path, null);
             this.binder.replaceDatabase(db);
-            Toast.makeText(this, getResources().getString(R.string.done), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             showErrorMessage(getResources().getString(R.string.error), e.toString());
         }
@@ -174,7 +184,7 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
                         if (!path.endsWith("/")) {
                             path += "/";
                         }
-                        path += "backup.json";
+                        path += "meshenger_backup.json";
                     }
                     pathEditText.setText(path);
                 }

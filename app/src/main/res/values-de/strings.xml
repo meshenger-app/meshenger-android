@@ -45,9 +45,9 @@
     <string name="about_version">App Ausführung:</string>
     <string name="about_info">App Info:</string>
     <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
-    <string name="empty_path">Leerer Pfad</string>
+    <string name="file_does_not_exist">Datei existiert nicht</string>
     <string name="no_path_selected">Kein Pfad ausgewählt</string>
-    <string name="invalid_path">Ungültiger Pfad</string>
+    <string name="file_already_exists">Datei existiert bereits</string>
     <string name="invalid_address">Ungültige Addresse</string>
     <string name="no_file_name">Kein Dateiname</string>
     <string name="contact_already_exists">Kontakt existiert bereits</string>

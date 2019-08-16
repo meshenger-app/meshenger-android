@@ -11,6 +11,7 @@
     <string name="camera_permission_request">La permission de la caméra est nécessaire pour scanner les codes QR</string>
     <string name="invalid_qr">QR-Code invalide</string>
     <string name="network_connect_invitation">Aucune information disponible, veuillez vous connecter à un réseau</string>
+    <string name="contact_has_no_address_warning">Attention: le contact n'a pas d'adresse</string>
     <string name="menu_settings">Réglages</string>
     <string name="menu_license">Licence</string>
     <string name="menu_backup">Sauvegarde</string>

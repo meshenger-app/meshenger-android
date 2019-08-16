@@ -97,6 +97,9 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
+            if (contact.getAddresses().isEmpty()) {
+                Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_LONG).show();
+            }
         } catch (WriterException e) {
             e.printStackTrace();
         }

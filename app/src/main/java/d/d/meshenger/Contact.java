@@ -23,7 +23,9 @@ public class Contact implements Serializable {
 
     // contact state
     private State state = State.PENDING;
-    //public boolean recent = false;
+
+    // last successful address
+    private InetSocketAddress last_address = null;
 
     public Contact(String name, String pubkey, ArrayList<String> addresses) {
         this.name = name;
@@ -76,6 +78,7 @@ public class Contact implements Serializable {
                 e.printStackTrace();
             }
         }
+
         return addrs;
     }
 
@@ -91,7 +94,20 @@ public class Contact implements Serializable {
         this.name = name;
     }
 
-    private static void closeSocket(Socket socket) {
+    private static Socket establishConnection(InetSocketAddress address) {
+        Socket socket = new Socket();
+        try {
+            // timeout to establish connection
+            socket.connect(address, 300);
+            return socket;
+        } catch (SocketTimeoutException e) {
+            // ignore
+        } catch (ConnectException e) {
+            // device is online, but does not listen on the given port
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (socket != null) {
             try {
                 socket.close();
@@ -99,25 +115,39 @@ public class Contact implements Serializable {
                 // ignore
             }
         }
+
+        return null;
     }
 
+    /*
+    * Create a connection to the contact.
+    * Try/Remember the last successful address.
+    */
     public Socket createSocket() {
-        final int connectionTimeout = 300;
-        for (InetSocketAddress addr : getAllSocketAddresses()) {
-            Socket socket = new Socket();
-            try {
-                // timeout to establish connection
-                socket.connect(addr, connectionTimeout);
-                return socket;
-            } catch (SocketTimeoutException e) {
-                // ignore
-            } catch (ConnectException e) {
-                // device is online, but does not listen on the given port
-                closeSocket(socket);
-            } catch (Exception e) {
-                e.printStackTrace();
+        Socket socket = null;
+
+        ArrayList<InetSocketAddress> addresses = this.getAllSocketAddresses();
+
+        // put last working address first in list
+        if (this.last_address != null) {
+            for (int i = 1; i < addresses.size(); i += 1) {
+                if (addresses.get(i).equals(this.last_address)) {
+                    // swap address
+                    InetSocketAddress tmp = addresses.get(i);
+                    addresses.set(i, addresses.get(0));
+                    addresses.set(0, tmp);
+                    break;
+                }
             }
-            closeSocket(socket);
+        }
+
+        for (InetSocketAddress address : addresses) {
+            socket = this.establishConnection(address);
+            if (socket != null) {
+                // TODO: address not verified yet!
+                this.last_address = address;
+                return socket;
+            }
         }
 
         return null;

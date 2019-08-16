@@ -64,8 +64,7 @@ class Database {
         // read data
         byte[] data = Utils.readExternalFile(path);
 
-        if (password != null & password.length() > 0) {
-            Log.d("Database", "use password for database: " + password);
+        if (password != null && password.length() > 0) {
             data = Crypto.decryptData(data, password.getBytes());
         }
 
@@ -83,11 +82,9 @@ class Database {
     public static void store(String path, Database db, String password) throws IOException, JSONException {
         JSONObject obj = Database.toJSON(db);
         byte[] data = obj.toString().getBytes();
-
-        if (password != null & password.length() > 0) {
+        if (password != null && password.length() > 0) {
             data = Crypto.encryptData(data, password.getBytes());
         }
-
         Utils.writeExternalFile(path, data);
     }
 

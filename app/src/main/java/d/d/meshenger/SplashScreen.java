@@ -21,6 +21,6 @@ public class SplashScreen extends Activity {
         new Handler().postDelayed(() -> {
             startActivity(new Intent(this, ContactListActivity.class));
             finish();
-        }, 1500);
+        }, 1000);
     }
 }

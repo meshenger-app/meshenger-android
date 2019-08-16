@@ -63,20 +63,20 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText et = new EditText(this);
         b.setTitle(R.string.paste_invitation)
-                .setPositiveButton("ok", (dialogInterface, i) -> {
-                    try {
-                        String data = et.getText().toString();
-                        JSONObject object = new JSONObject(data);
-                        Contact contact = Contact.importJSON(object);
-                        binder.addContact(contact);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
-                    }
-                    finish();
-                })
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
-                .setView(et);
+            .setPositiveButton("ok", (dialogInterface, i) -> {
+                try {
+                    String data = et.getText().toString();
+                    JSONObject object = new JSONObject(data);
+                    Contact contact = Contact.importJSON(object);
+                    binder.addContact(contact);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
+                }
+                finish();
+            })
+            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+            .setView(et);
         b.show();
     }
 

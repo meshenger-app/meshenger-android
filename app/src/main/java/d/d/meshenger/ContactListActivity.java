@@ -169,20 +169,16 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
         builder.setTitle("Confirm");
         builder.setMessage("Really remove contact: " + contact.getName());
-        builder.setCancelable(false); // not necessary
+        builder.setCancelable(false); // prevent key shortcut to cancel dialog
 
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                binder.deleteContact(contact.getPublicKey());
-                refreshContactList();
-                dialog.cancel();
-            }
+        builder.setPositiveButton(R.string.yes, (DialogInterface dialog, int id) -> {
+            binder.deleteContact(contact.getPublicKey());
+            refreshContactList();
+            dialog.cancel();
         });
 
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
+        builder.setNegativeButton(R.string.no, (DialogInterface dialog, int id) -> {
+            dialog.cancel();
         });
 
         // create dialog box
@@ -191,7 +187,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
     private void refreshContactList() {
-        log("refreshing...");
         if (this.binder == null || contactListView == null) {
             return;
         }
@@ -301,7 +296,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        log("onServiceConnected()");
         this.binder = (MainService.MainBinder) iBinder;
 
         //this.binder.setPingResultListener(this);
@@ -313,7 +307,6 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        log("onServiceDisconnected");
         this.binder = null;
     }
 

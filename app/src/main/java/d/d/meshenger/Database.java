@@ -58,22 +58,6 @@ class Database {
         }
     }
 
-/*
-    // check if the database is encrypted
-    public static boolean isEncrypted(String path) {
-        try {
-            byte[] data = Utils.readExternalFile(path);
-            for (int i = 0; data != null && i < data.length; i += 1) {
-                if (data[i] < 0x20) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-*/
     public static Database load(String path, String password) throws IOException, JSONException {
         String version = "2.0.0";
 
@@ -86,7 +70,7 @@ class Database {
         }
 
         JSONObject obj = new JSONObject(
-                new String(data, Charset.forName("UTF-8"))
+            new String(data, Charset.forName("UTF-8"))
         );
 
         if (!version.equals(obj.optString("version", ""))) {

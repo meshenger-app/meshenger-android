@@ -398,7 +398,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        // nothing to do
+        this.binder = null;
     }
 
     @Override

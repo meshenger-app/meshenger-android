@@ -62,14 +62,12 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        log("onServiceConnected()");
         this.binder = (MainService.MainBinder) iBinder;
         init();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        log("onServiceDisconnected");
         this.binder = null;
     }
 
@@ -191,9 +189,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle(getResources().getString(R.string.password));
         EditText et = new EditText(this);
-        //et.setText(password);
         et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        //et.setSelection(password.length());
         new AlertDialog.Builder(this)
             .setTitle(getResources().getString(R.string.enter_password))
             .setView(et)

@@ -107,7 +107,6 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        log("onServiceConnected " + (iBinder == null));
         this.binder = (MainService.MainBinder) iBinder;
 
         try {
@@ -121,7 +120,6 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        log("onServiceDisconnected");
         this.binder = null;
     }
 

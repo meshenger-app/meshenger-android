@@ -1,47 +1,24 @@
 package d.d.meshenger;
 
 import com.github.isabsent.filepicker.SimpleFilePickerDialog;
-
 import static com.github.isabsent.filepicker.SimpleFilePickerDialog.CompositeMode.FILE_OR_FOLDER_SINGLE_CHOICE;
 
-import android.Manifest;
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.Activity;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 
 public class BackupActivity extends MeshengerActivity implements ServiceConnection,
@@ -87,14 +64,12 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        log("onServiceConnected");
         this.binder = (MainService.MainBinder) iBinder;
         initViews();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        log("onServiceDisconnected");
         this.binder = null;
     }
 
@@ -109,38 +84,29 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         selectButton = findViewById(R.id.SelectButton);
         pathEditText = findViewById(R.id.pathEditText);
 
-        importButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.hasReadPermission(BackupActivity.this)) {
-                    importDatabase();
-                } else {
-                    Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
-                }
+        importButton.setOnClickListener((View v) -> {
+            if (Utils.hasReadPermission(BackupActivity.this)) {
+                importDatabase();
+            } else {
+                Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
             }
         });
 
-        exportButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.hasReadPermission(BackupActivity.this) && Utils.hasWritePermission(BackupActivity.this)) {
-                    exportDatabase();
-                } else {
-                    Utils.requestWritePermission(BackupActivity.this, REQUEST_PERMISSION);
-                    Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
-                }
+        exportButton.setOnClickListener((View v) -> {
+            if (Utils.hasReadPermission(BackupActivity.this) && Utils.hasWritePermission(BackupActivity.this)) {
+                exportDatabase();
+            } else {
+                Utils.requestWritePermission(BackupActivity.this, REQUEST_PERMISSION);
+                Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
             }
         });
 
-        selectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.hasReadPermission(BackupActivity.this)) {
-                    final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    showListItemDialog(getResources().getString(R.string.button_select), rootPath, FILE_OR_FOLDER_SINGLE_CHOICE, SELECT_PATH_REQUEST);
-                } else {
-                    Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
-                }
+        selectButton.setOnClickListener((View v) -> {
+            if (Utils.hasReadPermission(BackupActivity.this)) {
+                final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                showListItemDialog(getResources().getString(R.string.button_select), rootPath, FILE_OR_FOLDER_SINGLE_CHOICE, SELECT_PATH_REQUEST);
+            } else {
+                Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
             }
         });
     }
@@ -203,7 +169,6 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
             case SELECT_PATH_REQUEST:
                 if (extras.containsKey(SimpleFilePickerDialog.SELECTED_SINGLE_PATH)) {
                     String path = extras.getString(SimpleFilePickerDialog.SELECTED_SINGLE_PATH);
-                    //setPath(path);
                     if ((new File(path)).isDirectory()) {
                         // append slash
                         if (!path.endsWith("/")) {

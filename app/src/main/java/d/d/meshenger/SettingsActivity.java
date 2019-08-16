@@ -56,22 +56,17 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        log("onServiceConnected");
         this.binder = (MainService.MainBinder) iBinder;
         initViews();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        log("onServiceDisconnected");
         this.binder = null;
     }
 
     private void initViews() {
-        log("initViews");
-
         if (this.binder == null) {
-            log("this.binder is null");
             return;
         }
 

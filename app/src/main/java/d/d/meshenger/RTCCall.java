@@ -87,7 +87,6 @@ public class RTCCall implements DataChannel.Observer {
 
     // called for outgoing calls
     private RTCCall(Context context, String secretKey, Contact contact, OnStateChangeListener listener) {
-        log("starting call to " + contact.getName());
         this.context = context;
         this.contact = contact;
         this.commSocket = null;
@@ -102,9 +101,7 @@ public class RTCCall implements DataChannel.Observer {
             context.setTheme(R.style.AppTheme_Light);
         }
 
-        log("init RTC done");
         new Thread(() -> {
-            log("creating PeerConnection");
             connection = factory.createPeerConnection(Collections.emptyList(), new DefaultObserver() {
                 @Override
                 public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
@@ -167,11 +164,9 @@ public class RTCCall implements DataChannel.Observer {
 
                                 String action = obj.getString("action");
                                 if (action.equals("connected")) {
-                                    log("connected");
                                     reportStateChange(CallState.CONNECTED);
                                     handleAnswer(obj.getString("answer"));
                                 } else if (action.equals("dismissed")) {
-                                    log("dismissed");
                                     closeCommSocket();
                                     reportStateChange(CallState.DISMISSED);
                                 } else {
@@ -211,7 +206,6 @@ public class RTCCall implements DataChannel.Observer {
                 }
             });
 
-            log("PeerConnection created");
             connection.addStream(createStream());
             this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
             this.dataChannel.registerObserver(this);
@@ -292,7 +286,6 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void setRemoteVideoEnabled(boolean enabled) {
-        log("setting remote video enabled: " + enabled);
         new Handler(Looper.getMainLooper()).post(() -> {
             if (enabled) {
                 this.remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
@@ -396,11 +389,9 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void initRTC(Context c) {
-        log("initializing");
         PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(c).createInitializationOptions());
-        log("initialized");
         factory = PeerConnectionFactory.builder().createPeerConnectionFactory();
-        log("created");
+
         constraints = new MediaConstraints();
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"));
@@ -410,7 +401,6 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void handleAnswer(String remoteDesc) {
-        log("setting remote desc");
         connection.setRemoteDescription(new DefaultSdpObserver() {
             @Override
             public void onSetSuccess() {

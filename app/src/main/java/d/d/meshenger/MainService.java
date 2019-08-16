@@ -55,15 +55,13 @@ public class MainService extends Service implements Runnable {
         try {
             if ((new File(this.database_path)).exists()) {
                 // open existing database
-                log("open existing database");
                 this.db = Database.load(this.database_path, this.database_password);
             } else {
                 // create new database
-                log("create new database");
                 this.db = new Database();
             }
         } catch (Exception e) {
-            log("cannot open database");
+            // ignore
         }
     }
 
@@ -234,11 +232,11 @@ public class MainService extends Service implements Runnable {
                 }
             }
 
-            log("client " + client.getInetAddress().getHostAddress() + " disconnected");
+            log("client disconnected");
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("call_declined"));
         } catch (Exception e) {
             e.printStackTrace();
-            log("client " + client.getInetAddress().getHostAddress() + " disconnected (exception)");
+            log("client disconnected (exception)");
             if (this.currentCall != null) {
                 this.currentCall.decline();
             }
@@ -255,7 +253,6 @@ public class MainService extends Service implements Runnable {
         try {
             // wait until database is ready
             while (this.db == null && this.run) {
-                log("wait for db to become ready");
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {

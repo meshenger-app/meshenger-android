@@ -41,15 +41,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.goterl.lazycode.lazysodium.LazySodiumAndroid;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
-import com.goterl.lazycode.lazysodium.exceptions.SodiumException;
 import com.goterl.lazycode.lazysodium.interfaces.Box;
-import com.goterl.lazycode.lazysodium.utils.KeyPair;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -141,23 +137,16 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     }
 
     private void initializeSettings(String username) {
-        // use MainBinder here to access database?
+        // create key pair
+        SodiumAndroid sa = new SodiumAndroid();
+        byte[] publicKey = new byte[Box.PUBLICKEYBYTES];
+        byte[] secretKey = new byte[Box.SECRETKEYBYTES];
+        sa.crypto_box_keypair(publicKey, secretKey);
+
         Settings settings = this.binder.getSettings();
-
-        LazySodiumAndroid ls = new LazySodiumAndroid(new SodiumAndroid());
-        Box.Lazy box = (Box.Lazy) ls;
-
-        try {
-            KeyPair keyPair = box.cryptoBoxKeypair();
-            String publicKey = keyPair.getPublicKey().getAsHexString();
-            String secretKey = keyPair.getSecretKey().getAsHexString();
-
-            settings.setUsername(username);
-            settings.setSecretKey(secretKey);
-            settings.setPublicKey(publicKey);
-        } catch (SodiumException e) {
-            e.printStackTrace();
-        }
+        settings.setUsername(username);
+        settings.setPublicKey(Utils.byteArrayToHexString(publicKey));
+        settings.setSecretKey(Utils.byteArrayToHexString(secretKey));
 
         for (String mac : Utils.getMacAddresses()) {
             settings.addAddress(mac);

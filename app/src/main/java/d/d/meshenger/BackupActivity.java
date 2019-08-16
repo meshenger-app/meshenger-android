@@ -159,9 +159,8 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         }
 
         try {
-            JSONObject obj = Database.toJSON(this.binder.getDatabase());
-            Utils.writeExternalFile(path, obj.toString().getBytes());
-
+            Database db = this.binder.getDatabase();
+            Database.store(path, db, null);
             Toast.makeText(this, R.string.done, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             showErrorMessage("Error", e.toString());
@@ -182,13 +181,8 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         }
 
         try {
-            byte[] data = Utils.readExternalFile(path);
-            JSONObject obj = new JSONObject(
-                new String(data, Charset.forName("UTF-8"))
-            );
-
-            this.binder.setDatabase(Database.fromJSON(obj));
-
+            Database db = Database.load(path, null);
+            this.binder.replaceDatabase(db);
             Toast.makeText(this, getResources().getString(R.string.done), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             showErrorMessage(getResources().getString(R.string.error), e.toString());

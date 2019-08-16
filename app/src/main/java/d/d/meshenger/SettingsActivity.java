@@ -218,25 +218,25 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         et.setText(addresses_string);
         et.setSelection(addresses_string.length());
         new AlertDialog.Builder(this)
-                .setTitle(getResources().getString(R.string.settings_change_address))
-                .setView(et)
-                .setPositiveButton("ok", (dialogInterface, i) -> {
-                    ArrayList<String> new_addresses = Utils.split(et.getText().toString());
-                    ArrayList<String> invalid_addresses = getInvalidAddresses(new_addresses);
-                    if (invalid_addresses.isEmpty()) {
-                        this.binder.getSettings().setAddresses(new_addresses);
-                        this.binder.storeDatabase();
-                        syncSettings("address", Utils.join(new_addresses)); //needed?
-                    } else {
-                        // show invalid addresses
-                        for (String address : invalid_addresses) {
-                            Toast.makeText(this, getResources().getString(R.string.invalid_address) + ": " + address, Toast.LENGTH_LONG).show();
-                        }
+            .setTitle(getResources().getString(R.string.settings_change_address))
+            .setView(et)
+            .setPositiveButton("ok", (dialogInterface, i) -> {
+                ArrayList<String> new_addresses = Utils.split(et.getText().toString());
+                ArrayList<String> invalid_addresses = getInvalidAddresses(new_addresses);
+                if (invalid_addresses.isEmpty()) {
+                    this.binder.getSettings().setAddresses(new_addresses);
+                    this.binder.storeDatabase();
+                    syncSettings("address", Utils.join(new_addresses)); //needed?
+                } else {
+                    // show invalid addresses
+                    for (String address : invalid_addresses) {
+                        Toast.makeText(this, getResources().getString(R.string.invalid_address) + ": " + address, Toast.LENGTH_LONG).show();
                     }
-                    initViews();
-                })
-                .setNegativeButton(getResources().getText(R.string.cancel), null)
-                .show();
+                }
+                initViews();
+            })
+            .setNegativeButton(getResources().getText(R.string.cancel), null)
+            .show();
     }
 
     private void showChangePasswordDialog() {
@@ -246,16 +246,16 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         et.setSelection(password.length());
         new AlertDialog.Builder(this)
-                .setTitle(getResources().getString(R.string.settings_change_password))
-                .setView(et)
-                .setPositiveButton("ok", (dialogInterface, i) -> {
-                    String new_password = et.getText().toString();
-                    this.binder.setDatabasePassword(new_password);
-                    this.binder.storeDatabase();
-                    initViews();
-                })
-                .setNegativeButton(getResources().getText(R.string.cancel), null)
-                .show();
+            .setTitle(getResources().getString(R.string.settings_change_password))
+            .setView(et)
+            .setPositiveButton("ok", (dialogInterface, i) -> {
+                String new_password = et.getText().toString();
+                this.binder.setDatabasePassword(new_password);
+                this.binder.storeDatabase();
+                initViews();
+            })
+            .setNegativeButton(getResources().getText(R.string.cancel), null)
+            .show();
     }
 
     private void syncSettings(String what, boolean content) {

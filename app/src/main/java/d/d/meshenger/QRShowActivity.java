@@ -30,14 +30,13 @@ import org.json.JSONException;
 public class QRShowActivity extends MeshengerActivity implements ServiceConnection {
     private Contact contact = null;
     private MainService.MainBinder binder;
-    private String data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrshow);
 
-        if (getIntent().hasExtra("EXTRA_CONTACT")){
+        if (getIntent().hasExtra("EXTRA_CONTACT")) {
             this.contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
             findViewById(R.id.fabPresenter).setVisibility(View.GONE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -56,11 +55,16 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         });
 
         findViewById(R.id.fabShare).setOnClickListener(view -> {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.putExtra(Intent.EXTRA_TEXT, data);
-            i.setType("text/plain");
-            startActivity(i);
-            finish();
+            if (this.contact != null) try {
+                String data = Contact.exportJSON(this.contact).toString();
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.putExtra(Intent.EXTRA_TEXT, data);
+                i.setType("text/plain");
+                startActivity(i);
+                finish();
+            } catch (Exception e) {
+                // ignore
+            }
         });
 
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("incoming_contact"));
@@ -84,24 +88,19 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
     private void generateQR() throws Exception {
         if (this.contact == null) {
             // export own contact
-            Contact contact = this.binder.getSettings().getOwnContact();
-            data = Contact.exportJSON(contact).toString();
-        } else {
-            // export from contact list
-            data = Contact.exportJSON(this.contact).toString();
+            this.contact = this.binder.getSettings().getOwnContact();
         }
 
+        log("generateQR");
+        String data = Contact.exportJSON(this.contact).toString();
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-        try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080);
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
-            if (contact.getAddresses().isEmpty()) {
-                Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_LONG).show();
-            }
-        } catch (WriterException e) {
-            e.printStackTrace();
+        BitMatrix bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080);
+        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+        Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+        ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
+
+        if (this.contact.getAddresses().isEmpty()) {
+            Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
@@ -71,7 +72,9 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         this.binder = (MainService.MainBinder) iBinder;
-        init();
+
+        // delayed execution of init() to show splash page
+        (new Handler()).postDelayed(() -> { init(); }, 1000);
     }
 
     @Override

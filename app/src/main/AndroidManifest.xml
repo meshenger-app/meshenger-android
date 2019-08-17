@@ -25,8 +25,7 @@
             android:name=".ContactListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".QRShowActivity"
             android:exported="true"
@@ -51,19 +50,13 @@
             android:exported="true"
             android:screenOrientation="portrait" />
 
-        <receiver android:name=".BootReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".AboutActivity"></activity>
-        <activity android:name=".BackupActivity"></activity>
-        <activity android:name=".LicenseActivity"></activity>
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".BackupActivity" />
+        <activity android:name=".LicenseActivity" />
     </application>
 
 </manifest>

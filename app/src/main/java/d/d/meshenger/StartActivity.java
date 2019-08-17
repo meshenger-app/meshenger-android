@@ -215,7 +215,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getResources().getString(R.string.enter_password))
+        builder
+            .setTitle(R.string.enter_password)
             .setView(et)
             .setPositiveButton("ok", (dialogInterface, i) -> {
                 // we will override this handler
@@ -225,13 +226,16 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 finish();
             });
 
-        final AlertDialog dialog = builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
+
         // override handler (to be able to dismiss the dialog manually)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View v) -> {
             String password = et.getText().toString();
+
             this.binder.setDatabasePassword(password);
             this.binder.loadDatabase();
+
             if (this.binder.getDatabase() == null) {
                 Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show();
             } else {

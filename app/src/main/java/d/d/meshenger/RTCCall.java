@@ -142,7 +142,7 @@ public class RTCCall implements DataChannel.Observer {
                                     return;
                                 }
                                 JSONObject obj = new JSONObject(decrypted);
-                                if (obj.optString("action", "").equals("ringing")) {
+                                if (!obj.optString("action", "").equals("ringing")) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
                                     return;

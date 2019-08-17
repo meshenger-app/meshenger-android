@@ -4,7 +4,7 @@
 
 Features:
 
-- audio and video support
+- audio and video calls
 - contact authentication via public/secret keys
 - database backup and encryption
 - add custom addresses to reach participant

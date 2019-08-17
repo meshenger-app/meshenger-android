@@ -78,10 +78,15 @@ public class MainService extends Service implements Runnable {
         super.onDestroy();
         this.run = false;
 
-        try {
-            Database.store(this.database_path, this.db, this.database_password);
-        } catch (Exception e) {
-            e.printStackTrace();
+        // The database might be null here if no correct
+        // database password was supplied to open it.
+
+        if (this.db != null) {
+            try {
+                Database.store(this.database_path, this.db, this.database_password);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // shutdown listening socket and say goodbye
@@ -256,7 +261,7 @@ public class MainService extends Service implements Runnable {
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
-                    // ignore
+                    break;
                 }
             }
 
@@ -313,6 +318,10 @@ public class MainService extends Service implements Runnable {
                 saveDatabase();
                 refreshContacts();
             }
+        }
+
+        void shutdown() {
+            MainService.this.stopSelf();
         }
 
         String getDatabasePassword() {

@@ -246,9 +246,8 @@ class Utils {
         return macs;
     }
 
-    // for debugging only - list all device IP addresses
+    // list all IP/MAC addresses of running network interfaces - for debugging only
     public static void printAddresses() {
-        ArrayList<String> macs = new ArrayList<String>();
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {

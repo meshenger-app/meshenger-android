@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.goterl.lazycode.lazysodium.SodiumAndroid;
 import com.goterl.lazycode.lazysodium.interfaces.Box;
 
+import java.util.ArrayList;
+
 
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
     private MainService.MainBinder binder;
@@ -94,8 +96,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         unbindService(this);
     }
 
-    private void initializeSettings(String username) {
-        // create key pair
+    private void initializeSettings(String username, ArrayList<String> addresses) {
+        // create secret/public key pair
         SodiumAndroid sa = new SodiumAndroid();
         byte[] publicKey = new byte[Box.PUBLICKEYBYTES];
         byte[] secretKey = new byte[Box.SECRETKEYBYTES];
@@ -106,8 +108,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         settings.setPublicKey(Utils.byteArrayToHexString(publicKey));
         settings.setSecretKey(Utils.byteArrayToHexString(secretKey));
 
-        for (String mac : Utils.getMacAddresses()) {
-            settings.addAddress(mac);
+        for (String address : addresses) {
+            settings.addAddress(address);
         }
 
         try {
@@ -119,18 +121,14 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     // initial dialog to set the username
     private void showUsernameDialog() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle(R.string.hello);
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
         TextView tw = new TextView(this);
         tw.setText(R.string.name_prompt);
         //tw.setTextColor(Color.BLACK);
         tw.setTextSize(20);
         tw.setGravity(Gravity.CENTER_HORIZONTAL);
 
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(tw);
 
         EditText et = new EditText(this);
@@ -141,29 +139,22 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         layout.setPadding(40, 80, 40, 40);
         //layout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        dialog.setView(layout);
-        dialog.setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.hello);
+        builder.setView(layout);
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+            this.binder.shutdown();
             finish();
         });
 
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
-        dialog.setPositiveButton(R.string.next, (dialogInterface, i) -> {
-            String username = et.getText().toString();
-            initializeSettings(username);
-
-            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
-/*
-            Intent intent = new Intent("settings_changed");
-            intent.putExtra("subject", "username");
-            intent.putExtra("username", username);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-*/
-            conclude();
+        builder.setPositiveButton(R.string.next, (dialogInterface, i) -> {
+            // we will override this handler
         });
 
-        AlertDialog finalDialog = dialog.create();
-        finalDialog.setOnShowListener((newDialog) -> {
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener((newDialog) -> {
             Button okButton = ((AlertDialog) newDialog).getButton(AlertDialog.BUTTON_POSITIVE);
             et.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -192,7 +183,30 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
             }
         });
 
-        finalDialog.show();
+        dialog.show();
+
+        // override handler (to be able to dismiss the dialog manually)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View v) -> {
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+            String username = et.getText().toString();
+            ArrayList<String> addresses = Utils.getMacAddresses();
+
+            if (addresses.isEmpty()) {
+                Toast.makeText(this, "No hardware addresses found. Please enable e.g. WiFi for this step.", Toast.LENGTH_SHORT).show();
+            } else {
+                initializeSettings(username, addresses);
+                // close dialog
+                dialog.dismiss();
+                conclude();
+            }
+/*
+            Intent intent = new Intent("settings_changed");
+            intent.putExtra("subject", "username");
+            intent.putExtra("username", username);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+*/
+        });
     }
 
     // ask for database password

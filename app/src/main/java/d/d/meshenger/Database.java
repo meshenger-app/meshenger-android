@@ -27,11 +27,20 @@ class Database {
         return (this.findContact(publicKey) >= 0);
     }
 
-    public void addContact(Contact contact) throws ContactAlreadyAddedException {
-        if (this.contactExists(contact.getPublicKey())) {
-            throw new ContactAlreadyAddedException();
+    public void addContact(Contact contact) {
+        int idx = findContact(contact.getPublicKey());
+        if (idx >= 0) {
+            // contact exists - replace
+            this.contacts.set(idx, contact);
         } else {
             this.contacts.add(contact);
+        }
+    }
+
+    public void deleteContact(String publicKey) {
+        int idx = this.findContact(publicKey);
+        if (idx >= 0) {
+            this.contacts.remove(idx);
         }
     }
 
@@ -42,20 +51,6 @@ class Database {
             }
         }
         return -1;
-    }
-
-    public void deleteContact(String publicKey) {
-        int idx = this.findContact(publicKey);
-        if (idx >= 0) {
-            this.contacts.remove(idx);
-        }
-    }
-
-    class ContactAlreadyAddedException extends Exception {
-        @Override
-        public String getMessage() {
-            return "Contact already added";
-        }
     }
 
     public static Database load(String path, String password) throws IOException, JSONException {

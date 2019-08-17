@@ -259,8 +259,10 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String name = et.getText().toString();
-                    binder.setContactName(contact.getPublicKey(), name);
-                    refreshContactList();
+                    if (name.length() > 0) {
+                        contact.setName(name);
+                        refreshContactList();
+                    }
                 }
             }).show();
     }

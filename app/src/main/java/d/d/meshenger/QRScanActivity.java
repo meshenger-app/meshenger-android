@@ -68,7 +68,12 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
                     String data = et.getText().toString();
                     JSONObject object = new JSONObject(data);
                     Contact contact = Contact.importJSON(object);
-                    binder.addContact(contact);
+                    Contact other_contact = binder.getContact(contact.getPublicKey());
+                    if (other_contact == null) {
+                        binder.addContact(contact);
+                    } else {
+                        Toast.makeText(this, "Contact exists already: " + other_contact.getName(), Toast.LENGTH_SHORT).show();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();

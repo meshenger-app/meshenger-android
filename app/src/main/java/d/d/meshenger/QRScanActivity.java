@@ -59,6 +59,21 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         });
     }
 
+    private void addContact(String data) throws JSONException {
+        JSONObject object = new JSONObject(data);
+        Contact contact = Contact.importJSON(object);
+        Contact other_contact = binder.getContact(contact.getPublicKey());
+
+        if (other_contact == null) {
+            if (contact.getAddresses().isEmpty()) {
+                Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_LONG).show();
+            }
+            binder.addContact(contact);
+        } else {
+            Toast.makeText(this, "Contact already exists: " + other_contact.getName(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void startManualInput(){
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText et = new EditText(this);
@@ -66,14 +81,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
             .setPositiveButton("ok", (dialogInterface, i) -> {
                 try {
                     String data = et.getText().toString();
-                    JSONObject object = new JSONObject(data);
-                    Contact contact = Contact.importJSON(object);
-                    Contact other_contact = binder.getContact(contact.getPublicKey());
-                    if (other_contact == null) {
-                        binder.addContact(contact);
-                    } else {
-                        Toast.makeText(this, "Contact exists already: " + other_contact.getName(), Toast.LENGTH_SHORT).show();
-                    }
+                    addContact(data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
@@ -99,14 +107,9 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     @Override
     public void barcodeResult(BarcodeResult result) {
-        String data = result.getText();
         try {
-            JSONObject object = new JSONObject(data);
-            Contact contact = Contact.importJSON(object);
-            binder.addContact(contact);
-            if (contact.getAddresses().isEmpty()) {
-                Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_LONG).show();
-            }
+            String data = result.getText();
+            addContact(data);
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(this, R.string.invalid_qr, Toast.LENGTH_LONG).show();

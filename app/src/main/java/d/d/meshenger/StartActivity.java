@@ -13,6 +13,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -186,29 +187,35 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     // ask for database password
     private void showPasswordDialog() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle(getResources().getString(R.string.password));
         EditText et = new EditText(this);
         et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        new AlertDialog.Builder(this)
-            .setTitle(getResources().getString(R.string.enter_password))
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getString(R.string.enter_password))
             .setView(et)
             .setPositiveButton("ok", (dialogInterface, i) -> {
-                String password = et.getText().toString();
-                this.binder.setDatabasePassword(password);
-                this.binder.loadDatabase();
-                if (this.binder.getDatabase() == null) {
-                    Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show();
-                    // do nothing
-                } else {
-                    conclude();
-                }
+                // we will override this handler
             })
             .setNegativeButton(getResources().getText(R.string.cancel), (dialogInterface, i) -> {
-                // quit app
+                this.binder.shutdown();
                 finish();
-            })
-            .show();
+            });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        // override handler (to be able to dismiss the dialog manually)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View v) -> {
+            String password = et.getText().toString();
+            this.binder.setDatabasePassword(password);
+            this.binder.loadDatabase();
+            if (this.binder.getDatabase() == null) {
+                Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show();
+            } else {
+                // close dialog
+                dialog.dismiss();
+                conclude();
+            }
+        });
     }
 
     private void log(String s) {

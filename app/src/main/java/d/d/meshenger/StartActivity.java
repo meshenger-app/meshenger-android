@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -57,6 +58,12 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     }
 
     private void conclude() {
+        // set night mode
+        boolean nightMode = this.binder.getSettings().getNightMode();
+        AppCompatDelegate.setDefaultNightMode(
+            nightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
         startActivity(new Intent(this, ContactListActivity.class));
         finish();
     }

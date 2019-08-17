@@ -14,7 +14,7 @@ public class Settings {
     private String secretKey;
     private String publicKey;
     private String language;
-    private int mode;
+    private boolean nightMode;
     private boolean blockUnknown;
     private ArrayList<String> addresses;
 
@@ -23,7 +23,7 @@ public class Settings {
         this.secretKey = "";
         this.publicKey = "";
         this.language = "";
-        this.mode = 1;
+        this.nightMode = false;
         this.blockUnknown = false;
         this.addresses = new ArrayList<>();
     }
@@ -60,12 +60,12 @@ public class Settings {
         this.language = language;
     }
 
-    public int getMode() {
-        return mode;
+    public boolean getNightMode() {
+        return nightMode;
     }
 
-    public void setMode(int mode) {
-        this.mode = mode;
+    public void setNightMode(boolean nightMode) {
+        this.nightMode = nightMode;
     }
 
     public boolean getBlockUnknown() {
@@ -99,7 +99,7 @@ public class Settings {
         s.secretKey = obj.getString("secret_key");
         s.publicKey = obj.getString("public_key");
         s.language = obj.getString("language");
-        s.mode = obj.getInt("mode");
+        s.nightMode = obj.getBoolean("might_mode");
         s.blockUnknown = obj.getBoolean("block_unknown");
         JSONArray array = obj.getJSONArray("addresses");
         for (int i = 0; i < array.length(); i += 1) {
@@ -114,7 +114,7 @@ public class Settings {
         obj.put("secret_key", s.secretKey);
         obj.put("public_key", s.publicKey);
         obj.put("language", s.language);
-        obj.put("mode", s.mode);
+        obj.put("might_mode", s.nightMode);
         obj.put("block_unknown", s.blockUnknown);
         JSONArray array = new JSONArray();
         for (int i = 0; i < s.addresses.size(); i += 1) {

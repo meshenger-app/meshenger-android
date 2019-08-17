@@ -114,13 +114,21 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             syncSettings("ignoreUnsaved", isChecked);
         });
 
-        CheckBox nightMode = findViewById(R.id.checkBoxNightMode);
-        nightMode.setChecked(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
-        nightMode.setOnCheckedChangeListener((nightModeCheckBox, b) -> {
-            int mode = nightModeCheckBox.isChecked() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
-            AppCompatDelegate.setDefaultNightMode(mode);
-            this.binder.getSettings().setMode(mode);
+        boolean nightMode = this.binder.getSettings().getNightMode();
+        CheckBox nightModeCB = findViewById(R.id.checkBoxNightMode);
+        nightModeCB.setChecked(nightMode);
+        nightModeCB.setOnCheckedChangeListener((nightModeCheckBox, b) -> {
+            boolean checked = nightModeCheckBox.isChecked();
+
+            // apply value
+            AppCompatDelegate.setDefaultNightMode(
+                checked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
+
+            // save value
+            this.binder.getSettings().setNightMode(checked);
             this.binder.saveDatabase();
+
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });

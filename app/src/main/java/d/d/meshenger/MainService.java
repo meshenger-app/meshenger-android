@@ -384,6 +384,7 @@ public class MainService extends Service implements Runnable {
                 try {
                     Socket socket = contact.createSocket();
                     if (socket == null) {
+                        contact.setState(Contact.State.OFFLINE);
                         continue;
                     }
 

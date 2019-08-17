@@ -24,10 +24,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.goterl.lazycode.lazysodium.SodiumAndroid;
-import com.goterl.lazycode.lazysodium.interfaces.Box;
+import org.libsodium.jni.Sodium;
+import org.libsodium.jni.SodiumConstants;
 
 import java.util.ArrayList;
+
+import org.libsodium.jni.NaCl;
 
 
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
@@ -38,6 +40,9 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
+
+        // load libsodium for JNI access
+        NaCl.sodium();
 
         Typeface type = Typeface.createFromAsset(getAssets(), "rounds_black.otf");
         ((TextView) findViewById(R.id.splashText)).setTypeface(type);
@@ -98,10 +103,9 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     private void initializeSettings(String username, ArrayList<String> addresses) {
         // create secret/public key pair
-        SodiumAndroid sa = new SodiumAndroid();
-        byte[] publicKey = new byte[Box.PUBLICKEYBYTES];
-        byte[] secretKey = new byte[Box.SECRETKEYBYTES];
-        sa.crypto_box_keypair(publicKey, secretKey);
+        byte[] publicKey = new byte[SodiumConstants.PUBLICKEY_BYTES];
+        byte[] secretKey = new byte[SodiumConstants.SECRETKEY_BYTES];
+        Sodium.crypto_box_keypair(publicKey, secretKey);
 
         Settings settings = this.binder.getSettings();
         settings.setUsername(username);

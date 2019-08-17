@@ -123,7 +123,7 @@ public class RTCCall implements DataChannel.Observer {
                                 JSONObject obj = new JSONObject();
                                 obj.put("action", "call");
                                 obj.put("offer", connection.getLocalDescription().description);
-                                String encrypted = Crypto.encrypt(obj.toString(), contact.getPublicKey(), secretKey);
+                                String encrypted = Crypto.encryptMessage(obj.toString(), contact.getPublicKey(), secretKey);
                                 if (encrypted == null) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
@@ -135,7 +135,7 @@ public class RTCCall implements DataChannel.Observer {
 
                             {
                                 String response = reader.readLine();
-                                String decrypted = Crypto.decrypt(response, contact.getPublicKey(), secretKey);
+                                String decrypted = Crypto.decryptMessage(response, contact.getPublicKey(), secretKey);
                                 if (decrypted == null) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
@@ -153,7 +153,7 @@ public class RTCCall implements DataChannel.Observer {
 
                             {
                                 String response = reader.readLine();
-                                String decrypted = Crypto.decrypt(response, contact.getPublicKey(), secretKey);
+                                String decrypted = Crypto.decryptMessage(response, contact.getPublicKey(), secretKey);
                                 if (decrypted == null) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
@@ -437,7 +437,7 @@ public class RTCCall implements DataChannel.Observer {
                             JSONObject obj = new JSONObject();
                             obj.put("action", "connected");
                             obj.put("answer", connection.getLocalDescription().description);
-                            String encrypted = Crypto.encrypt(obj.toString(), contact.getPublicKey(), secretKey);
+                            String encrypted = Crypto.encryptMessage(obj.toString(), contact.getPublicKey(), secretKey);
                             if (encrypted != null) {
                                 os.write(encrypted.getBytes());
                                 reportStateChange(CallState.CONNECTED);
@@ -510,7 +510,7 @@ public class RTCCall implements DataChannel.Observer {
                 log("declining...");
                 if (this.commSocket != null) {
                     OutputStream os = this.commSocket.getOutputStream();
-                    String encrypted = Crypto.encrypt("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.secretKey);
+                    String encrypted = Crypto.encryptMessage("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.secretKey);
                     os.write(encrypted.getBytes());
                     os.flush();
                 }
@@ -539,7 +539,7 @@ public class RTCCall implements DataChannel.Observer {
             try {
                 if (this.commSocket != null) {
                     OutputStream os = this.commSocket.getOutputStream();
-                    String encrypted = Crypto.encrypt("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.secretKey);
+                    String encrypted = Crypto.encryptMessage("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.secretKey);
                     os.write(encrypted.getBytes());
                     os.flush();
                 }

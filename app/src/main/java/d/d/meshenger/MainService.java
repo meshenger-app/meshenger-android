@@ -99,7 +99,7 @@ public class MainService extends Service implements Runnable {
                         continue;
                     }
 
-                    String encrypted = Crypto.encrypt(message, contact.getPublicKey(), this.db.settings.getSecretKey());
+                    String encrypted = Crypto.encryptMessage(message, contact.getPublicKey(), this.db.settings.getSecretKey());
                     if (encrypted == null) {
                         continue;
                     }
@@ -174,7 +174,7 @@ public class MainService extends Service implements Runnable {
                 if (contact == null) {
                     // look for contact that decrypts the message
                     for (Contact c : this.db.contacts) {
-                        decrypted = Crypto.decrypt(request, c.getPublicKey(), this.db.settings.getSecretKey());
+                        decrypted = Crypto.decryptMessage(request, c.getPublicKey(), this.db.settings.getSecretKey());
                         if (decrypted != null) {
                             contact = c;
                             break;
@@ -182,7 +182,7 @@ public class MainService extends Service implements Runnable {
                     }
                 } else {
                     // we know the contact
-                    decrypted = Crypto.decrypt(request, contact.getPublicKey(), this.db.settings.getSecretKey());
+                    decrypted = Crypto.decryptMessage(request, contact.getPublicKey(), this.db.settings.getSecretKey());
                 }
 
                 if (decrypted == null) {
@@ -209,7 +209,7 @@ public class MainService extends Service implements Runnable {
                         this.currentCall = new RTCCall(this, secretKey, contact, client, offer);
 
                         // respond that we accept the call
-                        String encrypted = Crypto.encrypt("{\"action\":\"ringing\"}", contact.getPublicKey(), secretKey);
+                        String encrypted = Crypto.encryptMessage("{\"action\":\"ringing\"}", contact.getPublicKey(), secretKey);
                         os.write(encrypted.getBytes());
 
                         Intent intent = new Intent(this, CallActivity.class);
@@ -223,7 +223,7 @@ public class MainService extends Service implements Runnable {
                         log("ping...");
                         // someone wants to know if we are online
                         setClientState(contact, Contact.State.ONLINE);
-                        String encrypted = Crypto.encrypt("{\"action\":\"pong\"}", contact.getPublicKey(), secretKey);
+                        String encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), secretKey);
                         os.write(encrypted.getBytes());
                         break;
                     }
@@ -388,7 +388,7 @@ public class MainService extends Service implements Runnable {
                         continue;
                     }
 
-                    String encrypted = Crypto.encrypt("{\"action\":\"ping\"}", contact.getPublicKey(), secretKey);
+                    String encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", contact.getPublicKey(), secretKey);
                     if (encrypted == null) {
                         continue;
                     }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="d.d.meshenger.ContactListActivity"
+    tools:context=".ContactListActivity"
     tools:showIn="@layout/activity_contact_list"
     android:layout_margin="5dp">
 

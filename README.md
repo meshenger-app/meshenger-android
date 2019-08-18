@@ -1,13 +1,13 @@
-# Meshenger - An Open-Source P2P Messenger
+# Meshenger
 
- Allow voice- and video communication without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many networks such as community mesh networks, company networks or at home.
+ Allow voice- and video communication without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
 
 Features:
 
 - audio and video calls
 - contact authentication via public/secret keys
 - database backup and encryption
-- add custom addresses to reach participant
+- add custom addresses to reach contacts
 
 ## Download
 

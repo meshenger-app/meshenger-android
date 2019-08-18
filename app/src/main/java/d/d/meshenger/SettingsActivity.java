@@ -70,25 +70,16 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             return;
         }
 
-        findViewById(R.id.changeNameLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showChangeNameDialog();
-            }
+        findViewById(R.id.changeNameLayout).setOnClickListener((View view) -> {
+            showChangeNameDialog();
         });
 
-        findViewById(R.id.changeAddressLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showChangeAddressDialog();
-            }
+        findViewById(R.id.changeAddressLayout).setOnClickListener((View view) -> {
+            showChangeAddressDialog();
         });
 
-        findViewById(R.id.changePasswordLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showChangePasswordDialog();
-            }
+        findViewById(R.id.changePasswordLayout).setOnClickListener((View view) -> {
+            showChangePasswordDialog();
         });
 
         String username = this.binder.getSettings().getUsername();

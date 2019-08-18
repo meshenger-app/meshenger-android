@@ -48,11 +48,6 @@
         </activity>
 
         <activity
-            android:name=".SplashScreen"
-            android:exported="true"
-            android:screenOrientation="portrait" />
-
-        <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".SettingsActivity" />

@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +29,9 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
     private AlertDialog.Builder builder;
     private Button exportButton;
     private Button importButton;
-    private Button selectButton;
+    private ImageButton selectButton;
     private TextView pathEditText;
+    private TextView passwordEditText;
     private MainService.MainBinder binder;
 
     private void showErrorMessage(String title, String message) {
@@ -82,7 +84,8 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         importButton = findViewById(R.id.ImportButton);
         exportButton = findViewById(R.id.ExportButton);
         selectButton = findViewById(R.id.SelectButton);
-        pathEditText = findViewById(R.id.pathEditText);
+        pathEditText = findViewById(R.id.PathEditText);
+        passwordEditText = findViewById(R.id.PasswordEditText);
 
         importButton.setOnClickListener((View v) -> {
             if (Utils.hasReadPermission(BackupActivity.this)) {
@@ -112,6 +115,7 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
     }
 
     private void exportDatabase() {
+        String password = passwordEditText.getText().toString();
         String path = pathEditText.getText().toString();
 
         if (path == null || path.isEmpty()) {
@@ -131,7 +135,7 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
 
         try {
             Database db = this.binder.getDatabase();
-            Database.store(path, db, null);
+            Database.store(path, db, password);
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             showErrorMessage(getResources().getString(R.string.error), e.getMessage());
@@ -139,6 +143,7 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
     }
 
     private void importDatabase() {
+        String password = passwordEditText.getText().toString();
         String path = pathEditText.getText().toString();
 
         if (path == null || path.isEmpty()) {
@@ -157,7 +162,7 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         }
 
         try {
-            Database db = Database.load(path, null);
+            Database db = Database.load(path, password);
             this.binder.replaceDatabase(db);
             Toast.makeText(this, getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {

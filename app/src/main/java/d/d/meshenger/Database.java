@@ -20,7 +20,7 @@ class Database {
     Database() {
         this.contacts = new ArrayList<>();
         this.settings = new Settings();
-        this.version = "";
+        this.version = "2.1.0";
     }
 
     public boolean contactExists(String publicKey) {
@@ -46,7 +46,7 @@ class Database {
 
     public int findContact(String publicKey) {
         for (int i = 0; i < this.contacts.size(); i += 1) {
-            if (this.contacts.get(i).getPublicKey().equalsIgnoreCase(publicKey)) {
+            if (this.contacts.get(i).getPublicKey().equals(publicKey)) {
                 return i;
             }
         }
@@ -54,11 +54,10 @@ class Database {
     }
 
     public static Database load(String path, String password) throws IOException, JSONException {
-        String version = "2.0.0";
-
-        // read data
+        // read database file
         byte[] data = Utils.readExternalFile(path);
 
+        // encrypt database
         if (password != null && password.length() > 0) {
             data = Crypto.decryptData(data, password.getBytes());
         }
@@ -67,9 +66,7 @@ class Database {
             new String(data, Charset.forName("UTF-8"))
         );
 
-        if (!version.equals(obj.optString("version", ""))) {
-            obj = upgradeDatabase(obj.optString("version", ""), version, obj);
-        }
+        obj = upgradeDatabase(obj.getString("version"), "2.1.0", obj);
 
         return Database.fromJSON(obj);
     }
@@ -77,20 +74,23 @@ class Database {
     public static void store(String path, Database db, String password) throws IOException, JSONException {
         JSONObject obj = Database.toJSON(db);
         byte[] data = obj.toString().getBytes();
+
+        // encrypt database
         if (password != null && password.length() > 0) {
             data = Crypto.encryptData(data, password.getBytes());
         }
+
+        // write database file
         Utils.writeExternalFile(path, data);
     }
 
-    private static JSONObject upgradeDatabase(String from, String to, JSONObject obj) {
-        // not much to do yet
-        try {
-            if (from.isEmpty()) {
-                obj.put("version", to);
+    private static JSONObject upgradeDatabase(String from, String to, JSONObject obj) throws JSONException {
+        if (from.equals("2.0.0")) {
+            // add blocked field (added in 2.1.0)
+            JSONArray contacts = obj.getJSONArray("contacts");
+            for (int i = 0; i < contacts.length(); i += 1) {
+                contacts.getJSONObject(i).put("blocked", false);
             }
-        } catch (Exception e) {
-            // ignore ...
         }
         return obj;
     }

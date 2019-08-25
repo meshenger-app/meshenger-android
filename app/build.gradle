@@ -8,8 +8,8 @@ android {
         applicationId "d.d.meshenger"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 200
-        versionName "2.0.0"
+        versionCode 210
+        versionName "2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

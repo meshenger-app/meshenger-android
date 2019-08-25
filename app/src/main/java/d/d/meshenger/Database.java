@@ -102,7 +102,7 @@ class Database {
 
         JSONArray contacts = new JSONArray();
         for (Contact contact : db.contacts) {
-            contacts.put(Contact.exportJSON(contact));
+            contacts.put(Contact.exportJSON(contact, true));
         }
         obj.put("contacts", contacts);
 
@@ -119,7 +119,7 @@ class Database {
         JSONArray array = obj.getJSONArray("contacts");
         for (int i = 0; i < array.length(); i += 1) {
             db.contacts.add(
-                Contact.importJSON(array.getJSONObject(i))
+                Contact.importJSON(array.getJSONObject(i), true)
             );
         }
 

@@ -19,6 +19,7 @@ public class Contact implements Serializable {
 
     private String name;
     private String pubkey;
+    private boolean blocked;
     private ArrayList<String> addresses;
 
     // contact state
@@ -30,12 +31,14 @@ public class Contact implements Serializable {
     public Contact(String name, String pubkey, ArrayList<String> addresses) {
         this.name = name;
         this.pubkey = pubkey;
+        this.blocked = false;
         this.addresses = addresses;
     }
 
     private Contact() {
         this.name = "";
         this.pubkey = "";
+        this.blocked = false;
         this.addresses = new ArrayList<>();
     }
 
@@ -92,6 +95,14 @@ public class Contact implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean getBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     private static Socket establishConnection(InetSocketAddress address) {
@@ -153,7 +164,7 @@ public class Contact implements Serializable {
         return null;
     }
 
-    public static JSONObject exportJSON(Contact contact) throws JSONException {
+    public static JSONObject exportJSON(Contact contact, boolean all) throws JSONException {
         JSONObject object = new JSONObject();
         JSONArray array = new JSONArray();
 
@@ -165,10 +176,14 @@ public class Contact implements Serializable {
         }
         object.put("addresses", array);
 
+        if (all) {
+            object.put("blocked", contact.blocked);
+        }
+
         return object;
     }
 
-    public static Contact importJSON(JSONObject object) throws JSONException {
+    public static Contact importJSON(JSONObject object, boolean all) throws JSONException {
         Contact contact = new Contact();
         contact.name = object.getString("name");
         contact.pubkey = object.getString("public_key");
@@ -176,6 +191,10 @@ public class Contact implements Serializable {
         JSONArray array = object.getJSONArray("addresses");
         for (int i = 0; i < array.length(); i += 1) {
             contact.addAddress(array.getString(i));
+        }
+
+        if (all) {
+            contact.blocked = object.getBoolean("blocked");
         }
 
         return contact;

@@ -198,7 +198,15 @@ public class MainService extends Service implements Runnable {
                         this.currentCall.decline();
                     }
                     continue;
-                };
+                }
+
+                if (contact.getBlocked()) {
+                    // contact is blocked
+                    if (this.currentCall != null) {
+                        this.currentCall.decline();
+                    }
+                    break;
+                }
 
                 JSONObject obj = new JSONObject(decrypted);
                 String action = obj.optString("action", "");

@@ -241,7 +241,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
         try {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, Contact.exportJSON(c).toString());
+            intent.putExtra(Intent.EXTRA_TEXT, Contact.exportJSON(c, false).toString());
             startActivity(intent);
         } catch (JSONException e) {
             e.printStackTrace();

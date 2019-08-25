@@ -30,6 +30,16 @@ For encryption and authentication, libsodium is used. (TODO)
 
 Meshenger is Free and Open Source Software. Everybody can participate or even fork the software.
 
+## Building From Sources
+
+On Linux based systems:
+
+```
+./gradlew assembleRelease
+```
+
+Android Studio works as well.
+
 ### First Phase development
 
 This project was sponsored by the [Google Summer of Code](https://summerofcode.withgoogle.com/) 2018 as part of the [Freifunk](https://freifunk.net) organization to make local community networks more attractive.

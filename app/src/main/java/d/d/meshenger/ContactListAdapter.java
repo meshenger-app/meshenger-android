@@ -51,12 +51,21 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
             Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             Paint p = new Paint();
+
             if (contact.getState() == Contact.State.ONLINE) {
                 p.setColor(0xFF7AE12D); // green
             } else {
                 p.setColor(0xFFEC3E3E); // red
             }
+
             canvas.drawCircle(100, 100, 100, p);
+
+            if (contact.getBlocked()) {
+                // draw smaller red circle on top
+                p.setColor(0xFFEC3E3E); // red
+                canvas.drawCircle(100, 100, 70, p);
+            }
+
             state.setImageBitmap(bitmap);
         }
 /*

@@ -85,7 +85,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 log("init 4: check key pair");
                 if (this.binder.getSettings().getPublicKey().isEmpty()) {
                     // generate key pair
-                    setKeyPair();
+                    initKeyPair();
                 }
                 continueInit();
                 break;
@@ -142,7 +142,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         unbindService(this);
     }
 
-    private void setKeyPair() {
+    private void initKeyPair() {
         // create secret/public key pair
         byte[] publicKey = new byte[SodiumConstants.PUBLICKEY_BYTES];
         byte[] secretKey = new byte[SodiumConstants.SECRETKEY_BYTES];

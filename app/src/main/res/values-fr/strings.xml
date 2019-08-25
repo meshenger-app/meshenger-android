@@ -8,6 +8,7 @@
     <string name="cancel">annuler</string>
     <string name="next">suivante</string>
     <string name="enter_password">Entrer le mot de passe</string>
+    <string name="password">Mot de passe</string>
     <string name="camera_permission_request">La permission de la caméra est nécessaire pour scanner les codes QR</string>
     <string name="invalid_qr">QR-Code invalide</string>
     <string name="network_connect_invitation">Aucune information disponible, veuillez vous connecter à un réseau</string>
@@ -30,8 +31,14 @@
     <string name="delete">Effacer</string>
     <string name="rename">Renommer</string>
     <string name="share">Partager</string>
-    <string name="done">Terminé</string>
+    <string name="block">barrage</string>
+    <string name="unblock">autoriser</string>
+    <string name="done">Fini</string>
+    <string name="replace">Replacer</string>
+    <string name="take">Choisir</string>
+    <string name="confirm">Confirmer</string>
     <string name="contact_edit">Modifier le contact</string>
+    <string name="contact_exists">Contact existe</string>
     <string name="permission_mic">La permission du microphone est nécessaire pour passer des appels</string>
     <string name="hello">Bonjour!</string>
     <string name="call_connected">Connecté.</string>
@@ -52,7 +59,11 @@
     <string name="invalid_address">Adresse invalide</string>
     <string name="no_file_name">Pas de nom de fichier</string>
     <string name="contact_already_exists">Le contact existe déjà</string>
+    <string name="wrong_password">Mauvais mot de passe</string>
     <string name="error">Erreur</string>
+    <string name="ok">D'accord</string>
+    <string name="skip">Sauter</string>
+    <string name="exit">Finir</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
 </resources>

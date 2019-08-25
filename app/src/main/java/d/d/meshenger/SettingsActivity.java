@@ -10,9 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -191,7 +189,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         new AlertDialog.Builder(this)
             .setTitle(getResources().getString(R.string.settings_change_name))
             .setView(et)
-            .setPositiveButton("ok", (dialogInterface, i) -> {
+            .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                 String new_username = et.getText().toString();
                 this.binder.getSettings().setUsername(new_username);
                 this.binder.saveDatabase();
@@ -240,7 +238,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         new AlertDialog.Builder(this)
             .setTitle(getResources().getString(R.string.settings_change_password))
             .setView(et)
-            .setPositiveButton("ok", (dialogInterface, i) -> {
+            .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                 String new_password = et.getText().toString();
                 this.binder.setDatabasePassword(new_password);
                 this.binder.saveDatabase();

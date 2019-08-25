@@ -9,6 +9,7 @@
     <string name="cancel">cancel</string>
     <string name="next">next</string>
     <string name="enter_password">Enter password</string>
+    <string name="password">Password</string>
     <string name="camera_permission_request">Camera permission needed to scan codes</string>
     <string name="invalid_qr">Invalid QR-Code</string>
     <string name="network_connect_invitation">No information available, please connect to a network</string>
@@ -38,8 +39,14 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
     <string name="share">Share</string>
+    <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
+    <string name="replace">Replace</string>
+    <string name="take">Take</string>
+    <string name="confirm">Confirm</string>
     <string name="done">Done</string>
     <string name="contact_edit">Edit Contact</string>
+    <string name="contact_exists">Contact Exists</string>
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
     <string name="call_connected">Connected.</string>
@@ -60,7 +67,11 @@
     <string name="invalid_address">Invalid Address</string>
     <string name="no_file_name">No file name</string>
     <string name="contact_already_exists">Contact already exists</string>
+    <string name="wrong_password">Wrong password</string>
     <string name="error">Error</string>
+    <string name="ok">Ok</string>
+    <string name="skip">Skip</string>
+    <string name="exit">Exit</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 </resources>

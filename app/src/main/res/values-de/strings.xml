@@ -9,6 +9,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="next">Weiter</string>
     <string name="enter_password">Passwort eingeben</string>
+    <string name="password">Passwort</string>
     <string name="camera_permission_request">Benötige Erlaubniss, um Kamera zu benutzen</string>
     <string name="invalid_qr">Ungültiger QR-Code</string>
     <string name="network_connect_invitation">Keine Netzwerkinformation verfügbar</string>
@@ -31,8 +32,14 @@
     <string name="delete">Löschen</string>
     <string name="rename">Umbenennen</string>
     <string name="share">Teilen</string>
+    <string name="block">Blocken</string>
+    <string name="unblock">Freigeben</string>
+    <string name="replace">Ersetzen</string>
+    <string name="take">Übernehmen</string>
+    <string name="confirm">Bestätigen</string>
     <string name="done">Fertig</string>
     <string name="contact_edit">Kontakt bearbeiten</string>
+    <string name="contact_exists">Kontakt existiert</string>
     <string name="permission_mic">Dafür muss die App auf das Mikro zugreifen können.</string>
     <string name="hello">Hallo!</string>
     <string name="call_connected">Verbunden</string>
@@ -53,7 +60,11 @@
     <string name="invalid_address">Ungültige Addresse</string>
     <string name="no_file_name">Kein Dateiname</string>
     <string name="contact_already_exists">Kontakt existiert bereits</string>
+    <string name="wrong_password">Falsches Passwort</string>
     <string name="error">Fehler</string>
+    <string name="ok">Ok</string>
+    <string name="skip">Überspringen</string>
+    <string name="exit">Beenden</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 </resources>

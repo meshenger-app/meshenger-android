@@ -167,8 +167,8 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     private void showDeleteDialog(Contact contact) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Confirm");
-        builder.setMessage("Really remove contact: " + contact.getName());
+        builder.setTitle(R.string.confirm);
+        builder.setMessage("Remove contact: " + contact.getName());
         builder.setCancelable(false); // prevent key shortcut to cancel dialog
 
         builder.setPositiveButton(R.string.yes, (DialogInterface dialog, int id) -> {
@@ -255,14 +255,11 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             .setTitle(R.string.contact_edit)
             .setView(et)
             .setNegativeButton(getResources().getString(R.string.cancel), null)
-            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    String name = et.getText().toString();
-                    if (name.length() > 0) {
-                        contact.setName(name);
-                        refreshContactList();
-                    }
+            .setPositiveButton(R.string.ok, (DialogInterface dialogInterface, int i) -> {
+                String name = et.getText().toString();
+                if (name.length() > 0) {
+                    contact.setName(name);
+                    refreshContactList();
                 }
             }).show();
     }

@@ -78,7 +78,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText et = new EditText(this);
         b.setTitle(R.string.paste_invitation)
-            .setPositiveButton("ok", (dialogInterface, i) -> {
+            .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                 try {
                     String data = et.getText().toString();
                     addContact(data);

@@ -53,6 +53,7 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".BackupActivity" />
+        <activity android:name=".AddressActivity" />
         <activity android:name=".LicenseActivity" />
     </application>
 

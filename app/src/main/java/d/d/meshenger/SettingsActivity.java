@@ -75,7 +75,9 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         });
 
         findViewById(R.id.changeAddressLayout).setOnClickListener((View view) -> {
-            showChangeAddressDialog();
+            //showChangeAddressDialog();
+            Intent intent = new Intent(this, AddressActivity.class);
+            startActivity(intent);
         });
 
         findViewById(R.id.changePasswordLayout).setOnClickListener((View view) -> {
@@ -131,13 +133,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         ArrayList<String> invalid_addresses = new ArrayList<>();
 
         for (String address : addresses) {
-            try {
-                if (Utils.isMAC(address)) {
-                    // ok - ignore
-                } else {
-                    Utils.parseInetSocketAddress(address, MainService.serverPort);
-                }
-            } catch (Exception e) {
+            if (!Utils.isMAC(address) && !Utils.isIP(address) && !Utils.isDomain(address)) {
                 invalid_addresses.add(address);
             }
         }
@@ -206,6 +202,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .show();
     }
 
+/*
     private void showChangeAddressDialog() {
         String addresses_string = Utils.join(this.binder.getSettings().getAddresses());
         EditText et = new EditText(this);
@@ -214,7 +211,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         new AlertDialog.Builder(this)
             .setTitle(getResources().getString(R.string.settings_change_address))
             .setView(et)
-            .setPositiveButton("ok", (dialogInterface, i) -> {
+            .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
                 ArrayList<String> new_addresses = Utils.split(et.getText().toString());
                 ArrayList<String> invalid_addresses = getInvalidAddresses(new_addresses);
                 if (invalid_addresses.isEmpty()) {
@@ -232,6 +229,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .setNegativeButton(getResources().getText(R.string.cancel), null)
             .show();
     }
+*/
 
     private void showChangePasswordDialog() {
         String password = this.binder.getDatabasePassword();

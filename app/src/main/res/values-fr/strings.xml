@@ -45,6 +45,7 @@
     <string name="about_version">Version de l'application:</string>
     <string name="about_info">Informations sur l'application:</string>
     <string name="app_info">L'application Meshenger permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les contacts de chaque contact et de s’appeler. Cela fonctionne sur la plupart des réseaux, par exemple. à la maison, dans les réseaux communautaires ou au travail.</string>
+    <string name="address_management">Gestion des adresses</string>
     <string name="file_does_not_exist">Fichier ne existe pas</string>
     <string name="no_path_selected">Aucun chemin sélectionné</string>
     <string name="file_already_exists">Le fichier existe déjà</string>

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 class Utils {
@@ -170,12 +171,29 @@ class Utils {
         return array;
     }
 
+    // Check if MAC address is unicast/multicast
+    public static boolean isUnicastMAC(byte[] mac) {
+        return (mac[0] & 1) == 0;
+    }
+
+    // Check if MAC address is local/universal
+    public static boolean isUniversalMAC(byte[] mac) {
+        return (mac[0] & 2) == 0;
+    }
+
+    public static boolean isValidMAC(byte[] mac) {
+        // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
+        return ((mac != null)
+            && (mac.length == 6)
+            && ((mac[1] != 0x0) && (mac[2] != 0x0) && (mac[3] != 0x0) && (mac[4] != 0x0) && (mac[5] != 0x0))
+        );
+    }
 
     private static boolean isHexChar(char c) {
         return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
     }
 
-    // Check if MAC address string is valid
+    // check if a string is a MAC address (heuristic)
     public static boolean isMAC(String address) {
         if (address == null || address.length() != 17) {
             return false;
@@ -196,22 +214,47 @@ class Utils {
         return true;
     }
 
-    // Check if MAC address is unicast/multicast
-    public static boolean isUnicastMAC(byte[] mac) {
-        return (mac[0] & 1) == 0;
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("[a-z0-9\\-.]+");
+
+    // check if string is a domain (heuristic)
+    public static boolean isDomain(String domain) {
+      if (domain == null || domain.length() == 0) {
+        return false;
+      }
+
+      if (domain.startsWith(".") || domain.endsWith(".")) {
+        return false;
+      }
+
+      if (domain.contains("..") || !domain.contains(".")) {
+        return false;
+      }
+
+      if (domain.startsWith("-") || domain.endsWith("-")) {
+        return false;
+      }
+
+      if (domain.contains(".-") || domain.contains(".-")) {
+        return false;
+      }
+
+      return DOMAIN_PATTERN.matcher(domain).matches();
     }
 
-    // Check if MAC address is local/universal
-    public static boolean isUniversalMAC(byte[] mac) {
-        return (mac[0] & 2) == 0;
-    }
+    private static final Pattern IP_PATTERN = Pattern.compile("([a-f0-9:]+|[0-9.]+)");
 
-    public static boolean isValidMAC(byte[] mac) {
-        // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
-        return ((mac != null)
-            && (mac.length == 6)
-            && ((mac[1] != 0x0) && (mac[2] != 0x0) && (mac[3] != 0x0) && (mac[4] != 0x0) && (mac[5] != 0x0))
-        );
+    // check if a string is an IP address (heuristic)
+    public static boolean isIP(String address) {
+      if (!IP_PATTERN.matcher(address).matches()) {
+        return false;
+      }
+
+      try {
+          InetAddress.getByName(address);
+          return true;
+      } catch (Exception e) {
+          return false;
+      }
     }
 
     // Get all device MAC addresses that are universal and unicast
@@ -246,15 +289,15 @@ class Utils {
         return macs;
     }
 
-    // list all IP/MAC addresses of running network interfaces - for debugging only
-    public static void printAddresses() {
+    public static ArrayList<AddressEntry> collectAddresses() {
+        ArrayList<AddressEntry> addressList = new ArrayList<>();
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
                 byte[] mac = nif.getHardwareAddress();
 
-                if (mac == null) {
-                    log("Interface has null mac: " + nif.getName());
+                if (!isValidMAC(mac)) {
+                    log("Interface has invalid mac: " + nif.getName());
                     continue;
                 }
 
@@ -262,10 +305,7 @@ class Utils {
                     continue;
                 }
 
-                log("Interface: " + nif.getName() + " ("
-                    + Utils.bytesToMacAddress(mac) + ", "
-                    + (Utils.isUniversalMAC(mac) ? "universal" : "local") + ", "
-                    + (Utils.isUnicastMAC(mac) ? "unicast" : "multicast") + ")");
+                addressList.add(new AddressEntry(Utils.bytesToMacAddress(mac), nif.getName(), !Utils.isUnicastMAC(mac)));
 
                 for (InterfaceAddress ia : nif.getInterfaceAddresses()) {
                     InetAddress addr = ia.getAddress();
@@ -273,12 +313,21 @@ class Utils {
                         continue;
                     }
 
-                    log("Interface addr: " + addr);
+                    addressList.add(new AddressEntry(addr.getHostAddress(), nif.getName(), addr.isMulticastAddress()));
                 }
             }
         } catch (Exception ex) {
             // ignore
             log("error: " + ex.toString());
+        }
+
+        return addressList;
+    }
+
+    // list all IP/MAC addresses of running network interfaces - for debugging only
+    public static void printAddresses() {
+        for (AddressEntry ae : collectAddresses()) {
+            log("Address: " + ae.address + " (" + ae.device + (ae.multicast ? ", multicast" : "") + ")");
         }
     }
 

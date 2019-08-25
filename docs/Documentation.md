@@ -16,6 +16,8 @@ From the contacts MAC address, IPv6 addresses are derived by looking at the own 
 All IPv6 capable devices have these addresses in the form of IPv6 link local addresses: e.g. `fe80:1122:33ff:fe44:5566` when the MAC is `11:22:33:44:55:66`. (Also a bit needs to be flipped, but we ignore that here for the sake of simplicity.)
 Other types of IPv6 addresses of the same scheme ([EUI-64](https://de.wikipedia.org/wiki/EUI-64)) might also be present.
 
+Instead of MAC addresses, IPv4/IPv6 addresses or DNS names can also be used as well. The only limitation is that both phones need to have a reachable IP address.
+
 ## WebRTC
 
 Meshenger uses [WebRTC](https://webrtc.org/), a well-build, tested and mostly documented standard for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger.

@@ -197,6 +197,14 @@ public class Contact implements Serializable {
             contact.blocked = object.getBoolean("blocked");
         }
 
+        if (contact.name.length() == 0) {
+            throw new JSONException("Empty name field.");
+        }
+
+        if (contact.pubkey.length() == 0) {
+            throw new JSONException("Empty public_key field.");
+        }
+
         return contact;
     }
 

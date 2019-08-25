@@ -197,41 +197,46 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
                 List<Contact> contacts = binder.getContacts();
                 contactListView.setAdapter(new ContactListAdapter(ContactListActivity.this, R.layout.contact_item, contacts));
                 contactListView.setOnItemClickListener(ContactListActivity.this);
-                contactListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
-                        Resources res = getResources();
-                        String delete = res.getString(R.string.delete);
-                        String rename = res.getString(R.string.rename);
-                        String share = res.getString(R.string.share);
-                        String qr = "QR-ify";
-                        menu.getMenu().add(delete);
-                        menu.getMenu().add(rename);
-                        menu.getMenu().add(share);
-                        menu.getMenu().add(qr);
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem menuItem) {
-                                String title = menuItem.getTitle().toString();
-                                Contact contact = contacts.get(i);
-                                if (title.equals(delete)) {
-                                    showDeleteDialog(contact);
-                                } else if (title.equals(rename)) {
-                                    showContactEditDialog(contact);
-                                } else if (title.equals(share)) {
-                                    shareContact(contact);
-                                } else if (title.equals(qr)) {
-                                    Intent intent = new Intent(ContactListActivity.this, QRShowActivity.class);
-                                    intent.putExtra("EXTRA_CONTACT", contact);
-                                    startActivity(intent);
-                                }
-                                return false;
-                            }
-                        });
-                        menu.show();
-                        return true;
+                contactListView.setOnItemLongClickListener((AdapterView<?> adapterView, View view, int i, long l) -> {
+                    Contact contact = contacts.get(i);
+                    PopupMenu menu = new PopupMenu(ContactListActivity.this, view);
+                    Resources res = getResources();
+                    String delete = res.getString(R.string.delete);
+                    String rename = res.getString(R.string.rename);
+                    String block = res.getString(R.string.block);
+                    String unblock = res.getString(R.string.unblock);
+                    String share = res.getString(R.string.share);
+                    String qr = "QR-ify";
+                    menu.getMenu().add(delete);
+                    menu.getMenu().add(rename);
+                    menu.getMenu().add(share);
+                    if (contact.getBlocked()) {
+                        menu.getMenu().add(unblock);
+                    } else {
+                        menu.getMenu().add(block);
                     }
+                    menu.getMenu().add(qr);
+                    menu.setOnMenuItemClickListener((MenuItem menuItem) -> {
+                        String title = menuItem.getTitle().toString();
+                        if (title.equals(delete)) {
+                            showDeleteDialog(contact);
+                        } else if (title.equals(rename)) {
+                            showContactEditDialog(contact);
+                        } else if (title.equals(share)) {
+                            shareContact(contact);
+                        } else if (title.equals(block)) {
+                            contact.setBlocked(true);
+                        } else if (title.equals(unblock)) {
+                            contact.setBlocked(false);
+                        } else if (title.equals(qr)) {
+                            Intent intent = new Intent(ContactListActivity.this, QRShowActivity.class);
+                            intent.putExtra("EXTRA_CONTACT", contact);
+                            startActivity(intent);
+                        }
+                        return false;
+                    });
+                    menu.show();
+                    return true;
                 });
             }
         });

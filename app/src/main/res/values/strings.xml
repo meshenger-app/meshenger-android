@@ -6,6 +6,7 @@
     <string name="scan_invited">QR-Code Scanning</string>
     <string name="paste_invitation">Paste Data Here</string>
     <string name="invalid_data">Invalid data</string>
+    <string name="invalid_name">Invalid name</string>
     <string name="cancel">cancel</string>
     <string name="next">next</string>
     <string name="enter_password">Enter password</string>

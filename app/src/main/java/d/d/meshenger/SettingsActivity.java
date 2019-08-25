@@ -197,7 +197,7 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
                     syncSettings("username", new_username);
                     initViews();
                 } else {
-                    Toast.makeText(this, getResources().getString(R.string.invalid_data), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getResources().getString(R.string.invalid_name), Toast.LENGTH_SHORT).show();
                 }
             })
             .setNegativeButton(getResources().getText(R.string.cancel), null)

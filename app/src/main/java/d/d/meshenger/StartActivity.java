@@ -263,20 +263,23 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         // override handler (to be able to dismiss the dialog manually)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View v) -> {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
             String username = et.getText().toString();
-            this.binder.getSettings().setUsername(username);
+            if (Utils.isValidName(username)) {
+                this.binder.getSettings().setUsername(username);
 
-            try {
-                this.binder.saveDatabase();
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    this.binder.saveDatabase();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // close dialog
+                dialog.dismiss();
+                //dialog.cancel(); // needed?
+                continueInit();
+            } else {
+                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show();
             }
-
-            // close dialog
-            dialog.dismiss();
-            //dialog.cancel(); // needed?
-            continueInit();
         });
     }
 

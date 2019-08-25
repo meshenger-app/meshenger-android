@@ -5,6 +5,7 @@
     <string name="scan_invited">Numérisation de code QR</string>
     <string name="paste_invitation">Coller les données ici</string>
     <string name="invalid_data">Données invalides</string>
+    <string name="invalid_name">Nom Incorrect</string>
     <string name="cancel">annuler</string>
     <string name="next">suivante</string>
     <string name="enter_password">Entrer le mot de passe</string>

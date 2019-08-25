@@ -1,7 +1,9 @@
 package d.d.meshenger;
 
+import android.app.Dialog;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Typeface;
@@ -11,7 +13,6 @@ import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,6 +35,7 @@ import org.libsodium.jni.NaCl;
 
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
     private MainService.MainBinder binder;
+    private int startState = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,37 +53,76 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         startService(new Intent(this, MainService.class));
     }
 
-    void init() {
-        this.binder.loadDatabase();
-        if (this.binder.getDatabase() == null) {
-            showPasswordDialog();
-        } else {
-            if (this.binder.getSettings().getUsername().isEmpty()) {
-                // initialize database
-                showUsernameDialog();
-            } else {
-                conclude();
-            }
+    private void continueInit() {
+        this.startState += 1;
+
+        switch (this.startState) {
+            case 1:
+                log("init 1: load database");
+                // open without password
+                this.binder.loadDatabase();
+                continueInit();
+                break;
+            case 2:
+                log("init 2: check database");
+                if (this.binder.getDatabase() == null) {
+                    // database is probably encrypted
+                    showDatabasePasswordDialog();
+                } else {
+                    continueInit();
+                }
+                break;
+            case 3:
+                log("init 3: check username");
+                if (this.binder.getSettings().getUsername().isEmpty()) {
+                    // set username
+                    showMissingUsernameDialog();
+                } else {
+                    continueInit();
+                }
+                break;
+            case 4:
+                log("init 4: check key pair");
+                if (this.binder.getSettings().getPublicKey().isEmpty()) {
+                    // generate key pair
+                    setKeyPair();
+                }
+                continueInit();
+                break;
+            case 5:
+                log("init 5: check addresses");
+                if (this.binder.isFirstStart()) {
+                    showMissingAddressDialog();
+                } else {
+                    continueInit();
+                }
+                break;
+            case 6:
+               log("init 6: start contact list");
+                // set night mode
+                boolean nightMode = this.binder.getSettings().getNightMode();
+                AppCompatDelegate.setDefaultNightMode(
+                        nightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+                );
+
+                // all done - show contact list
+                startActivity(new Intent(this, ContactListActivity.class));
+                finish();
+                break;
         }
-    }
-
-    private void conclude() {
-        // set night mode
-        boolean nightMode = this.binder.getSettings().getNightMode();
-        AppCompatDelegate.setDefaultNightMode(
-            nightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-        );
-
-        startActivity(new Intent(this, ContactListActivity.class));
-        finish();
     }
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         this.binder = (MainService.MainBinder) iBinder;
 
-        // delayed execution of init() to show splash page
-        (new Handler()).postDelayed(() -> { init(); }, 1000);
+        if (this.binder.isFirstStart()) {
+            // show delayed splash page
+            (new Handler()).postDelayed(() -> { continueInit(); }, 1000);
+        } else {
+            // show contact list as fast as possible
+            continueInit();
+        }
     }
 
     @Override
@@ -101,20 +142,15 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         unbindService(this);
     }
 
-    private void initializeSettings(String username, ArrayList<String> addresses) {
+    private void setKeyPair() {
         // create secret/public key pair
         byte[] publicKey = new byte[SodiumConstants.PUBLICKEY_BYTES];
         byte[] secretKey = new byte[SodiumConstants.SECRETKEY_BYTES];
         Sodium.crypto_box_keypair(publicKey, secretKey);
 
         Settings settings = this.binder.getSettings();
-        settings.setUsername(username);
         settings.setPublicKey(Utils.byteArrayToHexString(publicKey));
         settings.setSecretKey(Utils.byteArrayToHexString(secretKey));
-
-        for (String address : addresses) {
-            settings.addAddress(address);
-        }
 
         try {
             this.binder.saveDatabase();
@@ -123,8 +159,43 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         }
     }
 
+    private void showMissingAddressDialog() {
+        ArrayList<String> addresses = Utils.getMacAddresses();
+        if (addresses.isEmpty()) {
+            Toast.makeText(this, "No contact address found! Please configure.", Toast.LENGTH_LONG).show();
+            continueInit();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Setup Address");
+            builder.setMessage("No address for your QR-Code configured. Set to: " + Utils.join(addresses));
+
+            builder.setPositiveButton(R.string.ok, (DialogInterface dialog, int id) -> {
+                for (String address : addresses) {
+                    this.binder.getSettings().addAddress(address);
+                }
+
+                try {
+                    this.binder.saveDatabase();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                dialog.cancel();
+                continueInit();
+            });
+
+            builder.setNegativeButton(R.string.skip, (DialogInterface dialog, int id) -> {
+                dialog.cancel();
+                // continue with out address configuration
+                continueInit();
+            });
+
+            builder.show();
+        }
+    }
+
     // initial dialog to set the username
-    private void showUsernameDialog() {
+    private void showMissingUsernameDialog() {
         TextView tw = new TextView(this);
         tw.setText(R.string.name_prompt);
         //tw.setTextColor(Color.BLACK);
@@ -194,60 +265,53 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
             String username = et.getText().toString();
-            ArrayList<String> addresses = Utils.getMacAddresses();
+            this.binder.getSettings().setUsername(username);
 
-            if (addresses.isEmpty()) {
-                Toast.makeText(this, "No hardware addresses found. Please enable e.g. WiFi for this step.", Toast.LENGTH_SHORT).show();
-            } else {
-                initializeSettings(username, addresses);
-                // close dialog
-                dialog.dismiss();
-                conclude();
+            try {
+                this.binder.saveDatabase();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-/*
-            Intent intent = new Intent("settings_changed");
-            intent.putExtra("subject", "username");
-            intent.putExtra("username", username);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-*/
+
+            // close dialog
+            dialog.dismiss();
+            //dialog.cancel(); // needed?
+            continueInit();
         });
     }
 
     // ask for database password
-    private void showPasswordDialog() {
-        EditText et = new EditText(this);
-        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    private void showDatabasePasswordDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.database_password_dialog);
+        //dialog.setTitle("Title...");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder
-            .setTitle(R.string.enter_password)
-            .setView(et)
-            .setPositiveButton("ok", (dialogInterface, i) -> {
-                // we will override this handler
-            })
-            .setNegativeButton(getResources().getText(R.string.cancel), (dialogInterface, i) -> {
-                this.binder.shutdown();
-                finish();
-            });
+        EditText passwordEditText = dialog.findViewById(R.id.PasswordEditText);
+        Button exitButton = dialog.findViewById(R.id.ExitButton);
+        Button okButton = dialog.findViewById(R.id.OkButton);
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        // override handler (to be able to dismiss the dialog manually)
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View v) -> {
-            String password = et.getText().toString();
-
+        okButton.setOnClickListener((View v) -> {
+            String password = passwordEditText.getText().toString();
             this.binder.setDatabasePassword(password);
             this.binder.loadDatabase();
 
             if (this.binder.getDatabase() == null) {
-                Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show();
             } else {
                 // close dialog
                 dialog.dismiss();
-                conclude();
+                continueInit();
             }
         });
+
+        exitButton.setOnClickListener((View v) -> {
+            // shutdown app
+            dialog.dismiss();
+            this.binder.shutdown();
+            finish();
+        });
+
+        dialog.show();
     }
 
     private void log(String s) {

@@ -30,6 +30,7 @@ import java.util.List;
 
 public class MainService extends Service implements Runnable {
     private Database db = null;
+    private boolean first_start = false;
     private String database_path = "";
     private String database_password = "";
 
@@ -56,9 +57,11 @@ public class MainService extends Service implements Runnable {
             if ((new File(this.database_path)).exists()) {
                 // open existing database
                 this.db = Database.load(this.database_path, this.database_password);
+                this.first_start = false;
             } else {
                 // create new database
                 this.db = new Database();
+                this.first_start = true;
             }
         } catch (Exception e) {
             // ignore
@@ -295,13 +298,26 @@ public class MainService extends Service implements Runnable {
             return currentCall;
         }
 
-        Contact getContact(String pubKey) {
-            int idx = db.findContact(pubKey);
-            if (idx >= 0) {
-                return db.contacts.get(idx);
-            } else {
-                return null;
+        boolean isFirstStart() {
+            return MainService.this.first_start;
+        }
+
+        Contact getContactByPublicKey(String pubKey) {
+            for (Contact contact : getContacts()) {
+                if (contact.getPublicKey().equalsIgnoreCase(pubKey)) {
+                    return contact;
+                }
             }
+            return null;
+        }
+
+        Contact getContactByName(String name) {
+            for (Contact contact : getContacts()) {
+                if (contact.getName().equals(name)) {
+                    return contact;
+                }
+            }
+            return null;
         }
 
         void addContact(Contact contact) {

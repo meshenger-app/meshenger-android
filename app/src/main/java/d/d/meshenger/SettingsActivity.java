@@ -190,11 +190,15 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .setTitle(getResources().getString(R.string.settings_change_name))
             .setView(et)
             .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                String new_username = et.getText().toString();
-                this.binder.getSettings().setUsername(new_username);
-                this.binder.saveDatabase();
-                syncSettings("username", new_username);
-                initViews();
+                String new_username = et.getText().toString().trim();
+                if (Utils.isValidName(new_username)) {
+                    this.binder.getSettings().setUsername(new_username);
+                    this.binder.saveDatabase();
+                    syncSettings("username", new_username);
+                    initViews();
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.invalid_data), Toast.LENGTH_SHORT).show();
+                }
             })
             .setNegativeButton(getResources().getText(R.string.cancel), null)
             .show();

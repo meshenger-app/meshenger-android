@@ -90,6 +90,27 @@ class Utils {
         return new ArrayList<>(Arrays.asList(parts));
     }
 
+    private static final Pattern NAME_PATTERN = Pattern.compile("[\\w _-]+");
+
+    // check for a name that has no funny unicode characters to not let them look to much like other names
+    public static boolean isValidName(String name) {
+        if (name == null || name.length() == 0) {
+            return false;
+        }
+
+        if (!name.equals(name.trim())) {
+            return false;
+        }
+
+        return NAME_PATTERN.matcher(name).matches();
+    }
+
+    private static final Pattern PUBLIC_KEY_PATTERN = Pattern.compile("[0-9A-F]{64}");
+
+    public static boolean isValidPublicKey(String pubkey) {
+        return PUBLIC_KEY_PATTERN.matcher(pubkey).matches();
+    }
+
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     public static String byteArrayToHexString(byte[] bytes) {

@@ -185,24 +185,25 @@ public class Contact implements Serializable {
 
     public static Contact importJSON(JSONObject object, boolean all) throws JSONException {
         Contact contact = new Contact();
+
         contact.name = object.getString("name");
         contact.pubkey = object.getString("public_key");
 
+        if (!Utils.isValidName(contact.name)) {
+            throw new JSONException("Name is invalid.");
+        }
+
+        if (!Utils.isValidPublicKey(contact.pubkey)) {
+            throw new JSONException("Public key is invalid.");
+        }
+
         JSONArray array = object.getJSONArray("addresses");
         for (int i = 0; i < array.length(); i += 1) {
-            contact.addAddress(array.getString(i));
+            contact.addAddress(array.getString(i).toUpperCase().trim());
         }
 
         if (all) {
             contact.blocked = object.getBoolean("blocked");
-        }
-
-        if (contact.name.length() == 0) {
-            throw new JSONException("Empty name field.");
-        }
-
-        if (contact.pubkey.length() == 0) {
-            throw new JSONException("Empty public_key field.");
         }
 
         return contact;

@@ -149,8 +149,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         Sodium.crypto_box_keypair(publicKey, secretKey);
 
         Settings settings = this.binder.getSettings();
-        settings.setPublicKey(Utils.byteArrayToHexString(publicKey));
-        settings.setSecretKey(Utils.byteArrayToHexString(secretKey));
+        settings.setPublicKey(Utils.byteArrayToHexString(publicKey).toUpperCase());
+        settings.setSecretKey(Utils.byteArrayToHexString(secretKey).toUpperCase());
 
         try {
             this.binder.saveDatabase();

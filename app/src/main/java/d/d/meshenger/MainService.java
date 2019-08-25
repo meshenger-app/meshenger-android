@@ -190,6 +190,9 @@ public class MainService extends Service implements Runnable {
 
                 if (decrypted == null) {
                     // cannot decrypt / unknown caller
+                    if (this.currentCall != null) {
+                        this.currentCall.decline();
+                    }
                     break;
                 }
 

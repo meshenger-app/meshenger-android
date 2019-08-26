@@ -8,9 +8,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="QR-Code Address List"
+        android:text="@string/qr_code_address_list"
         android:textColor="?attr/primaryTextColor"
-        android:textSize="25dp" />
+        android:textSize="25sp" />
 
     <Spinner
         android:id="@+id/StoredAddressSpinner"
@@ -38,14 +38,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Add" />
+            android:text="@string/button_add" />
 
         <Button
             android:id="@+id/RemoveButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.3"
-            android:text="Remove" />
+            android:text="@string/button_remove" />
 
     </LinearLayout>
 
@@ -59,7 +59,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Currently Active"
+        android:text="@string/currently_active"
         android:textColor="?attr/primaryTextColor"
         android:textSize="25sp" />
 
@@ -98,29 +98,35 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select an addresses that will be included in your QR-Code. Picking the devices MAC address is usually a good idea. If the list of currently active addresses is empty, then try to enable WiFi."
+            android:text="@string/address_management_help_text"
             android:textColor="?attr/primaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center|bottom"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/AbortButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Abort" />
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:text="@string/button_abort" />
 
         <Button
             android:id="@+id/SaveButton"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save" />
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:text="@string/button_save" />
 
     </LinearLayout>
 

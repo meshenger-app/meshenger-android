@@ -51,10 +51,17 @@
     <string name="button_select">Auswählen</string>
     <string name="button_import">Importieren</string>
     <string name="button_export">Exportieren</string>
+    <string name="button_abort">Abbrechen</string>
+    <string name="button_save">Speichern</string>
+    <string name="button_add">Hinzufügen</string>
+    <string name="button_remove">Entfernen</string>
     <string name="about_version">App Ausführung:</string>
     <string name="about_info">App Info:</string>
     <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
     <string name="address_management">Adressen Verwaltung</string>
+    <string name="qr_code_address_list">QR-Code Adress Liste</string>
+    <string name="currently_active">Gerade Aktiv</string>
+    <string name="address_management_help_text">Wähle eine Adresse oder mehrere aus die mit in den QR-Code integriert werden. Eine gute Idee is es, die MAC Adresse des WLAN Adapters (wlan0) zu verwenden. Beachte aber, das die Addresse and die Hardware des Gerätes gebunden ist. Schalte das WLAN an, falls die MAC Adresse nicht sichtbar ist.</string>
     <string name="file_does_not_exist">Datei existiert nicht</string>
     <string name="no_path_selected">Kein Pfad ausgewählt</string>
     <string name="file_already_exists">Datei existiert bereits</string>

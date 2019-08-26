@@ -68,7 +68,7 @@
     <string name="address_management">Address Management</string>
     <string name="qr_code_address_list">QR-Code Address List</string>
     <string name="currently_active">Currently Active</string>
-    <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. Enable your WiFi, if no MAC address is visible.</string>
+    <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. If no MAC address is visible, then enable your WiFi.</string>
     <string name="file_does_not_exist">File does not exist</string>
     <string name="no_path_selected">No path selected</string>
     <string name="file_already_exists">File already exists</string>

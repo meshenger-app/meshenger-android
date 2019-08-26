@@ -255,7 +255,7 @@ class Utils {
         return false;
       }
 
-      if (domain.contains(".-") || domain.contains(".-")) {
+      if (domain.contains(".-") || domain.contains("-.")) {
         return false;
       }
 

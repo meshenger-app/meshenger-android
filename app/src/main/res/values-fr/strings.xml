@@ -42,6 +42,7 @@
     <string name="contact_exists">Contact existe</string>
     <string name="permission_mic">La permission du microphone est nécessaire pour passer des appels</string>
     <string name="hello">Bonjour!</string>
+    <string name="empty_list_item">Vide</string>
     <string name="call_connected">Connecté.</string>
     <string name="call_denied">Diminué</string>
     <string name="call_ringing">Sonnerie...</string>

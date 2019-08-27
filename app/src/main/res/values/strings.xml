@@ -50,6 +50,7 @@
     <string name="contact_exists">Contact Exists</string>
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
+    <string name="empty_list_item">Empty</string>
     <string name="call_connected">Connected.</string>
     <string name="call_denied">Declined</string>
     <string name="call_ringing">Ringing...</string>

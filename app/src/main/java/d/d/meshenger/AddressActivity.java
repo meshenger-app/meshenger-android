@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,11 +29,12 @@ import java.util.List;
 public class AddressActivity extends MeshengerActivity implements ServiceConnection {
     private MainService.MainBinder binder;
     Spinner storedAddressSpinner;
+    Spinner systemAddressSpinner;
+    Button takeStoredAddressButton;
+    Button takeSystemAddressButton;
     EditText addressEditText;
     Button addButton;
     Button removeButton;
-    Spinner systemAddressSpinner;
-    Button takeButton;
     Button saveButton;
     Button abortButton;
 
@@ -51,11 +51,12 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         setTitle(R.string.address_management);
 
         storedAddressSpinner = findViewById(R.id.StoredAddressSpinner);
+        systemAddressSpinner = findViewById(R.id.SystemAddressSpinner);
+        takeStoredAddressButton = findViewById(R.id.TakeStoredAddressButton);
+        takeSystemAddressButton = findViewById(R.id.TakeSystemAddressButton);
         addressEditText = findViewById(R.id.AddressEditText);
         addButton = findViewById(R.id.AddButton);
         removeButton = findViewById(R.id.RemoveButton);
-        systemAddressSpinner = findViewById(R.id.SystemAddressSpinner);
-        takeButton = findViewById(R.id.TakeButton);
         saveButton = findViewById(R.id.SaveButton);
         abortButton = findViewById(R.id.AbortButton);
 
@@ -65,41 +66,12 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         systemAddressListAdapter = new AddressListAdapter(this, Color.parseColor("#b3b7b2")); //light grey
 
         storedAddressSpinner.setAdapter(storedAddressListAdapter);
-        storedAddressSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                log("storedAddressSpinner.onItemSelected");
-                // set for editing
-                if (!storedAddressListAdapter.isEmpty()) {
-                    AddressEntry ae = storedAddressList.get(pos);
-                    log("clicked: " + ae.address);
-                    addressEditText.setText(ae.address);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // nothing to do
-            }
-        });
+        systemAddressSpinner.setAdapter(systemAddressListAdapter);
 
         addressEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                String address = addressEditText.getText().toString();
-                boolean exists = (AddressEntry.findAddressEntry(storedAddressList, address) != null);
-                if (exists) {
-                    removeButton.setEnabled(true);
-                    addButton.setEnabled(false);
-                } else {
-                    removeButton.setEnabled(false);
-                    boolean valid = (Utils.isMAC(address) || Utils.isDomain(address) || Utils.isIP(address));
-                    if (valid) {
-                        addButton.setEnabled(true);
-                    } else {
-                        addButton.setEnabled(false);
-                    }
-                }
+                updateAdressEditTextButtons();
             }
 
             @Override
@@ -109,7 +81,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // nothing to do
+                updateAdressEditTextButtons();
             }
         });
 
@@ -146,11 +118,17 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
             }
         });
 
-        takeButton.setOnClickListener((View v) -> {
-            //AddressEntry ae = (Utils.Address) systemAddressSpinner.getSelectedItem();
+        takeSystemAddressButton.setOnClickListener((View v) -> {
             int pos = systemAddressSpinner.getSelectedItemPosition();
-            if (pos > -1) {
+            if (pos > -1 && !systemAddressListAdapter.isEmpty()) {
                 addressEditText.setText(systemAddressList.get(pos).address);
+            }
+        });
+
+        takeStoredAddressButton.setOnClickListener((View v) -> {
+            int pos = storedAddressSpinner.getSelectedItemPosition();
+            if (pos > -1 && !storedAddressListAdapter.isEmpty()) {
+                addressEditText.setText(storedAddressList.get(pos).address);
             }
         });
 
@@ -200,7 +178,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         this.binder = null;
     }
 
-    public static class AddressListAdapter extends BaseAdapter {
+    public class AddressListAdapter extends BaseAdapter {
         private final Activity context;
         private final int markColor;
         private List<AddressEntry> addressEntries;
@@ -253,7 +231,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
             TextView label = view.findViewById(R.id.label);
 
             if (isEmpty()) {
-                label.setText("Empty");
+                label.setText(getResources().getString(R.string.empty_list_item));
                 label.setTextColor(Color.BLACK);
             } else {
                 AddressEntry ae = this.addressEntries.get(position);
@@ -280,8 +258,25 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         }
     }
 
+    private void updateAdressEditTextButtons() {
+        String address = addressEditText.getText().toString();
+
+        boolean exists = (AddressEntry.findAddressEntry(storedAddressList, address) != null);
+        if (exists) {
+            addButton.setEnabled(false);
+            removeButton.setEnabled(true);
+        } else {
+            removeButton.setEnabled(false);
+            boolean valid = (Utils.isMAC(address) || Utils.isDomain(address) || Utils.isIP(address));
+            if (valid) {
+                addButton.setEnabled(true);
+            } else {
+                addButton.setEnabled(false);
+            }
+        }
+    }
+
     private void updateSpinners() {
-        log("update spinners");
         Collections.sort(storedAddressList);
         Collections.sort(systemAddressList);
 
@@ -293,6 +288,11 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
 
         systemAddressSpinner.setAdapter(storedAddressListAdapter);
         systemAddressSpinner.setAdapter(systemAddressListAdapter);
+
+        takeStoredAddressButton.setEnabled(!storedAddressList.isEmpty());
+        takeSystemAddressButton.setEnabled(!systemAddressList.isEmpty());
+
+        updateAdressEditTextButtons();
     }
 
     AddressEntry parseAddress(String address) {

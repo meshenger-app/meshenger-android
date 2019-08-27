@@ -26,10 +26,10 @@
             android:layout_gravity="center_vertical" />
 
         <Button
-            android:id="@+id/TakeStoredAddressButton"
+            android:id="@+id/PickStoredAddressButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/take" />
+            android:text="@string/pick" />
 
     </LinearLayout>
 
@@ -90,10 +90,10 @@
             android:layout_gravity="center_vertical" />
 
         <Button
-            android:id="@+id/TakeSystemAddressButton"
+            android:id="@+id/PickSystemAddressButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/take" />
+            android:text="@string/pick" />
 
     </LinearLayout>
 

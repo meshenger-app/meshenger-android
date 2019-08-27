@@ -30,8 +30,8 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
     private MainService.MainBinder binder;
     Spinner storedAddressSpinner;
     Spinner systemAddressSpinner;
-    Button takeStoredAddressButton;
-    Button takeSystemAddressButton;
+    Button pickStoredAddressButton;
+    Button pickSystemAddressButton;
     EditText addressEditText;
     Button addButton;
     Button removeButton;
@@ -52,8 +52,8 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
 
         storedAddressSpinner = findViewById(R.id.StoredAddressSpinner);
         systemAddressSpinner = findViewById(R.id.SystemAddressSpinner);
-        takeStoredAddressButton = findViewById(R.id.TakeStoredAddressButton);
-        takeSystemAddressButton = findViewById(R.id.TakeSystemAddressButton);
+        pickStoredAddressButton = findViewById(R.id.PickStoredAddressButton);
+        pickSystemAddressButton = findViewById(R.id.PickSystemAddressButton);
         addressEditText = findViewById(R.id.AddressEditText);
         addButton = findViewById(R.id.AddButton);
         removeButton = findViewById(R.id.RemoveButton);
@@ -118,14 +118,14 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
             }
         });
 
-        takeSystemAddressButton.setOnClickListener((View v) -> {
+        pickSystemAddressButton.setOnClickListener((View v) -> {
             int pos = systemAddressSpinner.getSelectedItemPosition();
             if (pos > -1 && !systemAddressListAdapter.isEmpty()) {
                 addressEditText.setText(systemAddressList.get(pos).address);
             }
         });
 
-        takeStoredAddressButton.setOnClickListener((View v) -> {
+        pickStoredAddressButton.setOnClickListener((View v) -> {
             int pos = storedAddressSpinner.getSelectedItemPosition();
             if (pos > -1 && !storedAddressListAdapter.isEmpty()) {
                 addressEditText.setText(storedAddressList.get(pos).address);
@@ -289,8 +289,8 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         systemAddressSpinner.setAdapter(storedAddressListAdapter);
         systemAddressSpinner.setAdapter(systemAddressListAdapter);
 
-        takeStoredAddressButton.setEnabled(!storedAddressList.isEmpty());
-        takeSystemAddressButton.setEnabled(!systemAddressList.isEmpty());
+        pickStoredAddressButton.setEnabled(!storedAddressListAdapter.isEmpty());
+        pickSystemAddressButton.setEnabled(!systemAddressListAdapter.isEmpty());
 
         updateAdressEditTextButtons();
     }

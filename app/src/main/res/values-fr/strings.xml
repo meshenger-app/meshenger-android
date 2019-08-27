@@ -36,7 +36,7 @@
     <string name="unblock">autoriser</string>
     <string name="done">Fini</string>
     <string name="replace">Replacer</string>
-    <string name="take">Choisir</string>
+    <string name="pick">Choisir</string>
     <string name="confirm">Confirmer</string>
     <string name="contact_edit">Modifier le contact</string>
     <string name="contact_exists">Contact existe</string>

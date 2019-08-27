@@ -36,6 +36,7 @@ import org.libsodium.jni.NaCl;
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
     private MainService.MainBinder binder;
     private int startState = 0;
+    private static Sodium sodium;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         setContentView(R.layout.activity_splash);
 
         // load libsodium for JNI access
-        NaCl.sodium();
+        this.sodium = NaCl.sodium();
 
         Typeface type = Typeface.createFromAsset(getAssets(), "rounds_black.otf");
         ((TextView) findViewById(R.id.splashText)).setTypeface(type);

@@ -1,0 +1,9 @@
+Effectuez des appels audio et vidéo sur les réseaux locaux.
+
+Meshenger permet des communications vocales et vidéo sans aucun serveur ou accès à Internet. Il suffit de scanner les code QR de vos contacts et s’appeler les uns les autres. Cela fonctionne sur la plupart des réseaux, p. ex. à la maison, dans les réseaux communautaires ou au travail.
+
+* utilise la liaison IPv6 locale par défaut
+* une communication chifrée
+* base de données chiffrée
+* sauvegarde de la base de données
+* mode nuit

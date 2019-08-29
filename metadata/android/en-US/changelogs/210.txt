@@ -4,5 +4,5 @@
 * allow database backup with password
 * allow to block users
 * delay splash screen display only on first startup
-* hide call unknown callers option until implemented
-* better QR-Code input valdiation
+* hide 'unknown callers' option until implemented
+* better QR-Code input validation

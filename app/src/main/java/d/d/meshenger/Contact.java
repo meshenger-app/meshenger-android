@@ -211,7 +211,7 @@ public class Contact implements Serializable {
         return contact;
     }
 
-    private void log(String s) {
+    private static void log(String s) {
         Log.d(Contact.class.getSimpleName(), s);
     }
 }

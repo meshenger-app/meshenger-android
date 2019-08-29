@@ -24,10 +24,6 @@ class Database {
         this.version = "3.0.0";
     }
 
-    public boolean contactExists(String publicKey) {
-        return (this.findContact(publicKey) >= 0);
-    }
-
     public void addContact(Contact contact) {
         int idx = findContact(contact.getPublicKey());
         if (idx >= 0) {

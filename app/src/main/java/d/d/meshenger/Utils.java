@@ -108,6 +108,9 @@ class Utils {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     public static String byteArrayToHexString(byte[] bytes) {
+        if (bytes == null) {
+            return "";
+        }
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j += 1) {
             int v = bytes[j] & 0xFF;
@@ -118,6 +121,9 @@ class Utils {
     }
 
     public static byte[] hexStringToByteArray(String str) {
+        if (str == null) {
+            return new byte[0];
+        }
         int len = str.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
@@ -340,35 +346,35 @@ class Utils {
     }
 
     // list all IP/MAC addresses of running network interfaces - for debugging only
-    public static void printAddresses() {
+    public static void printOwnAddresses() {
         for (AddressEntry ae : collectAddresses()) {
             log("Address: " + ae.address + " (" + ae.device + (ae.multicast ? ", multicast" : "") + ")");
         }
     }
 
     // Check if the given MAC address is in the IPv6 address
-    public static boolean isEUI64(Inet6Address addr6, byte[] mac) {
+    public static byte[] getEUI64MAC(Inet6Address addr6) {
         byte[] bytes = addr6.getAddress();
-        return ((mac != null)
-            && (mac.length == 6)
-            && (bytes != null)
-            && (bytes.length == 16)
-            && (bytes[8] == (byte) (mac[0] ^ 2))
-            && (bytes[9] == mac[1])
-            && (bytes[10] == mac[2])
-            && (bytes[11] == (byte) 0xFF)
-            && (bytes[12] == (byte) 0xFE)
-            && (bytes[13] == mac[3])
-            && (bytes[14] == mac[4])
-            && (bytes[15] == mac[5])
-        );
+        if (bytes[11] != ((byte) 0xFF) || bytes[12] != ((byte) 0xFE)) {
+            return null;
+        }
+
+        byte[] mac = new byte[6];
+        mac[0] = (byte) (bytes[8] ^ 2);
+        mac[1] = bytes[9];
+        mac[2] = bytes[10];
+        mac[3] = bytes[13];
+        mac[4] = bytes[14];
+        mac[5] = bytes[15];
+        return mac;
     }
 
     /*
     * Replace the MAC address of an EUi64 scheme IPv6 address with another MAC address.
     * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
     */
-    private static Inet6Address swappedEUI64(Inet6Address addr6, byte[] mac) {
+    private static Inet6Address createEUI64Address(Inet6Address addr6, byte[] mac) {
+        // addr6 is expected to be a EUI64 address
         try {
             byte[] bytes = addr6.getAddress();
 
@@ -413,8 +419,11 @@ class Utils {
 
                     if (addr instanceof Inet6Address) {
                         Inet6Address addr6 = (Inet6Address) addr;
-                        if (isEUI64(addr6, nif.getHardwareAddress())) {
-                            InetAddress new_addr = swappedEUI64(addr6, contact_mac_bytes);
+                        byte[] extracted_mac = getEUI64MAC(addr6);
+                        if (extracted_mac != null && Arrays.equals(extracted_mac, nif.getHardwareAddress())) {
+                            // We found the interface MAC address in the IPv6 assigned to that interface in the EUI-64 scheme.
+                            // Now assume that the contact has an address with the same scheme.
+                            InetAddress new_addr = createEUI64Address(addr6, contact_mac_bytes);
                             if (new_addr != null) {
                                 addrs.add(new InetSocketAddress(new_addr, port));
                             }

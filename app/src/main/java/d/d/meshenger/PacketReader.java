@@ -29,7 +29,6 @@ class PacketReader {
     byte[] readMessage() throws IOException {
         while (true) {
             int read = is.read(buffer, pos, buffer.length - pos);
-            log("read: " + read);
             if (read < 0) {
                 break;
             }
@@ -41,15 +40,12 @@ class PacketReader {
             }
 
             int len = readMessageHeader(buffer);
-            log("len: " + len + ", pos: " + pos);
             if (len < 0 || len > buffer.length) {
-                log("invalid packet length");
                 break;
             }
 
             // not enough data
             if (pos < (4 + len)) {
-                log("not enough data");
                 continue;
             }
 

@@ -145,6 +145,9 @@ public class MainService extends Service implements Runnable {
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(settingsReceiver);
+
+        // zero keys from memory
+        this.db.onDestroy();
     }
 
     @Override

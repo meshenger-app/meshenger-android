@@ -54,6 +54,23 @@ class Database {
         return -1;
     }
 
+    public void onDestroy() {
+        // zero keys from memory
+        if (this.settings.getSecretKey() != null) {
+            Arrays.fill(this.settings.getSecretKey(), (byte) 0);
+        }
+
+        if (this.settings.getPublicKey() != null) {
+            Arrays.fill(this.settings.getPublicKey(), (byte) 0);
+        }
+
+        for (Contact contact : this.contacts) {
+            if (contact.getPublicKey() != null) {
+                Arrays.fill(contact.getPublicKey(), (byte) 0);
+            }
+        }
+    }
+
     public static Database load(String path, String password) throws IOException, JSONException {
         // read database file
         byte[] data = Utils.readExternalFile(path);

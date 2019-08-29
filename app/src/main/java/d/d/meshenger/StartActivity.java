@@ -84,7 +84,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 break;
             case 4:
                 log("init 4: check key pair");
-                if (this.binder.getSettings().getPublicKey().isEmpty()) {
+                if (this.binder.getSettings().getPublicKey() == null) {
                     // generate key pair
                     initKeyPair();
                 }

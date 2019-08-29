@@ -20,6 +20,7 @@
     <string name="menu_backup">Sauvegarde</string>
     <string name="menu_about">À propos</string>
     <string name="call_connecting">Appel …</string>
+    <string name="unknown_caller">Appelant Inconnu</string>
     <string name="settings_change_name">Changer de nom</string>
     <string name="settings_change_language">Changer de langue</string>
     <string name="settings_change_address">Changement d’adresse</string>

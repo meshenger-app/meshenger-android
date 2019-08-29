@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class Settings {
     private String username;
-    private String secretKey;
-    private String publicKey;
+    private byte[] secretKey;
+    private byte[] publicKey;
     private String language;
     private boolean nightMode;
     private boolean blockUnknown;
@@ -20,27 +20,27 @@ public class Settings {
 
     public Settings() {
         this.username = "";
-        this.secretKey = "";
-        this.publicKey = "";
+        this.secretKey = null;
+        this.publicKey = null;
         this.language = "";
         this.nightMode = false;
         this.blockUnknown = false;
         this.addresses = new ArrayList<>();
     }
 
-    public String getSecretKey() {
+    public byte[] getSecretKey() {
         return secretKey;
     }
 
-    public void setSecretKey(String secretKey) {
+    public void setSecretKey(byte[] secretKey) {
         this.secretKey = secretKey;
     }
 
-    public String getPublicKey() {
+    public byte[] getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(String publicKey) {
+    public void setPublicKey(byte[] publicKey) {
         this.publicKey = publicKey;
     }
 
@@ -96,8 +96,8 @@ public class Settings {
     public static Settings importJSON(JSONObject obj) throws JSONException {
         Settings s = new Settings();
         s.username = obj.getString("username");
-        s.secretKey = obj.getString("secret_key");
-        s.publicKey = obj.getString("public_key");
+        s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"));
+        s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"));
         s.language = obj.getString("language");
         s.nightMode = obj.getBoolean("might_mode");
         s.blockUnknown = obj.getBoolean("block_unknown");
@@ -111,8 +111,8 @@ public class Settings {
     public static JSONObject exportJSON(Settings s) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("username", s.username);
-        obj.put("secret_key", s.secretKey);
-        obj.put("public_key", s.publicKey);
+        obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey));
+        obj.put("public_key", Utils.byteArrayToHexString(s.publicKey));
         obj.put("language", s.language);
         obj.put("might_mode", s.nightMode);
         obj.put("block_unknown", s.blockUnknown);

@@ -5,6 +5,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.libsodium.jni.Sodium;
+
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -18,7 +20,7 @@ public class Contact implements Serializable {
     enum State { ONLINE, OFFLINE, PENDING };
 
     private String name;
-    private String pubkey;
+    private byte[] pubkey;
     private boolean blocked;
     private ArrayList<String> addresses;
 
@@ -28,7 +30,7 @@ public class Contact implements Serializable {
     // last successful address
     private InetSocketAddress last_address = null;
 
-    public Contact(String name, String pubkey, ArrayList<String> addresses) {
+    public Contact(String name, byte[] pubkey, ArrayList<String> addresses) {
         this.name = name;
         this.pubkey = pubkey;
         this.blocked = false;
@@ -37,7 +39,7 @@ public class Contact implements Serializable {
 
     private Contact() {
         this.name = "";
-        this.pubkey = "";
+        this.pubkey = null;
         this.blocked = false;
         this.addresses = new ArrayList<>();
     }
@@ -85,7 +87,7 @@ public class Contact implements Serializable {
         return addrs;
     }
 
-    public String getPublicKey() {
+    public byte[] getPublicKey() {
         return pubkey;
     }
 
@@ -169,7 +171,7 @@ public class Contact implements Serializable {
         JSONArray array = new JSONArray();
 
         object.put("name", contact.name);
-        object.put("public_key", contact.pubkey);
+        object.put("public_key", Utils.byteArrayToHexString(contact.pubkey));
 
         for (String address : contact.getAddresses()) {
             array.put(address);
@@ -187,13 +189,13 @@ public class Contact implements Serializable {
         Contact contact = new Contact();
 
         contact.name = object.getString("name");
-        contact.pubkey = object.getString("public_key");
+        contact.pubkey = Utils.hexStringToByteArray(object.getString("public_key"));
 
         if (!Utils.isValidName(contact.name)) {
             throw new JSONException("Name is invalid.");
         }
 
-        if (!Utils.isValidPublicKey(contact.pubkey)) {
+        if (contact.pubkey == null || contact.pubkey.length != Sodium.crypto_sign_publickeybytes()) {
             throw new JSONException("Public key is invalid.");
         }
 

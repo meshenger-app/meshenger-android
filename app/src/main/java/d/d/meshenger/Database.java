@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 class Database {
@@ -37,16 +38,16 @@ class Database {
         }
     }
 
-    public void deleteContact(String publicKey) {
+    public void deleteContact(byte[] publicKey) {
         int idx = this.findContact(publicKey);
         if (idx >= 0) {
             this.contacts.remove(idx);
         }
     }
 
-    public int findContact(String publicKey) {
+    public int findContact(byte[] publicKey) {
         for (int i = 0; i < this.contacts.size(); i += 1) {
-            if (this.contacts.get(i).getPublicKey().equals(publicKey)) {
+            if (Arrays.equals(this.contacts.get(i).getPublicKey(), publicKey)) {
                 return i;
             }
         }

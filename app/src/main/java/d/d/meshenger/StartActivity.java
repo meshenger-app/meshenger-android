@@ -145,13 +145,14 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     private void initKeyPair() {
         // create secret/public key pair
-        byte[] publicKey = new byte[SodiumConstants.PUBLICKEY_BYTES];
-        byte[] secretKey = new byte[SodiumConstants.SECRETKEY_BYTES];
-        Sodium.crypto_box_keypair(publicKey, secretKey);
+        final byte[] publicKey = new byte[Sodium.crypto_sign_publickeybytes()];
+        final byte[] secretKey = new byte[Sodium.crypto_sign_secretkeybytes()];
+
+        Sodium.crypto_sign_keypair(publicKey, secretKey);
 
         Settings settings = this.binder.getSettings();
-        settings.setPublicKey(Utils.byteArrayToHexString(publicKey).toUpperCase());
-        settings.setSecretKey(Utils.byteArrayToHexString(secretKey).toUpperCase());
+        settings.setPublicKey(publicKey);
+        settings.setSecretKey(secretKey);
 
         try {
             this.binder.saveDatabase();

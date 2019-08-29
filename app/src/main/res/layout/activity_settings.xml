@@ -104,7 +104,7 @@
                     android:textSize="15dp" />
 
             </LinearLayout>
-<!--
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                     android:layout_margin="5dp" />
 
             </RelativeLayout>
--->
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

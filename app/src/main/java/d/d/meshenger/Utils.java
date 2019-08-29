@@ -105,12 +105,6 @@ class Utils {
         return NAME_PATTERN.matcher(name).matches();
     }
 
-    private static final Pattern PUBLIC_KEY_PATTERN = Pattern.compile("[0-9A-F]{64}");
-
-    public static boolean isValidPublicKey(String pubkey) {
-        return PUBLIC_KEY_PATTERN.matcher(pubkey).matches();
-    }
-
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     public static String byteArrayToHexString(byte[] bytes) {

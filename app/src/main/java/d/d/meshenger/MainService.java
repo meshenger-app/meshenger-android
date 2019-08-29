@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONObject;
+import org.libsodium.jni.Sodium;
 import org.webrtc.SurfaceViewRenderer;
 
 import java.io.BufferedReader;
@@ -22,9 +23,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.security.spec.ECField;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -95,6 +102,8 @@ public class MainService extends Service implements Runnable {
         // shutdown listening socket and say goodbye
         if (this.db != null && this.server != null && this.server.isBound() && !this.server.isClosed()) {
             try {
+                byte[] ownPublicKey = this.db.settings.getPublicKey();
+                byte[] ownSecretKey = this.db.settings.getSecretKey();
                 String message = "{\"action\": \"status_change\", \"status\", \"offline\"}";
 
                 for (Contact contact : this.db.contacts) {
@@ -102,7 +111,7 @@ public class MainService extends Service implements Runnable {
                         continue;
                     }
 
-                    String encrypted = Crypto.encryptMessage(message, contact.getPublicKey(), this.db.settings.getSecretKey());
+                    byte[] encrypted = Crypto.encryptMessage(message, contact.getPublicKey(), ownPublicKey, ownSecretKey);
                     if (encrypted == null) {
                         continue;
                     }
@@ -111,9 +120,9 @@ public class MainService extends Service implements Runnable {
                         Socket socket = null;
                         try {
                             socket = new Socket(addr.getAddress(), addr.getPort());
-                            OutputStream os = socket.getOutputStream();
-                            os.write(encrypted.getBytes());
-                            os.flush();
+                            PacketWriter pw = new PacketWriter(socket);
+                            pw.writeMessage(encrypted);
+                            //os.flush();
                             socket.close();
                             break;
                         } catch (Exception e) {
@@ -161,70 +170,89 @@ public class MainService extends Service implements Runnable {
     }
 
     private void handleClient(Socket client) {
-        log("handleClient");
+        byte[] clientPublicKey = new byte[Sodium.crypto_sign_publickeybytes()];
+        byte[] ownSecretKey = this.db.settings.getSecretKey();
+        byte[] ownPublicKey = this.db.settings.getPublicKey();
 
         try {
-            InputStream is = client.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            OutputStream os = client.getOutputStream();
+            PacketWriter pw = new PacketWriter(client);
+            PacketReader pr = new PacketReader(client);
             Contact contact = null;
-            String request;
 
-            log("waiting for line...");
-            while ((request = reader.readLine()) != null) {
-                String decrypted = null;
+            log("waiting for packet...");
+            while (true) {
+                byte[] request = pr.readMessage();
+                if (request == null) {
+                    log("timeout reached");
+                    break;
+                }
+
+                String decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey);
+                if (decrypted == null) {
+                    break;
+                }
 
                 if (contact == null) {
-                    // look for contact that decrypts the message
                     for (Contact c : this.db.contacts) {
-                        decrypted = Crypto.decryptMessage(request, c.getPublicKey(), this.db.settings.getSecretKey());
-                        if (decrypted != null) {
+                        if (Arrays.equals(c.getPublicKey(), clientPublicKey)) {
                             contact = c;
-                            break;
                         }
                     }
+
+                    if (contact == null && this.db.settings.getBlockUnknown()) {
+                        if (this.currentCall != null) {
+                            this.currentCall.decline();
+                        }
+                        break;
+                    }
+
+                    if (contact != null && contact.getBlocked()) {
+                        if (this.currentCall != null) {
+                            this.currentCall.decline();
+                        }
+                        break;
+                    }
+
+                    if (contact == null) {
+                        ArrayList<String> addresses = new ArrayList<>();
+                        InetAddress address = ((InetSocketAddress) client.getRemoteSocketAddress()).getAddress();
+
+                        // TODO: add full address and handle mac extraction when the contact is saved
+                        if (address instanceof Inet6Address) {
+                            // if the IPv6 address contains a MAC address, take that.
+                            byte[] mac = Utils.getEUI64MAC((Inet6Address) address);
+                            if (mac != null) {
+                                addresses.add(Utils.bytesToMacAddress(mac));
+                            } else {
+                                addresses.add(address.getHostAddress());
+                            }
+                        } else {
+                            addresses.add(address.getHostAddress());
+                        }
+
+                        contact = new Contact(getResources().getString(R.string.unknown_caller), clientPublicKey.clone(), addresses);
+                    }
                 } else {
-                    // we know the contact
-                    decrypted = Crypto.decryptMessage(request, contact.getPublicKey(), this.db.settings.getSecretKey());
-                }
-
-                if (decrypted == null) {
-                    // cannot decrypt / unknown caller
-                    if (this.currentCall != null) {
-                        this.currentCall.decline();
+                    if (!Arrays.equals(contact.getPublicKey(), clientPublicKey)) {
+                        // suspicious change of identity in call...
+                        continue;
                     }
-                    break;
-                }
-
-                if (this.db.settings.getBlockUnknown() && !db.contactExists(contact.getPublicKey())) {
-                    if (this.currentCall != null) {
-                        this.currentCall.decline();
-                    }
-                    continue;
-                }
-
-                if (contact.getBlocked()) {
-                    // contact is blocked
-                    if (this.currentCall != null) {
-                        this.currentCall.decline();
-                    }
-                    break;
                 }
 
                 JSONObject obj = new JSONObject(decrypted);
                 String action = obj.optString("action", "");
-                String secretKey = this.db.settings.getSecretKey();
 
                 switch (action) {
                     case "call": {
                         // someone calls us
                         log("call...");
                         String offer = obj.getString("offer");
-                        this.currentCall = new RTCCall(this, secretKey, contact, client, offer);
+                        this.currentCall = new RTCCall(this, ownPublicKey, ownSecretKey, contact, client, offer);
 
                         // respond that we accept the call
-                        String encrypted = Crypto.encryptMessage("{\"action\":\"ringing\"}", contact.getPublicKey(), secretKey);
-                        os.write(encrypted.getBytes());
+
+                        byte[] encrypted = Crypto.encryptMessage("{\"action\":\"ringing\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
+                        pw.writeMessage(encrypted);
 
                         Intent intent = new Intent(this, CallActivity.class);
                         intent.setAction("ACTION_ACCEPT_CALL");
@@ -237,8 +265,13 @@ public class MainService extends Service implements Runnable {
                         log("ping...");
                         // someone wants to know if we are online
                         setClientState(contact, Contact.State.ONLINE);
-                        String encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), secretKey);
-                        os.write(encrypted.getBytes());
+                        SocketAddress a = client.getRemoteSocketAddress();
+                        if (a instanceof InetSocketAddress) {
+                            contact.setLastGoodAddress(((InetSocketAddress) a).getAddress());
+                        }
+
+                        byte[] encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
+                        pw.writeMessage(encrypted);
                         break;
                     }
                     case "status_change": {
@@ -260,6 +293,9 @@ public class MainService extends Service implements Runnable {
                 this.currentCall.decline();
             }
         }
+
+        // zero out key
+        Arrays.fill(clientPublicKey, (byte) 0);
     }
 
     private void setClientState(Contact contact, Contact.State state) {
@@ -302,7 +338,13 @@ public class MainService extends Service implements Runnable {
     */
     class MainBinder extends Binder {
         RTCCall startCall(Contact contact, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer) {
-            return RTCCall.startCall(MainService.this, MainService.this.db.settings.getSecretKey(), contact, listener);
+            return RTCCall.startCall(
+                MainService.this,
+                MainService.this.db.settings.getPublicKey(),
+                MainService.this.db.settings.getSecretKey(),
+                contact,
+                listener
+            );
         }
 
         RTCCall getCurrentCall() {
@@ -313,9 +355,9 @@ public class MainService extends Service implements Runnable {
             return MainService.this.first_start;
         }
 
-        Contact getContactByPublicKey(String pubKey) {
+        Contact getContactByPublicKey(byte[] pubKey) {
             for (Contact contact : getContacts()) {
-                if (contact.getPublicKey().equalsIgnoreCase(pubKey)) {
+                if (Arrays.equals(contact.getPublicKey(), pubKey)) {
                     return contact;
                 }
             }
@@ -337,7 +379,7 @@ public class MainService extends Service implements Runnable {
             refreshContacts();
         }
 
-        void deleteContact(String pubKey) {
+        void deleteContact(byte[] pubKey) {
             db.deleteContact(pubKey);
             saveDatabase();
             refreshContacts();
@@ -375,8 +417,12 @@ public class MainService extends Service implements Runnable {
         }
 
         void pingContacts(ContactPingListener listener) {
-            String secretKey = getSettings().getSecretKey();
-            new Thread(new PingRunnable(getContacts(), secretKey, listener)).start();
+            new Thread(new PingRunnable(
+                getContacts(),
+                getSettings().getPublicKey(),
+                getSettings().getSecretKey(),
+                listener)
+            ).start();
         }
 
         void saveDatabase() {
@@ -394,13 +440,15 @@ public class MainService extends Service implements Runnable {
 
     class PingRunnable implements Runnable {
         private List<Contact> contacts;
-        String secretKey;
+        byte[] ownPublicKey;
+        byte[] ownSecretKey;
         ContactPingListener listener;
         Socket socket;
 
-        PingRunnable(List<Contact> contacts, String secretKey, ContactPingListener listener) {
+        PingRunnable(List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey, ContactPingListener listener) {
             this.contacts = contacts;
-            this.secretKey = secretKey;
+            this.ownPublicKey = ownPublicKey;
+            this.ownSecretKey = ownSecretKey;
             this.listener = listener;
             this.socket = new Socket();
         }
@@ -415,13 +463,13 @@ public class MainService extends Service implements Runnable {
                         continue;
                     }
 
-                    String encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", contact.getPublicKey(), secretKey);
+                    byte[] encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
                     if (encrypted == null) {
                         continue;
                     }
-                    OutputStream os = socket.getOutputStream();
-                    os.write(encrypted.getBytes());
-                    os.close();
+                    PacketWriter pw = new PacketWriter(socket);
+                    pw.writeMessage(encrypted);
+                    socket.close();
 
                     contact.setState(Contact.State.ONLINE);
                 } catch (Exception e) {
@@ -479,7 +527,7 @@ public class MainService extends Service implements Runnable {
         return new MainBinder();
     }
 
-    private void log(String data) {
+    private static void log(String data) {
         Log.d(MainService.class.getSimpleName(), data);
     }
 }

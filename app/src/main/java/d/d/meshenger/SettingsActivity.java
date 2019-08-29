@@ -96,15 +96,16 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         ((TextView) findViewById(R.id.passwordTv)).setText(
             password.isEmpty() ? "None" : "********"
         );
-/*
+
         CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
         ignoreCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            // save value
             this.binder.getSettings().setBlockUnknown(isChecked);
-            //this.db.updateSettings(settings);
+            this.binder.saveDatabase();
 
             syncSettings("ignoreUnsaved", isChecked);
         });
-*/
+
         boolean nightMode = this.binder.getSettings().getNightMode();
         CheckBox nightModeCB = findViewById(R.id.checkBoxNightMode);
         nightModeCB.setChecked(nightMode);

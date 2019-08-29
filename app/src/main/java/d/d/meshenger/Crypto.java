@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 class Crypto {
 
-    // decrypt data using a password
+    // decrypt database using a password
     public static byte[] decryptData(byte[] encrypted_message, byte[] password) {
         if (encrypted_message == null || password == null) {
             return null;
@@ -49,7 +49,7 @@ class Crypto {
         }
     }
 
-    // encrypt data using a password
+    // encrypt database using a password
     public static byte[] encryptData(byte[] data, byte[] password) {
         if (data == null || password == null) {
             return null;
@@ -86,98 +86,146 @@ class Crypto {
         }
     }
 
-    // encrypt data using a (receivers) public key and a (own) secret key
-    public static String encryptMessage(String messageStr, String publicKeyStr, String secretKeyStr) {
-        try {
-            byte[] publicKey = Utils.hexStringToByteArray(publicKeyStr);
-            byte[] secretKey = Utils.hexStringToByteArray(secretKeyStr);
-            byte[] encrypted_data = encrypt(messageStr.getBytes(), publicKey, secretKey);
-
-            // add newline for BufferedReader::readLine()
-            return Utils.byteArrayToHexString(encrypted_data) + "\n";
-        } catch (Exception e) {
-            // ignore
-        }
-
-        return null;
-    }
-
-    // decrypt data using a (receivers) public key and a (own) secret key
-    public static String decryptMessage(String messageStr, String publicKeyStr, String secretKeyStr) {
-        try {
-            byte[] publicKey = Utils.hexStringToByteArray(publicKeyStr);
-            byte[] secretKey = Utils.hexStringToByteArray(secretKeyStr);
-            byte[] message = Utils.hexStringToByteArray(messageStr);
-
-            byte[] decrypted = decrypt(message, publicKey, secretKey);
-            if (decrypted != null) {
-                return new String(decrypted, Charset.forName("UTF-8"));
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-
-        return null;
-    }
-
-    private static byte[] encrypt(byte[] data, byte[] publicKey, byte[] secretKey) {
-        if (data == null || publicKey == null || secretKey == null) {
+    public static byte[] encryptMessage(String message, byte[] otherPublicKey, byte[] ownPublicKey, byte[] ownSecretKey) {
+        byte[] message_bytes = message.getBytes();
+        byte[] signed = sign(message_bytes, ownSecretKey);
+        if (signed == null) {
             return null;
         }
 
-        // create nonce
-        byte[] nonce = new byte[SodiumConstants.NONCE_BYTES];
-        Sodium.randombytes_buf(nonce, nonce.length);
+        byte[] data = new byte[ownPublicKey.length + signed.length];
+        System.arraycopy(ownPublicKey, 0, data, 0, ownPublicKey.length);
+        System.arraycopy(signed, 0, data, ownPublicKey.length, signed.length);
 
-        // encrypt
-        byte[] encrypted_data = new byte[SodiumConstants.MAC_BYTES + data.length];
-        int rc = Sodium.crypto_box_easy(encrypted_data, data, data.length, nonce, publicKey, secretKey);
+        return encrypt(data, otherPublicKey);
+    }
 
-        // prepend nonce
-        byte[] encrypted_message = new byte[SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES + data.length];
-        System.arraycopy(nonce, 0, encrypted_message, 0, nonce.length);
-        System.arraycopy(encrypted_data, 0, encrypted_message, nonce.length, encrypted_data.length);
+    public static String decryptMessage(byte[] message, byte[] otherPublicKeySignOut, byte[] ownPublicKey, byte[] ownSecretKey) {
+        if (otherPublicKeySignOut == null || otherPublicKeySignOut.length != Sodium.crypto_sign_publickeybytes()) {
+            return null;
+        }
 
-        // zero own memory
-        Arrays.fill(nonce, (byte) 0);
-        Arrays.fill(encrypted_data, (byte) 0);
+        // make sure this is zeroed
+        Arrays.fill(otherPublicKeySignOut, (byte) 0);
+
+        byte[] messageData = decrypt(message, ownPublicKey, ownSecretKey);
+
+        if (messageData == null || messageData.length < otherPublicKeySignOut.length) {
+            return null;
+        }
+
+        // split message data in sender public key and content
+        byte[] messageSignedData = new byte[messageData.length - otherPublicKeySignOut.length];
+        System.arraycopy(messageData, 0, otherPublicKeySignOut, 0, otherPublicKeySignOut.length);
+        System.arraycopy(messageData, otherPublicKeySignOut.length, messageSignedData, 0, messageSignedData.length);
+
+        byte[] unsignedData = unsign(messageSignedData, otherPublicKeySignOut);
+
+        if (unsignedData == null) {
+            // signature does not match transmitted public key
+            return null;
+        }
+
+        return new String(unsignedData, Charset.forName("UTF-8"));
+    }
+
+    private static byte[] sign(byte[] data, byte[] secretKey) {
+        if (data == null) {
+            return null;
+        }
+
+        if (secretKey == null || secretKey.length != Sodium.crypto_sign_secretkeybytes()) {
+            return null;
+        }
+
+        byte[] signed_message = new byte[Sodium.crypto_sign_bytes() + data.length];
+        final int[] signed_message_len = new int[1];
+        int rc = Sodium.crypto_sign(signed_message, signed_message_len, data, data.length, secretKey);
+        if ((rc == 0) && (signed_message.length == signed_message_len[0])) {
+            return signed_message;
+        } else {
+            return null;
+        }
+    }
+
+    // verify signed message
+    private static byte[] unsign(byte[] signed_message, byte[] publicKey) {
+        if (signed_message == null || signed_message.length < Sodium.crypto_sign_bytes()) {
+            return null;
+        }
+
+        if (publicKey == null || publicKey.length != Sodium.crypto_sign_publickeybytes()) {
+            return null;
+        }
+
+        byte[] unsigned_message = new byte[signed_message.length - Sodium.crypto_sign_bytes()];
+
+        final int[] messageSize = new int[1];
+        int rc = Sodium.crypto_sign_open(unsigned_message, messageSize, signed_message, signed_message.length, publicKey);
+        if (rc == 0 && unsigned_message.length == messageSize[0]) {
+            return unsigned_message;
+        } else {
+            return null;
+        }
+    }
+
+    // decrypt an anonymous message using the receivers public key
+    private static byte[] encrypt(byte[] data, byte[] pk_sign) {
+        if (data == null) {
+            return null;
+        }
+
+        if (pk_sign == null || pk_sign.length != Sodium.crypto_sign_publickeybytes()) {
+            return null;
+        }
+
+        byte[] pk_box = new byte[Sodium.crypto_box_publickeybytes()];
+        int rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(pk_box, pk_sign);
+
+        if (rc1 != 0 || pk_box == null || pk_box.length != Sodium.crypto_box_publickeybytes()) {
+            return null;
+        }
+
+        byte[] ciphertext = new byte[SodiumConstants.SEAL_BYTES + data.length];
+        int rc = Sodium.crypto_box_seal(ciphertext, data, data.length, pk_box);
 
         if (rc == 0) {
-            return encrypted_message;
+            return ciphertext;
         } else {
-            Arrays.fill(encrypted_message, (byte) 0);
             return null;
         }
     }
 
-    // decrypt data using a (receivers) public key and a (own) secret key
-    private static byte[] decrypt(byte[] encrypted_message, byte[] publicKey, byte[] secretKey) {
-        if (encrypted_message == null || publicKey == null || secretKey == null) {
+    // decrypt an anonymous message using the receivers public and secret key
+    private static byte[] decrypt(byte[] ciphertext, byte[] pk_sign, byte[] sk_sign) {
+        if (ciphertext == null || ciphertext.length < SodiumConstants.SEAL_BYTES) {
             return null;
         }
 
-        if (encrypted_message.length < (SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES)) {
+        if (pk_sign == null || pk_sign.length != Sodium.crypto_sign_publickeybytes()) {
             return null;
         }
 
-        // separate nonce and encrypted data
-        byte[] nonce = new byte[SodiumConstants.NONCE_BYTES];
-        byte[] encrypted_data = new byte[encrypted_message.length - SodiumConstants.NONCE_BYTES];
-        System.arraycopy(encrypted_message, 0, nonce, 0, nonce.length);
-        System.arraycopy(encrypted_message, nonce.length, encrypted_data, 0, encrypted_data.length);
+        if (sk_sign == null || sk_sign.length != Sodium.crypto_sign_secretkeybytes()) {
+            return null;
+        }
 
-        // decrypt
-        byte[] decrypted_data = new byte[encrypted_data.length - SodiumConstants.MAC_BYTES];
-        int rc = Sodium.crypto_box_open_easy(decrypted_data, encrypted_data, encrypted_data.length, nonce, publicKey, secretKey);
+        // convert signature keys to box keys
+        byte[] pk_box = new byte[Sodium.crypto_box_publickeybytes()];
+        byte[] sk_box = new byte[Sodium.crypto_box_secretkeybytes()];
+        int rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(pk_box, pk_sign);
+        int rc2 = Sodium.crypto_sign_ed25519_sk_to_curve25519(sk_box, sk_sign);
 
-        // zero own memory
-        Arrays.fill(nonce, (byte) 0);
-        Arrays.fill(encrypted_data, (byte) 0);
+        if (rc1 != 0 || rc2 != 0) {
+            return null;
+        }
+
+        byte[] decrypted = new byte[ciphertext.length - SodiumConstants.SEAL_BYTES];
+        int rc = Sodium.crypto_box_seal_open(decrypted, ciphertext, ciphertext.length, pk_box, sk_box);
 
         if (rc == 0) {
-            return decrypted_data;
+            return decrypted;
         } else {
-            Arrays.fill(decrypted_data, (byte) 0);
             return null;
         }
     }

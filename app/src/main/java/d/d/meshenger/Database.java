@@ -21,7 +21,7 @@ class Database {
     Database() {
         this.contacts = new ArrayList<>();
         this.settings = new Settings();
-        this.version = "2.1.0";
+        this.version = "3.0.0";
     }
 
     public boolean contactExists(String publicKey) {
@@ -84,7 +84,7 @@ class Database {
             new String(data, Charset.forName("UTF-8"))
         );
 
-        obj = upgradeDatabase(obj.getString("version"), "2.1.0", obj);
+        obj = upgradeDatabase(obj.getString("version"), "3.0.0", obj);
 
         return Database.fromJSON(obj);
     }

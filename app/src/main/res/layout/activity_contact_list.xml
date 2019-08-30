@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/qr_glass1"
+        app:srcCompat="@drawable/qr_glass"
         android:visibility="gone"
         android:background="@color/colorPrimary"/>
 
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/qr"
+        app:srcCompat="@drawable/qr_code"
         android:visibility="gone"
         android:background="@color/colorPrimary" />
 
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/qr_glass1"
+        app:srcCompat="@drawable/qr_glass"
         android:background="@color/colorPrimary" />
 
 </android.support.design.widget.CoordinatorLayout>

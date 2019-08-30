@@ -32,7 +32,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/qr_glass1"
+        app:srcCompat="@drawable/qr_glass"
         android:background="@color/colorPrimary" />
 
 </RelativeLayout>

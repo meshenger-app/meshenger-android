@@ -118,7 +118,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
             scanAnimation = new TranslateAnimation(0, 0, -distance, 0);
             generateAnimnation = new TranslateAnimation(0, 0, -distance * 2, 0);
             alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
-            ((FloatingActionButton) fab).setImageResource(R.drawable.qr_glass1);
+            ((FloatingActionButton) fab).setImageResource(R.drawable.qr_glass);
             fabScan.setY(fabScan.getY() + distance);
             fabGen.setY(fabGen.getY() + distance * 2);
         } else {
@@ -154,7 +154,7 @@ public class ContactListActivity extends MeshengerActivity implements ServiceCon
     protected void onPause() {
         super.onPause();
         if (fabExpanded) {
-            fab.setImageResource(R.drawable.qr_glass1);
+            fab.setImageResource(R.drawable.qr_glass);
             fabScan.clearAnimation();
             fabGen.clearAnimation();
             fabScan.setY(fabScan.getY() + 200);

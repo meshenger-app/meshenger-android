@@ -97,8 +97,8 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             password.isEmpty() ? "None" : "********"
         );
 
-        CheckBox ignoreCB = findViewById(R.id.checkBoxIgnoreUnsaved);
-        ignoreCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+        CheckBox blockUnknown = findViewById(R.id.checkBoxBlockUnknown);
+        blockUnknown.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             // save value
             this.binder.getSettings().setBlockUnknown(isChecked);
             this.binder.saveDatabase();

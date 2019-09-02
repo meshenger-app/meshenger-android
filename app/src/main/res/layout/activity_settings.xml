@@ -113,12 +113,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_ignore_unsaved"
+                    android:text="@string/settings_block_unknown"
                     android:textSize="25dp"
                     android:textColor="?attr/primaryTextColor" />
 
                 <CheckBox
-                    android:id="@+id/checkBoxIgnoreUnsaved"
+                    android:id="@+id/checkBoxBlockUnknown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"

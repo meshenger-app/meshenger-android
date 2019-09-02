@@ -26,7 +26,7 @@
     <string name="settings_change_address">Change Address</string>
     <string name="settings_change_password">Change Password</string>
     <string name="settings_nightmode">Night Mode</string>
-    <string name="settings_ignore_unsaved">Ignore Unknown Callers</string>
+    <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="about_source">Source Code:</string>
     <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
     <string name="about_author">Developers:</string>

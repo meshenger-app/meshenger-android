@@ -26,7 +26,7 @@
     <string name="settings_change_address">Changement d’adresse</string>
     <string name="settings_change_password">Changer le mot de passe</string>
     <string name="settings_nightmode">Mode nuit</string>
-    <string name="settings_ignore_unsaved">Ignorer les appelants inconnus</string>
+    <string name="settings_block_unknown">Ignorer les appelants inconnus</string>
     <string name="about_source">Code source :</string>
     <string name="about_author">Développeurs :</string>
     <string name="about_license">Licence :</string>

@@ -20,12 +20,12 @@
     <string name="menu_backup">Backup</string>
     <string name="menu_about">Über</string>
     <string name="call_connecting">Verbinde...</string>
-    <string name="unknown_caller">Unbekannter Anrufer</string>
+    <string name="unknown_caller">Unbekannter Anrufer Blocken</string>
     <string name="settings_change_name">Namen Ändern</string>
     <string name="settings_change_language">Sprache Ändern</string>
     <string name="settings_change_address">Addresse Ändern</string>
     <string name="settings_change_password">Passwort Ändern</string>
-    <string name="settings_ignore_unsaved">Unbekannte Anrufer ignorieren</string>
+    <string name="settings_block_unknown">Ignoriere Unbekannte Anrufer</string>
     <string name="settings_nightmode">Dunkler Modus</string>
     <string name="about_source">Quellcode:</string>
     <string name="about_author">Entwickler:</string>

@@ -28,7 +28,6 @@
     <string name="settings_block_unknown">Ignoriere Unbekannte Anrufer</string>
     <string name="settings_nightmode">Dunkler Modus</string>
     <string name="about_source">Quellcode:</string>
-    <string name="about_author">Entwickler:</string>
     <string name="about_license">Lizenz:</string>
     <string name="about_license_version">GPL-3.0-or-later</string>
     <string name="delete">Löschen</string>

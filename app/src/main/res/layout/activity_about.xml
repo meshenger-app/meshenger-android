@@ -79,69 +79,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="@string/about_author"
-            android:textColor="?attr/primaryTextColor"
-            android:textSize="15dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/about_author_name1"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
-
-        <TextView
-            android:id="@+id/mailAddress1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_author_email1"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/about_author_name2"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
-
-        <TextView
-            android:id="@+id/mailAddress2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_author_email2"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/about_author_name3"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
-
-        <TextView
-            android:id="@+id/mailAddress3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_author_email3"
-            android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:text="@string/about_license"
             android:textColor="?attr/primaryTextColor"
             android:textSize="15dp" />
 
         <TextView
-            android:id="@+id/licenseVersion"
+            android:id="@+id/licenseTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/about_license_version"

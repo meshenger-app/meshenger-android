@@ -28,7 +28,6 @@
     <string name="settings_nightmode">Mode nuit</string>
     <string name="settings_block_unknown">Ignorer les appelants inconnus</string>
     <string name="about_source">Code source :</string>
-    <string name="about_author">Développeurs :</string>
     <string name="about_license">Licence :</string>
     <string name="about_license_version">GPL-3.0-or-later</string>
     <string name="delete">Effacer</string>

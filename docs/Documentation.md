@@ -22,6 +22,14 @@ Instead of MAC addresses, IPv4/IPv6 addresses or DNS names can also be used as w
 
 Meshenger uses [WebRTC](https://webrtc.org/), a well-build, tested and mostly documented standard for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger.
 
+Resources:
+
+- [Serverless WebRTC Android](https://github.com/wojta/serverless-webrtc-android)
+- [Real time communication with Webrtc on Android](https://hackernoon.com/real-time-communication-with-webrtc-on-android-f96cdcfc4771)
+- [Getting Started with WebRTC for Android](https://vivekc.xyz/getting-started-with-webrtc-for-android-daab1e268ff4)
+- [WebRTC for Android](https://www.amryousef.me/android-webrtc)
+- [Android WebRTC Tutorial](https://github.com/GleasonK/android-webrtc-tutorial)
+
 ## Crypto
 
 For encryption and authentication, libsodium is used. (TODO)

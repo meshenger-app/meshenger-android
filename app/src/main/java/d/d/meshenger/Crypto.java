@@ -12,36 +12,49 @@ import java.util.Arrays;
 class Crypto {
 
     // decrypt database using a password
-    public static byte[] decryptData(byte[] encrypted_message, byte[] password) {
+    public static byte[] decryptDatabase(byte[] encrypted_message, byte[] password) {
         if (encrypted_message == null || password == null) {
             return null;
         }
 
-        if (encrypted_message.length <= (SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES)) {
+        if (encrypted_message.length <= (4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES)) {
+            return null;
+        }
+
+        // separate salt, nonce and encrypted data
+        byte[] header = new byte[4];
+        byte[] salt = new byte[Sodium.crypto_pwhash_saltbytes()];
+        byte[] nonce = new byte[SodiumConstants.NONCE_BYTES];
+        byte[] encrypted_data = new byte[encrypted_message.length - header.length - salt.length - nonce.length];
+        System.arraycopy(encrypted_message, 0, header, 0, header.length);
+        System.arraycopy(encrypted_message, header.length, salt, 0, salt.length);
+        System.arraycopy(encrypted_message, header.length + salt.length, nonce, 0, nonce.length);
+        System.arraycopy(encrypted_message, header.length + salt.length + nonce.length, encrypted_data, 0, encrypted_data.length);
+
+        // expect header to be 0
+        if (!(header[0] == 0 && header[1] == 0 && header[2] == 0 && header[3] == 0)) {
             return null;
         }
 
         // hash password into key
-        byte[] key = new byte[Sodium.crypto_generichash_bytes()];
-        byte[] secret = new byte[0];
-        Sodium.crypto_generichash(key, key.length, password, password.length, secret, secret.length);
-
-        // separate nonce and encrypted data
-        byte[] nonce = new byte[SodiumConstants.NONCE_BYTES];
-        byte[] encrypted_data = new byte[encrypted_message.length - SodiumConstants.NONCE_BYTES];
-        System.arraycopy(encrypted_message, 0, nonce, 0, nonce.length);
-        System.arraycopy(encrypted_message, nonce.length, encrypted_data, 0, encrypted_data.length);
+        byte[] key = new byte[Sodium.crypto_box_seedbytes()];
+        int rc1 = Sodium.crypto_pwhash(key, key.length, password, password.length, salt,
+            Sodium.crypto_pwhash_opslimit_interactive(),
+            Sodium.crypto_pwhash_memlimit_interactive(),
+            Sodium.crypto_pwhash_alg_default());
 
         // decrypt
         byte[] decrypted_data = new byte[encrypted_data.length - SodiumConstants.MAC_BYTES];
-        int rc = Sodium.crypto_secretbox_open_easy(decrypted_data, encrypted_data, encrypted_data.length, nonce, key);
+        int rc2 = Sodium.crypto_secretbox_open_easy(decrypted_data, encrypted_data, encrypted_data.length, nonce, key);
 
         // zero own memory
+        Arrays.fill(header, (byte) 0);
+        Arrays.fill(salt, (byte) 0);
         Arrays.fill(key, (byte) 0);
         Arrays.fill(nonce, (byte) 0);
         Arrays.fill(encrypted_data, (byte) 0);
 
-        if (rc == 0) {
+        if (rc1 == 0 && rc2 == 0) {
             return decrypted_data;
         } else {
             Arrays.fill(decrypted_data, (byte) 0);
@@ -50,15 +63,27 @@ class Crypto {
     }
 
     // encrypt database using a password
-    public static byte[] encryptData(byte[] data, byte[] password) {
+    public static byte[] encryptDatabase(byte[] data, byte[] password) {
         if (data == null || password == null) {
             return null;
         }
 
         // hash password into key
-        byte[] key = new byte[Sodium.crypto_generichash_bytes()];
-        byte[] secret = new byte[0];
-        Sodium.crypto_generichash(key, key.length, password, password.length, secret, secret.length);
+        byte[] salt = new byte[Sodium.crypto_pwhash_saltbytes()];
+        Sodium.randombytes_buf(salt, salt.length);
+
+        // hash password into key
+        byte[] key = new byte[Sodium.crypto_box_seedbytes()];
+        int rc1 = Sodium.crypto_pwhash(key, key.length, password, password.length, salt,
+                Sodium.crypto_pwhash_opslimit_interactive(),
+                Sodium.crypto_pwhash_memlimit_interactive(),
+                Sodium.crypto_pwhash_alg_default());
+
+        byte[] header = new byte[4];
+        header[0] = 0;
+        header[1] = 0;
+        header[2] = 0;
+        header[3] = 0;
 
         // create nonce
         byte[] nonce = new byte[SodiumConstants.NONCE_BYTES];
@@ -66,19 +91,23 @@ class Crypto {
 
         // encrypt
         byte[] encrypted_data = new byte[SodiumConstants.MAC_BYTES + data.length];
-        int rc = Sodium.crypto_secretbox_easy(encrypted_data, data, data.length, nonce, key);
+        int rc2 = Sodium.crypto_secretbox_easy(encrypted_data, data, data.length, nonce, key);
 
-        // prepend nonce
-        byte[] encrypted_message = new byte[SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES + data.length];
-        System.arraycopy(nonce, 0, encrypted_message, 0, nonce.length);
-        System.arraycopy(encrypted_data, 0, encrypted_message, nonce.length, encrypted_data.length);
+        // prepend header, salt and nonce
+        byte[] encrypted_message = new byte[header.length + salt.length + nonce.length + encrypted_data.length];
+        System.arraycopy(header, 0, encrypted_message, 0, header.length);
+        System.arraycopy(salt, 0, encrypted_message, header.length, salt.length);
+        System.arraycopy(nonce, 0, encrypted_message, header.length + salt.length, nonce.length);
+        System.arraycopy(encrypted_data, 0, encrypted_message, header.length + salt.length + nonce.length, encrypted_data.length);
 
         // zero own memory
+        Arrays.fill(header, (byte) 0);
+        Arrays.fill(salt, (byte) 0);
         Arrays.fill(key, (byte) 0);
         Arrays.fill(nonce, (byte) 0);
         Arrays.fill(encrypted_data, (byte) 0);
 
-        if (rc == 0) {
+        if (rc1 == 0 && rc2 == 0) {
             return encrypted_message;
         } else {
             Arrays.fill(encrypted_message, (byte) 0);
@@ -110,7 +139,7 @@ class Crypto {
 
         byte[] messageData = decrypt(message, ownPublicKey, ownSecretKey);
 
-        if (messageData == null || messageData.length < otherPublicKeySignOut.length) {
+        if (messageData == null || messageData.length <= otherPublicKeySignOut.length) {
             return null;
         }
 

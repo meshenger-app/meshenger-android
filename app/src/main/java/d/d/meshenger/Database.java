@@ -73,7 +73,11 @@ class Database {
 
         // encrypt database
         if (password != null && password.length() > 0) {
-            data = Crypto.decryptData(data, password.getBytes());
+            data = Crypto.decryptDatabase(data, password.getBytes());
+
+            if (data == null) {
+                throw new IOException("wrong database password.");
+            }
         }
 
         JSONObject obj = new JSONObject(
@@ -91,7 +95,7 @@ class Database {
 
         // encrypt database
         if (password != null && password.length() > 0) {
-            data = Crypto.encryptData(data, password.getBytes());
+            data = Crypto.encryptDatabase(data, password.getBytes());
         }
 
         // write database file

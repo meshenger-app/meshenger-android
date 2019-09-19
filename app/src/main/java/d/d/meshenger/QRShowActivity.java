@@ -90,7 +90,7 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
 
         if (this.contact.getAddresses().isEmpty()) {
-            Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show();
         }
     }
 

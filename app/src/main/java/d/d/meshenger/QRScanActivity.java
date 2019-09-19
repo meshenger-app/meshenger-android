@@ -66,7 +66,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         Contact new_contact = Contact.importJSON(object, false);
 
         if (new_contact.getAddresses().isEmpty()) {
-            Toast.makeText(this, getResources().getString(R.string.contact_has_no_address_warning), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show();
         }
 
         // lookup existing contacts by key and name
@@ -141,12 +141,12 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
             String name = nameEditText.getText().toString();
 
             if (name.isEmpty()) {
-                Toast.makeText(this, "Name is empty.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (QRScanActivity.this.binder.getContactByName(name) != null) {
-                Toast.makeText(this, "A contact with that name exists already.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.contact_name_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
 

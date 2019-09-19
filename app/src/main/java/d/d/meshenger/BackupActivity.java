@@ -164,7 +164,7 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         try {
             Database db = Database.load(path, password);
             this.binder.replaceDatabase(db);
-            Toast.makeText(this, getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             showErrorMessage(getResources().getString(R.string.error), e.toString());
         }

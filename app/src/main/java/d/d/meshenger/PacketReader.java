@@ -61,7 +61,7 @@ class PacketReader {
         return null;
     }
 
-    private void log(String s) {
+    private static void log(String s) {
         Log.d(PacketReader.class.getSimpleName(), s);
     }
 }

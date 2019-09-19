@@ -183,7 +183,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         binder = null;
     }
 
-    private void log(String s) {
+    private static void log(String s) {
         Log.d(QRScanActivity.class.getSimpleName(), s);
     }
 }

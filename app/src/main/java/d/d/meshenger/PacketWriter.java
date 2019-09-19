@@ -31,7 +31,7 @@ class PacketWriter {
         this.os.write(message);
     }
 
-    private void log(String s) {
+    private static void log(String s) {
         Log.d(PacketWriter.class.getSimpleName(), s);
     }
 }

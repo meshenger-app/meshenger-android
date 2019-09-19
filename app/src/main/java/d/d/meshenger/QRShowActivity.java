@@ -128,7 +128,7 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         }
     };
 
-    private void log(String s) {
-        Log.d(ContactListActivity.class.getSimpleName(), s);
+    private static void log(String s) {
+        Log.d(QRShowActivity.class.getSimpleName(), s);
     }
 }

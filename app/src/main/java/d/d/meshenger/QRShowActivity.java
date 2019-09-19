@@ -5,11 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +18,8 @@ import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
-import org.json.JSONException;
 
 
 public class QRShowActivity extends MeshengerActivity implements ServiceConnection {
@@ -66,8 +61,6 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
                 // ignore
             }
         });
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("incoming_contact"));
     }
 
     @Override
@@ -76,8 +69,6 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         if (this.binder != null) {
             unbindService(this);
         }
-
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     private void bindService() {

@@ -1,6 +1,6 @@
 # Meshenger
 
- Allow voice- and video communication without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
+ Voice- and video calls without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
 
 Features:
 

@@ -1,6 +1,6 @@
-Make Audio/Video calls on local networks.
+Audio/Video calls on local networks.
 
-Meshenger allows voice and video communication without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks, e.g. at home, in community networks or at work.
+Meshenger allows voice and video calls without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks, e.g. at home, in community networks or at work.
 
 * uses IPv6 link local by default
 * encrypted communication

@@ -1,2 +1,6 @@
 * allow unknown callers
+* add call history e.g. to add unknown callers as contacts afterwards
+* prevent use of not used MAC/IP addresses, Meshenger cannot assign or change MAC/IP addresses
 * improved french translation
+* warn when contacts with the same name or public key are added
+* remove author list, it is getting too crowded

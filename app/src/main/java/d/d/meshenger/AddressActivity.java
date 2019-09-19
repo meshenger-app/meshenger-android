@@ -38,8 +38,8 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
     Button saveButton;
     Button abortButton;
 
-    ArrayList<AddressEntry> systemAddressList;
-    ArrayList<AddressEntry> storedAddressList;
+    List<AddressEntry> systemAddressList;
+    List<AddressEntry> storedAddressList;
     AddressListAdapter storedAddressListAdapter;
     AddressListAdapter systemAddressListAdapter;
 
@@ -71,7 +71,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         addressEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                updateAdressEditTextButtons();
+                updateAddressEditTextButtons();
             }
 
             @Override
@@ -81,7 +81,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateAdressEditTextButtons();
+                updateAddressEditTextButtons();
             }
         });
 
@@ -91,17 +91,23 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
                 return;
             }
 
-            AddressEntry ae = parseAddress(address);
-            if (ae.multicast) {
+            AddressEntry entry = parseAddress(address);
+
+            if (entry.multicast) {
                 Toast.makeText(this, "Multicast addresses are not supported.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            storedAddressList.add(ae);
+            if ((Utils.isMAC(address) || Utils.isIP(address)) && !systemAddressList.contains(entry)) {
+                Toast.makeText(this, "You can only choose a MAC/IP address that is used by the system.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            storedAddressList.add(entry);
             updateSpinners();
 
             // select the added element
-            int idx = AddressEntry.listIndexOf(storedAddressList, ae);
+            int idx = AddressEntry.listIndexOf(storedAddressList, entry);
             storedAddressSpinner.setSelection(idx);
         });
 
@@ -195,7 +201,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
             return this.addressEntries.isEmpty();
         }
 
-        public void update(List<AddressEntry> addressEntries, ArrayList<AddressEntry> addressEntriesMarked) {
+        public void update(List<AddressEntry> addressEntries, List<AddressEntry> addressEntriesMarked) {
             this.addressEntries = addressEntries;
             this.addressEntriesMarked = addressEntriesMarked;
         }
@@ -258,7 +264,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         }
     }
 
-    private void updateAdressEditTextButtons() {
+    private void updateAddressEditTextButtons() {
         String address = addressEditText.getText().toString();
 
         boolean exists = (AddressEntry.findAddressEntry(storedAddressList, address) != null);
@@ -292,18 +298,25 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         pickStoredAddressButton.setEnabled(!storedAddressListAdapter.isEmpty());
         pickSystemAddressButton.setEnabled(!systemAddressListAdapter.isEmpty());
 
-        updateAdressEditTextButtons();
+        updateAddressEditTextButtons();
     }
 
+    /*
+     * Create AddressEntry from address string.
+     * Do not perform any domain lookup
+    */
     AddressEntry parseAddress(String address) {
+        // instead of parsing, lookup in known addresses first
         AddressEntry ae = AddressEntry.findAddressEntry(systemAddressList, address);
         if (ae != null) {
+            // known address
             return new AddressEntry(address, ae.device, ae.multicast);
         } else if (Utils.isMAC(address)) {
-            boolean mc = !Utils.isUnicastMAC(Utils.macAddressToBytes(address));
+            // MAC address
+            boolean mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address));
             return new AddressEntry(address, "", mc);
         } else if (Utils.isIP(address)) {
-            //TODO: fix
+            // IP address
             boolean mc = false;
             try {
                 mc = Utils.parseInetSocketAddress(address, 0).getAddress().isMulticastAddress();
@@ -312,6 +325,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
             }
             return new AddressEntry(address, "", mc);
         } else {
+            // domain
             return new AddressEntry(address, "", false);
         }
     }

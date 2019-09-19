@@ -20,8 +20,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,9 +83,9 @@ class Utils {
         return TextUtils.join(",", list);
     }
 
-    public static ArrayList<String> split(String str) {
+    public static List<String> split(String str) {
         String[] parts = str.split(",");
-        return new ArrayList<>(Arrays.asList(parts));
+        return Arrays.asList(parts);
     }
 
     private static final Pattern NAME_PATTERN = Pattern.compile("[\\w _-]+");
@@ -133,38 +131,31 @@ class Utils {
         return data;
     }
 
-    public static InetSocketAddress parseInetSocketAddress(String addr, int default_port) throws URISyntaxException {
-        final boolean has_scheme = addr.contains("://");
-        String scheme_addr;
-
-        if (has_scheme) {
-            throw new URISyntaxException(addr, "Address is invalid");
+    public static InetSocketAddress parseInetSocketAddress(String addr, int defaultPort) {
+        if (addr == null || addr.length() == 0) {
+            return null;
         }
 
-        // parsing only works with a scheme
-        if (has_scheme) {
-            scheme_addr = addr;
-        } else {
-            scheme_addr = "xyz://" + addr;
-        }
+        int firstColon = addr.indexOf(':');
+        int lastColon = addr.lastIndexOf(':');
+        int port = -1;
 
+        try {
+            // parse port suffix
+            if (firstColon > 0 && lastColon > 0) {
+                if (addr.charAt(lastColon - 1) == ']' || firstColon == lastColon) {
+                    port = Integer.parseInt(addr.substring(lastColon + 1));
+                    addr = addr.substring(0, lastColon);
+                }
+            }
 
-        URI uri = new URI(scheme_addr);
-        String host = uri.getHost();
-        int port = uri.getPort();
+            if (port < 0) {
+                port = defaultPort;
+            }
 
-        if (port < 0) {
-            port = default_port;
-        }
-
-        if (host == null) {
-            throw new URISyntaxException(addr, "Address is invalid");
-        }
-
-        if (port < 0) {
-            return new InetSocketAddress(host, default_port);
-        } else {
-            return new InetSocketAddress(host, port);
+            return new InetSocketAddress(addr, port);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -193,8 +184,8 @@ class Utils {
     }
 
     // Check if MAC address is unicast/multicast
-    public static boolean isUnicastMAC(byte[] mac) {
-        return (mac[0] & 1) == 0;
+    public static boolean isMulticastMAC(byte[] mac) {
+        return (mac[0] & 1) != 0;
     }
 
     // Check if MAC address is local/universal
@@ -239,78 +230,41 @@ class Utils {
 
     // check if string is a domain (heuristic)
     public static boolean isDomain(String domain) {
-      if (domain == null || domain.length() == 0) {
-        return false;
-      }
+        if (domain == null || domain.length() == 0) {
+            return false;
+        }
 
-      if (domain.startsWith(".") || domain.endsWith(".")) {
-        return false;
-      }
+        if (domain.startsWith(".") || domain.endsWith(".")) {
+            return false;
+        }
 
-      if (domain.contains("..") || !domain.contains(".")) {
-        return false;
-      }
+        if (domain.contains("..") || !domain.contains(".")) {
+            return false;
+        }
 
-      if (domain.startsWith("-") || domain.endsWith("-")) {
-        return false;
-      }
+        if (domain.startsWith("-") || domain.endsWith("-")) {
+            return false;
+        }
 
-      if (domain.contains(".-") || domain.contains("-.")) {
-        return false;
-      }
+        if (domain.contains(".-") || domain.contains("-.")) {
+            return false;
+        }
 
-      return DOMAIN_PATTERN.matcher(domain).matches();
+        return DOMAIN_PATTERN.matcher(domain).matches();
     }
 
-    private static final Pattern IP_PATTERN = Pattern.compile("([a-f0-9:]+|[0-9.]+)");
+    private static final Pattern IPV4_PATTERN = Pattern.compile("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$");
+    private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$");
+    private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)$");
 
     // check if a string is an IP address (heuristic)
     public static boolean isIP(String address) {
-      if (!IP_PATTERN.matcher(address).matches()) {
-        return false;
-      }
-
-      try {
-          InetAddress.getByName(address);
-          return true;
-      } catch (Exception e) {
-          return false;
-      }
+        return IPV4_PATTERN.matcher(address).matches()
+            || IPV6_STD_PATTERN.matcher(address).matches()
+            || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches();
     }
 
-    // Get all device MAC addresses that are universal and unicast
-    public static ArrayList<String> getMacAddresses() {
-        ArrayList<String> macs = new ArrayList<String>();
-        try {
-            for (NetworkInterface nif : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                byte[] mac = nif.getHardwareAddress();
-
-                if (nif.isLoopback()) {
-                    continue;
-                }
-
-                if (!isValidMAC(mac)) {
-                    continue;
-                }
-
-                if (!Utils.isUniversalMAC(mac)) {
-                    continue;
-                }
-
-                if (!Utils.isUnicastMAC(mac)) {
-                    continue;
-                }
-
-                macs.add(Utils.bytesToMacAddress(mac));
-            }
-        } catch (Exception ex) {
-            // ignore
-        }
-
-        return macs;
-    }
-
-    public static ArrayList<AddressEntry> collectAddresses() {
+    public static List<AddressEntry> collectAddresses() {
         ArrayList<AddressEntry> addressList = new ArrayList<>();
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -326,7 +280,7 @@ class Utils {
                     continue;
                 }
 
-                addressList.add(new AddressEntry(Utils.bytesToMacAddress(mac), nif.getName(), !Utils.isUnicastMAC(mac)));
+                addressList.add(new AddressEntry(Utils.bytesToMacAddress(mac), nif.getName(), Utils.isMulticastMAC(mac)));
 
                 for (InterfaceAddress ia : nif.getInterfaceAddresses()) {
                     InetAddress addr = ia.getAddress();
@@ -436,6 +390,18 @@ class Utils {
         }
 
         return addrs;
+    }
+
+    // EUI-64 based address to MAC address
+    public static String getGeneralizedAddress(InetAddress address) {
+        if (address instanceof Inet6Address) {
+            // if the IPv6 address contains a MAC address, take that.
+            byte[] mac = Utils.getEUI64MAC((Inet6Address) address);
+            if (mac != null) {
+                return Utils.bytesToMacAddress(mac);
+            }
+        }
+        return address.getHostAddress();
     }
 
     // write file to external storage

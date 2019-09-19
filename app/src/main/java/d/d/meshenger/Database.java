@@ -1,8 +1,5 @@
 package d.d.meshenger;
 
-import android.content.Context;
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,13 +100,24 @@ class Database {
     }
 
     private static JSONObject upgradeDatabase(String from, String to, JSONObject obj) throws JSONException {
+        // 2.0.0 => 2.1.0
         if (from.equals("2.0.0")) {
             // add blocked field (added in 2.1.0)
             JSONArray contacts = obj.getJSONArray("contacts");
             for (int i = 0; i < contacts.length(); i += 1) {
                 contacts.getJSONObject(i).put("blocked", false);
             }
+            from = "2.1.0";
         }
+
+        // 2.1.0 => 3.0.0
+        if (from.equals("2.1.0")) {
+            // add new fields
+            obj.put("ice_servers", new JSONArray());
+            obj.put("development_mode", false);
+            from = "3.0.0";
+        }
+
         return obj;
     }
 

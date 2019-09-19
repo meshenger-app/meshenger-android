@@ -1,6 +1,5 @@
 package d.d.meshenger;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -21,8 +19,6 @@ import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,9 +31,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 
-public class CallActivity extends MeshengerActivity implements ServiceConnection, View.OnClickListener, SensorEventListener {
+public class CallActivity extends MeshengerActivity implements ServiceConnection, SensorEventListener {
     private TextView statusTextView;
     private TextView nameTextView;
 
@@ -47,8 +44,6 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     private RTCCall currentCall;
 
     private boolean calledWhileScreenOff = false;
-
-    private SensorManager sensorManager;
     private PowerManager powerManager;
     private PowerManager.WakeLock wakeLock;
     private PowerManager.WakeLock  passiveWakeLock = null;
@@ -57,6 +52,9 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     private final int CAMERA_PERMISSION_REQUEST_CODE =  2;
 
     private boolean permissionRequested = false;
+
+    private Contact contact = null;
+    private CallEvent.Type callEventType = null;
 
     private Vibrator vibrator = null;
     private Ringtone ringtone = null;
@@ -73,16 +71,23 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         nameTextView = findViewById(R.id.callName);
 
         String action = getIntent().getAction();
-        Contact contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
+        contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
 
-        if ("ACTION_START_CALL".equals(action)) {
-            log("starting call...");
+        log("onCreate: " + action);
+
+        if ("ACTION_OUTGOING_CALL".equals(action)) {
+            callEventType = CallEvent.Type.OUTGOING_UNKNOWN;
+
             connection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     binder = (MainService.MainBinder) iBinder;
-                    currentCall = binder.startCall(
-                        contact, activeCallback, findViewById(R.id.localRenderer)
+                    currentCall = RTCCall.startCall(
+                        CallActivity.this,
+                        binder,
+                        contact,
+                        activeCallback
+                        //findViewById(R.id.localRenderer)
                     );
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                 }
@@ -92,52 +97,98 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                     // nothing to do
                 }
             };
-            nameTextView.setText(contact.getName());
+
+            if (contact.getName().isEmpty()) {
+                nameTextView.setText(getResources().getString(R.string.unknown_caller));
+            } else {
+                nameTextView.setText(contact.getName());
+            }
+
             bindService(new Intent(this, MainService.class), connection, 0);
-            findViewById(R.id.callDecline).setOnClickListener(this);
+
+            View.OnClickListener declineListener = view -> {
+                // end call
+                currentCall.hangUp();
+                callEventType = CallEvent.Type.OUTGOING_DECLINED;
+                finish();
+            };
+
+            findViewById(R.id.callDecline).setOnClickListener(declineListener);
             startSensor();
-        } else if ("ACTION_ACCEPT_CALL".equals(action)) {
+        } else if ("ACTION_INCOMING_CALL".equals(action)) {
+            callEventType = CallEvent.Type.INCOMING_UNKNOWN;
+
             calledWhileScreenOff = !((PowerManager) getSystemService(POWER_SERVICE)).isScreenOn();
             passiveWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(
-                PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "wakeup"
+                PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "meshenger:wakeup"
             );
             passiveWakeLock.acquire(10000);
+
             connection = this;
             bindService(new Intent(this, MainService.class), this, 0);
-            nameTextView.setText(contact.getName());
-            findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
-            ringPhone();
 
-            View.OnClickListener optionsListener = view -> {
-                stopRingPhone();
-                if (view.getId() == R.id.callDecline) {
-                    log("declining call...");
-                    currentCall.decline();
+            if (contact.getName().isEmpty()) {
+                nameTextView.setText(getResources().getString(R.string.unknown_caller));
+            } else {
+                nameTextView.setText(contact.getName());
+            }
+
+            findViewById(R.id.callAccept).setVisibility(View.VISIBLE);
+            startRinging();
+
+            // decline call
+            View.OnClickListener declineListener = view -> {
+                stopRinging();
+
+                log("declining call...");
+                currentCall.decline();
+                if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
+                    passiveWakeLock.release();
+                }
+
+                callEventType = CallEvent.Type.INCOMING_DECLINED;
+
+                finish();
+            };
+
+            // hangup call
+            View.OnClickListener hangupListener = view -> {
+                stopRinging(); // make sure ringing has stopped ;-)
+
+                log("hangup call...");
+                currentCall.decline();
+                if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
+                    passiveWakeLock.release();
+                }
+
+                callEventType = CallEvent.Type.INCOMING_ACCEPTED;
+
+                finish();
+            };
+
+            View.OnClickListener acceptListener = view -> {
+                stopRinging();
+
+                log("accepted call...");
+                try {
+                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
+                    //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
+                    currentCall.accept(passiveCallback);
                     if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
                         passiveWakeLock.release();
                     }
-                    finish();
-                } else {
-                    try {
-                        currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
-                        //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
-                        currentCall.accept(passiveCallback);
-                        if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
-                            passiveWakeLock.release();
-                        }
-                        log("call accepted");
-                        findViewById(R.id.callDecline).setOnClickListener(this);
-                        startSensor();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        stopDelayed("Error accepting call");
-                        findViewById(R.id.callAccept).setVisibility(View.GONE);
-                    }
+                    findViewById(R.id.callDecline).setOnClickListener(hangupListener);
+                    startSensor();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    stopDelayed("Error accepting call");
+                    findViewById(R.id.callAccept).setVisibility(View.GONE);
+                    callEventType = CallEvent.Type.INCOMING_ERROR;
                 }
             };
 
-            findViewById(R.id.callAccept).setOnClickListener(optionsListener);
-            findViewById(R.id.callDecline).setOnClickListener(optionsListener);
+            findViewById(R.id.callAccept).setOnClickListener(acceptListener);
+            findViewById(R.id.callDecline).setOnClickListener(declineListener);
         }
 
         (findViewById(R.id.videoStreamSwitch)).setOnClickListener((button) -> {
@@ -147,17 +198,19 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             currentCall.switchFrontFacing();
         });
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(declineReceiver, new IntentFilter("call_declined"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(declineBroadcastReceiver, new IntentFilter("call_declined"));
     }
 
-    BroadcastReceiver declineReceiver = new BroadcastReceiver() {
+    BroadcastReceiver declineBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            log("declineBroadcastCastReceiver onReceive");
             finish();
         }
     };
 
-    private void ringPhone(){
+    private void startRinging(){
+        log("startRinging");
         int ringerMode = ((AudioManager) getSystemService(AUDIO_SERVICE)).getRingerMode();
 
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
@@ -181,7 +234,8 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         ringtone.play();
     }
 
-    private void stopRingPhone(){
+    private void stopRinging(){
+        log("stopRinging");
         if (vibrator != null) {
             vibrator.cancel();
             vibrator = null;
@@ -193,7 +247,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         }
     }
 
-    private void switchVideoEnabled(ImageButton button){
+    private void switchVideoEnabled(ImageButton button) {
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE);
             permissionRequested = true;
@@ -266,14 +320,8 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     }
 
     private void startSensor() {
-        //TODO implement for api < 21
-        //sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-        //Sensor s = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        //sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
-
         powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "proximity");
+        wakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "meshenger:proximity");
         wakeLock.acquire();
     }
 
@@ -295,21 +343,23 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        log("onDestroy");
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(declineReceiver);
-        stopRingPhone();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver);
+
+        stopRinging();
+
         if (currentCall.state == RTCCall.CallState.CONNECTED) {
             currentCall.decline();
         }
         currentCall.cleanup();
 
-        if (binder != null) {
-            unbindService(connection);
-        }
+        this.binder.addCallEvent(this.contact, this.callEventType);
 
-        //if (sensorManager != null)
-        //    log("unregistering sensor2");
-        //    sensorManager.unregisterListener(this);
+        //if (binder != null) {
+            unbindService(connection);
+        //}
+
         if (wakeLock != null) {
             wakeLock.release();
         }
@@ -326,30 +376,35 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     }
 
     private RTCCall.OnStateChangeListener activeCallback = callState -> {
-
         switch (callState) {
             case CONNECTING: {
+                log("activeCallback: CONNECTED");
                 setStatusText(getString(R.string.call_connecting));
                 break;
             }
             case CONNECTED: {
+                log("activeCallback: CONNECTED");
                 new Handler(getMainLooper()).post( () -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
                 setStatusText(getString(R.string.call_connected));
                 break;
             }
             case DISMISSED: {
+                log("activeCallback: DISMISSED");
                 stopDelayed(getString(R.string.call_denied));
                 break;
             }
             case RINGING: {
+                log("activeCallback: RINGING");
                 setStatusText(getString(R.string.call_ringing));
                 break;
             }
             case ENDED: {
+                log("activeCallback: ENDED");
                 stopDelayed(getString(R.string.call_ended));
                 break;
             }
             case ERROR: {
+                log("activeCallback: ERROR");
                 stopDelayed(getString(R.string.call_error));
                 break;
             }
@@ -359,20 +414,24 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     private RTCCall.OnStateChangeListener passiveCallback = callState -> {
         switch (callState) {
             case CONNECTED: {
+                log("passiveCallback: CONNECTED");
                 setStatusText(getString(R.string.call_connected));
                 runOnUiThread(() -> findViewById(R.id.callAccept).setVisibility(View.GONE));
                 new Handler(getMainLooper()).post(() -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE));
                 break;
             }
             case RINGING: {
+                log("passiveCallback: RINGING");
                 setStatusText(getString(R.string.call_ringing));
                 break;
             }
             case ENDED: {
+                log("passiveCallback: ENDED");
                 stopDelayed(getString(R.string.call_ended));
                 break;
             }
             case ERROR: {
+                log("passiveCallback: ERROR");
                 stopDelayed(getString(R.string.call_error));
                 break;
             }
@@ -402,25 +461,16 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     }
 
     @Override
-    public void onClick(View view) {
-        log("OnClick");
-        if (view.getId() == R.id.callDecline) {
-            log("endCall()");
-            currentCall.hangUp();
-            finish();
-        }
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         log("sensor changed: " + sensorEvent.values[0]);
+
         if (sensorEvent.values[0] == 0.0f) {
             wakeLock = ((PowerManager) getSystemService(POWER_SERVICE))
-                .newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+                .newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "meshenger:tag");
             wakeLock.acquire();
         } else {
             wakeLock = ((PowerManager) getSystemService(POWER_SERVICE))
-                .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+                .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "meshenger:tag");
             wakeLock.acquire();
         }
     }

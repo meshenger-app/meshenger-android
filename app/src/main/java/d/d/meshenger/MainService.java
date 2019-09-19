@@ -1,10 +1,8 @@
 package d.d.meshenger;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,19 +15,11 @@ import org.json.JSONObject;
 import org.libsodium.jni.Sodium;
 import org.webrtc.SurfaceViewRenderer;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.Inet6Address;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +37,8 @@ public class MainService extends Service implements Runnable {
     private volatile boolean run = true;
     private RTCCall currentCall = null;
 
+    private ArrayList<CallEvent> events = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,7 +48,7 @@ public class MainService extends Service implements Runnable {
         // handle incoming connections
         new Thread(this).start();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(settingsReceiver, new IntentFilter("settings_changed"));
+        events = new ArrayList<>();
     }
 
     private void loadDatabase() {
@@ -116,24 +108,23 @@ public class MainService extends Service implements Runnable {
                         continue;
                     }
 
-                    for (InetSocketAddress addr : contact.getAllSocketAddresses()) {
-                        Socket socket = null;
-                        try {
-                            socket = new Socket(addr.getAddress(), addr.getPort());
-                            PacketWriter pw = new PacketWriter(socket);
-                            pw.writeMessage(encrypted);
-                            //os.flush();
-                            socket.close();
-                            break;
-                        } catch (Exception e) {
-                            if (socket != null) {
-                                try {
-                                    socket.close();
-                                } catch (Exception ee) {
-                                    // ignore
-                                }
+                    Socket socket = null;
+                    try {
+                        socket = contact.createSocket();
+                        if (socket == null) {
+                            continue;
+                        }
+
+                        PacketWriter pw = new PacketWriter(socket);
+                        pw.writeMessage(encrypted);
+                        socket.close();
+                    } catch (Exception e) {
+                        if (socket != null) {
+                            try {
+                                socket.close();
+                            } catch (Exception ee) {
+                                // ignore
                             }
-                            socket = null;
                         }
                     }
                 }
@@ -144,32 +135,15 @@ public class MainService extends Service implements Runnable {
             }
         }
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(settingsReceiver);
-
-        // zero keys from memory
-        this.db.onDestroy();
+        if (this.db != null) {
+            // zero keys from memory
+            this.db.onDestroy();
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
-    }
-
-    private void refreshContacts() {
-        /*
-        ArrayList<Contact> contacts = (ArrayList<Contact>) db.getContacts();
-        if (db.getSettings() == null) {
-            //userName = "Unknown";
-            ignoreUnsaved = false;
-        } else {
-            //userName = db.getSettings().getUsername();
-            if (db.getSettings().getBlockUC() == 1) {
-                ignoreUnsaved = true;
-            } else {
-                ignoreUnsaved = false;
-            }
-        }
-        */
     }
 
     private void handleClient(Socket client) {
@@ -182,16 +156,18 @@ public class MainService extends Service implements Runnable {
             PacketReader pr = new PacketReader(client);
             Contact contact = null;
 
-            log("waiting for packet...");
+            InetSocketAddress remote_address = (InetSocketAddress) client.getRemoteSocketAddress();
+            log("incoming connection from " + remote_address);
+
             while (true) {
                 byte[] request = pr.readMessage();
                 if (request == null) {
-                    log("timeout reached");
                     break;
                 }
 
                 String decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey);
                 if (decrypted == null) {
+                    log("decryption failed");
                     break;
                 }
 
@@ -204,6 +180,7 @@ public class MainService extends Service implements Runnable {
 
                     if (contact == null && this.db.settings.getBlockUnknown()) {
                         if (this.currentCall != null) {
+                            log("block unknown contact => decline");
                             this.currentCall.decline();
                         }
                         break;
@@ -211,36 +188,28 @@ public class MainService extends Service implements Runnable {
 
                     if (contact != null && contact.getBlocked()) {
                         if (this.currentCall != null) {
+                            log("blocked contact => decline");
                             this.currentCall.decline();
                         }
                         break;
                     }
 
                     if (contact == null) {
-                        ArrayList<String> addresses = new ArrayList<>();
-                        InetAddress address = ((InetSocketAddress) client.getRemoteSocketAddress()).getAddress();
-
-                        // TODO: add full address and handle mac extraction when the contact is saved
-                        if (address instanceof Inet6Address) {
-                            // if the IPv6 address contains a MAC address, take that.
-                            byte[] mac = Utils.getEUI64MAC((Inet6Address) address);
-                            if (mac != null) {
-                                addresses.add(Utils.bytesToMacAddress(mac));
-                            } else {
-                                addresses.add(address.getHostAddress());
-                            }
-                        } else {
-                            addresses.add(address.getHostAddress());
-                        }
-
-                        contact = new Contact(getResources().getString(R.string.unknown_caller), clientPublicKey.clone(), addresses);
-                    }
-                } else {
-                    if (!Arrays.equals(contact.getPublicKey(), clientPublicKey)) {
-                        // suspicious change of identity in call...
-                        continue;
+                        // unknown caller
+                        contact = new Contact("", clientPublicKey.clone(), new ArrayList<>());
                     }
                 }
+
+                // suspicious change of identity in during connection...
+                if (!Arrays.equals(contact.getPublicKey(), clientPublicKey)) {
+                    log("suspicious change of key");
+                    continue;
+                }
+
+                // remember last good address (the outgoing port is random and not the server port)
+                contact.setLastWorkingAddress(
+                    new InetSocketAddress(remote_address.getAddress(), MainService.serverPort)
+                );
 
                 JSONObject obj = new JSONObject(decrypted);
                 String action = obj.optString("action", "");
@@ -250,7 +219,7 @@ public class MainService extends Service implements Runnable {
                         // someone calls us
                         log("call...");
                         String offer = obj.getString("offer");
-                        this.currentCall = new RTCCall(this, ownPublicKey, ownSecretKey, contact, client, offer);
+                        this.currentCall = new RTCCall(this, new MainBinder(), contact, client, offer);
 
                         // respond that we accept the call
 
@@ -258,7 +227,7 @@ public class MainService extends Service implements Runnable {
                         pw.writeMessage(encrypted);
 
                         Intent intent = new Intent(this, CallActivity.class);
-                        intent.setAction("ACTION_ACCEPT_CALL");
+                        intent.setAction("ACTION_INCOMING_CALL");
                         intent.putExtra("EXTRA_CONTACT", contact);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
@@ -268,10 +237,6 @@ public class MainService extends Service implements Runnable {
                         log("ping...");
                         // someone wants to know if we are online
                         setClientState(contact, Contact.State.ONLINE);
-                        SocketAddress a = client.getRemoteSocketAddress();
-                        if (a instanceof InetSocketAddress) {
-                            contact.setLastGoodAddress(((InetSocketAddress) a).getAddress());
-                        }
 
                         byte[] encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
                         pw.writeMessage(encrypted);
@@ -303,7 +268,6 @@ public class MainService extends Service implements Runnable {
 
     private void setClientState(Contact contact, Contact.State state) {
         contact.setState(Contact.State.ONLINE);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contact_refresh"));
     }
 
     @Override
@@ -319,7 +283,6 @@ public class MainService extends Service implements Runnable {
             }
 
             server = new ServerSocket(serverPort);
-            refreshContacts();
             while (this.run) {
                 try {
                     Socket socket = server.accept();
@@ -340,16 +303,6 @@ public class MainService extends Service implements Runnable {
     * Allows communication between MainService and other objects
     */
     class MainBinder extends Binder {
-        RTCCall startCall(Contact contact, RTCCall.OnStateChangeListener listener, SurfaceViewRenderer renderer) {
-            return RTCCall.startCall(
-                MainService.this,
-                MainService.this.db.settings.getPublicKey(),
-                MainService.this.db.settings.getSecretKey(),
-                contact,
-                listener
-            );
-        }
-
         RTCCall getCurrentCall() {
             return currentCall;
         }
@@ -359,7 +312,7 @@ public class MainService extends Service implements Runnable {
         }
 
         Contact getContactByPublicKey(byte[] pubKey) {
-            for (Contact contact : getContacts()) {
+            for (Contact contact : MainService.this.db.contacts) {
                 if (Arrays.equals(contact.getPublicKey(), pubKey)) {
                     return contact;
                 }
@@ -368,7 +321,7 @@ public class MainService extends Service implements Runnable {
         }
 
         Contact getContactByName(String name) {
-            for (Contact contact : getContacts()) {
+            for (Contact contact : MainService.this.db.contacts) {
                 if (contact.getName().equals(name)) {
                     return contact;
                 }
@@ -379,13 +332,13 @@ public class MainService extends Service implements Runnable {
         void addContact(Contact contact) {
             db.addContact(contact);
             saveDatabase();
-            refreshContacts();
+            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_contact_list"));
         }
 
         void deleteContact(byte[] pubKey) {
             db.deleteContact(pubKey);
             saveDatabase();
-            refreshContacts();
+            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_contact_list"));
         }
 
         void shutdown() {
@@ -421,6 +374,7 @@ public class MainService extends Service implements Runnable {
 
         void pingContacts(ContactPingListener listener) {
             new Thread(new PingRunnable(
+                    MainService.this,
                 getContacts(),
                 getSettings().getPublicKey(),
                 getSettings().getSecretKey(),
@@ -436,89 +390,114 @@ public class MainService extends Service implements Runnable {
             return MainService.this.db.settings;
         }
 
+        // return a cloned list
         List<Contact> getContacts() {
-            return MainService.this.db.contacts;
+           return new ArrayList<>(MainService.this.db.contacts);
+        }
+
+        void addCallEvent(Contact contact, CallEvent.Type type) {
+            MainService.this.events.add(new CallEvent(
+                contact.getPublicKey(),
+                contact.getLastWorkingAddress().getAddress(),
+                type
+            ));
+            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_event_list"));
+        }
+
+        // return a cloned list
+        List<CallEvent> getEvents() {
+            return new ArrayList<>(MainService.this.events);
+        }
+
+        void clearEvents() {
+            MainService.this.events.clear();
+            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_event_list"));
         }
     }
 
     class PingRunnable implements Runnable {
+        Context context;
         private List<Contact> contacts;
         byte[] ownPublicKey;
         byte[] ownSecretKey;
         ContactPingListener listener;
-        Socket socket;
 
-        PingRunnable(List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey, ContactPingListener listener) {
+        PingRunnable(Context context, List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey, ContactPingListener listener) {
+            this.context = context;
             this.contacts = contacts;
             this.ownPublicKey = ownPublicKey;
             this.ownSecretKey = ownSecretKey;
             this.listener = listener;
-            this.socket = new Socket();
         }
 
         @Override
         public void run() {
             for (Contact contact : contacts) {
+                Socket socket = null;
                 try {
-                    Socket socket = contact.createSocket();
+                    socket = contact.createSocket();
                     if (socket == null) {
                         contact.setState(Contact.State.OFFLINE);
                         continue;
                     }
 
+                    PacketWriter pw = new PacketWriter(socket);
+                    PacketReader pr = new PacketReader(socket);
+
+                    log("send ping to " + contact.getName());
+
                     byte[] encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
                     if (encrypted == null) {
+                        socket.close();
                         continue;
                     }
-                    PacketWriter pw = new PacketWriter(socket);
-                    pw.writeMessage(encrypted);
-                    socket.close();
 
-                    contact.setState(Contact.State.ONLINE);
+                    pw.writeMessage(encrypted);
+
+                    byte[] request = pr.readMessage();
+                    if (request == null) {
+                        socket.close();
+                        continue;
+                    }
+
+                    String decrypted = Crypto.decryptMessage(request, contact.getPublicKey(), ownPublicKey, ownSecretKey);
+                    if (decrypted == null) {
+                        log("decryption failed");
+                        socket.close();
+                        continue;
+                    }
+
+                    JSONObject obj = new JSONObject(decrypted);
+                    String action = obj.optString("action", "");
+                    if (action.equals("pong")) {
+                        log("got pong");
+                        contact.setState(Contact.State.ONLINE);
+                    }
+
+                    socket.close();
                 } catch (Exception e) {
                     contact.setState(Contact.State.OFFLINE);
-                    e.printStackTrace();
-                } finally {
                     if (socket != null) {
                         try {
                             socket.close();
-                        } catch (Exception e) {
+                        } catch (Exception ee) {
                             // ignore
                         }
                     }
-                    if (listener != null) {
-                        listener.onContactPingResult(contact);
-                    } else {
-                        log("no listener!");
-                    }
+                    e.printStackTrace();
+                }
+
+                if (listener != null) {
+                    listener.onContactPingResult(contact);
+                } else {
+                    log("no listener!");
                 }
             }
-        }
-    }
 
-    private BroadcastReceiver settingsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            /*
-            switch (intent.getAction()) {
-                case "settings_changed": {
-                    String subject = intent.getStringExtra("subject");
-                    switch (subject) {
-                        case "username": {
-                            userName = intent.getStringExtra("username");
-                            log("username: " + userName);
-                            break;
-                        }
-                        case "ignoreUnsaved":{
-                            ignoreUnsaved = intent.getBooleanExtra("ignoreUnsaved", false);
-                            log("ignore: " + ignoreUnsaved);
-                            break;
-                        }
-                    }
-                }
-            }*/
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("refresh_contact_list"));
         }
-    };
+
+    }
 
     public interface ContactPingListener {
         void onContactPingResult(Contact c);

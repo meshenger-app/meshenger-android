@@ -1,18 +1,19 @@
 package d.d.meshenger;
 
+import android.app.Dialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -20,7 +21,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -73,7 +74,6 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         });
 
         findViewById(R.id.changeAddressLayout).setOnClickListener((View view) -> {
-            //showChangeAddressDialog();
             Intent intent = new Intent(this, AddressActivity.class);
             startActivity(intent);
         });
@@ -82,71 +82,85 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             showChangePasswordDialog();
         });
 
+        findViewById(R.id.changeIceServersLayout).setOnClickListener((View view) -> {
+            showChangeIceServersDialog();
+        });
+
         String username = this.binder.getSettings().getUsername();
         ((TextView) findViewById(R.id.nameTv)).setText(
-            username.length() == 0 ? "None" : username
+            username.length() == 0 ? getResources().getString(R.string.none) : username
         );
 
-        ArrayList<String> addresses = this.binder.getSettings().getAddresses();
+        List<String> addresses = this.binder.getSettings().getAddresses();
         ((TextView) findViewById(R.id.addressTv)).setText(
-            addresses.size() == 0 ? "None" : Utils.join(addresses)
+            addresses.size() == 0 ? getResources().getString(R.string.none) : Utils.join(addresses)
         );
 
         String password = this.binder.getDatabasePassword();
         ((TextView) findViewById(R.id.passwordTv)).setText(
-            password.isEmpty() ? "None" : "********"
+            password.isEmpty() ? getResources().getString(R.string.none) : "********"
         );
 
-        CheckBox blockUnknown = findViewById(R.id.checkBoxBlockUnknown);
-        blockUnknown.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+        List<String> iceServers = this.binder.getSettings().getIceServers();
+        ((TextView) findViewById(R.id.iceServersTv)).setText(
+            iceServers.isEmpty() ? getResources().getString(R.string.none) : Utils.join(iceServers)
+        );
+
+        boolean blockUnknown = this.binder.getSettings().getBlockUnknown();
+        CheckBox blockUnknownCB = findViewById(R.id.checkBoxBlockUnknown);
+        blockUnknownCB.setChecked(blockUnknown);
+        blockUnknownCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             // save value
             this.binder.getSettings().setBlockUnknown(isChecked);
             this.binder.saveDatabase();
-
-            syncSettings("ignoreUnsaved", isChecked);
         });
 
         boolean nightMode = this.binder.getSettings().getNightMode();
         CheckBox nightModeCB = findViewById(R.id.checkBoxNightMode);
         nightModeCB.setChecked(nightMode);
-        nightModeCB.setOnCheckedChangeListener((nightModeCheckBox, b) -> {
-            boolean checked = nightModeCheckBox.isChecked();
-
+        nightModeCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             // apply value
             AppCompatDelegate.setDefaultNightMode(
-                checked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+                isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
             );
 
             // save value
-            this.binder.getSettings().setNightMode(checked);
+            this.binder.getSettings().setNightMode(isChecked);
             this.binder.saveDatabase();
 
             Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
 
-        getLocale();
-    }
+        boolean developmentMode = this.binder.getSettings().getDevelopmentMode();
+        CheckBox developmentModeCB = findViewById(R.id.checkBoxDevelopmentMode);
+        developmentModeCB.setChecked(developmentMode);
+        developmentModeCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            // save value
+            this.binder.getSettings().setDevelopmentMode(isChecked);
+            this.binder.saveDatabase();
+        });
 
-    private ArrayList<String> getInvalidAddresses(ArrayList<String> addresses) {
-        ArrayList<String> invalid_addresses = new ArrayList<>();
-
-        for (String address : addresses) {
-            if (!Utils.isMAC(address) && !Utils.isIP(address) && !Utils.isDomain(address)) {
-                invalid_addresses.add(address);
-            }
+        if (developmentMode) {
+            findViewById(R.id.changeIceServersLayout).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.changeIceServersLayout).setVisibility(View.GONE);
         }
 
-        return invalid_addresses;
+        getLocale();
     }
 
     private void getLocale() {
         Configuration config = getResources().getConfiguration();
         Locale locale = config.locale;
-        ((TextView) findViewById(R.id.localeTv)).setText(locale.getDisplayLanguage());
+        String language = locale.getDisplayLanguage();
 
-        this.binder.getSettings().setLanguage(locale.getDisplayLanguage());
-        this.binder.saveDatabase();
+        if (!this.binder.getSettings().getLanguage().equals(language)) {
+            this.binder.getSettings().setLanguage(language);
+            this.binder.saveDatabase();
+        }
+
+        ((TextView) findViewById(R.id.localeTv)).setText(language);
 
         Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN};
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
@@ -174,6 +188,9 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
 
                 getResources().updateConfiguration(config1, getResources().getDisplayMetrics());
 
+                this.binder.getSettings().setLanguage(locale.getDisplayLanguage());
+                this.binder.saveDatabase();
+
                 finish();
                 startActivity(new Intent(getApplicationContext(), this.getClass()));
 
@@ -195,7 +212,6 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
                 if (Utils.isValidName(new_username)) {
                     this.binder.getSettings().setUsername(new_username);
                     this.binder.saveDatabase();
-                    syncSettings("username", new_username);
                     initViews();
                 } else {
                     Toast.makeText(this, getResources().getString(R.string.invalid_name), Toast.LENGTH_SHORT).show();
@@ -204,35 +220,6 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .setNegativeButton(getResources().getText(R.string.cancel), null)
             .show();
     }
-
-/*
-    private void showChangeAddressDialog() {
-        String addresses_string = Utils.join(this.binder.getSettings().getAddresses());
-        EditText et = new EditText(this);
-        et.setText(addresses_string);
-        et.setSelection(addresses_string.length());
-        new AlertDialog.Builder(this)
-            .setTitle(getResources().getString(R.string.settings_change_address))
-            .setView(et)
-            .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                ArrayList<String> new_addresses = Utils.split(et.getText().toString());
-                ArrayList<String> invalid_addresses = getInvalidAddresses(new_addresses);
-                if (invalid_addresses.isEmpty()) {
-                    this.binder.getSettings().setAddresses(new_addresses);
-                    this.binder.saveDatabase();
-                    syncSettings("address", Utils.join(new_addresses)); //needed?
-                } else {
-                    // show invalid addresses
-                    for (String address : invalid_addresses) {
-                        Toast.makeText(this, getResources().getString(R.string.invalid_address) + ": " + address, Toast.LENGTH_LONG).show();
-                    }
-                }
-                initViews();
-            })
-            .setNegativeButton(getResources().getText(R.string.cancel), null)
-            .show();
-    }
-*/
 
     private void showChangePasswordDialog() {
         String password = this.binder.getDatabasePassword();
@@ -253,18 +240,33 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             .show();
     }
 
-    private void syncSettings(String what, boolean content) {
-        Intent intent = new Intent("settings_changed");
-        intent.putExtra("subject", what);
-        intent.putExtra(what, content);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
+    private void showChangeIceServersDialog() {
+        Settings settings = SettingsActivity.this.binder.getSettings();
 
-    private void syncSettings(String what, String content) {
-        Intent intent = new Intent("settings_changed");
-        intent.putExtra("subject", what);
-        intent.putExtra(what, content);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_set_ice_server);
+
+        TextView iceServersTextView = dialog.findViewById(R.id.iceServersEditText);
+        Button saveButton = dialog.findViewById(R.id.SaveButton);
+        Button abortButton = dialog.findViewById(R.id.AbortButton);
+
+        iceServersTextView.setText(Utils.join(settings.getIceServers()));
+
+        saveButton.setOnClickListener((View v) -> {
+            List<String> iceServers = Utils.split(iceServersTextView.getText().toString());
+            settings.setIceServers(iceServers);
+
+            // done
+            Toast.makeText(SettingsActivity.this, R.string.done, Toast.LENGTH_SHORT).show();
+
+            dialog.cancel();
+        });
+
+        abortButton.setOnClickListener((View v) -> {
+            dialog.cancel();
+        });
+
+        dialog.show();
     }
 
     @Override
@@ -277,13 +279,10 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
     public void onBackPressed() {
         super.onBackPressed();
 
-        Intent intent1 = new Intent("refresh");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        Intent intent2 = new Intent(SettingsActivity.this, ContactListActivity.class);
-        intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        startActivity(intent2);
+        startActivity(intent);
     }
 
     private void log(String s) {

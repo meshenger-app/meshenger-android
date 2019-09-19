@@ -1,12 +1,11 @@
 package d.d.meshenger;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Settings {
@@ -16,7 +15,10 @@ public class Settings {
     private String language;
     private boolean nightMode;
     private boolean blockUnknown;
-    private ArrayList<String> addresses;
+    private boolean developmentMode;
+    private List<String> addresses;
+    // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
+    private List<String> iceServers;
 
     public Settings() {
         this.username = "";
@@ -25,7 +27,9 @@ public class Settings {
         this.language = "";
         this.nightMode = false;
         this.blockUnknown = false;
+        this.developmentMode = false;
         this.addresses = new ArrayList<>();
+        this.iceServers = new ArrayList<>();
     }
 
     public byte[] getSecretKey() {
@@ -76,11 +80,19 @@ public class Settings {
         this.blockUnknown = blockUnknown;
     }
 
-    public ArrayList<String> getAddresses() {
+    public boolean getDevelopmentMode() {
+        return developmentMode;
+    }
+
+    public void setDevelopmentMode(boolean developmentMode) {
+        this.developmentMode = developmentMode;
+    }
+
+    public List<String> getAddresses() {
         return this.addresses;
     }
 
-    public void setAddresses(ArrayList<String> addresses) {
+    public void setAddresses(List<String> addresses) {
         this.addresses = addresses;
     }
 
@@ -93,6 +105,14 @@ public class Settings {
         this.addresses.add(address);
     }
 
+    public List<String> getIceServers() {
+        return this.iceServers;
+    }
+
+    public void setIceServers(List<String> iceServers) {
+        this.iceServers = iceServers;
+    }
+
     public static Settings importJSON(JSONObject obj) throws JSONException {
         Settings s = new Settings();
         s.username = obj.getString("username");
@@ -101,10 +121,18 @@ public class Settings {
         s.language = obj.getString("language");
         s.nightMode = obj.getBoolean("might_mode");
         s.blockUnknown = obj.getBoolean("block_unknown");
-        JSONArray array = obj.getJSONArray("addresses");
-        for (int i = 0; i < array.length(); i += 1) {
-            s.addresses.add(array.getString(i));
+        s.developmentMode = obj.getBoolean("development_mode");
+
+        JSONArray addresses = obj.getJSONArray("addresses");
+        for (int i = 0; i < addresses.length(); i += 1) {
+            s.addresses.add(addresses.getString(i));
         }
+
+        JSONArray iceServers = obj.getJSONArray("ice_servers");
+        for (int i = 0; i < iceServers.length(); i += 1) {
+            s.iceServers.add(iceServers.getString(i));
+        }
+
         return s;
     }
 
@@ -116,11 +144,20 @@ public class Settings {
         obj.put("language", s.language);
         obj.put("might_mode", s.nightMode);
         obj.put("block_unknown", s.blockUnknown);
-        JSONArray array = new JSONArray();
+        obj.put("development_mode", s.developmentMode);
+
+        JSONArray addresses = new JSONArray();
         for (int i = 0; i < s.addresses.size(); i += 1) {
-            array.put(s.addresses.get(i));
+            addresses.put(s.addresses.get(i));
         }
-        obj.put("addresses", array);
+        obj.put("addresses", addresses);
+
+        JSONArray iceServers = new JSONArray();
+        for (int i = 0; i < s.iceServers.size(); i += 1) {
+            iceServers.put(s.iceServers.get(i));
+        }
+        obj.put("ice_servers", iceServers);
+
         return obj;
     }
 

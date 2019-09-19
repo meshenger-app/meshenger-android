@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="18dp"
-            android:text="Export/Import Path" />
+            android:textColor="?attr/primaryTextColor"
+            android:text="@string/path_title" />
 
         <RelativeLayout
             android:layout_width="fill_parent"
@@ -64,7 +65,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:textSize="18dp"
-            android:text="@string/password" />
+            android:textColor="?attr/primaryTextColor"
+            android:text="@string/password_title" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/etPasswordLayout"

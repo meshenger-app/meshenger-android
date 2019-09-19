@@ -4,6 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 
 
+/*
+ * Item for address management (AddressActivity)
+ */
 public class AddressEntry implements Comparable<AddressEntry> {
     String address;
     String device;
@@ -27,7 +30,11 @@ public class AddressEntry implements Comparable<AddressEntry> {
 
     @Override
     public boolean equals(Object other) {
-        return this.address.equals(other);
+        if (other instanceof AddressEntry) {
+            return this.address.equals(((AddressEntry) other).address);
+        } else {
+            return super.equals(other);
+        }
     }
 
     @Override

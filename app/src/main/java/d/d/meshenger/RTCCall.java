@@ -28,14 +28,14 @@ import org.webrtc.SurfaceViewRenderer;
 //import org.webrtc.VideoCapturer;
 import org.webrtc.VideoTrack;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 
 public class RTCCall implements DataChannel.Observer {
@@ -67,36 +67,56 @@ public class RTCCall implements DataChannel.Observer {
     private Contact contact;
     private byte[] ownPublicKey;
     private byte[] ownSecretKey;
+    private List<PeerConnection.IceServer> iceServers;
     private OnStateChangeListener listener;
+    private MainService.MainBinder binder;
 
     public CallState state;
     public Socket commSocket;
 
-    static public RTCCall startCall(Context context, byte[] ownPublicKey, byte[] ownSecretKey, Contact contact, OnStateChangeListener listener) {
-        return new RTCCall(context, ownPublicKey, ownSecretKey, contact, listener);
+    static public RTCCall startCall(Context context, MainService.MainBinder binder, Contact contact, OnStateChangeListener listener) {
+        return new RTCCall(context, binder, contact, listener);
     }
 
     // called for incoming calls
-    public RTCCall(Context context, byte[] ownPublicKey, byte[] ownSecretKey, Contact contact, Socket commSocket, String offer) {
+    public RTCCall(Context context, MainService.MainBinder binder, Contact contact, Socket commSocket, String offer) {
         this.context = context;
         this.contact = contact;
         this.commSocket = commSocket;
         this.listener = null;
+        this.binder = binder;
+        this.ownPublicKey = binder.getSettings().getPublicKey();
+        this.ownSecretKey = binder.getSettings().getSecretKey();
         this.ownPublicKey = ownPublicKey;
         this.ownSecretKey = ownSecretKey;
         this.offer = offer;
+
+        // usually empty
+        this.iceServers = new ArrayList<>();
+        for (String server : binder.getSettings().getIceServers()) {
+            this.iceServers.add(PeerConnection.IceServer.builder(server).createIceServer());
+        }
 
         initRTC(context);
     }
 
     // called for outgoing calls
-    private RTCCall(Context context, byte[] ownPublicKey, byte[] ownSecretKey, Contact contact, OnStateChangeListener listener) {
+    private RTCCall(Context context, MainService.MainBinder binder, Contact contact, OnStateChangeListener listener) {
         this.context = context;
         this.contact = contact;
         this.commSocket = null;
         this.listener = listener;
-        this.ownPublicKey = ownPublicKey;
-        this.ownSecretKey = ownSecretKey;
+        this.binder = binder;
+        this.ownPublicKey = binder.getSettings().getPublicKey();
+        this.ownSecretKey = binder.getSettings().getSecretKey();
+
+        log("RTCCall created");
+
+        // usually empty
+        this.iceServers = new ArrayList<>();
+        for (String server : binder.getSettings().getIceServers()) {
+            this.iceServers.add(PeerConnection.IceServer.builder(server).createIceServer());
+        }
 
         initRTC(context);
 
@@ -117,12 +137,22 @@ public class RTCCall implements DataChannel.Observer {
                         log("transferring offer...");
                         try {
                             commSocket = contact.createSocket();
-
                             if (commSocket == null) {
                                 log("cannot establish connection");
                                 reportStateChange(CallState.ERROR);
+                                RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return;
                             }
+
+                            InetSocketAddress remote_address = (InetSocketAddress) commSocket.getRemoteSocketAddress();
+                            log("outgoing call from remote address: " + remote_address);
+
+                            // remember latest working address
+                            contact.setLastWorkingAddress(
+                                new InetSocketAddress(remote_address.getAddress(), MainService.serverPort)
+                            );
+
+                            log("connect..");
 
                             PacketReader pr = new PacketReader(commSocket);
                             reportStateChange(CallState.CONNECTING);
@@ -135,6 +165,7 @@ public class RTCCall implements DataChannel.Observer {
                                 if (encrypted == null) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
+                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return;
                                 }
                                 PacketWriter pw = new PacketWriter(commSocket);
@@ -144,15 +175,17 @@ public class RTCCall implements DataChannel.Observer {
                             {
                                 byte[] response = pr.readMessage();
                                 String decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey);
-                                if (decrypted == null || Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
+                                if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
+                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return;
                                 }
                                 JSONObject obj = new JSONObject(decrypted);
                                 if (!obj.optString("action", "").equals("ringing")) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
+                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return;
                                 }
                                 log("ringing...");
@@ -162,7 +195,7 @@ public class RTCCall implements DataChannel.Observer {
                             {
                                 byte[] response = pr.readMessage();
                                 String decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey);
-                                if (decrypted == null || Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
+                                if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
                                     return;
@@ -174,26 +207,32 @@ public class RTCCall implements DataChannel.Observer {
                                 if (action.equals("connected")) {
                                     reportStateChange(CallState.CONNECTED);
                                     handleAnswer(obj.getString("answer"));
+                                    // contact accepted receiving call
+                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
                                 } else if (action.equals("dismissed")) {
                                     closeCommSocket();
                                     reportStateChange(CallState.DISMISSED);
+                                    // contact declined receiving call
+                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
                                 } else {
                                     log("unknown action reply: " + action);
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
+                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 }
                             }
                         } catch (Exception e) {
                             closeCommSocket();
                             e.printStackTrace();
                             reportStateChange(CallState.ERROR);
+                            RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                         }
                     }
                 }
 
                 @Override
                 public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-                    log("change " + iceConnectionState.name());
+                    log("onIceConnectionChange " + iceConnectionState.name());
                     super.onIceConnectionChange(iceConnectionState);
                     if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED);
@@ -228,6 +267,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void closeCommSocket() {
+        log("closeCommSocket");
         if (this.commSocket != null) {
             try {
                 this.commSocket.close();
@@ -239,6 +279,7 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void closePeerConnection() {
+        log("closePeerConnection");
         if (this.connection != null) {
             try {
                 this.connection.close();
@@ -276,6 +317,7 @@ public class RTCCall implements DataChannel.Observer {
         String s = new String(data);
         JSONObject object = null;
         try {
+            log("onMessage: " + s);
             object = new JSONObject(s);
             if (object.has(StateChangeMessage)) {
                 String state = object.getString(StateChangeMessage);
@@ -321,6 +363,7 @@ public class RTCCall implements DataChannel.Observer {
             }
             JSONObject object = new JSONObject();
             object.put(StateChangeMessage, enabled ? CameraEnabledMessage : CameraDisabledMessage);
+            log("setVideoEnabled: " + object);
             dataChannel.send(new DataChannel.Buffer(ByteBuffer.wrap(object.toString().getBytes()), false));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -362,15 +405,18 @@ public class RTCCall implements DataChannel.Observer {
                 e.printStackTrace();
             }
         }
-        if (this.remoteRenderer != null)
-            this.remoteRenderer.release();
 
-        if (this.localRenderer != null)
+        if (this.remoteRenderer != null) {
+            this.remoteRenderer.release();
+        }
+
+        if (this.localRenderer != null) {
             this.localRenderer.release();
+        }
     }
 
     private void handleMediaStream(MediaStream stream) {
-        log("handling video stream");
+        log("handleMediaStream");
         if (this.remoteRenderer == null || stream.videoTracks.size() == 0) {
             return;
         }
@@ -413,13 +459,13 @@ public class RTCCall implements DataChannel.Observer {
             @Override
             public void onSetSuccess() {
                 super.onSetSuccess();
-                log("success");
+                log("onSetSuccess");
             }
 
             @Override
             public void onSetFailure(String s) {
                 super.onSetFailure(s);
-                log("failure: " + s);
+                log("onSetFailure: " + s);
             }
         }, new SessionDescription(SessionDescription.Type.ANSWER, remoteDesc));
     }
@@ -434,7 +480,7 @@ public class RTCCall implements DataChannel.Observer {
     public void accept(OnStateChangeListener listener) {
         this.listener = listener;
         new Thread(() -> {
-            connection = factory.createPeerConnection(Collections.emptyList(), new DefaultObserver() {
+            connection = factory.createPeerConnection(this.iceServers, new DefaultObserver() {
                 @Override
                 public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
                     super.onIceGatheringChange(iceGatheringState);
@@ -496,7 +542,7 @@ public class RTCCall implements DataChannel.Observer {
                     connection.createAnswer(new DefaultSdpObserver() {
                         @Override
                         public void onCreateSuccess(SessionDescription sessionDescription) {
-                            log("success");
+                            log("onCreateSuccess");
                             super.onCreateSuccess(sessionDescription);
                             connection.setLocalDescription(new DefaultSdpObserver(), sessionDescription);
                         }
@@ -504,7 +550,7 @@ public class RTCCall implements DataChannel.Observer {
                         @Override
                         public void onCreateFailure(String s) {
                             super.onCreateFailure(s);
-                            log("failure: " + s);
+                            log("onCreateFailure: " + s);
                         }
                     }, constraints);
                 }
@@ -520,10 +566,11 @@ public class RTCCall implements DataChannel.Observer {
                     PacketWriter pw = new PacketWriter(commSocket);
                     byte[] encrypted = Crypto.encryptMessage("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.ownPublicKey, this.ownSecretKey);
                     pw.writeMessage(encrypted);
-                    //this.commSocket.flush();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                cleanup();
             }
         }).start();
     }
@@ -549,7 +596,6 @@ public class RTCCall implements DataChannel.Observer {
                     PacketWriter pw = new PacketWriter(this.commSocket);
                     byte[] encrypted = Crypto.encryptMessage("{\"action\":\"dismissed\"}", this.contact.getPublicKey(), this.ownPublicKey, this.ownSecretKey);
                     pw.writeMessage(encrypted);
-                    //os.flush();
                 }
 
                 closeCommSocket();

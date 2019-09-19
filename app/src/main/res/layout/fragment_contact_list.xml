@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ContactListActivity">
+    android:layout_height="match_parent">
 
-    <!-- <android.support.design.widget.AppBarLayout
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout> -->
-
-    <include layout="@layout/content_contact_list" />
+        android:layout_margin="5dp"
+        android:id="@+id/contactList"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabScan1"
+        android:id="@+id/fabScan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -33,7 +22,7 @@
         android:background="@color/colorPrimary"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabGenerate1"
+        android:id="@+id/fabGenerate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -51,4 +40,4 @@
         app:srcCompat="@drawable/qr_glass"
         android:background="@color/colorPrimary" />
 
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

@@ -10,7 +10,8 @@
     <string name="cancel">Abbrechen</string>
     <string name="next">Weiter</string>
     <string name="enter_password">Passwort eingeben</string>
-    <string name="password">Passwort</string>
+    <string name="path_title">Import/Export Pfad</string>
+    <string name="password_title">Passwort</string>
     <string name="camera_permission_request">Benötige Erlaubniss, um Kamera zu benutzen</string>
     <string name="invalid_qr">Ungültiger QR-Code</string>
     <string name="network_connect_invitation">Keine Netzwerkinformation verfügbar</string>
@@ -30,6 +31,8 @@
     <string name="about_source">Quellcode:</string>
     <string name="about_license">Lizenz:</string>
     <string name="about_license_version">GPL-3.0-or-later</string>
+    <string name="none">Leer</string>
+    <string name="add">Hinzufügen</string>
     <string name="delete">Löschen</string>
     <string name="rename">Umbenennen</string>
     <string name="share">Teilen</string>
@@ -53,9 +56,13 @@
     <string name="button_import">Importieren</string>
     <string name="button_export">Exportieren</string>
     <string name="button_abort">Abbrechen</string>
+    <string name="button_rename">Umbenennen</string>
+    <string name="button_replace">Ersetzen</string>
     <string name="button_save">Speichern</string>
     <string name="button_add">Hinzufügen</string>
     <string name="button_remove">Entfernen</string>
+    <string name="title_contacts">Kontakte</string>
+    <string name="title_history">Anrufe</string>
     <string name="about_version">App Ausführung:</string>
     <string name="about_info">App Info:</string>
     <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
@@ -69,7 +76,12 @@
     <string name="invalid_address">Ungültige Addresse</string>
     <string name="no_file_name">Kein Dateiname</string>
     <string name="contact_already_exists">Kontakt existiert bereits</string>
+    <string name="enter_contact_name">Name des Kontaktes eingeben.</string>
     <string name="wrong_password">Falsches Passwort</string>
+    <string name="contact_name_conflict">Ein Kontakt mit dem Namen existiert bereits.</string>
+    <string name="contact_key_conflict">Ein Kontakt mit dem Schlüssel existiert bereits.</string>
+    <string name="contact_name_empty">Der Name is leer.</string>
+    <string name="contact_name_exists">Der Name existiert bereits.</string>
     <string name="error">Fehler</string>
     <string name="ok">Ok</string>
     <string name="skip">Überspringen</string>

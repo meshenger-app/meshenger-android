@@ -22,15 +22,15 @@ public class Contact implements Serializable {
     private String name;
     private byte[] pubkey;
     private boolean blocked;
-    private ArrayList<String> addresses;
+    private List<String> addresses;
 
     // contact state
     private State state = State.PENDING;
 
-    // last successful address
-    private InetSocketAddress last_address = null;
+    // last working address (use this address next connection and for unknown contact initialization)
+    private InetSocketAddress last_working_address = null;
 
-    public Contact(String name, byte[] pubkey, ArrayList<String> addresses) {
+    public Contact(String name, byte[] pubkey, List<String> addresses) {
         this.name = name;
         this.pubkey = pubkey;
         this.blocked = false;
@@ -52,7 +52,7 @@ public class Contact implements Serializable {
         this.state = state;
     }
 
-    public ArrayList<String> getAddresses() {
+    public List<String> getAddresses() {
         return this.addresses;
     }
 
@@ -69,13 +69,15 @@ public class Contact implements Serializable {
         this.addresses.add(address);
     }
 
-    public ArrayList<InetSocketAddress> getAllSocketAddresses() {
-        ArrayList<InetSocketAddress> addrs = new ArrayList<>();
+    public List<InetSocketAddress> getAllSocketAddresses() {
+        List<InetSocketAddress> addrs = new ArrayList<>();
         for (String address : this.addresses) {
+            log("get " + address);
             try {
                 if (Utils.isMAC(address)) {
                     addrs.addAll(Utils.getAddressPermutations(address, MainService.serverPort));
                 } else {
+                    // also resolves domains
                     addrs.add(Utils.parseInetSocketAddress(address, MainService.serverPort));
                 }
             } catch (Exception e) {
@@ -139,31 +141,34 @@ public class Contact implements Serializable {
     public Socket createSocket() {
         Socket socket = null;
 
-        ArrayList<InetSocketAddress> addresses = this.getAllSocketAddresses();
-
-        // put last working address first in list
-        if (this.last_address != null) {
-            for (int i = 1; i < addresses.size(); i += 1) {
-                if (addresses.get(i).equals(this.last_address)) {
-                    // swap address
-                    InetSocketAddress tmp = addresses.get(i);
-                    addresses.set(i, addresses.get(0));
-                    addresses.set(0, tmp);
-                    break;
-                }
+        // try last successful address first
+        if (this.last_working_address != null) {
+            log("try latest address: " + this.last_working_address);
+            socket = this.establishConnection(this.last_working_address);
+            if (socket != null) {
+                return socket;
             }
         }
 
-        for (InetSocketAddress address : addresses) {
+        for (InetSocketAddress address : this.getAllSocketAddresses()) {
+            log("try address: '" + address.getHostName() + "', port: " + address.getPort());
             socket = this.establishConnection(address);
             if (socket != null) {
-                // TODO: address not verified yet!
-                this.last_address = address;
                 return socket;
             }
         }
 
         return null;
+    }
+
+    // set good address to try first next time
+    public void setLastWorkingAddress(InetSocketAddress address) {
+        log("setLatestWorkingAddress: " + address);
+        this.last_working_address = address;
+    }
+
+    public InetSocketAddress getLastWorkingAddress() {
+        return this.last_working_address;
     }
 
     public static JSONObject exportJSON(Contact contact, boolean all) throws JSONException {
@@ -192,11 +197,11 @@ public class Contact implements Serializable {
         contact.pubkey = Utils.hexStringToByteArray(object.getString("public_key"));
 
         if (!Utils.isValidName(contact.name)) {
-            throw new JSONException("Name is invalid.");
+            throw new JSONException("Invalid Name.");
         }
 
         if (contact.pubkey == null || contact.pubkey.length != Sodium.crypto_sign_publickeybytes()) {
-            throw new JSONException("Public key is invalid.");
+            throw new JSONException("Invalid Public Key.");
         }
 
         JSONArray array = object.getJSONArray("addresses");

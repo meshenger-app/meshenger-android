@@ -26,13 +26,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.libsodium.jni.Sodium;
-import org.libsodium.jni.SodiumConstants;
-
-import java.util.ArrayList;
-
 import org.libsodium.jni.NaCl;
 
 
+/*
+ * Show splash screen, name setup dialog, database password dialog and
+ * start background service before starting the MainActivity.
+ */
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
     private MainService.MainBinder binder;
     private int startState = 0;
@@ -107,7 +107,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 );
 
                 // all done - show contact list
-                startActivity(new Intent(this, ContactListActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
                 finish();
                 break;
         }
@@ -116,13 +116,18 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         this.binder = (MainService.MainBinder) iBinder;
+        log("onServiceConnected");
 
-        if (this.binder.isFirstStart()) {
-            // show delayed splash page
-            (new Handler()).postDelayed(() -> { continueInit(); }, 1000);
-        } else {
-            // show contact list as fast as possible
-            continueInit();
+        if (this.startState == 0) {
+            if (this.binder.isFirstStart()) {
+                // show delayed splash page
+                (new Handler()).postDelayed(() -> {
+                    continueInit();
+                }, 1000);
+            } else {
+                // show contact list as fast as possible
+                continueInit();
+            }
         }
     }
 
@@ -161,29 +166,27 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         }
     }
 
+    private String getMacOfDevice(String device) {
+        for (AddressEntry ae : Utils.collectAddresses()) {
+            // only MAC addresses
+            if (ae.device.equals("wlan0") && Utils.isMAC(ae.address)) {
+                return ae.address;
+            }
+        }
+        return "";
+    }
+
     private void showMissingAddressDialog() {
-        ArrayList<String> addresses = Utils.getMacAddresses();
-        if (addresses.isEmpty()) {
-            Toast.makeText(this, "No contact address found! Please configure.", Toast.LENGTH_LONG).show();
-            continueInit();
-        } else {
+        String mac = getMacOfDevice("wlan0");
+
+        if (mac.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Setup Address");
-            builder.setMessage("No address for your QR-Code configured. Set to: " + Utils.join(addresses));
+            builder.setMessage("No address of your WiFi card found. Enable WiFi now (not Internet needed) or skip to configure later.");
 
             builder.setPositiveButton(R.string.ok, (DialogInterface dialog, int id) -> {
-                for (String address : addresses) {
-                    this.binder.getSettings().addAddress(address);
-                }
-
-                try {
-                    this.binder.saveDatabase();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                showMissingAddressDialog();
                 dialog.cancel();
-                continueInit();
             });
 
             builder.setNegativeButton(R.string.skip, (DialogInterface dialog, int id) -> {
@@ -193,6 +196,16 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
             });
 
             builder.show();
+        } else {
+            this.binder.getSettings().addAddress(mac);
+
+            try {
+                this.binder.saveDatabase();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            continueInit();
         }
     }
 
@@ -288,8 +301,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     // ask for database password
     private void showDatabasePasswordDialog() {
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.database_password_dialog);
-        //dialog.setTitle("Title...");
+        dialog.setContentView(R.layout.dialog_database_password);
 
         EditText passwordEditText = dialog.findViewById(R.id.PasswordEditText);
         Button exitButton = dialog.findViewById(R.id.ExitButton);

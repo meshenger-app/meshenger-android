@@ -105,6 +105,29 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/changeIceServersLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_change_ice_servers"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="25dp" />
+
+                <TextView
+                    android:id="@+id/iceServersTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -141,6 +164,29 @@
 
                 <CheckBox
                     android:id="@+id/checkBoxNightMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="5dp"
+                    android:textColor="?attr/secondaryTextColor"  />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_development_mode"
+                    android:textSize="25dp"
+                    android:textColor="?attr/primaryTextColor"  />
+
+                <CheckBox
+                    android:id="@+id/checkBoxDevelopmentMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"

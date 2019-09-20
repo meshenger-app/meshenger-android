@@ -72,7 +72,6 @@ public class Contact implements Serializable {
     public List<InetSocketAddress> getAllSocketAddresses() {
         List<InetSocketAddress> addrs = new ArrayList<>();
         for (String address : this.addresses) {
-            log("get " + address);
             try {
                 if (Utils.isMAC(address)) {
                     addrs.addAll(Utils.getAddressPermutations(address, MainService.serverPort));

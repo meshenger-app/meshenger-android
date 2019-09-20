@@ -149,7 +149,7 @@ public class RTCCall implements DataChannel.Observer {
 
                             // remember latest working address
                             contact.setLastWorkingAddress(
-                                new InetSocketAddress(remote_address.getAddress(), MainService.serverPort)
+                                    new InetSocketAddress(remote_address.getAddress(), MainService.serverPort)
                             );
 
                             log("connect..");

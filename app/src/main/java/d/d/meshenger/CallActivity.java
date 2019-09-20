@@ -378,7 +378,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     private RTCCall.OnStateChangeListener activeCallback = callState -> {
         switch (callState) {
             case CONNECTING: {
-                log("activeCallback: CONNECTED");
+                log("activeCallback: CONNECTING");
                 setStatusText(getString(R.string.call_connecting));
                 break;
             }

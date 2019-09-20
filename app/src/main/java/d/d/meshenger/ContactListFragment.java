@@ -59,6 +59,7 @@ public class ContactListFragment extends Fragment
     public void setActivity(MainActivity mainActivity) {
         log("setActivity");
         this.mainActivity = mainActivity;
+        refreshContactList();
     }
 
     private void runFabAnimation(View fab) {

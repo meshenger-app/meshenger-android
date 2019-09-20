@@ -112,7 +112,7 @@ class EventListAdapter extends ArrayAdapter<CallEvent> {
 
         TextView address_tv = view.findViewById(R.id.call_address);
         if (event.address != null) {
-            address_tv.setText(event.address.getHostAddress());
+            address_tv.setText("(" + event.address.getHostAddress() + ")");
         } else {
             address_tv.setText("");
         }

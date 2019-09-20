@@ -178,7 +178,7 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
         startActivity(intent);
     }
 
-    public void setActivity(MainActivity mainActivity) {
+    public void onServiceConnected(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         refreshEventList();
     }

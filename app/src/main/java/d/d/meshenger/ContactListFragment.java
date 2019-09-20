@@ -55,8 +55,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         return view;
     }
 
-    public void setActivity(MainActivity mainActivity) {
-        log("setActivity");
+    public void onServiceConnected(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         refreshContactList();
     }

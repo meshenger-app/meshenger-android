@@ -140,7 +140,7 @@ public class RTCCall implements DataChannel.Observer {
                             if (commSocket == null) {
                                 log("cannot establish connection");
                                 reportStateChange(CallState.ERROR);
-                                RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return;
                             }
 
@@ -165,7 +165,7 @@ public class RTCCall implements DataChannel.Observer {
                                 if (encrypted == null) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
-                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return;
                                 }
                                 PacketWriter pw = new PacketWriter(commSocket);
@@ -178,14 +178,14 @@ public class RTCCall implements DataChannel.Observer {
                                 if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
-                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return;
                                 }
                                 JSONObject obj = new JSONObject(decrypted);
                                 if (!obj.optString("action", "").equals("ringing")) {
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
-                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return;
                                 }
                                 log("ringing...");
@@ -218,14 +218,14 @@ public class RTCCall implements DataChannel.Observer {
                                     log("unknown action reply: " + action);
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
-                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 }
                             }
                         } catch (Exception e) {
                             closeCommSocket();
                             e.printStackTrace();
                             reportStateChange(CallState.ERROR);
-                            RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                            //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                         }
                     }
                 }

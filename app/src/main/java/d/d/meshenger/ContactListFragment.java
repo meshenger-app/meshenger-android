@@ -141,7 +141,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
 
     void refreshContactList() {
         log("refreshContactList");
-        if (this.mainActivity == null || this.mainActivity.binder == null || contactListView == null) {
+        if (this.mainActivity == null || this.mainActivity.binder == null) {
             log("refreshContactList early return");
             return;
         }

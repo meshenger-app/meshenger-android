@@ -80,11 +80,11 @@ class Utils {
     }
 
     public static String join(List<String> list) {
-        return TextUtils.join(",", list);
+        return TextUtils.join(", ", list);
     }
 
     public static List<String> split(String str) {
-        String[] parts = str.split(",");
+        String[] parts = str.split("\\s*,\\s*");
         return Arrays.asList(parts);
     }
 

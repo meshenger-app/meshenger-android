@@ -396,9 +396,10 @@ public class MainService extends Service implements Runnable {
         }
 
         void addCallEvent(Contact contact, CallEvent.Type type) {
+            InetSocketAddress last_working = contact.getLastWorkingAddress();
             MainService.this.events.add(new CallEvent(
                 contact.getPublicKey(),
-                contact.getLastWorkingAddress().getAddress(),
+                    (last_working != null) ? last_working.getAddress() : null,
                 type
             ));
             LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_event_list"));

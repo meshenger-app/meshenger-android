@@ -5,7 +5,7 @@
 Features:
 
 - audio and video calls
-- contact authentication via public/secret keys
+- encrypted communication
 - database backup and encryption
 - add custom addresses to reach contacts
 

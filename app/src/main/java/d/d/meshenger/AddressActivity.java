@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -283,8 +284,18 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
     }
 
     private void updateSpinners() {
-        Collections.sort(storedAddressList);
-        Collections.sort(systemAddressList);
+        // compare by device first, address second
+        Comparator<AddressEntry> compareAddressEntries = (AddressEntry o1, AddressEntry o2) -> {
+            int dd = o1.device.compareTo(o2.device);
+            if (dd == 0) {
+                return o1.address.compareTo(o2.address);
+            } else {
+                return dd;
+            }
+        };
+
+        Collections.sort(storedAddressList, compareAddressEntries);
+        Collections.sort(systemAddressList, compareAddressEntries);
 
         storedAddressListAdapter.update(storedAddressList, systemAddressList);
         storedAddressListAdapter.notifyDataSetChanged();

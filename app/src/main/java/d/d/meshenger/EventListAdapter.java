@@ -96,6 +96,7 @@ class EventListAdapter extends ArrayAdapter<CallEvent> {
                 break;
             case INCOMING_UNKNOWN:
             case INCOMING_MISSED:
+            case INCOMING_ERROR:
                 type_iv.setImageResource(R.drawable.call_incoming_missed);
                 break;
             case OUTGOING_ACCEPTED:
@@ -104,6 +105,7 @@ class EventListAdapter extends ArrayAdapter<CallEvent> {
                 break;
             case OUTGOING_UNKNOWN:
             case OUTGOING_MISSED:
+            case OUTGOING_ERROR:
                 type_iv.setImageResource(R.drawable.call_outgoing_missed);
                 break;
         }

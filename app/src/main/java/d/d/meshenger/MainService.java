@@ -283,6 +283,7 @@ public class MainService extends Service implements Runnable {
             }
 
             server = new ServerSocket(serverPort);
+
             while (this.run) {
                 try {
                     Socket socket = server.accept();
@@ -372,13 +373,12 @@ public class MainService extends Service implements Runnable {
             }
         }
 
-        void pingContacts(ContactPingListener listener) {
+        void pingContacts() {
             new Thread(new PingRunnable(
-                    MainService.this,
+                MainService.this,
                 getContacts(),
                 getSettings().getPublicKey(),
-                getSettings().getSecretKey(),
-                listener)
+                getSettings().getSecretKey())
             ).start();
         }
 
@@ -421,24 +421,33 @@ public class MainService extends Service implements Runnable {
         private List<Contact> contacts;
         byte[] ownPublicKey;
         byte[] ownSecretKey;
-        ContactPingListener listener;
+        MainBinder binder;
 
-        PingRunnable(Context context, List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey, ContactPingListener listener) {
+        PingRunnable(Context context, List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey) {
             this.context = context;
             this.contacts = contacts;
             this.ownPublicKey = ownPublicKey;
             this.ownSecretKey = ownSecretKey;
-            this.listener = listener;
+            this.binder = new MainBinder();
+        }
+
+        private void setState(byte[] publicKey, Contact.State state) {
+            Contact contact = this.binder.getContactByPublicKey(publicKey);
+            if (contact != null) {
+                contact.setState(state);
+            }
         }
 
         @Override
         public void run() {
             for (Contact contact : contacts) {
                 Socket socket = null;
+                byte[] publicKey = contact.getPublicKey();
                 try {
+
                     socket = contact.createSocket();
                     if (socket == null) {
-                        contact.setState(Contact.State.OFFLINE);
+                        setState(publicKey, Contact.State.OFFLINE);
                         continue;
                     }
 
@@ -447,7 +456,7 @@ public class MainService extends Service implements Runnable {
 
                     log("send ping to " + contact.getName());
 
-                    byte[] encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
+                    byte[] encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", publicKey, ownPublicKey, ownSecretKey);
                     if (encrypted == null) {
                         socket.close();
                         continue;
@@ -461,7 +470,7 @@ public class MainService extends Service implements Runnable {
                         continue;
                     }
 
-                    String decrypted = Crypto.decryptMessage(request, contact.getPublicKey(), ownPublicKey, ownSecretKey);
+                    String decrypted = Crypto.decryptMessage(request, publicKey, ownPublicKey, ownSecretKey);
                     if (decrypted == null) {
                         log("decryption failed");
                         socket.close();
@@ -472,12 +481,12 @@ public class MainService extends Service implements Runnable {
                     String action = obj.optString("action", "");
                     if (action.equals("pong")) {
                         log("got pong");
-                        contact.setState(Contact.State.ONLINE);
+                        setState(publicKey, Contact.State.ONLINE);
                     }
 
                     socket.close();
                 } catch (Exception e) {
-                    contact.setState(Contact.State.OFFLINE);
+                    setState(publicKey, Contact.State.OFFLINE);
                     if (socket != null) {
                         try {
                             socket.close();
@@ -487,22 +496,13 @@ public class MainService extends Service implements Runnable {
                     }
                     e.printStackTrace();
                 }
-
-                if (listener != null) {
-                    listener.onContactPingResult(contact);
-                } else {
-                    log("no listener!");
-                }
             }
 
+            log("send refresh_contact_list");
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("refresh_contact_list"));
         }
-
     }
 
-    public interface ContactPingListener {
-        void onContactPingResult(Contact c);
-    }
 
     @Nullable
     @Override

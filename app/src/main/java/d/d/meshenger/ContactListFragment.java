@@ -29,8 +29,7 @@ import java.util.List;
 import static android.os.Looper.getMainLooper;
 
 
-public class ContactListFragment extends Fragment
-       implements MainService.ContactPingListener, AdapterView.OnItemClickListener {
+public class ContactListFragment extends Fragment implements AdapterView.OnItemClickListener {
     private ListView contactListView;
     private boolean fabExpanded = false;
     private FloatingActionButton fabScan;
@@ -231,12 +230,6 @@ public class ContactListFragment extends Fragment
     public void onPause() {
         super.onPause();
         collapseFab();
-    }
-
-    @Override
-    public void onContactPingResult(Contact c) {
-        log("onContactPingResult");
-        refreshContactList();
     }
 
     @Override

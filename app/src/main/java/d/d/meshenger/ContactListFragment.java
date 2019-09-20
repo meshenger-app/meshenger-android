@@ -118,15 +118,15 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         }
     }
 
-    private void showDeleteDialog(Contact contact) {
+    private void showDeleteDialog(byte[] publicKey, String name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.mainActivity);
 
         builder.setTitle(R.string.confirm);
-        builder.setMessage("Remove contact: " + contact.getName());
+        builder.setMessage("Remove contact: " + name);
         builder.setCancelable(false); // prevent key shortcut to cancel dialog
 
         builder.setPositiveButton(R.string.yes, (DialogInterface dialog, int id) -> {
-            this.mainActivity.binder.deleteContact(contact.getPublicKey());
+            this.mainActivity.binder.deleteContact(publicKey);
             dialog.cancel();
         });
 
@@ -173,16 +173,17 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
 
                 menu.setOnMenuItemClickListener((MenuItem menuItem) -> {
                     String title = menuItem.getTitle().toString();
+                    byte[] publicKey = contact.getPublicKey();
                     if (title.equals(delete)) {
-                        showDeleteDialog(contact);
+                        showDeleteDialog(publicKey, contact.getName());
                     } else if (title.equals(rename)) {
-                        showContactEditDialog(contact);
+                        showContactEditDialog(publicKey, contact.getName());
                     } else if (title.equals(share)) {
                         shareContact(contact);
                     } else if (title.equals(block)) {
-                        contact.setBlocked(true);
+                        setBlocked(publicKey, true);
                     } else if (title.equals(unblock)) {
-                        contact.setBlocked(false);
+                        setBlocked(publicKey, false);
                     } else if (title.equals(qr)) {
                         Intent intent = new Intent(ContactListFragment.this.mainActivity, QRShowActivity.class);
                         intent.putExtra("EXTRA_CONTACT", contact);
@@ -194,6 +195,14 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
                 return true;
             });
         });
+    }
+
+    private void setBlocked(byte[] publicKey, boolean blocked) {
+        Contact contact = this.mainActivity.binder.getContactByPublicKey(publicKey);
+        if (contact != null) {
+            contact.setBlocked(blocked);
+            this.mainActivity.binder.addContact(contact);
+        }
     }
 
     private void shareContact(Contact c) {
@@ -208,19 +217,22 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         }
     }
 
-    private void showContactEditDialog(Contact contact) {
+    private void showContactEditDialog(byte[] publicKey, String name) {
         log("showContactEditDialog");
         EditText et = new EditText(this.mainActivity);
-        et.setText(contact.getName());
+        et.setText(name);
         AlertDialog dialog = new AlertDialog.Builder(this.mainActivity)
             .setTitle(R.string.contact_edit)
             .setView(et)
             .setNegativeButton(getResources().getString(R.string.cancel), null)
             .setPositiveButton(R.string.ok, (DialogInterface dialogInterface, int i) -> {
-                String name = et.getText().toString();
-                if (name.length() > 0) {
-                    contact.setName(name);
-                    refreshContactList();
+                String newName = et.getText().toString();
+                if (newName.length() > 0) {
+                    Contact contact = this.mainActivity.binder.getContactByPublicKey(publicKey);
+                    if (contact != null) {
+                        contact.setName(newName);
+                        this.mainActivity.binder.addContact(contact);
+                    }
                 }
             }).show();
     }

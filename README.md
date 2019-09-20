@@ -16,7 +16,7 @@ Features:
 
 ## Screenshots
 
-<img src="docs/logo_2.0.0.png" width="170"> <img src="docs/hello_2.0.0.png" width="170"> <img src="docs/connected_2.0.0.png" width="170"> <img src="docs/qrcode_2.0.0.png" width="170"> <img src="docs/settings_2.0.0.png" width="170">
+<img src="docs/logo_2.0.0.png" width="170"> <img src="docs/hello_2.0.0.png" width="170"> <img src="docs/connected_2.0.0.png" width="170"> <img src="docs/qrcode_2.0.0.png" width="170"> <img src="docs/settings_3.0.0.png" width="170">
 
 ## Documentation
 

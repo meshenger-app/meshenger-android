@@ -109,11 +109,11 @@ public class Contact implements Serializable {
         this.blocked = blocked;
     }
 
-    private static Socket establishConnection(InetSocketAddress address) {
+    private static Socket establishConnection(InetSocketAddress address, int timeout) {
         Socket socket = new Socket();
         try {
             // timeout to establish connection
-            socket.connect(address, 300);
+            socket.connect(address, timeout);
             return socket;
         } catch (SocketTimeoutException e) {
             // ignore
@@ -140,11 +140,12 @@ public class Contact implements Serializable {
     */
     public Socket createSocket() {
         Socket socket = null;
+        int connectionTimeout = 300;
 
         // try last successful address first
         if (this.last_working_address != null) {
             log("try latest address: " + this.last_working_address);
-            socket = this.establishConnection(this.last_working_address);
+            socket = this.establishConnection(this.last_working_address, connectionTimeout);
             if (socket != null) {
                 return socket;
             }
@@ -152,7 +153,7 @@ public class Contact implements Serializable {
 
         for (InetSocketAddress address : this.getAllSocketAddresses()) {
             log("try address: '" + address.getHostName() + "', port: " + address.getPort());
-            socket = this.establishConnection(address);
+            socket = this.establishConnection(address, connectionTimeout);
             if (socket != null) {
                 return socket;
             }

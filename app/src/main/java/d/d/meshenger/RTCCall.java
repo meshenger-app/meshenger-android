@@ -208,12 +208,12 @@ public class RTCCall implements DataChannel.Observer {
                                     reportStateChange(CallState.CONNECTED);
                                     handleAnswer(obj.getString("answer"));
                                     // contact accepted receiving call
-                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
+                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
                                 } else if (action.equals("dismissed")) {
                                     closeCommSocket();
                                     reportStateChange(CallState.DISMISSED);
                                     // contact declined receiving call
-                                    RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
+                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
                                 } else {
                                     log("unknown action reply: " + action);
                                     closeCommSocket();

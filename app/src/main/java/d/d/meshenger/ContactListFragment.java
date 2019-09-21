@@ -122,7 +122,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         AlertDialog.Builder builder = new AlertDialog.Builder(this.mainActivity);
 
         builder.setTitle(R.string.confirm);
-        builder.setMessage("Remove contact: " + name);
+        builder.setMessage(getResources().getString(R.string.contact_remove) + " " + name);
         builder.setCancelable(false); // prevent key shortcut to cancel dialog
 
         builder.setPositiveButton(R.string.yes, (DialogInterface dialog, int id) -> {

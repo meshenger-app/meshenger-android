@@ -26,8 +26,10 @@
     <string name="settings_change_language">Changer de langue</string>
     <string name="settings_change_address">Changement d’adresse</string>
     <string name="settings_change_password">Changer le mot de passe</string>
+    <string name="settings_change_ice_servers">Change ICE Servers</string>
     <string name="settings_nightmode">Mode nuit</string>
     <string name="settings_block_unknown">Ignorer les appelants inconnus</string>
+    <string name="settings_development_mode">Development Mode</string>
     <string name="about_source">Code source :</string>
     <string name="about_license">Licence :</string>
     <string name="about_license_version">GPL-3.0-or-later</string>
@@ -47,6 +49,7 @@
     <string name="permission_mic">La permission du microphone est nécessaire pour passer des appels</string>
     <string name="hello">Bonjour !</string>
     <string name="empty_list_item">Vide</string>
+    <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
     <string name="call_connected">Connecté.</string>
     <string name="call_denied">Décliné</string>
     <string name="call_ringing">Entrain de sonner …</string>
@@ -82,6 +85,7 @@
     <string name="contact_key_conflict">A contact with the same key exists.</string>
     <string name="contact_name_empty">Contact name is empty.</string>
     <string name="contact_name_exists">A contact with that name exists already.</string>
+    <string name="contact_remove">Remove contact?</string>
     <string name="error">Erreur</string>
     <string name="ok">D’accord</string>
     <string name="skip">Passer</string>

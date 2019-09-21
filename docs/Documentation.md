@@ -67,3 +67,35 @@ The second phase was to implement authentication/encryption of the WebRTC handsh
 Along with other usability features (e.g. backup), other contact addresses should be able to be used (e.g. hostnames, multicast groups).
 
 This phase was started with Meshenger 2.0.0.
+
+
+## Source Code
+
+StartActivity.java (starts first)
+ - show splash screen
+ - start MainService
+   - runs in background
+ - check if database is loaded, username set, key pair generated
+ - start MainActivity
+   - shows contact list and event list
+
+MainActivity.java
+ - displays ContactListFragment and EventListFragment
+
+MainService:
+ - listen for incoming calles in a thread
+ - ping contacts on request
+ - holds database instance
+ - provides MainBinder class to access database
+
+ MainService:
+ - listens for incoming connections (calls and pings) in thread
+ - ping contacts on request
+ - allows access to the database (settings and contact list) via class MainBinder
+
+Incoming call:
+1. MainService.handleClient() starts CallActivity Intent with Contact object as argument ("ACTION_INCOMING_CALL")
+
+Outgoing call:
+1. ContactListFragment or EventListFragment starts CallActivity Intent with Contact object as argument ("ACTION_OUTGOING_CALL")
+2. In CallActivity, RTCCall.startCall() is called

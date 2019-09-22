@@ -37,6 +37,7 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
+        mainActivity = (MainActivity) getActivity();
 
         eventListView = view.findViewById(R.id.eventList);
         fabDelete = view.findViewById(R.id.fabDelete);
@@ -54,7 +55,7 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
 
     void refreshEventList() {
         log("refreshEventList");
-        if (this.mainActivity == null || this.mainActivity.binder == null || eventListView == null) {
+        if (this.mainActivity == null || this.mainActivity.binder == null) {
             log("refreshEventList early return");
             return;
         }
@@ -178,8 +179,7 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
         startActivity(intent);
     }
 
-    public void onServiceConnected(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
+    public void onServiceConnected() {
         refreshEventList();
     }
 

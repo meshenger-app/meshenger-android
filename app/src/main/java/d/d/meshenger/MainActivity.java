@@ -80,8 +80,8 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         adapter.addFragment(eventListFragment, this.getResources().getString(R.string.title_history));
         mViewPager.setAdapter(adapter);
 
-        contactListFragment.onServiceConnected(this);
-        eventListFragment.onServiceConnected(this);
+        contactListFragment.onServiceConnected();
+        eventListFragment.onServiceConnected();
 
         // call it here because EventListFragment.onResume is triggered twice
         this.binder.pingContacts();

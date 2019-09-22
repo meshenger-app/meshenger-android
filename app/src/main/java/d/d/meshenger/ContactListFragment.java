@@ -43,6 +43,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         log("onCreateView");
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
+        mainActivity = (MainActivity) getActivity();
         fab = view.findViewById(R.id.fab);
         fabScan = view.findViewById(R.id.fabScan);
         fabGen = view.findViewById(R.id.fabGenerate);
@@ -55,8 +56,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         return view;
     }
 
-    public void onServiceConnected(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
+    public void onServiceConnected() {
         refreshContactList();
     }
 

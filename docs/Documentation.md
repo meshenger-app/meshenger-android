@@ -50,7 +50,7 @@ The WebRTC connection that takes over uses its own crypto scheme.
 
 Meshenger is Free and Open Source Software. Everybody can participate or even fork the software.
 
-## Building From Sources
+### Building From Sources
 
 On Linux based systems:
 
@@ -60,7 +60,7 @@ On Linux based systems:
 
 Android Studio works as well.
 
-### First Phase development
+### First Phase
 
 This project was sponsored by the [Google Summer of Code](https://summerofcode.withgoogle.com/) 2018 as part of the [Freifunk](https://freifunk.net) organization to make local community networks more attractive.
 
@@ -73,13 +73,22 @@ The development can be followed via the [Freifunk blog](https://blog.freifunk.ne
 
 This phase was concluded with Meshenger 1.0.0.
 
-### Second phase
+### Second Phase
 
 The second phase was to implement authentication/encryption of the WebRTC handshake and database encryption.
 Along with other usability features (e.g. backup), other contact addresses should be able to be used (e.g. hostnames, multicast groups).
 
-This phase was started with Meshenger 2.0.0.
+This phase was concluded with Meshenger 2.0.0.
 
+### Third Phase
+
+The third phase added better encryption, a call history and (re-) added unknown callers.
+
+This phase was concluded with Meshenger 3.0.0.
+
+### Fourth Phase
+
+This phase focuses on bug fixing, stabilization and adding support for multicast addresses to allow calls into different networks.
 
 ## Source Code
 

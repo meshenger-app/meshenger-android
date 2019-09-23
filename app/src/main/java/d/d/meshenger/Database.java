@@ -18,7 +18,7 @@ class Database {
     Database() {
         this.contacts = new ArrayList<>();
         this.settings = new Settings();
-        this.version = "3.0.1";
+        this.version = "3.0.2";
     }
 
     public void addContact(Contact contact) {
@@ -81,7 +81,7 @@ class Database {
             new String(data, Charset.forName("UTF-8"))
         );
 
-        obj = upgradeDatabase(obj.getString("version"), "3.0.1", obj);
+        obj = upgradeDatabase(obj.getString("version"), "3.0.2", obj);
 
         return Database.fromJSON(obj);
     }
@@ -118,8 +118,17 @@ class Database {
             from = "3.0.0";
         }
 
+        // 3.0.0 => 3.0.1
         if (from.equals("3.0.0")) {
+            // nothing to do
             from = "3.0.1";
+        }
+
+        // 3.0.1 => 3.0.2
+        if (from.equals("3.0.1")) {
+            // fix typo
+            obj.put("night_mode", obj.getBoolean("might_mode"));
+            from = "3.0.2";
         }
 
         return obj;

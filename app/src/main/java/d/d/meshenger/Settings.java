@@ -119,7 +119,7 @@ public class Settings {
         s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"));
         s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"));
         s.language = obj.getString("language");
-        s.nightMode = obj.getBoolean("might_mode");
+        s.nightMode = obj.getBoolean("night_mode");
         s.blockUnknown = obj.getBoolean("block_unknown");
         s.developmentMode = obj.getBoolean("development_mode");
 
@@ -142,7 +142,7 @@ public class Settings {
         obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey));
         obj.put("public_key", Utils.byteArrayToHexString(s.publicKey));
         obj.put("language", s.language);
-        obj.put("might_mode", s.nightMode);
+        obj.put("night_mode", s.nightMode);
         obj.put("block_unknown", s.blockUnknown);
         obj.put("development_mode", s.developmentMode);
 

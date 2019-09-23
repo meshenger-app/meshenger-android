@@ -1,1 +1,1 @@
-* nothing important yet
+* apply dark mode in main view without restart

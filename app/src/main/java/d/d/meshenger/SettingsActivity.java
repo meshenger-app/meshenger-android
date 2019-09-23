@@ -128,8 +128,8 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             this.binder.getSettings().setNightMode(isChecked);
             this.binder.saveDatabase();
 
-            Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
-            startActivity(intent);
+            // apply theme
+            this.recreate();
         });
 
         boolean developmentMode = this.binder.getSettings().getDevelopmentMode();

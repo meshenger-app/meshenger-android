@@ -38,13 +38,17 @@ For encryption and authentication, libsodium is used.
 
 The database contains the settings and contacts. It is stored in the internal/private file store of the app. If no password is given, the database is stored in plain text.
 
-If a password is given, it will be hashed and salted using `libsodium::crypto_pwhash`. The has is use as key for `libsodium::crypto_secretbox_open_easy` along with nonce. The salt and nonce is stored along with the database and changed every time that database is stored.
+If a password is given, it will be hashed and salted using `libsodium::crypto_pwhash`. The has is use as key for `libsodium::crypto_secretbox_open_easy` along with nonce. The salt and nonce is stored along with the database and changed every time the database is stored.
+
+The database file is prefixed with a four byte header. Currently, it is set to zero.
 
 ### Calls
 
 Contacts identities are based on public/secret keys (ed25519). These are used to sign the WebRTC SDP offers using `libsodium::crypto_sign` and are then encrypted using `libsodium.crypto_box_seal` (X25519, XSalsa20-Poly1305) with the recipients public key (curve25519) derived from the identity key.
 
-The WebRTC connection that takes over uses its own crypto scheme.
+Every packet is prefixed with a four byte header. Currently it only contains the packet length.
+
+The WebRTC connection itself uses its own crypto scheme.
 
 ## Development
 

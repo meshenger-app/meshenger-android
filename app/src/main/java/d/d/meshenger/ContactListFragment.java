@@ -147,7 +147,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         }
 
         new Handler(getMainLooper()).post(() -> {
-            List<Contact> contacts = ContactListFragment.this.mainActivity.binder.getContacts();
+            List<Contact> contacts = ContactListFragment.this.mainActivity.binder.getContactsCopy();
             contactListView.setAdapter(new ContactListAdapter(ContactListFragment.this.mainActivity, R.layout.item_contact, contacts));
             contactListView.setOnItemClickListener(ContactListFragment.this);
             contactListView.setOnItemLongClickListener((AdapterView<?> adapterView, View view, int i, long l) -> {
@@ -246,7 +246,7 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         log("onItemClick");
-        Contact contact = this.mainActivity.binder.getContacts().get(i);
+        Contact contact = this.mainActivity.binder.getContactsCopy().get(i);
         Intent intent = new Intent(this.mainActivity, CallActivity.class);
         intent.setAction("ACTION_OUTGOING_CALL");
         intent.putExtra("EXTRA_CONTACT", contact);

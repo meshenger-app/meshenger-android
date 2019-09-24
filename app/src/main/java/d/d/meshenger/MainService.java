@@ -376,7 +376,7 @@ public class MainService extends Service implements Runnable {
         void pingContacts() {
             new Thread(new PingRunnable(
                 MainService.this,
-                getContacts(),
+                getContactsCopy(),
                 getSettings().getPublicKey(),
                 getSettings().getSecretKey())
             ).start();
@@ -391,7 +391,7 @@ public class MainService extends Service implements Runnable {
         }
 
         // return a cloned list
-        List<Contact> getContacts() {
+        List<Contact> getContactsCopy() {
            return new ArrayList<>(MainService.this.db.contacts);
         }
 
@@ -406,7 +406,7 @@ public class MainService extends Service implements Runnable {
         }
 
         // return a cloned list
-        List<CallEvent> getEvents() {
+        List<CallEvent> getEventsCopy() {
             return new ArrayList<>(MainService.this.events);
         }
 

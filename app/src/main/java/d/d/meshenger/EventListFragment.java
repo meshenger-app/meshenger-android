@@ -60,8 +60,8 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
             return;
         }
 
-        List<CallEvent> events = EventListFragment.this.mainActivity.binder.getEvents();
-        List<Contact> contacts = EventListFragment.this.mainActivity.binder.getContacts();
+        List<CallEvent> events = EventListFragment.this.mainActivity.binder.getEventsCopy();
+        List<Contact> contacts = EventListFragment.this.mainActivity.binder.getContactsCopy();
 
         new Handler(getMainLooper()).post(() -> {
             log("refreshEventList update: " + events.size());

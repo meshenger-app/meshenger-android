@@ -1,7 +1,5 @@
 package d.d.meshenger;
 
-import android.util.Log;
-
 import org.libsodium.jni.Sodium;
 import org.libsodium.jni.SodiumConstants;
 

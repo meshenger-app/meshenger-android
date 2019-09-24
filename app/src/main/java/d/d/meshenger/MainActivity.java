@@ -18,7 +18,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -192,7 +191,7 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         }
     }
 
-    private static void log(String s) {
-        Log.d(MainActivity.class.getSimpleName(), s);
+    private void log(String s) {
+        Log.d(this, s);
     }
 }

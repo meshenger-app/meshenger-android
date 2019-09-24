@@ -1,7 +1,5 @@
 package d.d.meshenger;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -61,7 +59,7 @@ class PacketReader {
         return null;
     }
 
-    private static void log(String s) {
-        Log.d(PacketReader.class.getSimpleName(), s);
+    private void log(String s) {
+        Log.d(this, s);
     }
 }

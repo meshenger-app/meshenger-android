@@ -12,7 +12,6 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -213,6 +212,6 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
     }
 
     private void log(String s) {
-        Log.d(BackupActivity.class.getSimpleName(), s);
+        Log.d(this, s);
     }
 }

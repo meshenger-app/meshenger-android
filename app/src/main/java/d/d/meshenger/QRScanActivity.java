@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -269,7 +268,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         binder = null;
     }
 
-    private static void log(String s) {
-        Log.d(QRScanActivity.class.getSimpleName(), s);
+    private void log(String s) {
+        Log.d(this, s);
     }
 }

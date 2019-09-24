@@ -1,7 +1,5 @@
 package d.d.meshenger;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -31,7 +29,7 @@ class PacketWriter {
         this.os.write(message);
     }
 
-    private static void log(String s) {
-        Log.d(PacketWriter.class.getSimpleName(), s);
+    private void log(String s) {
+        Log.d(this, s);
     }
 }

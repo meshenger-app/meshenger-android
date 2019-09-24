@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -510,7 +509,7 @@ public class MainService extends Service implements Runnable {
         return new MainBinder();
     }
 
-    private static void log(String data) {
-        Log.d(MainService.class.getSimpleName(), data);
+    private void log(String data) {
+        Log.d(this, data);
     }
 }

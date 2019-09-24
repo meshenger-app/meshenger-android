@@ -1,7 +1,5 @@
 package d.d.meshenger;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -216,7 +214,7 @@ public class Contact implements Serializable {
         return contact;
     }
 
-    private static void log(String s) {
-        Log.d(Contact.class.getSimpleName(), s);
+    private void log(String s) {
+        Log.d(this, s);
     }
 }

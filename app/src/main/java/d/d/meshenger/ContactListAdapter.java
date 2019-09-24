@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +76,7 @@ class ContactListAdapter extends ArrayAdapter<Contact> {
         return convertView;
     }
 
-    private static void log(String s) {
-        Log.d(ContactListAdapter.class.getSimpleName(), s);
+    private void log(String s) {
+        Log.d(this, s);
     }
 }

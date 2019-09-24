@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.ColorInt;
 import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
 import android.util.TypedValue;
 
 import org.json.JSONException;
@@ -614,6 +613,6 @@ public class RTCCall implements DataChannel.Observer {
     }
 
     private void log(String s) {
-        Log.d(RTCCall.class.getSimpleName(), s);
+        Log.d(this, s);
     }
 }

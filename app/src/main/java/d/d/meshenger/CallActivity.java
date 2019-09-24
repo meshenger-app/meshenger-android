@@ -21,7 +21,6 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -481,6 +480,6 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
     }
 
     private void log(String s) {
-        Log.d(CallActivity.class.getSimpleName(), s);
+        Log.d(this, s);
     }
 }

@@ -13,12 +13,11 @@ import java.util.Arrays;
 class Database {
     Settings settings;
     ArrayList<Contact> contacts;
-    String version;
+    static String version = "3.0.2"; // current version
 
     Database() {
         this.contacts = new ArrayList<>();
         this.settings = new Settings();
-        this.version = "3.0.2";
     }
 
     public void addContact(Contact contact) {
@@ -81,9 +80,15 @@ class Database {
             new String(data, Charset.forName("UTF-8"))
         );
 
-        obj = upgradeDatabase(obj.getString("version"), "3.0.2", obj);
+        boolean upgraded = upgradeDatabase(obj.getString("version"), Database.version, obj);
+        Database db = Database.fromJSON(obj);
 
-        return Database.fromJSON(obj);
+        if (upgraded) {
+            log("store updated database");
+            Database.store(path, db, password);
+        }
+
+        return db;
     }
 
     public static void store(String path, Database db, String password) throws IOException, JSONException {
@@ -99,7 +104,13 @@ class Database {
         Utils.writeExternalFile(path, data);
     }
 
-    private static JSONObject upgradeDatabase(String from, String to, JSONObject obj) throws JSONException {
+    private static boolean upgradeDatabase(String from, String to, JSONObject obj) throws JSONException {
+        if (from.equals(to)) {
+            return false;
+        }
+
+        log("upgrade database from " + from + " to " + to);
+
         // 2.0.0 => 2.1.0
         if (from.equals("2.0.0")) {
             // add blocked field (added in 2.1.0)
@@ -113,8 +124,8 @@ class Database {
         // 2.1.0 => 3.0.0
         if (from.equals("2.1.0")) {
             // add new fields
-            obj.put("ice_servers", new JSONArray());
-            obj.put("development_mode", false);
+            obj.getJSONObject("settings").put("ice_servers", new JSONArray());
+            obj.getJSONObject("settings").put("development_mode", false);
             from = "3.0.0";
         }
 
@@ -126,12 +137,14 @@ class Database {
 
         // 3.0.1 => 3.0.2
         if (from.equals("3.0.1")) {
-            // fix typo
-            obj.put("night_mode", obj.getBoolean("might_mode"));
+            // fix typo in setting name
+            obj.getJSONObject("settings").put("night_mode", obj.getJSONObject("settings").getBoolean("might_mode"));
             from = "3.0.2";
         }
 
-        return obj;
+        obj.put("version", from);
+
+        return true;
     }
 
     public static JSONObject toJSON(Database db) throws JSONException {
@@ -167,5 +180,9 @@ class Database {
         db.settings = Settings.importJSON(settings);
 
         return db;
+    }
+
+    private static void log(String s) {
+        Log.d("Database", s);
     }
 }

@@ -36,11 +36,11 @@ For encryption and authentication, libsodium is used.
 
 ### Database
 
-The database contains the settings and contacts. It is stored in the internal/private file store of the app. If no password is given, the database is stored in plain text.
+The database contains the settings and contacts. It is stored in the internal/private file store of the app. If no password is used, the database is stored in plain text.
 
-If a password is given, it will be hashed and salted using `libsodium::crypto_pwhash`. The has is use as key for `libsodium::crypto_secretbox_open_easy` along with nonce. The salt and nonce is stored along with the database and changed every time the database is stored.
+If a password is used, it will be salted and hashed using `libsodium::crypto_pwhash`. The hash is used as key for `libsodium::crypto_secretbox_open_easy` along with a nonce. The salt and nonce are stored along with the database and changed every time the database is stored.
 
-The database file is prefixed with a four byte header. Currently, it is set to zero.
+The database file is prefixed with a four byte version header. Currently, it is set to zero.
 
 ### Calls
 

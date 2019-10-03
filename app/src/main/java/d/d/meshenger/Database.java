@@ -13,7 +13,7 @@ import java.util.Arrays;
 class Database {
     Settings settings;
     ArrayList<Contact> contacts;
-    static String version = "3.0.2"; // current version
+    static String version = "3.0.3"; // current version
 
     Database() {
         this.contacts = new ArrayList<>();
@@ -140,6 +140,12 @@ class Database {
             // fix typo in setting name
             obj.getJSONObject("settings").put("night_mode", obj.getJSONObject("settings").getBoolean("might_mode"));
             from = "3.0.2";
+        }
+
+        // 3.0.2 => 3.0.3
+        if (from.equals("3.0.2")) {
+            // nothing to do
+            from = "3.0.3";
         }
 
         obj.put("version", from);

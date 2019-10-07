@@ -218,7 +218,7 @@ public class MainService extends Service implements Runnable {
                         // someone calls us
                         log("call...");
                         String offer = obj.getString("offer");
-                        this.currentCall = new RTCCall(this, new MainBinder(), contact, client, offer);
+                        this.currentCall = new RTCCall(this, new MainBinder(this), contact, client, offer);
 
                         // respond that we accept the call
 
@@ -302,17 +302,27 @@ public class MainService extends Service implements Runnable {
     /*
     * Allows communication between MainService and other objects
     */
-    class MainBinder extends Binder {
+    static class MainBinder extends Binder {
+        private MainService service = null;
+
+        MainBinder(MainService service) {
+            this.service = service;
+        }
+
+        Context getContext() {
+            return this.service;
+        }
+
         RTCCall getCurrentCall() {
-            return currentCall;
+            return this.service.currentCall;
         }
 
         boolean isFirstStart() {
-            return MainService.this.first_start;
+            return this.service.first_start;
         }
 
         Contact getContactByPublicKey(byte[] pubKey) {
-            for (Contact contact : MainService.this.db.contacts) {
+            for (Contact contact : this.service.db.contacts) {
                 if (Arrays.equals(contact.getPublicKey(), pubKey)) {
                     return contact;
                 }
@@ -321,7 +331,7 @@ public class MainService extends Service implements Runnable {
         }
 
         Contact getContactByName(String name) {
-            for (Contact contact : MainService.this.db.contacts) {
+            for (Contact contact : this.service.db.contacts) {
                 if (contact.getName().equals(name)) {
                     return contact;
                 }
@@ -330,43 +340,43 @@ public class MainService extends Service implements Runnable {
         }
 
         void addContact(Contact contact) {
-            db.addContact(contact);
+            this.service.db.addContact(contact);
             saveDatabase();
-            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_contact_list"));
+            LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_contact_list"));
         }
 
         void deleteContact(byte[] pubKey) {
-            db.deleteContact(pubKey);
+            this.service.db.deleteContact(pubKey);
             saveDatabase();
-            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_contact_list"));
+            LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_contact_list"));
         }
 
         void shutdown() {
-            MainService.this.stopSelf();
+            this.service.stopSelf();
         }
 
         String getDatabasePassword() {
-            return MainService.this.database_password;
+            return this.service.database_password;
         }
 
         void setDatabasePassword(String password) {
-            MainService.this.database_password = password;
+            this.service.database_password = password;
         }
 
         Database getDatabase() {
-            return MainService.this.db;
+            return this.service.db;
         }
 
         void loadDatabase() {
-            MainService.this.loadDatabase();
+            this.service.loadDatabase();
         }
 
         void replaceDatabase(Database db) {
             if (db != null) {
-                if (MainService.this.db == null) {
-                    MainService.this.db = db;
+                if (this.service.db == null) {
+                    this.service.db = db;
                 } else {
-                    MainService.this.db = db;
+                    this.service.db = db;
                     saveDatabase();
                 }
             }
@@ -374,7 +384,7 @@ public class MainService extends Service implements Runnable {
 
         void pingContacts() {
             new Thread(new PingRunnable(
-                MainService.this,
+                this,
                 getContactsCopy(),
                 getSettings().getPublicKey(),
                 getSettings().getSecretKey())
@@ -382,52 +392,50 @@ public class MainService extends Service implements Runnable {
         }
 
         void saveDatabase() {
-            MainService.this.saveDatabase();
+            this.service.saveDatabase();
         }
 
         Settings getSettings() {
-            return MainService.this.db.settings;
+            return this.service.db.settings;
         }
 
         // return a cloned list
         List<Contact> getContactsCopy() {
-           return new ArrayList<>(MainService.this.db.contacts);
+           return new ArrayList<>(this.service.db.contacts);
         }
 
         void addCallEvent(Contact contact, CallEvent.Type type) {
             InetSocketAddress last_working = contact.getLastWorkingAddress();
-            MainService.this.events.add(new CallEvent(
+            this.service.events.add(new CallEvent(
                 contact.getPublicKey(),
                     (last_working != null) ? last_working.getAddress() : null,
                 type
             ));
-            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_event_list"));
+            LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_event_list"));
         }
 
         // return a cloned list
         List<CallEvent> getEventsCopy() {
-            return new ArrayList<>(MainService.this.events);
+            return new ArrayList<>(this.service.events);
         }
 
         void clearEvents() {
-            MainService.this.events.clear();
-            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_event_list"));
+            this.service.events.clear();
+            LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_event_list"));
         }
     }
 
-    class PingRunnable implements Runnable {
-        Context context;
+    static class PingRunnable implements Runnable {
         private List<Contact> contacts;
         byte[] ownPublicKey;
         byte[] ownSecretKey;
         MainBinder binder;
 
-        PingRunnable(Context context, List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey) {
-            this.context = context;
+        PingRunnable(MainBinder binder, List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey) {
+            this.binder = binder;
             this.contacts = contacts;
             this.ownPublicKey = ownPublicKey;
             this.ownSecretKey = ownSecretKey;
-            this.binder = new MainBinder();
         }
 
         private void setState(byte[] publicKey, Contact.State state) {
@@ -498,15 +506,18 @@ public class MainService extends Service implements Runnable {
             }
 
             log("send refresh_contact_list");
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("refresh_contact_list"));
+            LocalBroadcastManager.getInstance(this.binder.getContext()).sendBroadcast(new Intent("refresh_contact_list"));
+        }
+
+        private void log(String data) {
+            Log.d(this, data);
         }
     }
-
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return new MainBinder();
+        return new MainBinder(this);
     }
 
     private void log(String data) {

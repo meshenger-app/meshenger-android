@@ -57,6 +57,8 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
 
         LocalBroadcastManager.getInstance(this).registerReceiver(refreshEventListReceiver, new IntentFilter("refresh_event_list"));
         LocalBroadcastManager.getInstance(this).registerReceiver(refreshContactListReceiver, new IntentFilter("refresh_contact_list"));
+
+        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -65,6 +67,7 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshEventListReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshContactListReceiver);
 
+        unbindService(this);
         super.onDestroy();
     }
 
@@ -134,16 +137,12 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
     protected void onResume() {
         log("OnResume");
         super.onResume();
-
-        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onPause() {
         log("onPause");
         super.onPause();
-
-        unbindService(this);
     }
 
     @Override

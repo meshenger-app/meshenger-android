@@ -145,7 +145,12 @@ public class MainService extends Service implements Runnable {
         return START_STICKY;
     }
 
-    private void handleClient(Socket client) {
+    private void handleClient(MainBinder binder, Socket client) {
+        // just a precaution
+        if (this.db == null) {
+            return;
+        }
+
         byte[] clientPublicKey = new byte[Sodium.crypto_sign_publickeybytes()];
         byte[] ownSecretKey = this.db.settings.getSecretKey();
         byte[] ownPublicKey = this.db.settings.getPublicKey();
@@ -218,7 +223,7 @@ public class MainService extends Service implements Runnable {
                         // someone calls us
                         log("call...");
                         String offer = obj.getString("offer");
-                        this.currentCall = new RTCCall(this, new MainBinder(this), contact, client, offer);
+                        this.currentCall = new RTCCall(this, binder, contact, client, offer);
 
                         // respond that we accept the call
 
@@ -235,7 +240,10 @@ public class MainService extends Service implements Runnable {
                     case "ping": {
                         log("ping...");
                         // someone wants to know if we are online
-                        setClientState(contact, Contact.State.ONLINE);
+                        Contact c = binder.getContactByPublicKey(contact.getPublicKey());
+                        if (c != null) {
+                            c.setState(Contact.State.ONLINE);
+                        }
 
                         byte[] encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
                         pw.writeMessage(encrypted);
@@ -243,7 +251,10 @@ public class MainService extends Service implements Runnable {
                     }
                     case "status_change": {
                         if (obj.optString("status", "").equals("offline")) {
-                            setClientState(contact, Contact.State.OFFLINE);
+                            Contact c = binder.getContactByPublicKey(contact.getPublicKey());
+                            if (c != null) {
+                                c.setState(Contact.State.OFFLINE);
+                            }
                         } else {
                             log("Received unknown status_change: " + obj.getString("status"));
                         }
@@ -265,10 +276,6 @@ public class MainService extends Service implements Runnable {
         Arrays.fill(clientPublicKey, (byte) 0);
     }
 
-    private void setClientState(Contact contact, Contact.State state) {
-        contact.setState(Contact.State.ONLINE);
-    }
-
     @Override
     public void run() {
         try {
@@ -282,11 +289,12 @@ public class MainService extends Service implements Runnable {
             }
 
             server = new ServerSocket(serverPort);
+            MainBinder binder = new MainBinder(this);
 
             while (this.run) {
                 try {
                     Socket socket = server.accept();
-                    new Thread(() -> handleClient(socket)).start();
+                    new Thread(() -> handleClient(binder, socket)).start();
                 } catch (IOException e) {
                     // ignore
                 }

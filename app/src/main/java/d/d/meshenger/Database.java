@@ -13,7 +13,7 @@ import java.util.Arrays;
 class Database {
     Settings settings;
     ArrayList<Contact> contacts;
-    static String version = "3.0.3"; // current version
+    static String version = "3.1.0"; // current version
 
     Database() {
         this.contacts = new ArrayList<>();
@@ -146,6 +146,12 @@ class Database {
         if (from.equals("3.0.2")) {
             // nothing to do
             from = "3.0.3";
+        }
+
+        // 3.0.3 => 3.1.0
+        if (from.equals("3.0.3")) {
+            // nothing to do
+            from = "3.1.0";
         }
 
         obj.put("version", from);

@@ -55,10 +55,6 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         return view;
     }
 
-    public void onServiceConnected() {
-        refreshContactList();
-    }
-
     private void runFabAnimation(View fab) {
         log("runFabAnimation");
         AnimationSet scanSet = new AnimationSet(this.mainActivity, null);

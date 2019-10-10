@@ -178,10 +178,6 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
         startActivity(intent);
     }
 
-    public void onServiceConnected() {
-        refreshEventList();
-    }
-
     private static void log(String s) {
         Log.d(EventListFragment.class.getSimpleName(), s);
     }

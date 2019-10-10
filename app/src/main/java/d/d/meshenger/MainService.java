@@ -240,21 +240,14 @@ public class MainService extends Service implements Runnable {
                     case "ping": {
                         log("ping...");
                         // someone wants to know if we are online
-                        Contact c = binder.getContactByPublicKey(contact.getPublicKey());
-                        if (c != null) {
-                            c.setState(Contact.State.ONLINE);
-                        }
-
+                        binder.setContactState(contact.getPublicKey(), Contact.State.ONLINE);
                         byte[] encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
                         pw.writeMessage(encrypted);
                         break;
                     }
                     case "status_change": {
                         if (obj.optString("status", "").equals("offline")) {
-                            Contact c = binder.getContactByPublicKey(contact.getPublicKey());
-                            if (c != null) {
-                                c.setState(Contact.State.OFFLINE);
-                            }
+                            binder.setContactState(contact.getPublicKey(), Contact.State.OFFLINE);
                         } else {
                             log("Received unknown status_change: " + obj.getString("status"));
                         }
@@ -359,6 +352,14 @@ public class MainService extends Service implements Runnable {
             LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_contact_list"));
         }
 
+        void setContactState(byte[] publicKey, Contact.State state) {
+            Contact contact = getContactByPublicKey(publicKey);
+            if (contact != null && contact.getState() != state) {
+                contact.setState(state);
+                LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_contact_list"));
+            }
+        }
+
         void shutdown() {
             this.service.stopSelf();
         }
@@ -446,23 +447,16 @@ public class MainService extends Service implements Runnable {
             this.ownSecretKey = ownSecretKey;
         }
 
-        private void setState(byte[] publicKey, Contact.State state) {
-            Contact contact = this.binder.getContactByPublicKey(publicKey);
-            if (contact != null) {
-                contact.setState(state);
-            }
-        }
-
         @Override
         public void run() {
             for (Contact contact : contacts) {
                 Socket socket = null;
                 byte[] publicKey = contact.getPublicKey();
-                try {
 
+                try {
                     socket = contact.createSocket();
                     if (socket == null) {
-                        setState(publicKey, Contact.State.OFFLINE);
+                        this.binder.setContactState(publicKey, Contact.State.OFFLINE);
                         continue;
                     }
 
@@ -496,12 +490,12 @@ public class MainService extends Service implements Runnable {
                     String action = obj.optString("action", "");
                     if (action.equals("pong")) {
                         log("got pong");
-                        setState(publicKey, Contact.State.ONLINE);
+                        this.binder.setContactState(publicKey, Contact.State.ONLINE);
                     }
 
                     socket.close();
                 } catch (Exception e) {
-                    setState(publicKey, Contact.State.OFFLINE);
+                    this.binder.setContactState(publicKey, Contact.State.OFFLINE);
                     if (socket != null) {
                         try {
                             socket.close();

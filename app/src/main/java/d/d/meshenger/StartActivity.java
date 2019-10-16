@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +27,8 @@ import android.widget.Toast;
 
 import org.libsodium.jni.Sodium;
 import org.libsodium.jni.NaCl;
+
+import java.util.Locale;
 
 
 /*
@@ -104,6 +107,11 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 AppCompatDelegate.setDefaultNightMode(
                         nightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
                 );
+
+                // set language
+                Configuration config = new Configuration();
+                config.locale = new Locale(this.binder.getSettings().getLanguage());
+                getResources().updateConfiguration(config, getResources().getDisplayMetrics());
 
                 // all done - show contact list
                 startActivity(new Intent(this, MainActivity.class));

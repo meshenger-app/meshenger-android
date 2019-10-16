@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.IBinder;
+import android.os.LocaleList;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
@@ -151,30 +152,32 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
 
     private void getLocale() {
         Configuration config = getResources().getConfiguration();
-        Locale locale = config.locale;
-        String language = locale.getDisplayLanguage();
+        String language = config.locale.getLanguage();
 
         if (!this.binder.getSettings().getLanguage().equals(language)) {
             this.binder.getSettings().setLanguage(language);
             this.binder.saveDatabase();
         }
 
-        ((TextView) findViewById(R.id.localeTv)).setText(language);
+        ((TextView) findViewById(R.id.localeTv)).setText(config.locale.getDisplayLanguage());
 
-        Locale[] locales = new Locale[]{Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN};
+        // supported languages
+        Locale[] locales = { new Locale("en"), new Locale("de"), new Locale("fr"), new Locale("ru") };
+
         findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
             RadioGroup group = new RadioGroup(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            for (int i = 0; i < locales.length; i += 1) {
-                Locale l = locales[i];
+            int i = 0;
+            for (Locale locale : locales) {
                 RadioButton button = new RadioButton(this);
                 button.setId(i);
-                button.setText(l.getDisplayLanguage());
-                if (l.getISO3Language().equals(locale.getISO3Language())) {
+                button.setText(locale.getDisplayLanguage());
+                if (locale.getISO3Language().equals(config.locale.getISO3Language())) {
                     button.setChecked(true);
                 }
                 group.addView(button);
+                i += 1;
             }
 
             builder.setView(group);
@@ -182,12 +185,13 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             group.setOnCheckedChangeListener((a, position) -> {
                 log("changed locale to " + locales[position].getLanguage());
 
-                Configuration config1 = new Configuration();
-                config1.locale = locales[position];
+                Configuration new_config = new Configuration();
+                new_config.locale = locales[position];
 
-                getResources().updateConfiguration(config1, getResources().getDisplayMetrics());
+                getResources().updateConfiguration(new_config, getResources().getDisplayMetrics());
 
-                this.binder.getSettings().setLanguage(locale.getDisplayLanguage());
+                log("save language to database");
+                this.binder.getSettings().setLanguage(config.locale.getISO3Language());
                 this.binder.saveDatabase();
 
                 finish();

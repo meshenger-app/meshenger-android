@@ -1,1 +1,2 @@
 * add indicator for missed calls
+* add russian translation

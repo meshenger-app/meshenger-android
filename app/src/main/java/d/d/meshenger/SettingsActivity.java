@@ -5,9 +5,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.os.IBinder;
-import android.os.LocaleList;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
@@ -16,13 +14,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
-import java.util.Locale;
 
 
 public class SettingsActivity extends MeshengerActivity implements ServiceConnection {
@@ -146,60 +141,6 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         } else {
             findViewById(R.id.changeIceServersLayout).setVisibility(View.GONE);
         }
-
-        getLocale();
-    }
-
-    private void getLocale() {
-        Configuration config = getResources().getConfiguration();
-        String language = config.locale.getLanguage();
-
-        if (!this.binder.getSettings().getLanguage().equals(language)) {
-            this.binder.getSettings().setLanguage(language);
-            this.binder.saveDatabase();
-        }
-
-        ((TextView) findViewById(R.id.localeTv)).setText(config.locale.getDisplayLanguage());
-
-        // supported languages
-        Locale[] locales = { new Locale("en"), new Locale("de"), new Locale("fr"), new Locale("ru") };
-
-        findViewById(R.id.changeLocaleLayout).setOnClickListener((v) -> {
-            RadioGroup group = new RadioGroup(this);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            int i = 0;
-            for (Locale locale : locales) {
-                RadioButton button = new RadioButton(this);
-                button.setId(i);
-                button.setText(locale.getDisplayLanguage());
-                if (locale.getISO3Language().equals(config.locale.getISO3Language())) {
-                    button.setChecked(true);
-                }
-                group.addView(button);
-                i += 1;
-            }
-
-            builder.setView(group);
-            AlertDialog dialog = builder.show();
-            group.setOnCheckedChangeListener((a, position) -> {
-                log("changed locale to " + locales[position].getLanguage());
-
-                Configuration new_config = new Configuration();
-                new_config.locale = locales[position];
-
-                getResources().updateConfiguration(new_config, getResources().getDisplayMetrics());
-
-                log("save language to database");
-                this.binder.getSettings().setLanguage(config.locale.getISO3Language());
-                this.binder.saveDatabase();
-
-                finish();
-                startActivity(new Intent(getApplicationContext(), this.getClass()));
-
-                dialog.dismiss();
-            });
-        });
     }
 
     private void showChangeNameDialog() {

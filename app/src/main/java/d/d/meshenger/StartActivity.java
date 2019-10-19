@@ -108,11 +108,6 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                         nightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
                 );
 
-                // set language
-                Configuration config = new Configuration();
-                config.locale = new Locale(this.binder.getSettings().getLanguage());
-                getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-
                 // all done - show contact list
                 startActivity(new Intent(this, MainActivity.class));
                 finish();

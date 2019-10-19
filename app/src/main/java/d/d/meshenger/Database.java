@@ -150,7 +150,7 @@ class Database {
 
         // 3.0.3 => 3.1.0
         if (from.equals("3.0.3")) {
-            // nothing to do
+            obj.getJSONObject("settings").remove("language");
             from = "3.1.0";
         }
 

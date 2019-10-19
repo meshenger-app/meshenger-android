@@ -12,7 +12,6 @@ public class Settings {
     private String username;
     private byte[] secretKey;
     private byte[] publicKey;
-    private String language;
     private boolean nightMode;
     private boolean blockUnknown;
     private boolean developmentMode;
@@ -24,7 +23,6 @@ public class Settings {
         this.username = "";
         this.secretKey = null;
         this.publicKey = null;
-        this.language = "";
         this.nightMode = false;
         this.blockUnknown = false;
         this.developmentMode = false;
@@ -54,14 +52,6 @@ public class Settings {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
     }
 
     public boolean getNightMode() {
@@ -118,7 +108,6 @@ public class Settings {
         s.username = obj.getString("username");
         s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"));
         s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"));
-        s.language = obj.getString("language");
         s.nightMode = obj.getBoolean("night_mode");
         s.blockUnknown = obj.getBoolean("block_unknown");
         s.developmentMode = obj.getBoolean("development_mode");
@@ -141,7 +130,6 @@ public class Settings {
         obj.put("username", s.username);
         obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey));
         obj.put("public_key", Utils.byteArrayToHexString(s.publicKey));
-        obj.put("language", s.language);
         obj.put("night_mode", s.nightMode);
         obj.put("block_unknown", s.blockUnknown);
         obj.put("development_mode", s.developmentMode);

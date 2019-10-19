@@ -137,8 +137,10 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         });
 
         if (developmentMode) {
+            findViewById(R.id.changeDevelopmentModeLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.changeIceServersLayout).setVisibility(View.VISIBLE);
         } else {
+            findViewById(R.id.changeDevelopmentModeLayout).setVisibility(View.GONE);
             findViewById(R.id.changeIceServersLayout).setVisibility(View.GONE);
         }
     }

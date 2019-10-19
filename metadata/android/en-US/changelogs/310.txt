@@ -1,2 +1,4 @@
 * add indicator for missed calls
 * add russian translation
+* remove language setting
+* hide development option

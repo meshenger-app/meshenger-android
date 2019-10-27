@@ -49,6 +49,8 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
         eventListView.setAdapter(eventListAdapter);
         eventListView.setOnItemClickListener(this);
 
+        refreshEventList();
+
         return view;
     }
 

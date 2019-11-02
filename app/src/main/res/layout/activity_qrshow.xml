@@ -22,7 +22,6 @@
         android:layout_marginTop="@dimen/fab_margin"
         android:layout_marginEnd="101dp"
         android:layout_marginBottom="-77dp"
-        android:background="@color/colorPrimary"
         app:srcCompat="@android:drawable/ic_menu_share" />
 
     <android.support.design.widget.FloatingActionButton
@@ -32,7 +31,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/qr_glass"
-        android:background="@color/colorPrimary" />
+        app:srcCompat="@drawable/qr_glass" />
 
 </RelativeLayout>

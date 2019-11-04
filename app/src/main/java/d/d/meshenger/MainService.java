@@ -48,6 +48,8 @@ public class MainService extends Service implements Runnable {
 
     private ArrayList<CallEvent> events = null;
 
+    private MainBinder mainBinder = new MainBinder(this);
+
     private int NOTIFICATION = 42;
 
     @Override
@@ -581,7 +583,7 @@ public class MainService extends Service implements Runnable {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return new MainBinder(this);
+        return mainBinder;
     }
 
     private void log(String data) {

@@ -56,6 +56,7 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
 
     void refreshEventList() {
         log("refreshEventList");
+
         if (this.mainActivity == null || this.mainActivity.binder == null) {
             log("refreshEventList early return");
             return;
@@ -77,7 +78,6 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
                 String add = res.getString(R.string.add);
                 String block = res.getString(R.string.block);
                 String unblock = res.getString(R.string.unblock);
-                String qr = "QR-ify";
                 Contact contact = EventListFragment.this.mainActivity.binder.getContactByPublicKey(event.pubKey);
 
                 // allow to add unknown caller

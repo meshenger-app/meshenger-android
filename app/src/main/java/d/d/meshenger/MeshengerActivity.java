@@ -28,7 +28,7 @@ public class MeshengerActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // recreate acitivity to apply mode
+        // recreate activity to apply mode
         boolean dark_active_now = darkModeEnabled();
         if (dark_active != dark_active_now) {
             dark_active = dark_active_now;

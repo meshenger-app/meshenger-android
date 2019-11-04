@@ -272,9 +272,9 @@ public class MainService extends Service implements Runnable {
                     }
                 }
 
-                // suspicious change of identity in during connection...
+                // suspicious change of identity during connection...
                 if (!Arrays.equals(contact.getPublicKey(), clientPublicKey)) {
-                    log("suspicious change of key");
+                    log("suspicious change of identity");
                     continue;
                 }
 
@@ -289,7 +289,7 @@ public class MainService extends Service implements Runnable {
                 switch (action) {
                     case "call": {
                         // someone calls us
-                        log("call...");
+                        log("got call...");
                         String offer = obj.getString("offer");
                         this.currentCall = new RTCCall(this, binder, contact, client, offer);
 
@@ -306,7 +306,7 @@ public class MainService extends Service implements Runnable {
                         return;
                     }
                     case "ping": {
-                        log("ping...");
+                        log("got ping...");
                         // someone wants to know if we are online
                         binder.setContactState(contact.getPublicKey(), Contact.State.ONLINE);
                         byte[] encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.getPublicKey(), ownPublicKey, ownSecretKey);
@@ -323,8 +323,9 @@ public class MainService extends Service implements Runnable {
                 }
             }
 
-            log("client disconnected");
+            log("call disconnected");
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("call_declined"));
+
         } catch (Exception e) {
             e.printStackTrace();
             log("client disconnected (exception)");
@@ -350,7 +351,7 @@ public class MainService extends Service implements Runnable {
             }
 
             server = new ServerSocket(serverPort);
-            MainBinder binder = new MainBinder(this);
+            MainBinder binder = (MainBinder) onBind(null);
 
             while (this.run) {
                 try {
@@ -372,7 +373,7 @@ public class MainService extends Service implements Runnable {
     * Allows communication between MainService and other objects
     */
     static class MainBinder extends Binder {
-        private MainService service = null;
+        private MainService service;
 
         MainBinder(MainService service) {
             this.service = service;
@@ -456,6 +457,7 @@ public class MainService extends Service implements Runnable {
         }
 
         void pingContacts() {
+            Log.d(this, "pingContacts");
             new Thread(new PingRunnable(
                 this,
                 getContactsCopy(),

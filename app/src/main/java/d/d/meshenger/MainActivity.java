@@ -112,7 +112,6 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         contactListFragment.refreshContactList();
         eventListFragment.refreshEventList();
 
-        // call it here because EventListFragment.onResume is triggered twice
         this.binder.pingContacts();
     }
 

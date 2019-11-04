@@ -20,6 +20,7 @@
     <string name="menu_license">Licence</string>
     <string name="menu_backup">Sauvegarde</string>
     <string name="menu_about">À propos</string>
+    <string name="menu_exit">Sortie</string>
     <string name="call_connecting">Appel en cours …</string>
     <string name="unknown_caller">Appelant Inconnu</string>
     <string name="settings_change_name">Changer de nom</string>
@@ -73,6 +74,7 @@
     <string name="qr_code_address_list">Liste d’adresses QR-Code</string>
     <string name="currently_active">Actuellement actif</string>
     <string name="address_management_help_text">Choisissez une ou plusieurs adresses à intégrer dans votre code QR. Une bonne idée consiste à utiliser l’adresse MAC de l’adaptateur Wi-Fi (wlan0). Notez cependant que l’adresse est liée au matériel du périphérique. Allumez le Wi-Fi si l’adresse MAC n’est pas visible.</string>
+    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="file_does_not_exist">Ce fichier n’existe pas</string>
     <string name="no_path_selected">Aucun chemin sélectionné</string>
     <string name="file_already_exists">Le fichier existe déjà</string>

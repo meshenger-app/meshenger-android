@@ -1,18 +1,26 @@
 package d.d.meshenger;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import org.json.JSONObject;
 import org.libsodium.jni.Sodium;
-import org.webrtc.SurfaceViewRenderer;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +30,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
 
 
 public class MainService extends Service implements Runnable {
@@ -37,6 +47,8 @@ public class MainService extends Service implements Runnable {
     private RTCCall currentCall = null;
 
     private ArrayList<CallEvent> events = null;
+
+    private int NOTIFICATION = 42;
 
     @Override
     public void onCreate() {
@@ -140,9 +152,63 @@ public class MainService extends Service implements Runnable {
         }
     }
 
+    private void showNotification() {
+        String channelId = "meshenger_service";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel chan = new NotificationChannel(channelId, "Meshenger Background Service", NotificationManager.IMPORTANCE_DEFAULT);
+            chan.setLightColor(Color.RED);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            service.createNotificationChannel(chan);
+        }
+
+        // start MainActivity
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        Context mActivity = getApplicationContext();
+        Notification notification = new NotificationCompat.Builder(mActivity, channelId)
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.ic_local_phone_black_24dp)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.logo_small))
+                .setPriority(PRIORITY_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setContentText(getResources().getText(R.string.listen_for_incoming_calls))
+                .setContentIntent(pendingNotificationIntent)
+                .build();
+
+        startForeground(NOTIFICATION, notification);
+    }
+
+    final static String START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION";
+    final static String STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION";
+
+    public static void start(Context ctx) {
+        Intent startIntent = new Intent(ctx, MainService.class);
+        startIntent.setAction(START_FOREGROUND_ACTION);
+        ContextCompat.startForegroundService(ctx, startIntent);
+    }
+
+    public static void stop(Context ctx) {
+        Intent stopIntent = new Intent(ctx, MainService.class);
+        stopIntent.setAction(STOP_FOREGROUND_ACTION);
+        ctx.startService(stopIntent);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+        if (intent == null || intent.getAction() == null) {
+            // ignore
+        } else if (intent.getAction().equals(START_FOREGROUND_ACTION)) {
+            log("Received Start Foreground Intent");
+            showNotification();
+        } else if (intent.getAction().equals(STOP_FOREGROUND_ACTION)) {
+            log("Received Stop Foreground Intent");
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(NOTIFICATION);
+            stopForeground(true);
+            stopSelf();
+        }
+        return START_NOT_STICKY;
     }
 
     private void handleClient(MainBinder binder, Socket client) {
@@ -358,10 +424,6 @@ public class MainService extends Service implements Runnable {
                 contact.setState(state);
                 LocalBroadcastManager.getInstance(this.service).sendBroadcast(new Intent("refresh_contact_list"));
             }
-        }
-
-        void shutdown() {
-            this.service.stopSelf();
         }
 
         String getDatabasePassword() {

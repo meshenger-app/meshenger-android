@@ -19,6 +19,7 @@
     <string name="menu_license">Лицензия</string>
     <string name="menu_backup">Бэкап</string>
     <string name="menu_about">О приложении</string>
+    <string name="menu_exit">Выход</string>
     <string name="call_connecting">Вызов...</string>
     <string name="unknown_caller">Неизвестный абонент</string>
     <string name="settings_change_name">Изменить имя</string>
@@ -72,6 +73,7 @@
     <string name="qr_code_address_list">Список адресов QR-кода</string>
     <string name="currently_active">В настоящее время активен</string>
     <string name="address_management_help_text">Выберите один или несколько адресов, которые будут включены в ваш QR-код. Хорошей идеей является использование MAC-адреса адаптера WiFi (wlan0). Но имейте в виду, что он привязан к оборудованию вашего устройства. Если MAC-адрес не отображается, включите Wi-Fi.</string>
+    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="file_does_not_exist">Файл не существует</string>
     <string name="no_path_selected">Путь не выбран</string>
     <string name="file_already_exists">Файл уже существует</string>

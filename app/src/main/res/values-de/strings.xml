@@ -20,6 +20,7 @@
     <string name="menu_license">Lizenz</string>
     <string name="menu_backup">Backup</string>
     <string name="menu_about">Über</string>
+    <string name="menu_exit">Beenden</string>
     <string name="call_connecting">Verbinde...</string>
     <string name="unknown_caller">Unbekannter Anrufer Blocken</string>
     <string name="settings_change_name">Namen Ändern</string>
@@ -73,6 +74,7 @@
     <string name="qr_code_address_list">QR-Code Adress Liste</string>
     <string name="currently_active">Gerade Aktiv</string>
     <string name="address_management_help_text">Wähle eine Adresse oder mehrere aus die mit in den QR-Code integriert werden. Eine gute Idee is es, die MAC Adresse des WLAN Adapters (wlan0) zu verwenden. Beachte aber, das die Addresse and die Hardware des Gerätes gebunden ist. Schalte das WLAN an, falls die MAC Adresse nicht sichtbar ist.</string>
+    <string name="listen_for_incoming_calls">Warte auf eingehende Anrufe.</string>
     <string name="file_does_not_exist">Datei existiert nicht</string>
     <string name="no_path_selected">Kein Pfad ausgewählt</string>
     <string name="file_already_exists">Datei existiert bereits</string>

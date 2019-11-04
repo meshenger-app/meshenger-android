@@ -53,7 +53,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         ((TextView) findViewById(R.id.splashText)).setTypeface(type);
 
         // start MainService and call back via onServiceConnected()
-        startService(new Intent(this, MainService.class));
+        MainService.start(this);
     }
 
     private void continueInit() {
@@ -235,7 +235,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         builder.setTitle(R.string.hello);
         builder.setView(layout);
         builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-            this.binder.shutdown();
+            this.stopService(new Intent(this, MainService.class));
             finish();
         });
 
@@ -326,7 +326,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         exitButton.setOnClickListener((View v) -> {
             // shutdown app
             dialog.dismiss();
-            this.binder.shutdown();
+            this.stopService(new Intent(this, MainService.class));
             finish();
         });
 

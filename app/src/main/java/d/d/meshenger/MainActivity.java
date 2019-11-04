@@ -142,6 +142,15 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             }
+            case R.id.action_exit: {
+                MainService.stop(this);
+                if (android.os.Build.VERSION.SDK_INT >= 21) {
+                    finishAndRemoveTask();
+                } else {
+                    finish();
+                }
+                break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

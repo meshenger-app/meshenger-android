@@ -171,7 +171,7 @@ public class MainService extends Service implements Runnable {
         Context mActivity = getApplicationContext();
         Notification notification = new NotificationCompat.Builder(mActivity, channelId)
                 .setOngoing(true)
-                .setSmallIcon(R.drawable.ic_local_phone_black_24dp)
+                .setSmallIcon(R.drawable.ic_logo)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.logo_small))
                 .setPriority(PRIORITY_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)

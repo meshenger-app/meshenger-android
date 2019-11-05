@@ -137,7 +137,7 @@ public class Contact implements Serializable {
     */
     public Socket createSocket() {
         Socket socket = null;
-        int connectionTimeout = 300;
+        int connectionTimeout = 500;
 
         // try last successful address first
         if (this.last_working_address != null) {

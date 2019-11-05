@@ -53,6 +53,7 @@ The WebRTC connection itself uses its own crypto scheme.
 ## Development
 
 Meshenger is Free and Open Source Software. Everybody can participate or even fork the software.
+You can enable special development options by tapping the version on the About page a few times.
 
 ### Building From Sources
 

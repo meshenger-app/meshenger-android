@@ -18,6 +18,9 @@
     <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
+    <!-- uses-permission-sdk-23 tag required for the simple question dialog to come up -->
+    <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
     <application
         android:allowBackup="true"
         tools:replace="android:allowBackup"

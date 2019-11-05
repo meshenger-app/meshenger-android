@@ -3,14 +3,17 @@ package d.d.meshenger;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.Editable;
@@ -27,8 +30,6 @@ import android.widget.Toast;
 
 import org.libsodium.jni.Sodium;
 import org.libsodium.jni.NaCl;
-
-import java.util.Locale;
 
 
 /*
@@ -54,6 +55,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
         // start MainService and call back via onServiceConnected()
         MainService.start(this);
+
+        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
     }
 
     private void continueInit() {
@@ -101,7 +104,25 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 }
                 break;
             case 6:
-               log("init 6: start contact list");
+                log("init 6: battery optimizations");
+                if (this.binder.isFirstStart() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    try {
+                        PowerManager pMgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+                        if (!pMgr.isIgnoringBatteryOptimizations(this.getPackageName())) {
+                            log("ask for battery optimizations");
+                            Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                            intent.setData(Uri.parse("package:" + this.getPackageName()));
+                            startActivity(intent);
+                            break;
+                        }
+                    } catch(Exception e) {
+                        // ignore
+                    }
+                }
+                continueInit();
+                break;
+            case 7:
+               log("init 7: start contact list");
                 // set night mode
                 boolean nightMode = this.binder.getSettings().getNightMode();
                 AppCompatDelegate.setDefaultNightMode(
@@ -141,12 +162,16 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     @Override
     protected void onResume() {
         super.onResume();
-        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
+
+        // for when the ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS activity returns
+        if (this.startState != 0) {
+             continueInit();
+        }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         unbindService(this);
     }
 

@@ -7,19 +7,28 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- For calls in general (keep screen on and vibrate phone) -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
-    <!-- uses-permission-sdk-23 tag required for the simple question dialog to come up -->
+    <!--
+        Be able to ask to disable battery optimizations to disable deep sleep and always be able to receive incoming messages.
+        uses-permission-sdk-23 tag required for the simple question dialog to come up
+    -->
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- WebRTC Dependencies -->
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -41,7 +50,7 @@
             android:name=".QRScanActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name=".MainService" />
+        <service android:name=".MainService" android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".StartActivity"

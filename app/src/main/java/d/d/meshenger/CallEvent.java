@@ -23,10 +23,16 @@ class CallEvent {
     Type type;
     Date date;
 
-    CallEvent(byte[] pubKey, InetAddress address, Type type) {
+    public CallEvent(byte[] pubKey, InetAddress address, Type type) {
         this.pubKey = pubKey;
         this.address = address;
         this.type = type;
         this.date = new Date();
+    }
+
+    public boolean isMissedCall() {
+        return this.type == CallEvent.Type.INCOMING_UNKNOWN
+            || this.type == CallEvent.Type.INCOMING_MISSED
+            || this.type == CallEvent.Type.INCOMING_ERROR;
     }
 }

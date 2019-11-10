@@ -163,10 +163,7 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         int missedCalls = 0;
         Date since = this.eventListAccessed;
         for (CallEvent event : this.binder.getEventsCopy()) {
-            if (event.date.compareTo(since) >= 0 && (
-                       event.type == CallEvent.Type.INCOMING_UNKNOWN
-                    || event.type == CallEvent.Type.INCOMING_MISSED
-                    || event.type == CallEvent.Type.INCOMING_ERROR)) {
+            if (event.date.compareTo(since) >= 0 && event.isMissedCall()) {
                 missedCalls += 1;
             }
         }

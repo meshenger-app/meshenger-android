@@ -8,6 +8,8 @@
     <string name="invalid_name">Недействительное имя</string>
     <string name="cancel">отмена</string>
     <string name="next">следующий</string>
+    <string name="setup_address_title">Настройка сетевого адреса</string>
+    <string name="setup_address_message">Карта WiFi не найдена. Включите WiFi сейчас (Интернет не нужен) или пропустите настройку позже.</string>
     <string name="enter_password">Введите пароль</string>
     <string name="path_title">Путь импорта/экспорта</string>
     <string name="password_title">Пароль</string>

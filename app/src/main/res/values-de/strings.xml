@@ -9,6 +9,8 @@
     <string name="invalid_name">Ungültiger Name</string>
     <string name="cancel">Abbrechen</string>
     <string name="next">Weiter</string>
+    <string name="setup_address_title">Netzwerkaddresse Konfigurieren</string>
+    <string name="setup_address_message">Keine WLAN Hardware gefunden. Jetzt kurz WLAN anschalten (kein Internet nötig) oder überspringen und später konfigurieren.</string>
     <string name="enter_password">Passwort eingeben</string>
     <string name="path_title">Import/Export Pfad</string>
     <string name="password_title">Passwort</string>

@@ -208,8 +208,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
         if (mac.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Setup Address");
-            builder.setMessage("No address of your WiFi card found. Enable WiFi now (not Internet needed) or skip to configure later.");
+            builder.setTitle(R.string.setup_address_title);
+            builder.setMessage(R.string.setup_address_message);
 
             builder.setPositiveButton(R.string.ok, (DialogInterface dialog, int id) -> {
                 showMissingAddressDialog();

@@ -31,6 +31,7 @@
     <string name="settings_change_ice_servers">Изменить ICE сервера</string>
     <string name="settings_nightmode">Ночной режим</string>
     <string name="settings_block_unknown">Блокировать неизвестных абонентов</string>
+    <string name="settings_ignore_battery_optimizations">Игнорировать оптимизацию батареи</string>
     <string name="settings_development_mode">Режим разработчика</string>
     <string name="about_source">Исходный код:</string>
     <string name="about_license">Лицензия:</string>

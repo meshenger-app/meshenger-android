@@ -3,9 +3,13 @@ package d.d.meshenger;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
@@ -57,6 +61,14 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         this.binder = null;
+    }
+
+    private boolean getIgnoreBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pMgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+            return pMgr.isIgnoringBatteryOptimizations(this.getPackageName());
+        }
+        return false;
     }
 
     private void initViews() {
@@ -127,6 +139,19 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
             this.recreate();
         });
 
+        boolean ignoreBatteryOptimizations = getIgnoreBatteryOptimizations();
+        CheckBox ignoreBatteryOptimizationsCB = findViewById(R.id.checkBoxIgnoreBatteryOptimizations);
+        ignoreBatteryOptimizationsCB.setChecked(ignoreBatteryOptimizations);
+        ignoreBatteryOptimizationsCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + this.getPackageName()));
+                this.startActivity(intent);
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.only_necessary_for_android_6_or_later), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         boolean developmentMode = this.binder.getSettings().getDevelopmentMode();
         CheckBox developmentModeCB = findViewById(R.id.checkBoxDevelopmentMode);
         developmentModeCB.setChecked(developmentMode);
@@ -137,9 +162,11 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         });
 
         if (developmentMode) {
+            findViewById(R.id.changeIgnoreBatteryOptimizations).setVisibility(View.VISIBLE);
             findViewById(R.id.changeDevelopmentModeLayout).setVisibility(View.VISIBLE);
             findViewById(R.id.changeIceServersLayout).setVisibility(View.VISIBLE);
         } else {
+            findViewById(R.id.changeIgnoreBatteryOptimizations).setVisibility(View.GONE);
             findViewById(R.id.changeDevelopmentModeLayout).setVisibility(View.GONE);
             findViewById(R.id.changeIceServersLayout).setVisibility(View.GONE);
         }

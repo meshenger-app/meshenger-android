@@ -128,6 +128,30 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/changeIgnoreBatteryOptimizations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_ignore_battery_optimizations"
+                    android:textSize="25dp"
+                    android:textColor="?attr/primaryTextColor"  />
+
+                <CheckBox
+                    android:id="@+id/checkBoxIgnoreBatteryOptimizations"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="5dp"
+                    android:textColor="?attr/secondaryTextColor"  />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">

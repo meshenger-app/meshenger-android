@@ -40,6 +40,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     private MainService.MainBinder binder;
     private int startState = 0;
     private static Sodium sodium;
+    private static final int IGNORE_BATTERY_OPTIMIZATION_REQUEST = 5223;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,10 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     }
 
     private void continueInit() {
+        if (this.binder == null) {
+            return;
+        }
+
         this.startState += 1;
 
         switch (this.startState) {
@@ -109,10 +114,9 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                     try {
                         PowerManager pMgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
                         if (!pMgr.isIgnoringBatteryOptimizations(this.getPackageName())) {
-                            log("ask for battery optimizations");
                             Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                             intent.setData(Uri.parse("package:" + this.getPackageName()));
-                            startActivity(intent);
+                            startActivityForResult(intent, IGNORE_BATTERY_OPTIMIZATION_REQUEST);
                             break;
                         }
                     } catch(Exception e) {
@@ -137,6 +141,14 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IGNORE_BATTERY_OPTIMIZATION_REQUEST) {
+            // resultCode: -1 (Allow), 0 (Deny)
+            continueInit();
+        }
+    }
+
+    @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         this.binder = (MainService.MainBinder) iBinder;
         log("onServiceConnected");
@@ -157,16 +169,6 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         this.binder = null;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // for when the ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS activity returns
-        if (this.startState != 0) {
-             continueInit();
-        }
     }
 
     @Override

@@ -20,6 +20,6 @@ Features:
 
 ## Documentation
 
-Meshenger exchanges the contact name, public key and MAC address via QR-Code. The MAC address is used to create an IP address to connect to clients. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can trasmit audio and video.
+Meshenger exchanges the contact name, public key and MAC/IP/DNS address via QR-Code. By default, only a MAC address is transferred as address and then used to create an IPv6 link local address to connect to the contact. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can trasmit audio and video.
 
 Details can be found in the [Documentation](docs/Documentation.md) or in the [FAQ](docs/faq.md).

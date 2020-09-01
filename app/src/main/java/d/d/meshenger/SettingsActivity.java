@@ -143,12 +143,11 @@ public class SettingsActivity extends MeshengerActivity implements ServiceConnec
         CheckBox ignoreBatteryOptimizationsCB = findViewById(R.id.checkBoxIgnoreBatteryOptimizations);
         ignoreBatteryOptimizationsCB.setChecked(ignoreBatteryOptimizations);
         ignoreBatteryOptimizationsCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            // Only required for Adroind 6 or later
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 intent.setData(Uri.parse("package:" + this.getPackageName()));
                 this.startActivity(intent);
-            } else {
-                Toast.makeText(this, getResources().getString(R.string.only_necessary_for_android_6_or_later), Toast.LENGTH_SHORT).show();
             }
         });
 

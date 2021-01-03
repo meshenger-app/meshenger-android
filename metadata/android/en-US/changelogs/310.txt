@@ -1,7 +1,10 @@
 * add indicator for missed calls
 * add explicit exit action
 * increase api and library versions
-* add russian translation
+* add Russian translation (thanks ferhadnecef)
+* add Spanish translation (thanks wuniversales)
+* add Brazilian Portuguese translation (thanks mezysinc)
 * remove language setting
 * hide development option
+* ask for microphone permissions on call start instead of first start
 * ask to disable battery optimizations on first start to be able to receive calls at all times

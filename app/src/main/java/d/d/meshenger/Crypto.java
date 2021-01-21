@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 
 class Crypto {
+    // for development / testing only
+    private static boolean disable_crypto = false;
 
     // decrypt database using a password
     public static byte[] decryptDatabase(byte[] encrypted_message, byte[] password) {
@@ -17,6 +19,10 @@ class Crypto {
 
         if (encrypted_message.length <= (4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES)) {
             return null;
+        }
+
+        if (disable_crypto) {
+            return encrypted_message;
         }
 
         // separate salt, nonce and encrypted data
@@ -64,6 +70,10 @@ class Crypto {
     public static byte[] encryptDatabase(byte[] data, byte[] password) {
         if (data == null || password == null) {
             return null;
+        }
+
+        if (disable_crypto) {
+            return data;
         }
 
         // hash password into key
@@ -114,6 +124,10 @@ class Crypto {
     }
 
     public static byte[] encryptMessage(String message, byte[] otherPublicKey, byte[] ownPublicKey, byte[] ownSecretKey) {
+        if (disable_crypto) {
+            return message.getBytes();
+        }
+
         byte[] message_bytes = message.getBytes();
         byte[] signed = sign(message_bytes, ownSecretKey);
         if (signed == null) {
@@ -130,6 +144,10 @@ class Crypto {
     public static String decryptMessage(byte[] message, byte[] otherPublicKeySignOut, byte[] ownPublicKey, byte[] ownSecretKey) {
         if (otherPublicKeySignOut == null || otherPublicKeySignOut.length != Sodium.crypto_sign_publickeybytes()) {
             return null;
+        }
+
+        if (disable_crypto) {
+            return new String(message, Charset.forName("UTF-8"));
         }
 
         // make sure this is zeroed

@@ -34,7 +34,7 @@ public class AboutActivity extends MeshengerActivity implements ServiceConnectio
             if (binder != null) {
                 versionClicked += 1;
                 if (versionClicked < 4) {
-                    Toast.makeText(this, (4 - versionClicked) + " Clicks to Development Mode", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, (4 - versionClicked) + " Clicks left for Development Mode", Toast.LENGTH_SHORT).show();
                 } else {
                     if (!binder.getSettings().getDevelopmentMode()) {
                         binder.getSettings().setDevelopmentMode(true);

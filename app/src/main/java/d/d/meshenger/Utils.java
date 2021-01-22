@@ -263,6 +263,11 @@ class Utils {
                 || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches();
     }
 
+    public static boolean isIPv6(String address) {
+        return IPV6_STD_PATTERN.matcher(address).matches()
+                || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches();
+    }
+
     public static List<AddressEntry> collectAddresses() {
         ArrayList<AddressEntry> addressList = new ArrayList<>();
         try {
@@ -289,8 +294,14 @@ class Utils {
                     addressList.add(new AddressEntry(addr.getHostAddress(), nif.getName(), addr.isMulticastAddress()));
                     if(fullAddress.indexOf('%')>0){
                         String subaddress = fullAddress.substring(0, fullAddress.indexOf('%'));
+                        if(isIPv6(subaddress)){
+                            subaddress="["+subaddress+"]";
+                        }
                         addressList.add(new AddressEntry(subaddress, nif.getName(), addr.isMulticastAddress()));
                     } else {
+                        if(isIPv6(fullAddress)){
+                            fullAddress="["+fullAddress+"]";
+                        }
                         addressList.add(new AddressEntry(fullAddress, nif.getName(), addr.isMulticastAddress()));
                     }
                 }

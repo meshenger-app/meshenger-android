@@ -97,8 +97,8 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
         scanSet.setDuration(duration);
         generateSet.setDuration(duration);
 
-        fabScan.setVisibility(View.VISIBLE);
-        fabGen.setVisibility(View.VISIBLE);
+        fabScan.show();
+        fabGen.show();
 
         fabScan.startAnimation(scanSet);
         fabGen.startAnimation(generateSet);

@@ -125,7 +125,7 @@ class Utils {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(str.charAt(i), 16) << 4)
-                + Character.digit(str.charAt(i + 1), 16));
+                    + Character.digit(str.charAt(i + 1), 16));
         }
         return data;
     }
@@ -195,8 +195,8 @@ class Utils {
     public static boolean isValidMAC(byte[] mac) {
         // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
         return ((mac != null)
-            && (mac.length == 6)
-            && ((mac[1] != 0x0) && (mac[2] != 0x0) && (mac[3] != 0x0) && (mac[4] != 0x0) && (mac[5] != 0x0))
+                && (mac.length == 6)
+                && ((mac[1] != 0x0) && (mac[2] != 0x0) && (mac[3] != 0x0) && (mac[4] != 0x0) && (mac[5] != 0x0))
         );
     }
 
@@ -259,8 +259,8 @@ class Utils {
     // check if a string is an IP address (heuristic)
     public static boolean isIP(String address) {
         return IPV4_PATTERN.matcher(address).matches()
-            || IPV6_STD_PATTERN.matcher(address).matches()
-            || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches();
+                || IPV6_STD_PATTERN.matcher(address).matches()
+                || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches();
     }
 
     public static List<AddressEntry> collectAddresses() {
@@ -270,24 +270,29 @@ class Utils {
             for (NetworkInterface nif : all) {
                 byte[] mac = nif.getHardwareAddress();
 
-                if (!isValidMAC(mac)) {
-                    log("Interface has invalid mac: " + nif.getName());
-                    continue;
-                }
-
                 if (nif.isLoopback()) {
                     continue;
                 }
 
-                addressList.add(new AddressEntry(Utils.bytesToMacAddress(mac), nif.getName(), Utils.isMulticastMAC(mac)));
+                if (isValidMAC(mac)) {
+                    addressList.add(new AddressEntry(Utils.bytesToMacAddress(mac), nif.getName(), Utils.isMulticastMAC(mac)));
+                }
 
                 for (InterfaceAddress ia : nif.getInterfaceAddresses()) {
                     InetAddress addr = ia.getAddress();
+
                     if (addr.isLoopbackAddress()) {
                         continue;
                     }
 
+                    String fullAddress = addr.getHostAddress();
                     addressList.add(new AddressEntry(addr.getHostAddress(), nif.getName(), addr.isMulticastAddress()));
+                    if(fullAddress.indexOf('%')>0){
+                        String subaddress = fullAddress.substring(0, fullAddress.indexOf('%'));
+                        addressList.add(new AddressEntry(subaddress, nif.getName(), addr.isMulticastAddress()));
+                    } else {
+                        addressList.add(new AddressEntry(fullAddress, nif.getName(), addr.isMulticastAddress()));
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -323,9 +328,9 @@ class Utils {
     }
 
     /*
-    * Replace the MAC address of an EUi64 scheme IPv6 address with another MAC address.
-    * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
-    */
+     * Replace the MAC address of an EUi64 scheme IPv6 address with another MAC address.
+     * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
+     */
     private static Inet6Address createEUI64Address(Inet6Address addr6, byte[] mac) {
         // addr6 is expected to be a EUI64 address
         try {
@@ -350,10 +355,10 @@ class Utils {
     }
 
     /*
-    * Iterate all device addresses, check if they conform to the EUI64 scheme.
-    * If yes, replace the MAC address in it with the supplied one and return that address.
-    * Also set the given port for those generated addresses.
-    */
+     * Iterate all device addresses, check if they conform to the EUI64 scheme.
+     * If yes, replace the MAC address in it with the supplied one and return that address.
+     * Also set the given port for those generated addresses.
+     */
     public static List<InetSocketAddress> getAddressPermutations(String contact_mac, int port) {
         byte[] contact_mac_bytes = Utils.macAddressToBytes(contact_mac);
         ArrayList<InetSocketAddress> addrs = new ArrayList<InetSocketAddress>();
@@ -436,6 +441,7 @@ class Utils {
             buffer.write(data, 0, nRead);
         }
 
+        fis.close();
         return buffer.toByteArray();
     }
 

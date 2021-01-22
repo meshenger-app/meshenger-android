@@ -36,7 +36,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
-    implementation 'com.google.zxing:core:3.2.0'
+    //back to 3.3.0 instead of 3.4.0 sue to https://github.com/zxing/zxing/issues/1170
+    implementation 'com.google.zxing:core:3.3.0'
     implementation 'org.webrtc:google-webrtc:1.0.24064'
     implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.2'
     implementation 'net.java.dev.jna:jna:4.5.2@aar'

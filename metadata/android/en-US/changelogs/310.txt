@@ -5,6 +5,7 @@
 * add Spanish translation (thanks wuniversales)
 * add Brazilian Portuguese translation (thanks mezysinc)
 * remove language setting
-* hide development option
+* show addresses of tun interfaces in address management
+* hide development option (tap three times on version)
 * ask for microphone permissions on call start instead of first start
 * ask to disable battery optimizations on first start to be able to receive calls at all times

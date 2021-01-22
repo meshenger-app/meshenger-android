@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 class Crypto {
     // for development / testing only
-    private static boolean disable_crypto = true;
+    public static boolean disable_crypto = true;
 
     // decrypt database using a password
     public static byte[] decryptDatabase(byte[] encrypted_message, byte[] password) {

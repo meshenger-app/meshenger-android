@@ -162,6 +162,7 @@ public class RTCCall implements DataChannel.Observer {
                                 obj.put("offer", connection.getLocalDescription().description);
                                 byte[] encrypted = Crypto.encryptMessage(obj.toString(), contact.getPublicKey(), ownPublicKey, ownSecretKey);
                                 if (encrypted == null) {
+                                    log("encrypted var is null");
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
@@ -174,7 +175,8 @@ public class RTCCall implements DataChannel.Observer {
                             {
                                 byte[] response = pr.readMessage();
                                 String decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey);
-                                if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
+                                if (decrypted == null || (!Arrays.equals(contact.getPublicKey(), otherPublicKey) && !Crypto.disable_crypto)) {
+                                    log("decrypted var is null or pubkey does not match");
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
@@ -182,6 +184,7 @@ public class RTCCall implements DataChannel.Observer {
                                 }
                                 JSONObject obj = new JSONObject(decrypted);
                                 if (!obj.optString("action", "").equals("ringing")) {
+                                    log("action not equals ringing");
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
@@ -194,7 +197,8 @@ public class RTCCall implements DataChannel.Observer {
                             {
                                 byte[] response = pr.readMessage();
                                 String decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey);
-                                if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
+                                if (decrypted == null || (!Arrays.equals(contact.getPublicKey(), otherPublicKey) && !Crypto.disable_crypto)) {
+                                    log("decrypted (201) var is null or pubkey does not match");
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
                                     return;
@@ -209,6 +213,7 @@ public class RTCCall implements DataChannel.Observer {
                                     // contact accepted receiving call
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
                                 } else if (action.equals("dismissed")) {
+                                    log("dismissed");
                                     closeCommSocket();
                                     reportStateChange(CallState.DISMISSED);
                                     // contact declined receiving call

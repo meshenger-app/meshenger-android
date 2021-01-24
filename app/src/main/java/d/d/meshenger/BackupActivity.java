@@ -1,37 +1,27 @@
 package d.d.meshenger;
 
-import com.github.isabsent.filepicker.SimpleFilePickerDialog;
-import static com.github.isabsent.filepicker.SimpleFilePickerDialog.CompositeMode.FILE_OR_FOLDER_SINGLE_CHOICE;
-
-import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 
-public class BackupActivity extends MeshengerActivity implements ServiceConnection,
-        SimpleFilePickerDialog.InteractionListenerString {
-    private static final String SELECT_PATH_REQUEST = "SELECT_PATH_REQUEST";
-    private static final int REQUEST_PERMISSION = 0x01;
+public class BackupActivity extends MeshengerActivity {
+    private static final String TAG = "BackupActivity";
+    private static final int READ_REQUEST_CODE = 0x01;
+    private static final int WRITE_REQUEST_CODE = 0x02;
     private AlertDialog.Builder builder;
     private Button exportButton;
     private Button importButton;
     private ImageButton selectButton;
-    private TextView pathEditText;
     private TextView passwordEditText;
-    private MainService.MainBinder binder;
 
     private void showErrorMessage(String title, String message) {
         builder.setTitle(title);
@@ -45,173 +35,77 @@ public class BackupActivity extends MeshengerActivity implements ServiceConnecti
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backup);
 
-        bindService();
         initViews();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (this.binder != null) {
-            unbindService(this);
-        }
-    }
-
-    private void bindService() {
-        // ask MainService to get us the binder object
-        Intent serviceIntent = new Intent(this, MainService.class);
-        bindService(serviceIntent, this, Service.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        this.binder = (MainService.MainBinder) iBinder;
-        initViews();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-        this.binder = null;
     }
 
     private void initViews() {
-        if (this.binder == null) {
-            return;
-        }
-
         builder = new AlertDialog.Builder(this);
         importButton = findViewById(R.id.ImportButton);
         exportButton = findViewById(R.id.ExportButton);
         selectButton = findViewById(R.id.SelectButton);
-        pathEditText = findViewById(R.id.PathEditText);
         passwordEditText = findViewById(R.id.PasswordEditText);
 
         importButton.setOnClickListener((View v) -> {
-            if (Utils.hasReadPermission(BackupActivity.this)) {
-                importDatabase();
-            } else {
-                Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
-            }
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/json");
+            startActivityForResult(intent, READ_REQUEST_CODE);
         });
 
         exportButton.setOnClickListener((View v) -> {
-            if (Utils.hasReadPermission(BackupActivity.this) && Utils.hasWritePermission(BackupActivity.this)) {
-                exportDatabase();
-            } else {
-                Utils.requestWritePermission(BackupActivity.this, REQUEST_PERMISSION);
-                Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
-            }
-        });
-
-        selectButton.setOnClickListener((View v) -> {
-            if (Utils.hasReadPermission(BackupActivity.this)) {
-                final String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                showListItemDialog(getResources().getString(R.string.button_select), rootPath, FILE_OR_FOLDER_SINGLE_CHOICE, SELECT_PATH_REQUEST);
-            } else {
-                Utils.requestReadPermission(BackupActivity.this, REQUEST_PERMISSION);
-            }
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.putExtra(Intent.EXTRA_TITLE, "meshenger-backup.json");
+            intent.setType("application/json");
+            startActivityForResult(intent, WRITE_REQUEST_CODE);
         });
     }
 
-    private void exportDatabase() {
+    private void exportDatabase(Uri uri) {
         String password = passwordEditText.getText().toString();
-        String path = pathEditText.getText().toString();
-
-        if (path == null || path.isEmpty()) {
-            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_path_selected));
-            return;
-        }
-
-        if ((new File(path)).isDirectory() || path.endsWith("/")) {
-            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_file_name));
-            return;
-        }
-
-        if ((new File(path)).exists()) {
-            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.file_already_exists));
-            return;
-        }
 
         try {
-            Database db = this.binder.getDatabase();
-            Database.store(path, db, password);
+            Database db = MainService.instance.getDatabase();
+            byte[] data = Database.toData(db, password);
+            Utils.writeExternalFile(this, uri, data);
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             showErrorMessage(getResources().getString(R.string.error), e.getMessage());
         }
     }
 
-    private void importDatabase() {
+    private void importDatabase(Uri uri) {
         String password = passwordEditText.getText().toString();
-        String path = pathEditText.getText().toString();
-
-        if (path == null || path.isEmpty()) {
-            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_path_selected));
-            return;
-        }
-
-        if ((new File(path)).isDirectory() || path.endsWith("/")) {
-            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.no_file_name));
-            return;
-        }
-
-        if (!(new File(path)).exists()) {
-            showErrorMessage(getResources().getString(R.string.error), getResources().getString(R.string.file_does_not_exist));
-            return;
-        }
 
         try {
-            Database db = Database.load(path, password);
-            this.binder.replaceDatabase(db);
+            byte[] data = Utils.readExternalFile(this, uri);
+            Database db = Database.fromData(data, password);
+            MainService.instance.replaceDatabase(db);
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             showErrorMessage(getResources().getString(R.string.error), e.toString());
         }
     }
 
-    // path picker
     @Override
-    public void showListItemDialog(String title, String folderPath, SimpleFilePickerDialog.CompositeMode mode, String dialogTag) {
-        SimpleFilePickerDialog.build(folderPath, mode)
-                .title(title)
-                .show(this, dialogTag);
-    }
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    @Override
-    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
-        switch (dialogTag) {
-            case SELECT_PATH_REQUEST:
-                if (extras.containsKey(SimpleFilePickerDialog.SELECTED_SINGLE_PATH)) {
-                    String path = extras.getString(SimpleFilePickerDialog.SELECTED_SINGLE_PATH);
-                    if ((new File(path)).isDirectory()) {
-                        // append slash
-                        if (!path.endsWith("/")) {
-                            path += "/";
-                        }
-                        path += "meshenger_backup.json";
-                    }
-                    pathEditText.setText(path);
-                }
-                break;
+        if (resultCode != RESULT_OK) {
+            return;
         }
-        return false;
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (data == null || data.getData() == null) {
+            return;
+        }
+
         switch (requestCode) {
-            case REQUEST_PERMISSION:
-                if (Utils.allGranted(grantResults)) {
-                    // permissions granted
-                    Toast.makeText(getApplicationContext(), "Permissions granted - please try again.", Toast.LENGTH_SHORT).show();
-                } else {
-                    showErrorMessage("Permissions Required", "Action cannot be performed.");
-                }
-                break;
+        case READ_REQUEST_CODE:
+            importDatabase(data.getData());
+            break;
+        case WRITE_REQUEST_CODE:
+            exportDatabase(data.getData());
+            break;
         }
-    }
-
-    private void log(String s) {
-        Log.d(this, s);
     }
 }

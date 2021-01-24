@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CallActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/remoteRenderer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/backgroundCardColor" />
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/localRenderer"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/callName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CallerName"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="30dp" />
+
+            <TextView
+                android:id="@+id/callStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/call_connecting"
+                android:textColor="?attr/secondaryTextColor"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/callOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="30dp">
+
+            <ImageButton
+                android:id="@+id/callAccept"
+                android:layout_width="@dimen/call_button_size"
+                android:layout_height="@dimen/call_button_size"
+                android:layout_marginRight="80dp"
+                android:background="@drawable/accept_button_round"
+                android:padding="@dimen/call_button_image_padding"
+                android:scaleType="fitXY"
+                android:src="@drawable/baseline_phone_black_48"
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:id="@+id/callDecline"
+                android:layout_width="@dimen/call_button_size"
+                android:layout_height="@dimen/call_button_size"
+                android:background="@drawable/accept_button_round"
+                android:padding="@dimen/call_button_image_padding"
+                android:scaleType="fitXY"
+                android:src="@drawable/baseline_phone_missed_black_48" />
+
+            <RelativeLayout
+                android:layout_width="@dimen/call_button_size"
+                android:layout_height="@dimen/call_button_size"
+                android:layout_toRightOf="@id/callDecline"
+                android:layout_marginLeft="40dp"
+                android:id="@+id/videoStreamSwitchLayout"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/videoStreamSwitch"
+                    android:layout_width="@dimen/call_button_size"
+                    android:layout_height="@dimen/call_button_size"
+                    android:background="@drawable/accept_button_round"
+                    android:padding="@dimen/call_button_image_padding"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/baseline_camera_alt_black_48" />
+
+            </RelativeLayout>
+
+
+            <ImageButton
+                android:id="@+id/frontFacingSwitch"
+                android:layout_width="@dimen/call_button_size"
+                android:layout_height="@dimen/call_button_size"
+                android:layout_marginLeft="40dp"
+                android:layout_toRightOf="@id/videoStreamSwitch"
+                android:background="@drawable/accept_button_round"
+                android:padding="@dimen/call_button_image_padding"
+                android:scaleType="fitXY"
+                android:src="@drawable/baseline_switch_camera_black_48"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

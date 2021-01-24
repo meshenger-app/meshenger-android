@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDelegate;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -28,16 +26,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import org.libsodium.jni.Sodium;
 import org.libsodium.jni.NaCl;
-
 
 /*
  * Show splash screen, name setup dialog, database password dialog and
  * start background service before starting the MainActivity.
  */
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
-    private MainService.MainBinder binder;
+    private static final String TAG = "StartActivity";
     private int startState = 0;
     private static Sodium sodium;
     private static final int IGNORE_BATTERY_OPTIMIZATION_REQUEST = 5223;
@@ -45,6 +45,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
 
         setContentView(R.layout.activity_splash);
 
@@ -57,26 +58,22 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         // start MainService and call back via onServiceConnected()
         MainService.start(this);
 
+        ComponentName myService = startService(new Intent(this, MainService.class));
         bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
     }
 
     private void continueInit() {
-        if (this.binder == null) {
-            return;
-        }
-
         this.startState += 1;
-
         switch (this.startState) {
             case 1:
-                log("init 1: load database");
+                Log.d(TAG, "init 1: load database");
                 // open without password
-                this.binder.loadDatabase();
+                MainService.instance.loadDatabase();
                 continueInit();
                 break;
             case 2:
-                log("init 2: check database");
-                if (this.binder.getDatabase() == null) {
+                Log.d(TAG, "init 2: check database");
+                if (MainService.instance.getDatabase() == null) {
                     // database is probably encrypted
                     showDatabasePasswordDialog();
                 } else {
@@ -84,8 +81,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 }
                 break;
             case 3:
-                log("init 3: check username");
-                if (this.binder.getSettings().getUsername().isEmpty()) {
+                Log.d(TAG, "init 3: check username");
+                if (MainService.instance.getSettings().getUsername().isEmpty()) {
                     // set username
                     showMissingUsernameDialog();
                 } else {
@@ -93,24 +90,24 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 }
                 break;
             case 4:
-                log("init 4: check key pair");
-                if (this.binder.getSettings().getPublicKey() == null) {
+                Log.d(TAG, "init 4: check key pair");
+                if (MainService.instance.getSettings().getPublicKey() == null) {
                     // generate key pair
                     initKeyPair();
                 }
                 continueInit();
                 break;
             case 5:
-                log("init 5: check addresses");
-                if (this.binder.isFirstStart()) {
+                Log.d(TAG, "init 5: check addresses");
+                if (MainService.instance.isFirstStart()) {
                     showMissingAddressDialog();
                 } else {
                     continueInit();
                 }
                 break;
             case 6:
-                log("init 6: battery optimizations");
-                if (this.binder.isFirstStart() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.d(TAG, "init 6: battery optimizations");
+                if (MainService.instance.isFirstStart() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     try {
                         PowerManager pMgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
                         if (!pMgr.isIgnoringBatteryOptimizations(this.getPackageName())) {
@@ -126,9 +123,9 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 continueInit();
                 break;
             case 7:
-               log("init 7: start contact list");
+               Log.d(TAG, "init 7: start contact list");
                 // set night mode
-                boolean nightMode = this.binder.getSettings().getNightMode();
+                boolean nightMode = MainService.instance.getSettings().getNightMode();
                 AppCompatDelegate.setDefaultNightMode(
                         nightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
                 );
@@ -150,11 +147,11 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        this.binder = (MainService.MainBinder) iBinder;
-        log("onServiceConnected");
+        //this.binder = (MainService.MainBinder) iBinder;
+        Log.d(TAG, "onServiceConnected");
 
         if (this.startState == 0) {
-            if (this.binder.isFirstStart()) {
+            if (MainService.instance.isFirstStart()) {
                 // show delayed splash page
                 (new Handler()).postDelayed(() -> {
                     continueInit();
@@ -168,7 +165,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        this.binder = null;
+        //this.binder = null;
     }
 
     @Override
@@ -184,19 +181,20 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
         Sodium.crypto_sign_keypair(publicKey, secretKey);
 
-        Settings settings = this.binder.getSettings();
+        Settings settings = MainService.instance.getSettings();
         settings.setPublicKey(publicKey);
         settings.setSecretKey(secretKey);
 
         try {
-            this.binder.saveDatabase();
+            MainService.instance.saveDatabase();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    // for the database initialization
     private String getMacOfDevice(String device) {
-        for (AddressEntry ae : Utils.collectAddresses()) {
+        for (AddressEntry ae : AddressUtils.getOwnAddresses()) {
             // only MAC addresses
             if (ae.device.equals("wlan0") && Utils.isMAC(ae.address)) {
                 return ae.address;
@@ -210,6 +208,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
         if (mac.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
             builder.setTitle(R.string.setup_address_title);
             builder.setMessage(R.string.setup_address_message);
 
@@ -226,13 +225,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
             builder.show();
         } else {
-            this.binder.getSettings().addAddress(mac);
-
-            try {
-                this.binder.saveDatabase();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            MainService.instance.getSettings().addAddress(mac);
+            MainService.instance.saveDatabase();
 
             continueInit();
         }
@@ -273,6 +267,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         });
 
         AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
         dialog.setOnShowListener((newDialog) -> {
             Button okButton = ((AlertDialog) newDialog).getButton(AlertDialog.BUTTON_POSITIVE);
             et.addTextChangedListener(new TextWatcher() {
@@ -307,15 +302,10 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         // override handler (to be able to dismiss the dialog manually)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View v) -> {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
-            String username = et.getText().toString();
-            if (Utils.isValidName(username)) {
-                this.binder.getSettings().setUsername(username);
-
-                try {
-                    this.binder.saveDatabase();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            String username = et.getText().toString().trim();
+            if (Utils.isValidContactName(username)) {
+                MainService.instance.getSettings().setUsername(username);
+                MainService.instance.saveDatabase();
 
                 // close dialog
                 dialog.dismiss();
@@ -331,6 +321,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
     private void showDatabasePasswordDialog() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_database_password);
+        dialog.setCancelable(false);
 
         EditText passwordEditText = dialog.findViewById(R.id.PasswordEditText);
         Button exitButton = dialog.findViewById(R.id.ExitButton);
@@ -338,10 +329,10 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
         okButton.setOnClickListener((View v) -> {
             String password = passwordEditText.getText().toString();
-            this.binder.setDatabasePassword(password);
-            this.binder.loadDatabase();
+            MainService.instance.setDatabasePassword(password);
+            MainService.instance.loadDatabase();
 
-            if (this.binder.getDatabase() == null) {
+            if (MainService.instance.getDatabase() == null) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show();
             } else {
                 // close dialog
@@ -358,9 +349,5 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         });
 
         dialog.show();
-    }
-
-    private void log(String s) {
-        Log.d(this, s);
     }
 }

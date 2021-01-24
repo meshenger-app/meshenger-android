@@ -23,7 +23,6 @@
     <string name="menu_backup">Backup</string>
     <string name="menu_about">About</string>
     <string name="menu_exit">Exit</string>
-    <string name="call_connecting">Calling...</string>
     <string name="unknown_caller">Unknown Caller</string>
     <string name="settings_change_name">Change Name</string>
     <string name="settings_change_language">Change Language</string>
@@ -33,7 +32,17 @@
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>
-    <string name="settings_development_mode">Development Mode</string>
+    <string name="settings_settings_mode">Settings Mode</string>
+    <string name="settings_speakerphone">Speakerphone</string>
+    <string name="settings_video_resolutions">Video Resolutions</string>
+    <string name="settings_video_codecs">Video Codecs</string>
+    <string name="settings_audio_codecs">Audio Codecs</string>
+    <string name="settings_enable_microphone">Enable Microphone</string>
+    <string name="settings_enable_speaker">Enable Speaker</string>
+    <string name="settings_enable_camera">Enable Camera</string>
+    <string name="settings_enable_video">Enable Video</string>
+    <string name="settings_auto_accept_call">Accept Call Immediately</string>
+    <string name="settings_auto_connect_call">Start Calls Immediately</string>
     <string name="about_source">Source Code:</string>
     <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
     <string name="about_license">License:</string>
@@ -46,7 +55,7 @@
     <string name="block">Block</string>
     <string name="unblock">Unblock</string>
     <string name="replace">Replace</string>
-    <string name="pick">Take</string>
+    <string name="pick">Pick</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
     <string name="contact_edit">Edit Contact</string>
@@ -55,6 +64,7 @@
     <string name="hello">Hello!</string>
     <string name="empty_list_item">Empty</string>
     <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
+    <string name="call_connecting">Calling...</string>
     <string name="call_connected">Connected.</string>
     <string name="call_denied">Declined</string>
     <string name="call_ringing">Ringing...</string>
@@ -87,10 +97,10 @@
     <string name="contact_already_exists">Contact already exists</string>
     <string name="enter_contact_name">Enter contact name.</string>
     <string name="wrong_password">Wrong password</string>
-    <string name="contact_name_conflict">A contact with the same name exists.</string>
-    <string name="contact_key_conflict">A contact with the same key exists.</string>
+    <string name="contact_name_conflict">A contact with the same name exists:</string>
+    <string name="contact_key_conflict">A contact with the same key exists:</string>
     <string name="contact_name_empty">Contact name is empty.</string>
-    <string name="contact_name_exists">A contact with that name exists already.</string>
+    <string name="contact_name_exists">A contact with that name exists already:</string>
     <string name="contact_remove">Remove contact?</string>
     <string name="error">Error</string>
     <string name="ok">Ok</string>

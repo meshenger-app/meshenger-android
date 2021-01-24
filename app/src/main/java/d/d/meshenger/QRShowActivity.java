@@ -1,13 +1,9 @@
 package d.d.meshenger;
 
-import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.os.IBinder;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +17,9 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 
-public class QRShowActivity extends MeshengerActivity implements ServiceConnection {
+public class QRShowActivity extends MeshengerActivity {
+    private static final String TAG = "QRShowActivity";
     private Contact contact = null;
-    private MainService.MainBinder binder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +27,12 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         setContentView(R.layout.activity_qrshow);
 
         if (getIntent().hasExtra("EXTRA_CONTACT")) {
-            this.contact = (Contact) getIntent().getExtras().get("EXTRA_CONTACT");
+            byte[] publicKey = getIntent().getExtras().getByteArray("EXTRA_CONTACT");
+            this.contact = MainService.instance.getContacts().getContactByPublicKey(publicKey);
+        }
+
+        if (this.contact != null) {
+            Log.d(TAG, "got contact");
             findViewById(R.id.fabPresenter).setVisibility(View.GONE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
@@ -41,7 +42,7 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         }
 
         setTitle(getString(R.string.scan_invitation));
-        bindService();
+        //bindService();
 
         findViewById(R.id.fabPresenter).setOnClickListener(view -> {
             startActivity(new Intent(this, QRScanActivity.class));
@@ -50,7 +51,7 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
 
         findViewById(R.id.fabShare).setOnClickListener(view -> {
             if (this.contact != null) try {
-                String data = Contact.exportJSON(this.contact, false).toString();
+                String data = Contact.toJSON(this.contact).toString();
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.putExtra(Intent.EXTRA_TEXT, data);
                 i.setType("text/plain");
@@ -60,42 +61,6 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
                 // ignore
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (this.binder != null) {
-            unbindService(this);
-        }
-    }
-
-    private void bindService() {
-        Intent serviceIntent = new Intent(this, MainService.class);
-        bindService(serviceIntent, this, Service.BIND_AUTO_CREATE);
-    }
-
-    private void generateQR() throws Exception {
-        if (this.contact == null) {
-            // export own contact
-            this.contact = this.binder.getSettings().getOwnContact();
-        }
-
-        String data = Contact.exportJSON(this.contact, false).toString();
-        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-        BitMatrix bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080);
-        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-        Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-        ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
-
-        if (this.contact.getAddresses().isEmpty()) {
-            Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        this.binder = (MainService.MainBinder) iBinder;
 
         try {
             generateQR();
@@ -106,9 +71,22 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
         }
     }
 
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-        this.binder = null;
+    private void generateQR() throws Exception {
+        if (this.contact == null) {
+            // export own contact
+            this.contact = MainService.instance.getSettings().getOwnContact();
+        }
+
+        String data = Contact.toJSON(this.contact).toString();
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        BitMatrix bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080);
+        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+        Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+        ((ImageView) findViewById(R.id.QRView)).setImageBitmap(bitmap);
+
+        if (this.contact.getAddresses().isEmpty()) {
+            Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {

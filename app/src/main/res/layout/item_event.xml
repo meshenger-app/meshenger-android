@@ -27,11 +27,12 @@
 
             <ImageView
                 android:id="@+id/call_type"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:src="@drawable/call_incoming"
-                android:layout_margin="8dp" />
+                android:layout_margin="8dp"
+                android:scaleType="fitEnd"
+                android:src="@drawable/ic_incoming_call_accepted" />
 
         </LinearLayout>
 

@@ -2,19 +2,17 @@ package d.d.meshenger;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.ResultPoint;
@@ -25,15 +23,16 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.libsodium.jni.Sodium;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 
-public class QRScanActivity extends MeshengerActivity implements BarcodeCallback, ServiceConnection {
+public class QRScanActivity extends MeshengerActivity implements BarcodeCallback {
+	private static final String TAG = "QRScanActivity";
     private DecoratedBarcodeView barcodeView;
-    private MainService.MainBinder binder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +40,6 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
         setContentView(R.layout.activity_qrscan);
         setTitle(getString(R.string.scan_invited));
-
-        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
 
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, 1);
@@ -58,46 +55,89 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         findViewById(R.id.fabManualInput).setOnClickListener(view -> {
             startManualInput();
         });
+
+        if (Utils.hasCameraPermission(this)) {
+            initCamera();
+        }
     }
 
-    private void addContact(String data) throws JSONException {
-        JSONObject object = new JSONObject(data);
-        Contact new_contact = Contact.importJSON(object, false);
+    private Contact parseContact(String data) {
+        Log.d(TAG, "parseContact");
 
-        if (new_contact.getAddresses().isEmpty()) {
+        try {
+            JSONObject object = new JSONObject(data);
+
+            if (!object.has("blocked")) {
+                object.put("blocked", false);
+            }
+
+            Contact contact = Contact.fromJSON(object);
+
+            if (!Utils.isValidContactName(contact.getName())) {
+                Toast.makeText(this, "Invalid name.", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            if (contact.getPublicKey() == null || contact.getPublicKey().length != Sodium.crypto_sign_publickeybytes()) {
+                Toast.makeText(this, "Invalid public key.", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            return contact;
+        } catch (JSONException e) {
+            Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
+        }
+        return null;
+    }
+
+    private void addContact(String data) {
+        Contact contact = parseContact(data);
+
+        if (contact == null) {
+            finish();
+            return;
+        }
+
+        if (contact.getAddresses().isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show();
         }
 
         // lookup existing contacts by key and name
-        Contact existing_pubkey_contact = binder.getContactByPublicKey(new_contact.getPublicKey());
-        Contact existing_name_contact = binder.getContactByName(new_contact.getName());
+        Contacts contacts = MainService.instance.getContacts();
+        Contact existing_key_contact = contacts.getContactByPublicKey(contact.getPublicKey());
+        Contact existing_name_contact = contacts.getContactByName(contact.getName());
 
-        if (existing_pubkey_contact != null) {
+        if (existing_key_contact != null) {
             // contact with that public key exists
-            showPubkeyConflictDialog(new_contact, existing_pubkey_contact);
+            showPublicKeyConflictDialog(contact, existing_key_contact);
         } else if (existing_name_contact != null) {
             // contact with that name exists
-            showNameConflictDialog(new_contact, existing_name_contact);
+            showNameConflictDialog(contact, existing_name_contact);
         } else {
             // no conflict
-            binder.addContact(new_contact);
+            contacts.addContact(contact);
+            MainService.instance.saveDatabase();
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("contacts_changed"));
             finish();
         }
     }
 
-    private void showPubkeyConflictDialog(Contact new_contact, Contact other_contact) {
+    private void showPublicKeyConflictDialog(Contact new_contact, Contact old_contact) {
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_add_contact_pubkey_conflict);
+        dialog.setContentView(R.layout.dialog_add_contact_key_conflict);
 
-        TextView nameTextView = dialog.findViewById(R.id.NameTextView);
+        TextView contactTextView = dialog.findViewById(R.id.NameTextView);
+        dialog.setCancelable(false);
+
         Button abortButton = dialog.findViewById(R.id.AbortButton);
         Button replaceButton = dialog.findViewById(R.id.ReplaceButton);
 
-        nameTextView.setText(other_contact.getName());
+        contactTextView.setText(new_contact.getName() + " => " + old_contact.getName());
 
         replaceButton.setOnClickListener((View v) -> {
-            QRScanActivity.this.binder.deleteContact(other_contact.getPublicKey());
-            QRScanActivity.this.binder.addContact(new_contact);
+            Contacts contacts = MainService.instance.getContacts();
+            contacts.deleteContact(old_contact.getPublicKey());
+            contacts.addContact(new_contact);
 
             // done
             Toast.makeText(QRScanActivity.this, R.string.done, Toast.LENGTH_SHORT).show();
@@ -114,20 +154,22 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         dialog.show();
     }
 
-    private void showNameConflictDialog(Contact new_contact, Contact other_contact) {
+    private void showNameConflictDialog(Contact new_contact, Contact old_contact) {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_contact_name_conflict);
+        dialog.setCancelable(false);
 
         EditText nameEditText = dialog.findViewById(R.id.NameEditText);
         Button abortButton = dialog.findViewById(R.id.AbortButton);
         Button replaceButton = dialog.findViewById(R.id.ReplaceButton);
         Button renameButton = dialog.findViewById(R.id.RenameButton);
 
-        nameEditText.setText(other_contact.getName());
+        nameEditText.setText(old_contact.getName());
 
         replaceButton.setOnClickListener((View v) -> {
-            QRScanActivity.this.binder.deleteContact(other_contact.getPublicKey());
-            QRScanActivity.this.binder.addContact(new_contact);
+            Contacts contacts = MainService.instance.getContacts();
+            contacts.deleteContact(old_contact.getPublicKey());
+            contacts.addContact(new_contact);
 
             // done
             Toast.makeText(QRScanActivity.this, R.string.done, Toast.LENGTH_SHORT).show();
@@ -138,20 +180,21 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
         renameButton.setOnClickListener((View v) -> {
             String name = nameEditText.getText().toString();
+            Contacts contacts = MainService.instance.getContacts();
 
             if (name.isEmpty()) {
                 Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (QRScanActivity.this.binder.getContactByName(name) != null) {
+            if (contacts.getContactByName(name) != null) {
                 Toast.makeText(this, R.string.contact_name_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // rename
             new_contact.setName(name);
-            QRScanActivity.this.binder.addContact(new_contact);
+            contacts.addContact(new_contact);
 
             // done
             Toast.makeText(QRScanActivity.this, R.string.done, Toast.LENGTH_SHORT).show();
@@ -170,24 +213,21 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
 
     private void startManualInput() {
         barcodeView.pause();
-        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+
         EditText et = new EditText(this);
-        b.setTitle(R.string.paste_invitation)
+        builder.setTitle(R.string.paste_invitation)
             .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                try {
-                    String data = et.getText().toString();
-                    addContact(data);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
-                }
+                String data = et.getText().toString();
+                addContact(data);
             })
             .setNegativeButton(R.string.cancel, (dialog, i) -> {
                 dialog.cancel();
                 barcodeView.resume();
             })
             .setView(et);
-        b.show();
+        builder.show();
     }
 
     @Override
@@ -207,13 +247,8 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         // no more scan until result is processed
         barcodeView.pause();
 
-        try {
-            String data = result.getText();
-            addContact(data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(this, R.string.invalid_qr, Toast.LENGTH_LONG).show();
-        }
+        String data = result.getText();
+        addContact(data);
     }
 
     @Override
@@ -225,7 +260,7 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     protected void onResume() {
         super.onResume();
 
-        if (barcodeView != null && binder != null) {
+        if (barcodeView != null) {
             barcodeView.resume();
         }
     }
@@ -234,15 +269,9 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
     protected void onPause() {
         super.onPause();
 
-        if (barcodeView != null && binder != null) {
+        if (barcodeView != null) {
             barcodeView.pause();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(this);
     }
 
     private void initCamera() {
@@ -252,23 +281,5 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         barcodeView.getBarcodeView().setDecoderFactory(new DefaultDecoderFactory(formats));
         barcodeView.decodeContinuous(this);
         barcodeView.resume();
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        this.binder = (MainService.MainBinder) iBinder;
-
-        if (Utils.hasCameraPermission(this)) {
-            initCamera();
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-        binder = null;
-    }
-
-    private void log(String s) {
-        Log.d(this, s);
     }
 }

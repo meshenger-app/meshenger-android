@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 
-class Crypto {
+public class Crypto {
     // for development / testing only
     private static boolean disable_crypto = false;
 

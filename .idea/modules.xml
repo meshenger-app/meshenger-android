@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="meshenger-android/app" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/meshenger-android.iml" filepath="$PROJECT_DIR$/.idea/modules/meshenger-android.iml" group="meshenger-android" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/meshenger-android.iml" filepath="$PROJECT_DIR$/.idea/modules/meshenger-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/meshenger-android.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/meshenger-android.app.iml" />
     </modules>
   </component>
 </project>

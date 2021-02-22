@@ -458,12 +458,14 @@ public class MainService extends Service implements Runnable {
 
         void pingContacts() {
             Log.d(this, "pingContacts");
-            new Thread(new PingRunnable(
-                this,
-                getContactsCopy(),
-                getSettings().getPublicKey(),
-                getSettings().getSecretKey())
-            ).start();
+            if (this.service.db != null) {
+                new Thread(new PingRunnable(
+                    this,
+                    getContactsCopy(),
+                    getSettings().getPublicKey(),
+                    getSettings().getSecretKey())
+                ).start();
+            }
         }
 
         void saveDatabase() {

@@ -6,13 +6,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import org.json.JSONObject;
 import org.libsodium.jni.Sodium;
-import org.webrtc.SurfaceViewRenderer;
 
 import java.io.File;
 import java.io.IOException;

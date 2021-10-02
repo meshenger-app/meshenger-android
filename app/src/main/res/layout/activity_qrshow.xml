@@ -12,7 +12,7 @@
         android:id="@+id/QRView"/>
 
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabShare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         android:background="@color/colorPrimary"
         app:srcCompat="@android:drawable/ic_menu_share" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPresenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

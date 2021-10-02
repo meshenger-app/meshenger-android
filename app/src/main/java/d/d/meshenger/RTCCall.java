@@ -5,8 +5,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.ColorInt;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.annotation.ColorInt;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
 
 import org.json.JSONException;

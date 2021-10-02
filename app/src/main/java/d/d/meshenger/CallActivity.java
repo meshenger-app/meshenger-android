@@ -18,8 +18,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 
 
 public class CallActivity extends MeshengerActivity implements ServiceConnection, SensorEventListener {

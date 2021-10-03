@@ -105,7 +105,7 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
                 break;
             }
             case R.id.action_backup: {
-                startActivity(new Intent(this, BackupActivity.class));
+                //startActivity(new Intent(this, BackupActivity.class));
                 break;
             }
             case R.id.action_about: {

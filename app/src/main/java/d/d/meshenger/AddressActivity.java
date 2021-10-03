@@ -98,8 +98,8 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
                 return;
             }
 
-            if ((Utils.isMAC(address) || Utils.isIP(address)) && !systemAddressList.contains(entry)) {
-                Toast.makeText(this, "You can only choose a MAC/IP address that is used by the system.", Toast.LENGTH_LONG).show();
+            if (Utils.isIP(address) && !systemAddressList.contains(entry)) {
+                Toast.makeText(this, "You can only choose a IP address that is used by the system.", Toast.LENGTH_LONG).show();
                 return;
             }
 

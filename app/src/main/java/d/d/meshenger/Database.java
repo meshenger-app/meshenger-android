@@ -111,37 +111,6 @@ class Database {
 
         log("upgrade database from " + from + " to " + to);
 
-        // 2.0.0 => 2.1.0
-        if (from.equals("2.0.0")) {
-            // add blocked field (added in 2.1.0)
-            JSONArray contacts = obj.getJSONArray("contacts");
-            for (int i = 0; i < contacts.length(); i += 1) {
-                contacts.getJSONObject(i).put("blocked", false);
-            }
-            from = "2.1.0";
-        }
-
-        // 2.1.0 => 3.0.0
-        if (from.equals("2.1.0")) {
-            // add new fields
-            obj.getJSONObject("settings").put("ice_servers", new JSONArray());
-            obj.getJSONObject("settings").put("development_mode", false);
-            from = "3.0.0";
-        }
-
-        // 3.0.0 => 3.0.1
-        if (from.equals("3.0.0")) {
-            // nothing to do
-            from = "3.0.1";
-        }
-
-        // 3.0.1 => 3.0.2
-        if (from.equals("3.0.1")) {
-            // fix typo in setting name
-            obj.getJSONObject("settings").put("night_mode", obj.getJSONObject("settings").getBoolean("might_mode"));
-            from = "3.0.2";
-        }
-
         // 3.0.2 => 3.0.3
         if (from.equals("3.0.2")) {
             // nothing to do

@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class Contact implements Serializable {
@@ -71,12 +72,8 @@ public class Contact implements Serializable {
         List<InetSocketAddress> addrs = new ArrayList<>();
         for (String address : this.addresses) {
             try {
-                if (Utils.isMAC(address)) {
-                    addrs.addAll(Utils.getAddressPermutations(address, MainService.serverPort));
-                } else {
-                    // also resolves domains
-                    addrs.add(Utils.parseInetSocketAddress(address, MainService.serverPort));
-                }
+                // also resolves domains
+                addrs.add(Utils.parseInetSocketAddress(address, MainService.serverPort));
             } catch (Exception e) {
                 log("invalid address: " + address);
                 e.printStackTrace();
@@ -204,7 +201,7 @@ public class Contact implements Serializable {
 
         JSONArray array = object.getJSONArray("addresses");
         for (int i = 0; i < array.length(); i += 1) {
-            contact.addAddress(array.getString(i).toUpperCase().trim());
+            contact.addAddress(array.getString(i).toLowerCase(Locale.ROOT).trim());
         }
 
         if (all) {

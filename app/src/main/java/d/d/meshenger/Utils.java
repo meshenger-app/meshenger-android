@@ -102,7 +102,7 @@ class Utils {
         return NAME_PATTERN.matcher(name).matches();
     }
 
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private final static char[] hexArray = "0123456789abcdef".toCharArray();
 
     public static String byteArrayToHexString(byte[] bytes) {
         if (bytes == null) {
@@ -134,25 +134,12 @@ class Utils {
         if (addr == null || addr.length() == 0) {
             return null;
         }
-
-        int firstColon = addr.indexOf(':');
-        int lastColon = addr.lastIndexOf(':');
-        int port = -1;
-
-        try {
-            // parse port suffix
-            if (firstColon > 0 && lastColon > 0) {
-                if (addr.charAt(lastColon - 1) == ']' || firstColon == lastColon) {
-                    port = Integer.parseInt(addr.substring(lastColon + 1));
-                    addr = addr.substring(0, lastColon);
-                }
+        try{
+            if(isIPv6(addr)){
+                return new InetSocketAddress(InetAddress.getByName("["+addr+"]"), defaultPort);
+            } else {
+                return new InetSocketAddress(InetAddress.getByName(addr), defaultPort);
             }
-
-            if (port < 0) {
-                port = defaultPort;
-            }
-
-            return new InetSocketAddress(addr, port);
         } catch (Exception e) {
             return null;
         }
@@ -273,14 +260,9 @@ class Utils {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
-                byte[] mac = nif.getHardwareAddress();
 
                 if (nif.isLoopback()) {
                     continue;
-                }
-
-                if (isValidMAC(mac)) {
-                    addressList.add(new AddressEntry(Utils.bytesToMacAddress(mac), nif.getName(), Utils.isMulticastMAC(mac)));
                 }
 
                 for (InterfaceAddress ia : nif.getInterfaceAddresses()) {
@@ -291,16 +273,15 @@ class Utils {
                     }
 
                     String fullAddress = addr.getHostAddress();
-                    addressList.add(new AddressEntry(addr.getHostAddress(), nif.getName(), addr.isMulticastAddress()));
                     if(fullAddress.indexOf('%')>0){
                         String subaddress = fullAddress.substring(0, fullAddress.indexOf('%'));
                         if(isIPv6(subaddress)){
-                            subaddress="["+subaddress+"]";
+                            subaddress=""+subaddress+"";
                         }
                         addressList.add(new AddressEntry(subaddress, nif.getName(), addr.isMulticastAddress()));
                     } else {
                         if(isIPv6(fullAddress)){
-                            fullAddress="["+fullAddress+"]";
+                            fullAddress=""+fullAddress+"";
                         }
                         addressList.add(new AddressEntry(fullAddress, nif.getName(), addr.isMulticastAddress()));
                     }

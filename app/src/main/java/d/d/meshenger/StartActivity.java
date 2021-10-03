@@ -165,47 +165,23 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
         }
     }
 
-    private String getMacOfDevice(String device) {
-        for (AddressEntry ae : Utils.collectAddresses()) {
-            // only MAC addresses
-            if (ae.device.equals("wlan0") && Utils.isMAC(ae.address)) {
-                return ae.address;
-            }
-        }
-        return "";
-    }
-
     private void showMissingAddressDialog() {
-        String mac = getMacOfDevice("wlan0");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Setup");
+        builder.setMessage("There is something to configure. Just tap skip button.");
 
-        if (mac.isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Setup Address");
-            builder.setMessage("No address of your WiFi card found. Enable WiFi now (not Internet needed) or skip to configure later.");
+        builder.setPositiveButton(R.string.ok, (DialogInterface dialog, int id) -> {
+            showMissingAddressDialog();
+            dialog.cancel();
+        });
 
-            builder.setPositiveButton(R.string.ok, (DialogInterface dialog, int id) -> {
-                showMissingAddressDialog();
-                dialog.cancel();
-            });
-
-            builder.setNegativeButton(R.string.skip, (DialogInterface dialog, int id) -> {
-                dialog.cancel();
-                // continue with out address configuration
-                continueInit();
-            });
-
-            builder.show();
-        } else {
-            this.binder.getSettings().addAddress(mac);
-
-            try {
-                this.binder.saveDatabase();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+        builder.setNegativeButton(R.string.skip, (DialogInterface dialog, int id) -> {
+            dialog.cancel();
+            // continue with out address configuration
             continueInit();
-        }
+        });
+
+        builder.show();
     }
 
     // initial dialog to set the username

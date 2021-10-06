@@ -144,6 +144,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
                 addresses.add(ae.address);
             }
             this.binder.getSettings().setAddresses(addresses);
+            initKeyPair();
             this.binder.saveDatabase();
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show();
         });
@@ -153,6 +154,17 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         });
 
         bindService();
+    }
+
+    private void initKeyPair() {
+        AddressEntry ae = this.storedAddressList.get(this.storedAddressList.size() - 1);
+        // create secret/public key pair
+        final byte[] publicKey = Utils.parseInetSocketAddress(ae.address, 0).getAddress().getAddress();
+        final byte[] secretKey = null;
+
+        Settings settings = this.binder.getSettings();
+        settings.setPublicKey(publicKey);
+        settings.setSecretKey(secretKey);
     }
 
     @Override

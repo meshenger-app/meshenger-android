@@ -24,10 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.libsodium.jni.Sodium;
-import org.libsodium.jni.NaCl;
-
-
 /*
  * Show splash screen, name setup dialog, database password dialog and
  * start background service before starting the MainActivity.
@@ -35,16 +31,12 @@ import org.libsodium.jni.NaCl;
 public class StartActivity extends MeshengerActivity implements ServiceConnection {
     private MainService.MainBinder binder;
     private int startState = 0;
-    private static Sodium sodium;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-
-        // load libsodium for JNI access
-        this.sodium = NaCl.sodium();
 
         Typeface type = Typeface.createFromAsset(getAssets(), "rounds_black.otf");
         ((TextView) findViewById(R.id.splashText)).setTypeface(type);
@@ -149,10 +141,8 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
     private void initKeyPair() {
         // create secret/public key pair
-        final byte[] publicKey = new byte[Sodium.crypto_sign_publickeybytes()];
-        final byte[] secretKey = new byte[Sodium.crypto_sign_secretkeybytes()];
-
-        Sodium.crypto_sign_keypair(publicKey, secretKey);
+        final byte[] publicKey = null;
+        final byte[] secretKey = null;
 
         Settings settings = this.binder.getSettings();
         settings.setPublicKey(publicKey);

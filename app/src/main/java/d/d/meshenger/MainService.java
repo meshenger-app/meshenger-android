@@ -11,7 +11,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import org.json.JSONObject;
-import org.libsodium.jni.Sodium;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,7 +144,7 @@ public class MainService extends Service implements Runnable {
     }
 
     private void handleClient(Socket client) {
-        byte[] clientPublicKey = new byte[Sodium.crypto_sign_publickeybytes()];
+
         byte[] ownSecretKey = this.db.settings.getSecretKey();
         byte[] ownPublicKey = this.db.settings.getPublicKey();
 
@@ -155,6 +154,7 @@ public class MainService extends Service implements Runnable {
             Contact contact = null;
 
             InetSocketAddress remote_address = (InetSocketAddress) client.getRemoteSocketAddress();
+            byte[] clientPublicKey = remote_address.getAddress().getAddress();
             log("incoming connection from " + remote_address);
 
             while (true) {
@@ -259,9 +259,6 @@ public class MainService extends Service implements Runnable {
                 this.currentCall.decline();
             }
         }
-
-        // zero out key
-        Arrays.fill(clientPublicKey, (byte) 0);
     }
 
     private void setClientState(Contact contact, Contact.State state) {

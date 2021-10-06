@@ -3,7 +3,6 @@ package d.d.meshenger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import org.libsodium.jni.Sodium;
 
 import java.io.Serializable;
 import java.net.ConnectException;
@@ -195,7 +194,7 @@ public class Contact implements Serializable {
             throw new JSONException("Invalid Name.");
         }
 
-        if (contact.pubkey == null || contact.pubkey.length != Sodium.crypto_sign_publickeybytes()) {
+        if (contact.pubkey == null) {
             throw new JSONException("Invalid Public Key.");
         }
 

@@ -8,8 +8,8 @@ android {
         applicationId "d.d.meshenger"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 305
-        versionName "0.3.0.6"
+        versionCode 306
+        versionName "0.3.0.8"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name+"-"+versionName)
@@ -37,7 +37,4 @@ dependencies {
     //back to 3.3.0 instead of 3.4.0 sue to https://github.com/zxing/zxing/issues/1170
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'org.webrtc:google-webrtc:1.0.22672'
-    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.2'
-    implementation 'net.java.dev.jna:jna:5.6.0@aar'
-
 }

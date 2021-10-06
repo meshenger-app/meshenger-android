@@ -11,7 +11,6 @@ import android.util.TypedValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.libsodium.jni.Sodium;
 import org.webrtc.AudioTrack;
 import org.webrtc.Camera1Enumerator;
 import org.webrtc.CameraEnumerator;
@@ -130,8 +129,6 @@ public class RTCCall implements DataChannel.Observer {
                 @Override
                 public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
                     super.onIceGatheringChange(iceGatheringState);
-                    byte[] otherPublicKey = new byte[Sodium.crypto_sign_publickeybytes()];
-
                     if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                         log("transferring offer...");
                         try {
@@ -142,8 +139,8 @@ public class RTCCall implements DataChannel.Observer {
                                 //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return;
                             }
-
                             InetSocketAddress remote_address = (InetSocketAddress) commSocket.getRemoteSocketAddress();
+                            byte[] otherPublicKey = remote_address.getAddress().getAddress();
                             log("outgoing call from remote address: " + remote_address);
 
                             // remember latest working address
@@ -175,7 +172,7 @@ public class RTCCall implements DataChannel.Observer {
                             {
                                 byte[] response = pr.readMessage();
                                 String decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey);
-                                if (decrypted == null || (!Arrays.equals(contact.getPublicKey(), otherPublicKey) && !Crypto.disable_crypto)) {
+                                if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
                                     log("decrypted var is null or pubkey does not match");
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
@@ -197,7 +194,7 @@ public class RTCCall implements DataChannel.Observer {
                             {
                                 byte[] response = pr.readMessage();
                                 String decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey);
-                                if (decrypted == null || (!Arrays.equals(contact.getPublicKey(), otherPublicKey) && !Crypto.disable_crypto)) {
+                                if (decrypted == null || !Arrays.equals(contact.getPublicKey(), otherPublicKey)) {
                                     log("decrypted (201) var is null or pubkey does not match");
                                     closeCommSocket();
                                     reportStateChange(CallState.ERROR);
@@ -369,9 +366,7 @@ public class RTCCall implements DataChannel.Observer {
             object.put(StateChangeMessage, enabled ? CameraEnabledMessage : CameraDisabledMessage);
             log("setVideoEnabled: " + object);
             dataChannel.send(new DataChannel.Buffer(ByteBuffer.wrap(object.toString().getBytes()), false));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
     }

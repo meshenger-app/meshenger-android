@@ -251,7 +251,10 @@ public class RTCCall implements DataChannel.Observer {
                     dataChannel.registerObserver(RTCCall.this);
                 }
             });
+            PeerConnection.RTCConfiguration config = new PeerConnection.RTCConfiguration(new ArrayList());
+            config.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_ONCE;
 
+            connection.setConfiguration(config);
             connection.addStream(createStream());
             this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
             this.dataChannel.registerObserver(this);
@@ -597,7 +600,6 @@ public class RTCCall implements DataChannel.Observer {
 
                 closeCommSocket();
                 closePeerConnection();
-
                 reportStateChange(CallState.ENDED);
             } catch (IOException e) {
                 e.printStackTrace();

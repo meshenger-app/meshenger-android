@@ -110,8 +110,10 @@ public class Contact implements Serializable {
             return socket;
         } catch (SocketTimeoutException e) {
             // ignore
+            e.printStackTrace();
         } catch (ConnectException e) {
             // device is online, but does not listen on the given port
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

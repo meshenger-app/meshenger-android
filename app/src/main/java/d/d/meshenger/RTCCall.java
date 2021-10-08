@@ -85,8 +85,6 @@ public class RTCCall implements DataChannel.Observer {
         this.binder = binder;
         this.ownPublicKey = binder.getSettings().getPublicKey();
         this.ownSecretKey = binder.getSettings().getSecretKey();
-        this.ownPublicKey = ownPublicKey;
-        this.ownSecretKey = ownSecretKey;
         this.offer = offer;
 
         // usually empty

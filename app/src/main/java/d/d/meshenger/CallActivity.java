@@ -335,7 +335,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             permissionRequested = false;
             return;
         }
-        finish();
+        //finish();
     }
 
     @Override

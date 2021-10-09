@@ -251,7 +251,7 @@ public class RTCCall implements DataChannel.Observer {
                     dataChannel.registerObserver(RTCCall.this);
                 }
             });
-            PeerConnection.RTCConfiguration config = new PeerConnection.RTCConfiguration(new ArrayList());
+            PeerConnection.RTCConfiguration config = new PeerConnection.RTCConfiguration(this.iceServers);
             config.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_ONCE;
 
             connection.setConfiguration(config);

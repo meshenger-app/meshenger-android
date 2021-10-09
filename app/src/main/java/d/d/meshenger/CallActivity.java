@@ -189,10 +189,15 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             findViewById(R.id.callDecline).setOnClickListener(declineListener);
         }
 
-        (findViewById(R.id.videoStreamSwitch)).setOnClickListener((button) -> {
-            switchVideoEnabled((ImageButton) button);
+        findViewById(R.id.speakerMode).setOnClickListener(button -> {
+            chooseVoiceMode((ImageButton)button);
         });
-        (findViewById(R.id.frontFacingSwitch)).setOnClickListener((button) -> {
+
+        findViewById(R.id.videoStreamSwitch).setOnClickListener((button) -> {
+           switchVideoEnabled((ImageButton)button);
+        });
+
+        findViewById(R.id.frontFacingSwitch).setOnClickListener((button) -> {
             currentCall.switchFrontFacing();
         });
 
@@ -242,6 +247,20 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         if (ringtone != null){
             ringtone.stop();
             ringtone = null;
+        }
+    }
+
+    private void chooseVoiceMode(ImageButton button) {
+        AudioManager audioManager = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+        currentCall.setSpeakerEnabled(!currentCall.isSpeakerEnabled());
+        if(currentCall.isSpeakerEnabled()) {
+            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            audioManager.setSpeakerphoneOn(true);
+            button.setAlpha(1.0f);
+        } else {
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+            audioManager.setSpeakerphoneOn(false);
+            button.setAlpha(0.6f);
         }
     }
 
@@ -382,9 +401,10 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             }
             case CONNECTED: {
                 log("activeCallback: CONNECTED");
-                new Handler(getMainLooper()).post(
-                    () -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE)
-                );
+                new Handler(getMainLooper()).post(() -> {
+                    findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
+                    findViewById(R.id.speakerMode).setVisibility(View.VISIBLE);
+                });
                 setStatusText(getString(R.string.call_connected));
                 break;
             }
@@ -417,9 +437,11 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                 log("passiveCallback: CONNECTED");
                 setStatusText(getString(R.string.call_connected));
                 runOnUiThread(() -> findViewById(R.id.callAccept).setVisibility(View.GONE));
-                new Handler(getMainLooper()).post(
-                    () -> findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE)
-                );
+
+                new Handler(getMainLooper()).post(() -> {
+                    findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
+                    findViewById(R.id.speakerMode).setVisibility(View.VISIBLE);
+                });
                 break;
             }
             case RINGING: {

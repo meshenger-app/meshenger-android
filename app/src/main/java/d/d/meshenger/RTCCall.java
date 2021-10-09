@@ -60,6 +60,7 @@ public class RTCCall implements DataChannel.Observer {
     private MediaStream upStream;
     private DataChannel dataChannel;
 
+    private boolean speakerEnabled;
     private boolean videoEnabled;
 
     private Context context;
@@ -352,8 +353,16 @@ public class RTCCall implements DataChannel.Observer {
         });
     }
 
+    public boolean isSpeakerEnabled() {
+        return this.speakerEnabled;
+    }
+
     public boolean isVideoEnabled() {
         return this.videoEnabled;
+    }
+
+    public void setSpeakerEnabled(boolean enabled) {
+        this.speakerEnabled = enabled;
     }
 
     public void setVideoEnabled(boolean enabled) {

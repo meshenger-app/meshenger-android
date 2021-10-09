@@ -8,8 +8,8 @@ android {
         applicationId "d.d.meshenger"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 311
-        versionName "0.3.1.1"
+        versionCode 312
+        versionName "0.3.1.2"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name+"-"+versionName)

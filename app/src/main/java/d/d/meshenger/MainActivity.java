@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
@@ -72,8 +74,8 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         log("onDestroy");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshEventListReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshContactListReceiver);
-
         unbindService(this);
+        ((AudioManager)this.getSystemService(Context.AUDIO_SERVICE)).setSpeakerphoneOn(false);
         super.onDestroy();
     }
 

@@ -29,11 +29,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.webrtc.RTCStatsCollectorCallback;
+import org.webrtc.RTCStatsReport;
+
 import java.io.IOException;
+
+import d.d.meshenger.util.StatsReportUtil;
 
 
 public class CallActivity extends MeshengerActivity implements ServiceConnection, SensorEventListener {
     private TextView statusTextView;
+    private TextView callStats;
     private TextView nameTextView;
 
     private MainService.MainBinder binder = null;
@@ -66,6 +72,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         statusTextView = findViewById(R.id.callStatus);
+        callStats = findViewById(R.id.callStats);
         nameTextView = findViewById(R.id.callName);
 
         String action = getIntent().getAction();
@@ -80,13 +87,14 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     binder = (MainService.MainBinder) iBinder;
+
                     currentCall = RTCCall.startCall(
-                        CallActivity.this,
-                        binder,
-                        contact,
-                        activeCallback
-                        //findViewById(R.id.localRenderer)
+                            CallActivity.this,
+                            binder,
+                            contact,
+                            activeCallback
                     );
+
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
                 }
 
@@ -393,6 +401,20 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         currentCall.releaseCamera();
     }
 
+    private RTCStatsCollectorCallback statsCollector = new RTCStatsCollectorCallback() {
+
+        StatsReportUtil statsReportUtil = new StatsReportUtil();
+        @Override
+        public void onStatsDelivered(RTCStatsReport rtcStatsReport) {
+            String stats = statsReportUtil.getStatsReport(rtcStatsReport);
+            // If you need update UI, simply do this:
+            runOnUiThread(() -> {
+                // update your UI component here.
+                callStats.setText(stats);
+            });
+        }
+    };
+
     private RTCCall.OnStateChangeListener activeCallback = callState -> {
         switch (callState) {
             case CONNECTING: {
@@ -402,7 +424,14 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             }
             case CONNECTED: {
                 log("activeCallback: CONNECTED");
+                boolean devMode = binder.getSettings().getDevelopmentMode();
                 new Handler(getMainLooper()).post( () -> {
+                    if(devMode){
+                        currentCall.accept(statsCollector);
+                        callStats.setVisibility(View.VISIBLE);
+                    } else {
+                        callStats.setVisibility(View.GONE);
+                    }
                     findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
                     findViewById(R.id.speakerMode).setVisibility(View.VISIBLE);
                 });
@@ -437,10 +466,17 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
             case CONNECTED: {
                 log("passiveCallback: CONNECTED");
                 setStatusText(getString(R.string.call_connected));
+                boolean devMode = binder.getSettings().getDevelopmentMode();
                 runOnUiThread(() -> findViewById(R.id.callAccept).setVisibility(View.GONE));
                 new Handler(getMainLooper()).post(() -> {
                     findViewById(R.id.videoStreamSwitchLayout).setVisibility(View.VISIBLE);
                     findViewById(R.id.speakerMode).setVisibility(View.VISIBLE);
+                    if(devMode){
+                        currentCall.accept(statsCollector);
+                        callStats.setVisibility(View.VISIBLE);
+                    } else {
+                        callStats.setVisibility(View.GONE);
+                    }
                 });
                 break;
             }

@@ -21,6 +21,7 @@ import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
+import org.webrtc.RTCStatsCollectorCallback;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceViewRenderer;
 //import org.webrtc.VideoCapturer;
@@ -34,6 +35,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class RTCCall implements DataChannel.Observer {
@@ -486,6 +491,11 @@ public class RTCCall implements DataChannel.Observer {
         }
     }
 
+    public void accept(RTCStatsCollectorCallback statsCollector) {
+        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
+        scheduleTaskExecutor.scheduleAtFixedRate(() -> connection.getStats(statsCollector), 5, 5, TimeUnit.SECONDS);
+    }
+
     public void accept(OnStateChangeListener listener) {
         this.listener = listener;
         new Thread(() -> {
@@ -564,6 +574,7 @@ public class RTCCall implements DataChannel.Observer {
                     }, constraints);
                 }
             }, new SessionDescription(SessionDescription.Type.OFFER, offer));
+
         }).start();
     }
 

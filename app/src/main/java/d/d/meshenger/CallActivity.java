@@ -260,6 +260,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
         } else {
             audioManager.setMode(AudioManager.MODE_NORMAL);
             audioManager.setSpeakerphoneOn(false);
+            audioManager.setBluetoothScoOn(false);
             button.setAlpha(0.6f);
         }
     }

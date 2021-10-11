@@ -96,6 +96,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                     );
 
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
+                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                 }
 
                 @Override
@@ -178,7 +179,7 @@ public class CallActivity extends MeshengerActivity implements ServiceConnection
                 log("accepted call...");
                 try {
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer));
-                    //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
+                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
                     currentCall.accept(passiveCallback);
                     if (passiveWakeLock != null && passiveWakeLock.isHeld()) {
                         passiveWakeLock.release();

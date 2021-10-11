@@ -14,37 +14,33 @@
             android:id="@+id/remoteRenderer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/backgroundCardColor" />
+            android:background="?attr/backgroundCardColor"
+            android:visibility="gone"/>
 
-        <FrameLayout
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/localRenderer"
             android:layout_width="150dp"
-            android:layout_height="200dp"
-            android:id="@+id/container"
+            android:layout_height="195dp"
+            android:layout_gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="100dp"
-            android:visibility="gone">
-            <SurfaceView
-                android:id="@+id/surfaceView"
-                android:layout_width="150dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center">
-            </SurfaceView>
-        </FrameLayout>
+            android:layout_marginBottom="100dp">
+        </org.webrtc.SurfaceViewRenderer>
 
         <TextView
             android:id="@+id/callStats"
-            android:layout_width="170dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
-            android:layout_marginLeft="10dp"
-            android:lines="10"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp"
+            android:layout_marginStart="10dp"
+            android:lines="11"
             android:text="Statistic..."
             android:textColor="@android:color/holo_green_light"
             android:textSize="15sp"
             android:background="@color/colorBackgroundDark"
             android:alpha="0.6"
-            android:visibility="gone"/>
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -104,8 +100,7 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:layout_marginStart="30dp"
-                android:id="@+id/videoStreamSwitchLayout"
->
+                android:id="@+id/videoStreamSwitchLayout">
 
                 <ImageButton
                     android:id="@+id/videoStreamSwitch"

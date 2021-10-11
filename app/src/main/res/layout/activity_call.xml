@@ -16,13 +16,21 @@
             android:layout_height="match_parent"
             android:background="?attr/backgroundCardColor" />
 
-        <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/localRenderer"
+        <FrameLayout
             android:layout_width="150dp"
             android:layout_height="200dp"
+            android:id="@+id/container"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:visibility="gone" />
+            android:layout_marginBottom="100dp"
+            android:visibility="gone">
+            <SurfaceView
+                android:id="@+id/surfaceView"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center">
+            </SurfaceView>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/callStats"

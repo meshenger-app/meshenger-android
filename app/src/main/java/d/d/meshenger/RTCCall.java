@@ -493,7 +493,7 @@ public class RTCCall implements DataChannel.Observer {
 
     public void accept(RTCStatsCollectorCallback statsCollector) {
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
-        scheduleTaskExecutor.scheduleAtFixedRate(() -> connection.getStats(statsCollector), 5, 5, TimeUnit.SECONDS);
+        scheduleTaskExecutor.scheduleAtFixedRate(() -> connection.getStats(statsCollector), 1, 5, TimeUnit.SECONDS);
     }
 
     public void accept(OnStateChangeListener listener) {

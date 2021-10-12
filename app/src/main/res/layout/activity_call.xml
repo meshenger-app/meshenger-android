@@ -10,21 +10,22 @@
         android:layout_height="match_parent">
 
         <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/remoteRenderer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/backgroundCardColor"
-            android:visibility="gone"/>
-
-        <org.webrtc.SurfaceViewRenderer
             android:id="@+id/localRenderer"
             android:layout_width="150dp"
             android:layout_height="195dp"
             android:layout_gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="100dp">
+            android:layout_marginBottom="100dp"
+            android:visibility="gone">
         </org.webrtc.SurfaceViewRenderer>
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/remoteRenderer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/backgroundCardColor"
+            />
 
         <TextView
             android:id="@+id/callStats"

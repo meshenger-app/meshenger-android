@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
+import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +30,6 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
-//import org.webrtc.VideoCapturer;
-import org.webrtc.VideoCapturer;
 import org.webrtc.VideoFrame;
 import org.webrtc.VideoSink;
 import org.webrtc.VideoSource;
@@ -62,15 +61,11 @@ public class RTCCall implements DataChannel.Observer {
     private MediaConstraints constraints;
 
     private String offer;
-
-    @Nullable
-    private SurfaceTextureHelper surfaceTextureHelper;
+    
     private final EglBase rootEglBase = EglBase.create();
 
     private SurfaceViewRenderer remoteRenderer;
     private SurfaceViewRenderer localRenderer;
-
-    private EglBase.Context sharedContext;
     private CameraVideoCapturer capturer;
 
     private MediaStream upStream;
@@ -273,10 +268,7 @@ public class RTCCall implements DataChannel.Observer {
             config.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_ONCE;
 
             connection.setConfiguration(config);
-            //connection.addStream(createStream());
-            List<String> mediaStreamLabels = Collections.singletonList("RIV");
-            connection.addTrack(getVideoTrack(), mediaStreamLabels);
-            connection.addTrack(getAudioTrack(), mediaStreamLabels);
+            connection.addStream(createStream());
 
             this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
             this.dataChannel.registerObserver(this);
@@ -394,7 +386,14 @@ public class RTCCall implements DataChannel.Observer {
         try {
             if (enabled) {
                 this.capturer.startCapture(500, 500, 30);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    this.localRenderer.setVisibility(View.VISIBLE);
+                    this.localRenderer.setZOrderOnTop(true);
+                });
             } else {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    this.localRenderer.setVisibility(View.GONE);
+                });
                 this.capturer.stopCapture();
             }
             JSONObject object = new JSONObject();
@@ -407,21 +406,6 @@ public class RTCCall implements DataChannel.Observer {
             e.printStackTrace();
         }
     }
-
-    /*private void initLocalRenderer() {
-        if (this.localRenderer != null) {
-            log("really initng " + (this.sharedContext == null));
-            this.localRenderer.init(this.sharedContext, null);
-            this.localCameraTrack.addSink(localRenderer);
-            this.capturer.startCapture(500, 500, 30);
-        }
-    }*/
-
-    /*private void initVideoTrack() {
-        this.sharedContext = EglBase.create().getEglBaseContext();
-        this.capturer = createCapturer(true);
-        this.localCameraTrack = factory.createVideoTrack("video1", factory.createVideoSource(capturer));
-    }*/
 
     public void releaseCamera() {
         if (this.capturer != null) {
@@ -448,8 +432,7 @@ public class RTCCall implements DataChannel.Observer {
         }
 
         new Handler(Looper.getMainLooper()).post(() -> {
-            //remoteRenderer.setBackgroundColor(Color.TRANSPARENT);
-            remoteRenderer.init(this.sharedContext, null);
+            remoteRenderer.init(this.rootEglBase.getEglBaseContext(), null);
             stream.videoTracks.get(0).addSink(remoteRenderer);
         });
     }
@@ -458,7 +441,6 @@ public class RTCCall implements DataChannel.Observer {
         upStream = factory.createLocalMediaStream("stream1");
         upStream.addTrack(getAudioTrack());
         upStream.addTrack(getVideoTrack());
-        //this.capturer.startCapture(500, 500, 30);
         return upStream;
     }
 
@@ -476,28 +458,13 @@ public class RTCCall implements DataChannel.Observer {
         this.capturer = createCapturer();
 
         localRender.setTarget(localRenderer);
-        surfaceTextureHelper =
-                SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
-        VideoSource videoSource = factory.createVideoSource(this.capturer);
-        capturer.initialize(surfaceTextureHelper, context, new VideoCapturer.CapturerObserver() {
-            @Override
-            public void onCapturerStarted(boolean b) {
-
-            }
-
-            @Override
-            public void onCapturerStopped() {
-
-            }
-
-            @Override
-            public void onFrameCaptured(VideoFrame videoFrame) {
-
-            }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            localRenderer.init(this.rootEglBase.getEglBaseContext(), null);
         });
+        VideoSource videoSource = factory.createVideoSource(this.capturer);
         VideoTrack localVideoTrack = factory.createVideoTrack("video1", videoSource);
         localVideoTrack.setEnabled(true);
-        localVideoTrack.addSink(localRender);
+        localVideoTrack.addSink(localRenderer);
         return localVideoTrack;
     }
 
@@ -528,7 +495,7 @@ public class RTCCall implements DataChannel.Observer {
     private void initRTC(Context c) {
         PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(c).createInitializationOptions());
         factory = PeerConnectionFactory.builder().createPeerConnectionFactory();
-
+        factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
         constraints = new MediaConstraints();
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"));
         constraints.optional.add(new MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"));
@@ -613,11 +580,7 @@ public class RTCCall implements DataChannel.Observer {
                 }
 
             });
-            //connection.addStream(createStream());
-            List<String> mediaStreamLabels = Collections.singletonList("RIV");
-            connection.addTrack(getVideoTrack(), mediaStreamLabels);
-            connection.addTrack(getAudioTrack(), mediaStreamLabels);
-            //this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
+            connection.addStream(createStream());
 
             log("setting remote description");
             connection.setRemoteDescription(new DefaultSdpObserver() {

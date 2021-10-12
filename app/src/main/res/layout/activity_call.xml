@@ -16,7 +16,7 @@
             android:layout_gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="80dp"
             android:visibility="gone">
         </org.webrtc.SurfaceViewRenderer>
 
@@ -32,7 +32,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="80dp"
             android:layout_marginStart="10dp"
             android:lines="11"
             android:text="Statistic..."
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="30dp">
+            android:paddingBottom="10dp">
 
             <ImageButton
                 android:id="@+id/callAccept"

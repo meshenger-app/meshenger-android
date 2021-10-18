@@ -301,18 +301,27 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
+    }
+
+    @Override
     protected void onResume() {
         log("OnResume");
         super.onResume();
-
-        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onPause() {
         log("onPause");
-        super.onPause();
         collapseFab();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         unbindService(this);
     }
 

@@ -36,7 +36,9 @@
             android:name=".QRScanActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name=".MainService" />
+        <service
+            android:name=".MainService"
+            android:exported="false"/>
 
         <activity
             android:name=".StartActivity"

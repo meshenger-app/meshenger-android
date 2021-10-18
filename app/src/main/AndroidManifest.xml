@@ -4,15 +4,16 @@
     package="d.d.meshenger">
 
     <!-- Backup Import/Export -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -20,7 +21,8 @@
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
-        android:supportsRtl="true"
+        android:largeHeap="true"
+        android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
 
@@ -38,10 +40,14 @@
 
         <service
             android:name=".MainService"
-            android:exported="false"/>
+            android:exported="false"
+            android:enabled="true"
+            android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <activity
             android:name=".StartActivity"
+            android:launchMode="singleTask"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

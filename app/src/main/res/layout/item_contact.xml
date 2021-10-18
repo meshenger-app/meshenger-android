@@ -7,8 +7,8 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_alignParentLeft="true">
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -19,20 +19,20 @@
                 android:id="@+id/contact_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30dp"
                 android:layout_marginTop="5.5dp"
-                android:textColor="?attr/primaryTextColor" />
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
     </LinearLayout>
 
     <ProgressBar
+        android:id="@+id/contact_waiting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:padding="6dp"
-        android:id="@+id/contact_waiting"/>
+        android:padding="6dp" />
 
     <ImageView
         android:id="@+id/contact_state"

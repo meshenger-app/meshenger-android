@@ -14,34 +14,31 @@
             android:id="@+id/localRenderer"
             android:layout_width="150dp"
             android:layout_height="195dp"
-            android:layout_gravity="center"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
             android:layout_marginBottom="80dp"
-            android:visibility="gone">
-        </org.webrtc.SurfaceViewRenderer>
+            android:visibility="gone"></org.webrtc.SurfaceViewRenderer>
 
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/remoteRenderer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/backgroundCardColor"
-            />
+            android:background="?attr/backgroundCardColor" />
 
         <TextView
             android:id="@+id/callStats"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
             android:layout_marginStart="10dp"
+            android:layout_marginBottom="80dp"
+            android:alpha="0.6"
+            android:background="@color/colorBackgroundDark"
             android:lines="11"
             android:text="Statistic..."
             android:textColor="@android:color/holo_green_light"
-            android:textSize="15sp"
-            android:background="@color/colorBackgroundDark"
-            android:alpha="0.6"
-            />
+            android:textSize="15sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -85,7 +82,7 @@
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/baseline_phone_black_48"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/callDecline"
@@ -94,14 +91,13 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/baseline_phone_missed_black_48"
-                />
+                android:src="@drawable/baseline_phone_missed_black_48" />
 
             <RelativeLayout
+                android:id="@+id/videoStreamSwitchLayout"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginStart="30dp"
-                android:id="@+id/videoStreamSwitchLayout">
+                android:layout_marginStart="30dp">
 
                 <ImageButton
                     android:id="@+id/videoStreamSwitch"
@@ -131,12 +127,12 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:layout_marginStart="30dp"
+                android:alpha="0.6"
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@android:drawable/ic_lock_silent_mode_off"
-                android:alpha="0.6"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
 
         </LinearLayout>

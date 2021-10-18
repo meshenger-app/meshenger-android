@@ -7,11 +7,11 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.View;
+
+import androidx.annotation.ColorInt;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +28,6 @@ import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.RTCStatsCollectorCallback;
 import org.webrtc.SessionDescription;
-import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoFrame;
 import org.webrtc.VideoSink;
@@ -49,31 +48,24 @@ import java.util.concurrent.TimeUnit;
 
 
 public class RTCCall implements DataChannel.Observer {
-    enum CallState { CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR }
-
     private final String StateChangeMessage = "StateChange";
     private final String CameraDisabledMessage = "CameraDisabled";
     private final String CameraEnabledMessage = "CameraEnabled";
-
+    private final EglBase rootEglBase = EglBase.create();
+    private final ProxyVideoSink localRender = new ProxyVideoSink();
+    public CallState state;
+    public Socket commSocket;
     private PeerConnectionFactory factory;
     private PeerConnection connection;
-
     private MediaConstraints constraints;
-
     private String offer;
-    
-    private final EglBase rootEglBase = EglBase.create();
-
     private SurfaceViewRenderer remoteRenderer;
     private SurfaceViewRenderer localRenderer;
     private CameraVideoCapturer capturer;
-
     private MediaStream upStream;
     private DataChannel dataChannel;
-
     private boolean speakerEnabled;
     private boolean videoEnabled;
-
     private Context context;
     private Contact contact;
     private byte[] ownPublicKey;
@@ -81,13 +73,6 @@ public class RTCCall implements DataChannel.Observer {
     private List<PeerConnection.IceServer> iceServers;
     private OnStateChangeListener listener;
     private MainService.MainBinder binder;
-
-    public CallState state;
-    public Socket commSocket;
-
-    static public RTCCall startCall(Context context, MainService.MainBinder binder, Contact contact, OnStateChangeListener listener) {
-        return new RTCCall(context, binder, contact, listener);
-    }
 
     // called for incoming calls
     public RTCCall(Context context, MainService.MainBinder binder, Contact contact, Socket commSocket, String offer) {
@@ -282,6 +267,10 @@ public class RTCCall implements DataChannel.Observer {
         }).start();
     }
 
+    static public RTCCall startCall(Context context, MainService.MainBinder binder, Contact contact, OnStateChangeListener listener) {
+        return new RTCCall(context, binder, contact, listener);
+    }
+
     private void closeCommSocket() {
         log("closeCommSocket");
         if (this.commSocket != null) {
@@ -369,16 +358,16 @@ public class RTCCall implements DataChannel.Observer {
         });
     }
 
-    public boolean isSpeakerEnabled(){
+    public boolean isSpeakerEnabled() {
         return this.speakerEnabled;
-    }
-
-    public boolean isVideoEnabled(){
-        return this.videoEnabled;
     }
 
     public void setSpeakerEnabled(boolean enabled) {
         this.speakerEnabled = enabled;
+    }
+
+    public boolean isVideoEnabled() {
+        return this.videoEnabled;
     }
 
     public void setVideoEnabled(boolean enabled) {
@@ -463,26 +452,6 @@ public class RTCCall implements DataChannel.Observer {
         localVideoTrack.setEnabled(true);
         localVideoTrack.addSink(localRenderer);
         return localVideoTrack;
-    }
-
-    private final ProxyVideoSink localRender = new ProxyVideoSink();
-
-    private static class ProxyVideoSink implements VideoSink {
-        private VideoSink target;
-
-        @Override
-        synchronized public void onFrame(VideoFrame frame) {
-            if (target == null) {
-                Logging.d(TAG, "Dropping frame in proxy because target is null.");
-                return;
-            }
-
-            target.onFrame(frame);
-        }
-
-        synchronized public void setTarget(VideoSink target) {
-            this.target = target;
-        }
     }
 
     private AudioTrack getAudioTrack() {
@@ -660,11 +629,31 @@ public class RTCCall implements DataChannel.Observer {
         }).start();
     }
 
+    private void log(String s) {
+        Log.d(this, s);
+    }
+
+    enum CallState {CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR}
+
     public interface OnStateChangeListener {
         void OnStateChange(CallState state);
     }
 
-    private void log(String s) {
-        Log.d(this, s);
+    private static class ProxyVideoSink implements VideoSink {
+        private VideoSink target;
+
+        @Override
+        synchronized public void onFrame(VideoFrame frame) {
+            if (target == null) {
+                Logging.d(TAG, "Dropping frame in proxy because target is null.");
+                return;
+            }
+
+            target.onFrame(frame);
+        }
+
+        synchronized public void setTarget(VideoSink target) {
+            this.target = target;
+        }
     }
 }

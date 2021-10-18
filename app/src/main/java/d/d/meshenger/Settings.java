@@ -32,6 +32,54 @@ public class Settings {
         this.iceServers = new ArrayList<>();
     }
 
+    public static Settings importJSON(JSONObject obj) throws JSONException {
+        Settings s = new Settings();
+        s.username = obj.getString("username");
+        s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"));
+        s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"));
+        s.language = obj.getString("language");
+        s.nightMode = obj.getBoolean("night_mode");
+        s.blockUnknown = obj.getBoolean("block_unknown");
+        s.developmentMode = obj.getBoolean("development_mode");
+
+        JSONArray addresses = obj.getJSONArray("addresses");
+        for (int i = 0; i < addresses.length(); i += 1) {
+            s.addresses.add(addresses.getString(i));
+        }
+
+        JSONArray iceServers = obj.getJSONArray("ice_servers");
+        for (int i = 0; i < iceServers.length(); i += 1) {
+            s.iceServers.add(iceServers.getString(i));
+        }
+
+        return s;
+    }
+
+    public static JSONObject exportJSON(Settings s) throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("username", s.username);
+        obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey));
+        obj.put("public_key", Utils.byteArrayToHexString(s.publicKey));
+        obj.put("language", s.language);
+        obj.put("night_mode", s.nightMode);
+        obj.put("block_unknown", s.blockUnknown);
+        obj.put("development_mode", s.developmentMode);
+
+        JSONArray addresses = new JSONArray();
+        for (int i = 0; i < s.addresses.size(); i += 1) {
+            addresses.put(s.addresses.get(i));
+        }
+        obj.put("addresses", addresses);
+
+        JSONArray iceServers = new JSONArray();
+        for (int i = 0; i < s.iceServers.size(); i += 1) {
+            iceServers.put(s.iceServers.get(i));
+        }
+        obj.put("ice_servers", iceServers);
+
+        return obj;
+    }
+
     public byte[] getSecretKey() {
         return secretKey;
     }
@@ -111,54 +159,6 @@ public class Settings {
 
     public void setIceServers(List<String> iceServers) {
         this.iceServers = iceServers;
-    }
-
-    public static Settings importJSON(JSONObject obj) throws JSONException {
-        Settings s = new Settings();
-        s.username = obj.getString("username");
-        s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"));
-        s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"));
-        s.language = obj.getString("language");
-        s.nightMode = obj.getBoolean("night_mode");
-        s.blockUnknown = obj.getBoolean("block_unknown");
-        s.developmentMode = obj.getBoolean("development_mode");
-
-        JSONArray addresses = obj.getJSONArray("addresses");
-        for (int i = 0; i < addresses.length(); i += 1) {
-            s.addresses.add(addresses.getString(i));
-        }
-
-        JSONArray iceServers = obj.getJSONArray("ice_servers");
-        for (int i = 0; i < iceServers.length(); i += 1) {
-            s.iceServers.add(iceServers.getString(i));
-        }
-
-        return s;
-    }
-
-    public static JSONObject exportJSON(Settings s) throws JSONException {
-        JSONObject obj = new JSONObject();
-        obj.put("username", s.username);
-        obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey));
-        obj.put("public_key", Utils.byteArrayToHexString(s.publicKey));
-        obj.put("language", s.language);
-        obj.put("night_mode", s.nightMode);
-        obj.put("block_unknown", s.blockUnknown);
-        obj.put("development_mode", s.developmentMode);
-
-        JSONArray addresses = new JSONArray();
-        for (int i = 0; i < s.addresses.size(); i += 1) {
-            addresses.put(s.addresses.get(i));
-        }
-        obj.put("addresses", addresses);
-
-        JSONArray iceServers = new JSONArray();
-        for (int i = 0; i < s.iceServers.size(); i += 1) {
-            iceServers.put(s.iceServers.get(i));
-        }
-        obj.put("ice_servers", iceServers);
-
-        return obj;
     }
 
     public Contact getOwnContact() {

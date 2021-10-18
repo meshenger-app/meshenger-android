@@ -24,13 +24,13 @@ public class LicenseActivity extends MeshengerActivity {
                 StringBuffer buffer = new StringBuffer();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(getAssets().open("license.txt")));
                 String line;
-                while((line = reader.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     buffer.append(line.trim() + "\n");
                 }
                 reader.close();
                 runOnUiThread(() -> {
                     findViewById(R.id.licenseLoadingBar).setVisibility(View.GONE);
-                    ((TextView)findViewById(R.id.licenceText)).setText(buffer.toString());
+                    ((TextView) findViewById(R.id.licenceText)).setText(buffer.toString());
                 });
             } catch (IOException e) {
                 e.printStackTrace();

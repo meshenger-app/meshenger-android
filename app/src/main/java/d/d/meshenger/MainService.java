@@ -6,9 +6,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -23,12 +24,11 @@ import java.util.List;
 
 
 public class MainService extends Service implements Runnable {
+    public static final int serverPort = 10001;
     private Database db = null;
     private boolean first_start = false;
     private String database_path = "";
     private String database_password = "";
-
-    public static final int serverPort = 10001;
     private ServerSocket server;
 
     private volatile boolean run = true;
@@ -206,7 +206,7 @@ public class MainService extends Service implements Runnable {
 
                 // remember last good address (the outgoing port is random and not the server port)
                 contact.setLastWorkingAddress(
-                    new InetSocketAddress(remote_address.getAddress(), MainService.serverPort)
+                        new InetSocketAddress(remote_address.getAddress(), MainService.serverPort)
                 );
 
                 JSONObject obj = new JSONObject(decrypted);
@@ -295,9 +295,19 @@ public class MainService extends Service implements Runnable {
         }
     }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new MainBinder();
+    }
+
+    private void log(String data) {
+        Log.d(this, data);
+    }
+
     /*
-    * Allows communication between MainService and other objects
-    */
+     * Allows communication between MainService and other objects
+     */
     class MainBinder extends Binder {
         RTCCall getCurrentCall() {
             return currentCall;
@@ -370,10 +380,10 @@ public class MainService extends Service implements Runnable {
 
         void pingContacts() {
             new Thread(new PingRunnable(
-                MainService.this,
-                getContactsCopy(),
-                getSettings().getPublicKey(),
-                getSettings().getSecretKey())
+                    MainService.this,
+                    getContactsCopy(),
+                    getSettings().getPublicKey(),
+                    getSettings().getSecretKey())
             ).start();
         }
 
@@ -387,15 +397,15 @@ public class MainService extends Service implements Runnable {
 
         // return a cloned list
         List<Contact> getContactsCopy() {
-           return new ArrayList<>(MainService.this.db.contacts);
+            return new ArrayList<>(MainService.this.db.contacts);
         }
 
         void addCallEvent(Contact contact, CallEvent.Type type) {
             InetSocketAddress last_working = contact.getLastWorkingAddress();
             MainService.this.events.add(new CallEvent(
-                contact.getPublicKey(),
+                    contact.getPublicKey(),
                     (last_working != null) ? last_working.getAddress() : null,
-                type
+                    type
             ));
             LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(new Intent("refresh_event_list"));
         }
@@ -413,10 +423,10 @@ public class MainService extends Service implements Runnable {
 
     class PingRunnable implements Runnable {
         Context context;
-        private List<Contact> contacts;
         byte[] ownPublicKey;
         byte[] ownSecretKey;
         MainBinder binder;
+        private List<Contact> contacts;
 
         PingRunnable(Context context, List<Contact> contacts, byte[] ownPublicKey, byte[] ownSecretKey) {
             this.context = context;
@@ -496,16 +506,5 @@ public class MainService extends Service implements Runnable {
             log("send refresh_contact_list");
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent("refresh_contact_list"));
         }
-    }
-
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new MainBinder();
-    }
-
-    private void log(String data) {
-        Log.d(this, data);
     }
 }

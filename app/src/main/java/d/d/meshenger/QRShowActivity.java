@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.os.IBinder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -24,6 +24,16 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class QRShowActivity extends MeshengerActivity implements ServiceConnection {
     private Contact contact = null;
     private MainService.MainBinder binder;
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
+
+    private static void log(String s) {
+        Log.d(QRShowActivity.class.getSimpleName(), s);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,16 +119,5 @@ public class QRShowActivity extends MeshengerActivity implements ServiceConnecti
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         this.binder = null;
-    }
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            finish();
-        }
-    };
-
-    private static void log(String s) {
-        Log.d(QRShowActivity.class.getSimpleName(), s);
     }
 }

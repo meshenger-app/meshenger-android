@@ -1,8 +1,8 @@
 package d.d.meshenger;
 
 /*
-* Wrapper for android.util.Log to disable logging
-*/
+ * Wrapper for android.util.Log to disable logging
+ */
 public class Log {
     private static String contextString(Object context) {
         if (context instanceof String) {

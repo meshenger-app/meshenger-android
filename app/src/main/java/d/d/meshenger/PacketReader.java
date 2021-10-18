@@ -19,9 +19,9 @@ class PacketReader {
 
     private static int readMessageHeader(byte[] packet) {
         return ((packet[0] & 0xFF) << 24)
-            | ((packet[1] & 0xFF) << 16)
-            | ((packet[2] & 0xFF) << 8)
-            | ((packet[3] & 0xFF) << 0);
+                | ((packet[1] & 0xFF) << 16)
+                | ((packet[2] & 0xFF) << 8)
+                | ((packet[3] & 0xFF) << 0);
     }
 
     byte[] readMessage() throws IOException {

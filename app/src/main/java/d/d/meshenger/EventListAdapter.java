@@ -1,8 +1,6 @@
 package d.d.meshenger;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -30,6 +31,10 @@ class EventListAdapter extends ArrayAdapter<CallEvent> {
         this.context = context;
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    private static void log(String s) {
+        Log.d(EventListAdapter.class.getSimpleName(), s);
     }
 
     public void update(List<CallEvent> events, List<Contact> contacts) {
@@ -116,9 +121,5 @@ class EventListAdapter extends ArrayAdapter<CallEvent> {
             address_tv.setText("");
         }
         return view;
-    }
-
-    private static void log(String s) {
-        Log.d(EventListAdapter.class.getSimpleName(), s);
     }
 }

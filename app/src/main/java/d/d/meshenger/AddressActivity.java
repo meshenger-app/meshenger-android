@@ -6,8 +6,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.os.IBinder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -27,7 +27,6 @@ import java.util.List;
 
 
 public class AddressActivity extends MeshengerActivity implements ServiceConnection {
-    private MainService.MainBinder binder;
     Spinner storedAddressSpinner;
     Spinner systemAddressSpinner;
     Button pickStoredAddressButton;
@@ -37,11 +36,11 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
     Button removeButton;
     Button saveButton;
     Button abortButton;
-
     List<AddressEntry> systemAddressList;
     List<AddressEntry> storedAddressList;
     AddressListAdapter storedAddressListAdapter;
     AddressListAdapter systemAddressListAdapter;
+    private MainService.MainBinder binder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,86 +195,6 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
         this.binder = null;
     }
 
-    public class AddressListAdapter extends BaseAdapter {
-        private final Activity context;
-        private final int markColor;
-        private List<AddressEntry> addressEntries;
-        private List<AddressEntry> addressEntriesMarked;
-
-        public AddressListAdapter(Activity context, int markColor) {
-            this.context = context;
-            this.markColor = markColor;
-            this.addressEntries = new ArrayList<>();
-            this.addressEntriesMarked = new ArrayList<>();
-        }
-
-        public boolean isEmpty() {
-            return this.addressEntries.isEmpty();
-        }
-
-        public void update(List<AddressEntry> addressEntries, List<AddressEntry> addressEntriesMarked) {
-            this.addressEntries = addressEntries;
-            this.addressEntriesMarked = addressEntriesMarked;
-        }
-
-        @Override
-        public int getCount() {
-            if (isEmpty()) {
-                return 1;
-            }
-            return addressEntries.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            if (isEmpty()) {
-                return null;
-            }
-            return addressEntries.get(position);
-        }
-   
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View view, ViewGroup parent) {
-            if (view == null) {
-                LayoutInflater inflater = context.getLayoutInflater();
-                view = inflater.inflate(R.layout.activity_address_item, parent, false);
-            }
-
-            TextView label = view.findViewById(R.id.label);
-
-            if (isEmpty()) {
-                label.setText(getResources().getString(R.string.empty_list_item));
-                label.setTextColor(Color.BLACK);
-            } else {
-                AddressEntry ae = this.addressEntries.get(position);
-
-                ArrayList<String> info = new ArrayList<>();
-                if (ae.device.length() > 0) {
-                    info.add(ae.device);
-                }
-
-                if (ae.multicast) {
-                    info.add("multicast");
-                }
-
-                label.setText(ae.address + (info.isEmpty() ? "" : (" (" + Utils.join(info) + ")")));
-
-                if (AddressEntry.listIndexOf(addressEntriesMarked, ae) < 0) {
-                    label.setTextColor(Color.BLACK);
-                } else {
-                    label.setTextColor(this.markColor);
-                }
-            }
-
-            return view;
-        }
-    }
-
     private void updateAddressEditTextButtons() {
         String address = addressEditText.getText().toString();
 
@@ -326,7 +245,7 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
     /*
      * Create AddressEntry from address string.
      * Do not perform any domain lookup
-    */
+     */
     AddressEntry parseAddress(String address) {
         // instead of parsing, lookup in known addresses first
         AddressEntry ae = AddressEntry.findAddressEntry(systemAddressList, address);
@@ -359,5 +278,85 @@ public class AddressActivity extends MeshengerActivity implements ServiceConnect
 
     private void log(String s) {
         Log.d(this, s);
+    }
+
+    public class AddressListAdapter extends BaseAdapter {
+        private final Activity context;
+        private final int markColor;
+        private List<AddressEntry> addressEntries;
+        private List<AddressEntry> addressEntriesMarked;
+
+        public AddressListAdapter(Activity context, int markColor) {
+            this.context = context;
+            this.markColor = markColor;
+            this.addressEntries = new ArrayList<>();
+            this.addressEntriesMarked = new ArrayList<>();
+        }
+
+        public boolean isEmpty() {
+            return this.addressEntries.isEmpty();
+        }
+
+        public void update(List<AddressEntry> addressEntries, List<AddressEntry> addressEntriesMarked) {
+            this.addressEntries = addressEntries;
+            this.addressEntriesMarked = addressEntriesMarked;
+        }
+
+        @Override
+        public int getCount() {
+            if (isEmpty()) {
+                return 1;
+            }
+            return addressEntries.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            if (isEmpty()) {
+                return null;
+            }
+            return addressEntries.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+            if (view == null) {
+                LayoutInflater inflater = context.getLayoutInflater();
+                view = inflater.inflate(R.layout.activity_address_item, parent, false);
+            }
+
+            TextView label = view.findViewById(R.id.label);
+
+            if (isEmpty()) {
+                label.setText(getResources().getString(R.string.empty_list_item));
+                label.setTextColor(Color.BLACK);
+            } else {
+                AddressEntry ae = this.addressEntries.get(position);
+
+                ArrayList<String> info = new ArrayList<>();
+                if (ae.device.length() > 0) {
+                    info.add(ae.device);
+                }
+
+                if (ae.multicast) {
+                    info.add("multicast");
+                }
+
+                label.setText(ae.address + (info.isEmpty() ? "" : (" (" + Utils.join(info) + ")")));
+
+                if (AddressEntry.listIndexOf(addressEntriesMarked, ae) < 0) {
+                    label.setTextColor(Color.BLACK);
+                } else {
+                    label.setTextColor(this.markColor);
+                }
+            }
+
+            return view;
+        }
     }
 }

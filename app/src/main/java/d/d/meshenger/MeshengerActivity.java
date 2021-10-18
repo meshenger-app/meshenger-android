@@ -1,6 +1,7 @@
 package d.d.meshenger;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -8,7 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 /*
  * Activity base class to apply night mode
-*/
+ */
 public class MeshengerActivity extends AppCompatActivity {
     boolean dark_active; // dark mode
 

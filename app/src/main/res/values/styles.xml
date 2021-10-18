@@ -12,7 +12,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    
+
     <style name="AppTheme.Light" parent="AppTheme">
         <item name="primaryTextColor">@android:color/black</item>
         <item name="secondaryTextColor">@android:color/darker_gray</item>

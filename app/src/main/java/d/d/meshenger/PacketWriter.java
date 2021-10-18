@@ -23,9 +23,9 @@ class PacketWriter {
     }
 
     public void writeMessage(byte[] message) throws IOException {
-    	writeMessageHeader(this.header, message.length);
-    	// need to concatenate?
-    	this.os.write(this.header);
+        writeMessageHeader(this.header, message.length);
+        // need to concatenate?
+        this.os.write(this.header);
         this.os.write(message);
     }
 

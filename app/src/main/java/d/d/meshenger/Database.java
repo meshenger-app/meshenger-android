@@ -11,56 +11,13 @@ import java.util.Arrays;
 
 
 class Database {
+    static String version = "3.0.3"; // current version
     Settings settings;
     ArrayList<Contact> contacts;
-    static String version = "3.0.3"; // current version
 
     Database() {
         this.contacts = new ArrayList<>();
         this.settings = new Settings();
-    }
-
-    public void addContact(Contact contact) {
-        int idx = findContact(contact.getPublicKey());
-        if (idx >= 0) {
-            // contact exists - replace
-            this.contacts.set(idx, contact);
-        } else {
-            this.contacts.add(contact);
-        }
-    }
-
-    public void deleteContact(byte[] publicKey) {
-        int idx = this.findContact(publicKey);
-        if (idx >= 0) {
-            this.contacts.remove(idx);
-        }
-    }
-
-    public int findContact(byte[] publicKey) {
-        for (int i = 0; i < this.contacts.size(); i += 1) {
-            if (Arrays.equals(this.contacts.get(i).getPublicKey(), publicKey)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public void onDestroy() {
-        // zero keys from memory
-        if (this.settings.getSecretKey() != null) {
-            Arrays.fill(this.settings.getSecretKey(), (byte) 0);
-        }
-
-        if (this.settings.getPublicKey() != null) {
-            Arrays.fill(this.settings.getPublicKey(), (byte) 0);
-        }
-
-        for (Contact contact : this.contacts) {
-            if (contact.getPublicKey() != null) {
-                Arrays.fill(contact.getPublicKey(), (byte) 0);
-            }
-        }
     }
 
     public static Database load(String path, String password) throws IOException, JSONException {
@@ -77,7 +34,7 @@ class Database {
         }
 
         JSONObject obj = new JSONObject(
-            new String(data, Charset.forName("UTF-8"))
+                new String(data, Charset.forName("UTF-8"))
         );
 
         boolean upgraded = upgradeDatabase(obj.getString("version"), Database.version, obj);
@@ -146,7 +103,7 @@ class Database {
         JSONArray array = obj.getJSONArray("contacts");
         for (int i = 0; i < array.length(); i += 1) {
             db.contacts.add(
-                Contact.importJSON(array.getJSONObject(i), true)
+                    Contact.importJSON(array.getJSONObject(i), true)
             );
         }
 
@@ -159,5 +116,48 @@ class Database {
 
     private static void log(String s) {
         Log.d("Database", s);
+    }
+
+    public void addContact(Contact contact) {
+        int idx = findContact(contact.getPublicKey());
+        if (idx >= 0) {
+            // contact exists - replace
+            this.contacts.set(idx, contact);
+        } else {
+            this.contacts.add(contact);
+        }
+    }
+
+    public void deleteContact(byte[] publicKey) {
+        int idx = this.findContact(publicKey);
+        if (idx >= 0) {
+            this.contacts.remove(idx);
+        }
+    }
+
+    public int findContact(byte[] publicKey) {
+        for (int i = 0; i < this.contacts.size(); i += 1) {
+            if (Arrays.equals(this.contacts.get(i).getPublicKey(), publicKey)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void onDestroy() {
+        // zero keys from memory
+        if (this.settings.getSecretKey() != null) {
+            Arrays.fill(this.settings.getSecretKey(), (byte) 0);
+        }
+
+        if (this.settings.getPublicKey() != null) {
+            Arrays.fill(this.settings.getPublicKey(), (byte) 0);
+        }
+
+        for (Contact contact : this.contacts) {
+            if (contact.getPublicKey() != null) {
+                Arrays.fill(contact.getPublicKey(), (byte) 0);
+            }
+        }
     }
 }

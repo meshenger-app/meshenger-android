@@ -10,8 +10,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -23,6 +21,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
 
 /*
  * Show splash screen, name setup dialog, database password dialog and
@@ -90,7 +91,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
                 }
                 break;
             case 6:
-               log("init 6: start contact list");
+                log("init 6: start contact list");
                 // set night mode
                 boolean nightMode = this.binder.getSettings().getNightMode();
                 AppCompatDelegate.setDefaultNightMode(

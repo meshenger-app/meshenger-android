@@ -15,14 +15,6 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import androidx.annotation.NonNull;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +26,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONException;
 
@@ -48,6 +48,14 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
     private FloatingActionButton fabScan;
     private FloatingActionButton fabGen;
     private FloatingActionButton fab;
+    private BroadcastReceiver refreshContactListReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //refreshContactList();
+            ContactListAdapter adapter = (ContactListAdapter) contactListView.getAdapter();
+            adapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -249,7 +257,7 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
     protected void onDestroy() {
         log("onDestroy");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshContactListReceiver);
-        ((AudioManager)this.getSystemService(Context.AUDIO_SERVICE)).setSpeakerphoneOn(false);
+        ((AudioManager) this.getSystemService(Context.AUDIO_SERVICE)).setSpeakerphoneOn(false);
         super.onDestroy();
     }
 
@@ -291,15 +299,6 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private BroadcastReceiver refreshContactListReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //refreshContactList();
-            ContactListAdapter adapter = (ContactListAdapter) contactListView.getAdapter();
-            adapter.notifyDataSetChanged();
-        }
-    };
 
     @Override
     protected void onResume() {

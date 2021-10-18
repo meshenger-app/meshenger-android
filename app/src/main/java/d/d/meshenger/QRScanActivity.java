@@ -7,14 +7,15 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
-import androidx.annotation.NonNull;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.ResultPoint;
@@ -173,20 +174,20 @@ public class QRScanActivity extends MeshengerActivity implements BarcodeCallback
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         EditText et = new EditText(this);
         b.setTitle(R.string.paste_invitation)
-            .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                try {
-                    String data = et.getText().toString();
-                    addContact(data);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
-                }
-            })
-            .setNegativeButton(R.string.cancel, (dialog, i) -> {
-                dialog.cancel();
-                barcodeView.resume();
-            })
-            .setView(et);
+                .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                    try {
+                        String data = et.getText().toString();
+                        addContact(data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, (dialog, i) -> {
+                    dialog.cancel();
+                    barcodeView.resume();
+                })
+                .setView(et);
         b.show();
     }
 

@@ -1,14 +1,12 @@
 package d.d.meshenger;
 
+import static android.os.Looper.getMainLooper;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,11 +17,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static android.os.Looper.getMainLooper;
 
 
 public class EventListFragment extends Fragment implements AdapterView.OnItemClickListener {
@@ -31,6 +33,10 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
     private ListView eventListView;
     private EventListAdapter eventListAdapter;
     private FloatingActionButton fabDelete;
+
+    private static void log(String s) {
+        Log.d(EventListFragment.class.getSimpleName(), s);
+    }
 
     @Nullable
     @Override
@@ -145,7 +151,7 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
 
             String address = Utils.getGeneralizedAddress(event.address);
             EventListFragment.this.mainActivity.binder.addContact(
-                new Contact(name, event.pubKey, Arrays.asList(address))
+                    new Contact(name, event.pubKey, Arrays.asList(address))
             );
 
             Toast.makeText(this.mainActivity, R.string.done, Toast.LENGTH_SHORT).show();
@@ -180,9 +186,5 @@ public class EventListFragment extends Fragment implements AdapterView.OnItemCli
 
     public void onServiceConnected() {
         refreshEventList();
-    }
-
-    private static void log(String s) {
-        Log.d(EventListFragment.class.getSimpleName(), s);
     }
 }

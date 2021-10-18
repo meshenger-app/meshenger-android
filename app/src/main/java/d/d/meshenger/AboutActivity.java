@@ -15,7 +15,7 @@ public class AboutActivity extends MeshengerActivity {
         setTitle(getResources().getString(R.string.menu_about));
 
         ((TextView) findViewById(R.id.versionTv)).setText(
-            Utils.getApplicationVersion(this)
+                Utils.getApplicationVersion(this)
         );
 
         findViewById(R.id.licenseTV).setOnClickListener(v -> {

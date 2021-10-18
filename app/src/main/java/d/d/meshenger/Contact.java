@@ -1,8 +1,8 @@
 package d.d.meshenger;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONArray;
 
 import java.io.Serializable;
 import java.net.ConnectException;
@@ -15,16 +15,14 @@ import java.util.Locale;
 
 
 public class Contact implements Serializable {
-    enum State { ONLINE, OFFLINE, PENDING };
-
     private String name;
+
+    ;
     private byte[] pubkey;
     private boolean blocked;
     private List<String> addresses;
-
     // contact state
     private State state = State.PENDING;
-
     // last working address (use this address next connection and for unknown contact initialization)
     private InetSocketAddress last_working_address = null;
 
@@ -40,6 +38,78 @@ public class Contact implements Serializable {
         this.pubkey = null;
         this.blocked = false;
         this.addresses = new ArrayList<>();
+    }
+
+    private static Socket establishConnection(InetSocketAddress address, int timeout) {
+        Socket socket = new Socket();
+        try {
+            // timeout to establish connection
+            socket.connect(address, timeout);
+            return socket;
+        } catch (SocketTimeoutException e) {
+            // ignore
+            e.printStackTrace();
+        } catch (ConnectException e) {
+            // device is online, but does not listen on the given port
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+
+        return null;
+    }
+
+    public static JSONObject exportJSON(Contact contact, boolean all) throws JSONException {
+        JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
+
+        object.put("name", contact.name);
+        object.put("public_key", Utils.byteArrayToHexString(contact.pubkey));
+
+        for (String address : contact.getAddresses()) {
+            array.put(address);
+        }
+        object.put("addresses", array);
+
+        if (all) {
+            object.put("blocked", contact.blocked);
+        }
+
+        return object;
+    }
+
+    public static Contact importJSON(JSONObject object, boolean all) throws JSONException {
+        Contact contact = new Contact();
+
+        contact.name = object.getString("name");
+        contact.pubkey = Utils.hexStringToByteArray(object.getString("public_key"));
+
+        if (!Utils.isValidName(contact.name)) {
+            throw new JSONException("Invalid Name.");
+        }
+
+        if (contact.pubkey == null) {
+            throw new JSONException("Invalid Public Key.");
+        }
+
+        JSONArray array = object.getJSONArray("addresses");
+        for (int i = 0; i < array.length(); i += 1) {
+            contact.addAddress(array.getString(i).toLowerCase(Locale.ROOT).trim());
+        }
+
+        if (all) {
+            contact.blocked = object.getBoolean("blocked");
+        }
+
+        return contact;
     }
 
     public State getState() {
@@ -102,37 +172,10 @@ public class Contact implements Serializable {
         this.blocked = blocked;
     }
 
-    private static Socket establishConnection(InetSocketAddress address, int timeout) {
-        Socket socket = new Socket();
-        try {
-            // timeout to establish connection
-            socket.connect(address, timeout);
-            return socket;
-        } catch (SocketTimeoutException e) {
-            // ignore
-            e.printStackTrace();
-        } catch (ConnectException e) {
-            // device is online, but does not listen on the given port
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (socket != null) {
-            try {
-                socket.close();
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-
-        return null;
-    }
-
     /*
-    * Create a connection to the contact.
-    * Try/Remember the last successful address.
-    */
+     * Create a connection to the contact.
+     * Try/Remember the last successful address.
+     */
     public Socket createSocket() {
         Socket socket = null;
         int connectionTimeout = 300;
@@ -157,62 +200,19 @@ public class Contact implements Serializable {
         return null;
     }
 
+    public InetSocketAddress getLastWorkingAddress() {
+        return this.last_working_address;
+    }
+
     // set good address to try first next time
     public void setLastWorkingAddress(InetSocketAddress address) {
         log("setLatestWorkingAddress: " + address);
         this.last_working_address = address;
     }
 
-    public InetSocketAddress getLastWorkingAddress() {
-        return this.last_working_address;
-    }
-
-    public static JSONObject exportJSON(Contact contact, boolean all) throws JSONException {
-        JSONObject object = new JSONObject();
-        JSONArray array = new JSONArray();
-
-        object.put("name", contact.name);
-        object.put("public_key", Utils.byteArrayToHexString(contact.pubkey));
-
-        for (String address : contact.getAddresses()) {
-            array.put(address);
-        }
-        object.put("addresses", array);
-
-        if (all) {
-            object.put("blocked", contact.blocked);
-        }
-
-        return object;
-    }
-
-    public static Contact importJSON(JSONObject object, boolean all) throws JSONException {
-        Contact contact = new Contact();
-
-        contact.name = object.getString("name");
-        contact.pubkey = Utils.hexStringToByteArray(object.getString("public_key"));
-
-        if (!Utils.isValidName(contact.name)) {
-            throw new JSONException("Invalid Name.");
-        }
-
-        if (contact.pubkey == null) {
-            throw new JSONException("Invalid Public Key.");
-        }
-
-        JSONArray array = object.getJSONArray("addresses");
-        for (int i = 0; i < array.length(); i += 1) {
-            contact.addAddress(array.getString(i).toLowerCase(Locale.ROOT).trim());
-        }
-
-        if (all) {
-            contact.blocked = object.getBoolean("blocked");
-        }
-
-        return contact;
-    }
-
     private void log(String s) {
         Log.d(this, s);
     }
+
+    enum State {ONLINE, OFFLINE, PENDING}
 }

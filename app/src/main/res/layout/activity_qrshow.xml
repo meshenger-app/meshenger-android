@@ -7,9 +7,9 @@
     tools:context=".QRShowActivity">
 
     <ImageView
+        android:id="@+id/QRView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/QRView"/>
+        android:layout_height="wrap_content" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,7 +32,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/qr_glass"
-        android:background="@color/colorPrimary" />
+        android:background="@color/colorPrimary"
+        app:srcCompat="@drawable/qr_glass" />
 
 </RelativeLayout>

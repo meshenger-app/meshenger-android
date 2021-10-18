@@ -5,9 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import android.text.TextUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +29,13 @@ import java.util.regex.Pattern;
 
 
 class Utils {
+
+    private static final Pattern NAME_PATTERN = Pattern.compile("[\\w _-]+");
+    private final static char[] hexArray = "0123456789abcdef".toCharArray();
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("[a-z0-9\\-.]+");
+    private static final Pattern IPV4_PATTERN = Pattern.compile("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$");
+    private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$");
+    private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)$");
 
     public static boolean hasReadPermission(Activity activity) {
         return (ContextCompat.checkSelfPermission(
@@ -87,8 +95,6 @@ class Utils {
         return Arrays.asList(parts);
     }
 
-    private static final Pattern NAME_PATTERN = Pattern.compile("[\\w _-]+");
-
     // check for a name that has no funny unicode characters to not let them look to much like other names
     public static boolean isValidName(String name) {
         if (name == null || name.length() == 0) {
@@ -101,8 +107,6 @@ class Utils {
 
         return NAME_PATTERN.matcher(name).matches();
     }
-
-    private final static char[] hexArray = "0123456789abcdef".toCharArray();
 
     public static String byteArrayToHexString(byte[] bytes) {
         if (bytes == null) {
@@ -134,9 +138,9 @@ class Utils {
         if (addr == null || addr.length() == 0) {
             return null;
         }
-        try{
-            if(isIPv6(addr)){
-                return new InetSocketAddress(InetAddress.getByName("["+addr+"]"), defaultPort);
+        try {
+            if (isIPv6(addr)) {
+                return new InetSocketAddress(InetAddress.getByName("[" + addr + "]"), defaultPort);
             } else {
                 return new InetSocketAddress(InetAddress.getByName(addr), defaultPort);
             }
@@ -212,8 +216,6 @@ class Utils {
         return true;
     }
 
-    private static final Pattern DOMAIN_PATTERN = Pattern.compile("[a-z0-9\\-.]+");
-
     // check if string is a domain (heuristic)
     public static boolean isDomain(String domain) {
         if (domain == null || domain.length() == 0) {
@@ -238,10 +240,6 @@ class Utils {
 
         return DOMAIN_PATTERN.matcher(domain).matches();
     }
-
-    private static final Pattern IPV4_PATTERN = Pattern.compile("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$");
-    private static final Pattern IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$");
-    private static final Pattern IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)$");
 
     // check if a string is an IP address (heuristic)
     public static boolean isIP(String address) {
@@ -273,15 +271,15 @@ class Utils {
                     }
 
                     String fullAddress = addr.getHostAddress();
-                    if(fullAddress.indexOf('%')>0){
+                    if (fullAddress.indexOf('%') > 0) {
                         String subaddress = fullAddress.substring(0, fullAddress.indexOf('%'));
-                        if(isIPv6(subaddress)){
-                            subaddress=""+subaddress+"";
+                        if (isIPv6(subaddress)) {
+                            subaddress = "" + subaddress + "";
                         }
                         addressList.add(new AddressEntry(subaddress, nif.getName(), addr.isMulticastAddress()));
                     } else {
-                        if(isIPv6(fullAddress)){
-                            fullAddress=""+fullAddress+"";
+                        if (isIPv6(fullAddress)) {
+                            fullAddress = "" + fullAddress + "";
                         }
                         addressList.add(new AddressEntry(fullAddress, nif.getName(), addr.isMulticastAddress()));
                     }

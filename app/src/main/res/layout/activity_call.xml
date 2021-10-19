@@ -36,7 +36,7 @@
             android:alpha="0.6"
             android:background="@color/colorBackgroundDark"
             android:lines="11"
-            android:text="Statistic..."
+            android:text=""
             android:textColor="@android:color/holo_green_light"
             android:textSize="15sp" />
 

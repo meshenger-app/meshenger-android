@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Meshenger</string>
-    <string name="action_settings">Settings</string>
     <string name="name_prompt">What should be your name?</string>
     <string name="scan_invitation">Scan This QR-Code</string>
     <string name="scan_invited">QR-Code Scanning</string>
@@ -10,11 +9,8 @@
     <string name="cancel">cancel</string>
     <string name="next">next</string>
     <string name="enter_password">Enter password</string>
-    <string name="path_title">Import/Export Path</string>
-    <string name="password_title">Password</string>
     <string name="camera_permission_request">Camera permission needed to scan codes</string>
     <string name="invalid_qr">Invalid QR-Code</string>
-    <string name="network_connect_invitation">No information available, please connect to a network</string>
     <string name="contact_has_no_address_warning">Warning: Contact has no address</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_license">License</string>
@@ -41,12 +37,10 @@
     <string name="share">Share</string>
     <string name="block">Block</string>
     <string name="unblock">Unblock</string>
-    <string name="replace">Replace</string>
     <string name="pick">Take</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
     <string name="contact_edit">Edit Contact</string>
-    <string name="contact_exists">Contact Exists</string>
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
     <string name="empty_list_item">Empty</string>
@@ -56,17 +50,12 @@
     <string name="call_ringing">Ringing...</string>
     <string name="call_ended">Call Ended</string>
     <string name="call_error">Error</string>
-    <string name="button_select">Select</string>
-    <string name="button_import">Import</string>
-    <string name="button_export">Export</string>
     <string name="button_abort">Abort</string>
     <string name="button_rename">Rename</string>
     <string name="button_replace">Replace</string>
     <string name="button_save">Save</string>
     <string name="button_add">Add</string>
     <string name="button_remove">Remove</string>
-    <string name="title_contacts">Contacts</string>
-    <string name="title_history">History</string>
     <string name="about_version">App Version:</string>
     <string name="about_info">App Info:</string>
     <string name="app_info">Meshenger app allows voice and video communication without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
@@ -74,12 +63,6 @@
     <string name="qr_code_address_list">QR-Code Address List</string>
     <string name="currently_active">Currently Active</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. If no MAC address is visible, then enable your WiFi.</string>
-    <string name="file_does_not_exist">File does not exist</string>
-    <string name="no_path_selected">No path selected</string>
-    <string name="file_already_exists">File already exists</string>
-    <string name="invalid_address">Invalid Address</string>
-    <string name="no_file_name">No file name</string>
-    <string name="contact_already_exists">Contact already exists</string>
     <string name="enter_contact_name">Enter contact name.</string>
     <string name="wrong_password">Wrong password</string>
     <string name="contact_name_conflict">A contact with the same name exists.</string>
@@ -87,7 +70,6 @@
     <string name="contact_name_empty">Contact name is empty.</string>
     <string name="contact_name_exists">A contact with that name exists already.</string>
     <string name="contact_remove">Remove contact?</string>
-    <string name="error">Error</string>
     <string name="ok">Ok</string>
     <string name="skip">Skip</string>
     <string name="exit">Exit</string>

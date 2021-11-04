@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class MainService extends Service implements Runnable {
     public static final int serverPort = 10001;
     private Database db = null;

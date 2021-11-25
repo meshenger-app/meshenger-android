@@ -284,7 +284,12 @@ class Utils {
                         continue;
                     }
 
-                    addressList.add(new AddressEntry(addr.getHostAddress(), nif.getName(), addr.isMulticastAddress()));
+                    String ip = addr.getHostAddress();
+                    // remove interface
+                    if (ip.indexOf('%') > 0) {
+                        ip = ip.substring(0, ip.indexOf('%'));
+                    }
+                    addressList.add(new AddressEntry(ip, nif.getName(), addr.isMulticastAddress()));
                 }
             }
         } catch (Exception ex) {

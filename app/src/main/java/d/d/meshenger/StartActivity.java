@@ -220,7 +220,7 @@ public class StartActivity extends MeshengerActivity implements ServiceConnectio
 
             builder.setNegativeButton(R.string.skip, (DialogInterface dialog, int id) -> {
                 dialog.cancel();
-                // continue with out address configuration
+                // continue without address configuration
                 continueInit();
             });
 

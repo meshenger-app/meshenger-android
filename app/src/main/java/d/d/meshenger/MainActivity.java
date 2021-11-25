@@ -205,6 +205,20 @@ public class MainActivity extends MeshengerActivity implements ServiceConnection
     }
 
     @Override
+    protected void onStart() {
+        log("onStart");
+        super.onStart();
+        bindService(new Intent(this, MainService.class), this, Service.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        log("onStop");
+        super.onStop();
+        unbindService(this);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {

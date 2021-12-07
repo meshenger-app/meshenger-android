@@ -79,7 +79,7 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/baseline_phone_black_48"
+                android:src="@drawable/baseline_phone_48"
                 android:visibility="gone" />
 
             <ImageButton
@@ -89,7 +89,7 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/baseline_phone_missed_black_48" />
+                android:src="@drawable/baseline_phone_missed_48" />
 
             <RelativeLayout
                 android:id="@+id/videoStreamSwitchLayout"
@@ -104,7 +104,7 @@
                     android:background="@drawable/accept_button_round"
                     android:padding="@dimen/call_button_image_padding"
                     android:scaleType="fitXY"
-                    android:src="@drawable/baseline_camera_alt_black_48" />
+                    android:src="@drawable/baseline_camera_alt_48" />
 
             </RelativeLayout>
 
@@ -116,7 +116,7 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/baseline_switch_camera_black_48"
+                android:src="@drawable/baseline_switch_camera_48"
                 android:visibility="gone" />
 
             <ImageButton

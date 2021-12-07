@@ -380,7 +380,7 @@ public class CallActivity extends CupLinkActivity implements ServiceConnection, 
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                button.setImageResource(currentCall.isVideoEnabled() ? R.drawable.baseline_camera_alt_black_off_48 : R.drawable.baseline_camera_alt_black_48);
+                button.setImageResource(currentCall.isVideoEnabled() ? R.drawable.baseline_camera_alt_off_48 : R.drawable.baseline_camera_alt_48);
                 Animation a = new ScaleAnimation(0.0f, 1.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 a.setDuration(buttonAnimationDuration / 2);
                 button.startAnimation(a);

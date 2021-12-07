@@ -5,11 +5,11 @@ android {
     }
     compileSdkVersion 31
     defaultConfig {
-        applicationId "d.d.meshenger"
+        applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 317
-        versionName "0.3.1.7"
+        versionCode 318
+        versionName "0.3.1.8"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)

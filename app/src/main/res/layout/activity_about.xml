@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:orientation="vertical"
         android:paddingBottom="40dp">
@@ -17,7 +17,7 @@
             android:layout_height="150dp"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:src="@drawable/logo" />
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
             android:layout_marginTop="10dp"
             android:text="@string/app_name"
             android:textColor="?attr/primaryTextColor"
-            android:textSize="22dp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
@@ -35,14 +35,14 @@
             android:layout_marginTop="20dp"
             android:text="@string/about_version"
             android:textColor="?attr/primaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/versionTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -50,14 +50,14 @@
             android:layout_marginTop="30dp"
             android:text="@string/about_info"
             android:textColor="?attr/primaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_info"
             android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,14 +65,14 @@
             android:layout_marginTop="30dp"
             android:text="@string/about_source"
             android:textColor="?attr/primaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="web"
             android:text="@string/source_link"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
             android:layout_marginTop="30dp"
             android:text="@string/about_license"
             android:textColor="?attr/primaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/licenseTV"
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:text="@string/about_license_version"
             android:textColor="?attr/secondaryTextColor"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
     </LinearLayout>
 

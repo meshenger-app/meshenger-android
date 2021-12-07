@@ -19,9 +19,9 @@
     <application
         android:name="org.rivchain.cuplink.MainApplication"
         android:allowBackup="true"
-        android:icon="@drawable/logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logo"
+        android:roundIcon="@mipmap/ic_launcher"
         android:largeHeap="true"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"

@@ -38,7 +38,7 @@ import java.io.IOException;
 import org.rivchain.cuplink.util.StatsReportUtil;
 
 
-public class CallActivity extends MeshengerActivity implements ServiceConnection, SensorEventListener {
+public class CallActivity extends CupLinkActivity implements ServiceConnection, SensorEventListener {
     private final long buttonAnimationDuration = 400;
     private final int CAMERA_PERMISSION_REQUEST_CODE = 2;
     BroadcastReceiver declineBroadcastReceiver = new BroadcastReceiver() {

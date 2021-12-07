@@ -41,7 +41,7 @@ import java.util.List;
 
 
 // the main view with tabs
-public class MainActivity extends MeshengerActivity implements ServiceConnection, AdapterView.OnItemClickListener {
+public class MainActivity extends CupLinkActivity implements ServiceConnection, AdapterView.OnItemClickListener {
     public MainService.MainBinder binder;
     private ListView contactListView;
     private boolean fabExpanded = false;

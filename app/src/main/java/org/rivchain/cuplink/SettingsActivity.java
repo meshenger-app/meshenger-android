@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class SettingsActivity extends MeshengerActivity implements ServiceConnection {
+public class SettingsActivity extends CupLinkActivity implements ServiceConnection {
     private MainService.MainBinder binder;
 
     @Override

@@ -21,7 +21,7 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 
-public class QRShowActivity extends MeshengerActivity implements ServiceConnection {
+public class QRShowActivity extends CupLinkActivity implements ServiceConnection {
     private Contact contact = null;
     private MainService.MainBinder binder;
     private BroadcastReceiver receiver = new BroadcastReceiver() {

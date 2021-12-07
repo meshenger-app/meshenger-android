@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getContext();
 
-        assertEquals("org.rivchain.meshenger", appContext.getPackageName());
+        assertEquals("org.rivchain.cuplink", appContext.getPackageName());
     }
 }

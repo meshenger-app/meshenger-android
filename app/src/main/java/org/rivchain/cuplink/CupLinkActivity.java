@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 /*
  * Activity base class to apply night mode
  */
-public class MeshengerActivity extends AppCompatActivity {
+public class CupLinkActivity extends AppCompatActivity {
     boolean dark_active; // dark mode
 
     @Override

@@ -57,7 +57,7 @@
     <string name="button_remove">Retirer</string>
     <string name="about_version">Version de l’application :</string>
     <string name="about_info">Informations sur l’application :</string>
-    <string name="app_info">L’application Meshenger permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les codes QR des contacts, les uns des autres. Cela fonctionne sur la plupart des réseaux, p. ex. à la maison, dans les réseaux communautaires ou au travail.</string>
+    <string name="app_info">L’application CupLink permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les codes QR des contacts, les uns des autres. Cela fonctionne sur la plupart des réseaux, p. ex. à la maison, dans les réseaux communautaires ou au travail.</string>
     <string name="address_management">Gestion des adresses</string>
     <string name="qr_code_address_list">Liste d’adresses QR-Code</string>
     <string name="currently_active">Actuellement actif</string>

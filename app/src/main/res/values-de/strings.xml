@@ -57,7 +57,7 @@
     <string name="button_remove">Entfernen</string>
     <string name="about_version">App Ausführung:</string>
     <string name="about_info">App Info:</string>
-    <string name="app_info">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
+    <string name="app_info">Die CupLink-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
     <string name="address_management">Adressen Verwaltung</string>
     <string name="qr_code_address_list">QR-Code Adress Liste</string>
     <string name="currently_active">Gerade Aktiv</string>

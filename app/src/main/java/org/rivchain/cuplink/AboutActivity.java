@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 
-public class AboutActivity extends MeshengerActivity {
+public class AboutActivity extends CupLinkActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

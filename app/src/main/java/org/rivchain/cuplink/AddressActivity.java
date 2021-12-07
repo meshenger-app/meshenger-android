@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class AddressActivity extends MeshengerActivity implements ServiceConnection {
+public class AddressActivity extends CupLinkActivity implements ServiceConnection {
     Spinner storedAddressSpinner;
     Spinner systemAddressSpinner;
     Button pickStoredAddressButton;

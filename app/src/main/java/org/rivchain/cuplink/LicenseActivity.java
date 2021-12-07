@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 
-public class LicenseActivity extends MeshengerActivity {
+public class LicenseActivity extends CupLinkActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

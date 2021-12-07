@@ -29,7 +29,7 @@ import androidx.appcompat.app.AppCompatDelegate;
  * Show splash screen, name setup dialog, database password dialog and
  * start background service before starting the MainActivity.
  */
-public class StartActivity extends MeshengerActivity implements ServiceConnection {
+public class StartActivity extends CupLinkActivity implements ServiceConnection {
     private MainService.MainBinder binder;
     private int startState = 0;
 

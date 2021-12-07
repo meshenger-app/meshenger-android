@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class QRScanActivity extends MeshengerActivity implements BarcodeCallback, ServiceConnection {
+public class QRScanActivity extends CupLinkActivity implements BarcodeCallback, ServiceConnection {
     private DecoratedBarcodeView barcodeView;
     private MainService.MainBinder binder;
 

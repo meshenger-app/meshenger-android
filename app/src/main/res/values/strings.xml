@@ -27,7 +27,7 @@
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_development_mode">Development Mode</string>
     <string name="about_source">Source Code:</string>
-    <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
+    <string name="source_link" translatable="false">https://github.com/RiV-chain/CupLink</string>
     <string name="about_license">License:</string>
     <string name="about_license_version">GPL-3.0-or-later</string>
     <string name="none">None</string>

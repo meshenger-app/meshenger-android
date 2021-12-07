@@ -26,7 +26,7 @@ public class MainApplication extends Application {
         plugin.setHttpMethod(HttpSender.Method.POST);
         DialogConfigurationBuilder dialog = new DialogConfigurationBuilder(this);
         dialog.withText("Sorry, the application crashed.");
-        dialog.withTitle("Meshenger");
+        dialog.withTitle("CupLink");
         dialog.withPositiveButtonText(base.getText(android.R.string.ok).toString());
         dialog.withNegativeButtonText(base.getText(android.R.string.cancel).toString());
         dialog.setCommentPrompt("Please describe what were you doing when the app crashed:");

@@ -223,7 +223,7 @@ public class CallActivity extends CupLinkActivity implements ServiceConnection, 
 
             calledWhileScreenOff = !((PowerManager) getSystemService(POWER_SERVICE)).isScreenOn();
             passiveWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(
-                    PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "meshenger:wakeup"
+                    PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.PARTIAL_WAKE_LOCK, "cuplink:wakeup"
             );
             passiveWakeLock.acquire(10000);
 

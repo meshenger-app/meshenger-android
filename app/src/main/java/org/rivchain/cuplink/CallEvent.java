@@ -11,6 +11,7 @@ class CallEvent {
     InetAddress address; // may be null in case the call attempt failed
     Type type;
     Date date;
+
     CallEvent(byte[] pubKey, InetAddress address, Type type) {
         this.pubKey = pubKey;
         this.address = address;

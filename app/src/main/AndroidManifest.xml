@@ -21,8 +21,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher"
         android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
@@ -41,15 +41,15 @@
 
         <service
             android:name="org.rivchain.cuplink.MainService"
-            android:exported="false"
             android:enabled="true"
+            android:exported="false"
             android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name="org.rivchain.cuplink.StartActivity"
-            android:launchMode="singleTask"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

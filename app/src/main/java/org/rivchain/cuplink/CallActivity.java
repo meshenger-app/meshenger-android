@@ -30,12 +30,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.rivchain.cuplink.util.StatsReportUtil;
 import org.webrtc.RTCStatsCollectorCallback;
 import org.webrtc.RTCStatsReport;
 
 import java.io.IOException;
-
-import org.rivchain.cuplink.util.StatsReportUtil;
 
 
 public class CallActivity extends CupLinkActivity implements ServiceConnection, SensorEventListener {

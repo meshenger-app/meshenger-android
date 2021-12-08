@@ -82,10 +82,6 @@ public class SettingsActivity extends CupLinkActivity implements ServiceConnecti
             showChangePasswordDialog();
         });
 
-        findViewById(R.id.changeIceServersLayout).setOnClickListener((View view) -> {
-            showChangeIceServersDialog();
-        });
-
         String username = this.binder.getSettings().getUsername();
         ((TextView) findViewById(R.id.nameTv)).setText(
                 username.length() == 0 ? getResources().getString(R.string.none) : username
@@ -99,11 +95,6 @@ public class SettingsActivity extends CupLinkActivity implements ServiceConnecti
         String password = this.binder.getDatabasePassword();
         ((TextView) findViewById(R.id.passwordTv)).setText(
                 password.isEmpty() ? getResources().getString(R.string.none) : "********"
-        );
-
-        List<String> iceServers = this.binder.getSettings().getIceServers();
-        ((TextView) findViewById(R.id.iceServersTv)).setText(
-                iceServers.isEmpty() ? getResources().getString(R.string.none) : Utils.join(iceServers)
         );
 
         boolean blockUnknown = this.binder.getSettings().getBlockUnknown();
@@ -140,12 +131,6 @@ public class SettingsActivity extends CupLinkActivity implements ServiceConnecti
             this.binder.getSettings().setDevelopmentMode(isChecked);
             this.binder.saveDatabase();
         });
-
-        if (developmentMode) {
-            findViewById(R.id.changeIceServersLayout).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(R.id.changeIceServersLayout).setVisibility(View.GONE);
-        }
 
         getLocale();
     }
@@ -238,35 +223,6 @@ public class SettingsActivity extends CupLinkActivity implements ServiceConnecti
                 })
                 .setNegativeButton(getResources().getText(R.string.cancel), null)
                 .show();
-    }
-
-    private void showChangeIceServersDialog() {
-        Settings settings = SettingsActivity.this.binder.getSettings();
-
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_set_ice_server);
-
-        TextView iceServersTextView = dialog.findViewById(R.id.iceServersEditText);
-        Button saveButton = dialog.findViewById(R.id.SaveButton);
-        Button abortButton = dialog.findViewById(R.id.AbortButton);
-
-        iceServersTextView.setText(Utils.join(settings.getIceServers()));
-
-        saveButton.setOnClickListener((View v) -> {
-            List<String> iceServers = Utils.split(iceServersTextView.getText().toString());
-            settings.setIceServers(iceServers);
-
-            // done
-            Toast.makeText(SettingsActivity.this, R.string.done, Toast.LENGTH_SHORT).show();
-
-            dialog.cancel();
-        });
-
-        abortButton.setOnClickListener((View v) -> {
-            dialog.cancel();
-        });
-
-        dialog.show();
     }
 
     @Override

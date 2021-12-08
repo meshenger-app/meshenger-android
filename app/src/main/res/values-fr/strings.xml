@@ -61,7 +61,7 @@
     <string name="address_management">Gestion des adresses</string>
     <string name="qr_code_address_list">Liste d’adresses QR-Code</string>
     <string name="currently_active">Actuellement actif</string>
-    <string name="address_management_help_text">Choisissez une ou plusieurs adresses à intégrer dans votre code QR. Une bonne idée consiste à utiliser l’adresse MAC de l’adaptateur Wi-Fi (wlan0). Notez cependant que l’adresse est liée au matériel du périphérique. Allumez le Wi-Fi si l’adresse MAC n’est pas visible.</string>
+    <string name="address_management_help_text">Choisissez une ou plusieurs adresses à intégrer dans votre code QR.</string>
     <string name="enter_contact_name">Entrez le nom du contact.</string>
     <string name="wrong_password">Mot de passe non valide</string>
     <string name="contact_name_conflict">Un contact ayant le même nom existe déjà.</string>

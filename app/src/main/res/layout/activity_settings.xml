@@ -26,14 +26,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_change_name"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/nameTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/secondaryTextColor"
-                    android:textSize="15dp" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -49,14 +49,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_change_language"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/localeTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/secondaryTextColor"
-                    android:textSize="15dp" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -71,14 +71,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_change_address"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/addressTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/secondaryTextColor"
-                    android:textSize="15dp" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -93,37 +93,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_change_password"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/passwordTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/secondaryTextColor"
-                    android:textSize="15dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/changeIceServersLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_change_ice_servers"
-                    android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
-
-                <TextView
-                    android:id="@+id/iceServersTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="?attr/secondaryTextColor"
-                    android:textSize="15dp" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -137,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_block_unknown"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <CheckBox
                     android:id="@+id/checkBoxBlockUnknown"
@@ -159,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_nightmode"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <CheckBox
                     android:id="@+id/checkBoxNightMode"
@@ -182,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/settings_development_mode"
                     android:textColor="?attr/primaryTextColor"
-                    android:textSize="25dp" />
+                    android:textSize="25sp" />
 
                 <CheckBox
                     android:id="@+id/checkBoxDevelopmentMode"

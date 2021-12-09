@@ -211,6 +211,12 @@ public class AddressActivity extends CupLinkActivity implements ServiceConnectio
                 addButton.setEnabled(false);
             }
         }
+        boolean nightMode = this.binder.getSettings().getNightMode();
+        if(nightMode) {
+            addressEditText.setTextColor(Color.WHITE);
+        } else {
+            addressEditText.setTextColor(Color.BLACK);
+        }
     }
 
     private void updateSpinners() {

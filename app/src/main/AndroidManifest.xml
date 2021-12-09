@@ -25,7 +25,9 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name="org.rivchain.cuplink.MainActivity"

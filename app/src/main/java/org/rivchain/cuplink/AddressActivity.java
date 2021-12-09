@@ -331,14 +331,10 @@ public class AddressActivity extends CupLinkActivity implements ServiceConnectio
             }
 
             TextView label = view.findViewById(R.id.label);
-            boolean nightMode = binder.getSettings().getNightMode();
+
             if (isEmpty()) {
                 label.setText(getResources().getString(R.string.empty_list_item));
-                if(nightMode){
-                    label.setTextColor(Color.WHITE);
-                } else {
-                    label.setTextColor(Color.BLACK);
-                }
+                label.setTextColor(Color.GRAY);
             } else {
                 AddressEntry ae = this.addressEntries.get(position);
 
@@ -354,11 +350,7 @@ public class AddressActivity extends CupLinkActivity implements ServiceConnectio
                 label.setText(ae.address + (info.isEmpty() ? "" : (" (" + Utils.join(info) + ")")));
 
                 if (AddressEntry.listIndexOf(addressEntriesMarked, ae) < 0) {
-                    if(nightMode){
-                        label.setTextColor(Color.WHITE);
-                    } else {
-                        label.setTextColor(Color.BLACK);
-                    }
+                    label.setTextColor(Color.GRAY);
                 } else {
                     label.setTextColor(this.markColor);
                 }

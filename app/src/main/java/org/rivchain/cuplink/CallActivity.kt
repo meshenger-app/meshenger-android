@@ -154,8 +154,8 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                     binder = iBinder as MainBinder
                     currentCall = RTCCall.startCall(
                             this@CallActivity,
-                            binder,
-                            contact,
+                            binder!!,
+                            contact!!,
                             activeCallback
                     )
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
@@ -386,7 +386,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             currentCall!!.decline()
         }
         currentCall!!.cleanup()
-        binder!!.addCallEvent(contact, callEventType)
+        binder!!.addCallEvent(contact!!, callEventType)
 
         //if (binder != null) {
         unbindService(connection!!)
@@ -394,9 +394,9 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         if (wakeLock != null) {
             wakeLock!!.release()
         }
-        if (currentCall != null && currentCall!!.commSocket != null && currentCall!!.commSocket.isConnected && !currentCall!!.commSocket.isClosed) {
+        if (currentCall != null && currentCall!!.commSocket != null && currentCall!!.commSocket!!.isConnected && !currentCall!!.commSocket!!.isClosed) {
             try {
-                currentCall!!.commSocket.close()
+                currentCall!!.commSocket!!.close()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -417,7 +417,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
-        currentCall = binder!!.currentCall
+        currentCall = binder!!.getCurrentCall()!!
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

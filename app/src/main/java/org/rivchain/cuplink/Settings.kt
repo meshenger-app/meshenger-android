@@ -10,13 +10,13 @@ class Settings {
     var secretKey: ByteArray? = null
     var publicKey: ByteArray? = null
     private var language = ""
-    private var nightMode = false
+    var nightMode = false
     var blockUnknown = false
-    private var developmentMode = false
-    private var addresses: MutableList<String>
+    var developmentMode = false
+    var addresses: MutableList<String>
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
-    private var iceServers: MutableList<String>
+    var iceServers: MutableList<String>
 
     fun getUsername(): String {
         return username
@@ -34,10 +34,12 @@ class Settings {
         this.language = language
     }
 
+    @JvmName("getNightMode1")
     fun getNightMode(): Boolean {
         return nightMode
     }
 
+    @JvmName("setNightMode1")
     fun setNightMode(nightMode: Boolean) {
         this.nightMode = nightMode
     }
@@ -47,18 +49,22 @@ class Settings {
         this.blockUnknown = blockUnknown
     }
 
+    @JvmName("getDevelopmentMode1")
     fun getDevelopmentMode(): Boolean {
         return developmentMode
     }
 
+    @JvmName("setDevelopmentMode1")
     fun setDevelopmentMode(developmentMode: Boolean) {
         this.developmentMode = developmentMode
     }
 
+    @JvmName("getAddresses1")
     fun getAddresses(): List<String> {
         return addresses
     }
 
+    @JvmName("setAddresses1")
     fun setAddresses(addresses: MutableList<String>) {
         this.addresses = addresses
     }
@@ -72,10 +78,12 @@ class Settings {
         addresses.add(address)
     }
 
+    @JvmName("getIceServers1")
     fun getIceServers(): List<String> {
         return iceServers
     }
 
+    @JvmName("setIceServers1")
     fun setIceServers(iceServers: MutableList<String>) {
         this.iceServers = iceServers
     }

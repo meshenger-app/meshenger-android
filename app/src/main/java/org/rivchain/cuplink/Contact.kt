@@ -12,7 +12,7 @@ import java.net.SocketTimeoutException
 import java.util.*
 
 class Contact : Serializable {
-    private var name: String
+    var name: String
     var publicKey: ByteArray?
         private set
     private var blocked: Boolean
@@ -62,7 +62,7 @@ class Contact : Serializable {
             for (address in addresses) {
                 try {
                     // also resolves domains
-                    addrs.add(Utils.parseInetSocketAddress(address, MainService.serverPort))
+                    addrs.add(Utils.parseInetSocketAddress(address, MainService.serverPort)!!)
                 } catch (e: Exception) {
                     log("invalid address: $address")
                     e.printStackTrace()
@@ -71,10 +71,12 @@ class Contact : Serializable {
             return addrs
         }
 
+    @JvmName("getName1")
     fun getName(): String {
         return name
     }
 
+    @JvmName("setName1")
     fun setName(name: String) {
         this.name = name
     }

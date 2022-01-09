@@ -58,7 +58,7 @@ class Database {
         @Throws(IOException::class, JSONException::class)
         fun load(path: String?, password: String?): Database {
             // read database file
-            var data = Utils.readExternalFile(path)
+            var data = Utils.readExternalFile(path!!)
 
             // encrypt database
             if (password != null && password.length > 0) {
@@ -90,7 +90,7 @@ class Database {
             }
 
             // write database file
-            Utils.writeExternalFile(path, data)
+            Utils.writeExternalFile(path!!, data)
         }
 
         @Throws(JSONException::class)

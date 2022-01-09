@@ -124,7 +124,7 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
     private fun initKeyPair() {
         val ae = storedAddressList!![storedAddressList!!.size - 1]
         // create secret/public key pair
-        val publicKey = Utils.parseInetSocketAddress(ae.address, 0).address.address
+        val publicKey = Utils.parseInetSocketAddress(ae.address, 0)!!.address.address
         val secretKey: ByteArray? = null
         val settings = binder!!.settings
         settings.publicKey = publicKey
@@ -220,7 +220,7 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             // IP address
             var mc = false
             try {
-                mc = Utils.parseInetSocketAddress(address, 0).address.isMulticastAddress
+                mc = Utils.parseInetSocketAddress(address, 0)!!.address.isMulticastAddress
             } catch (e: Exception) {
                 // ignore
             }

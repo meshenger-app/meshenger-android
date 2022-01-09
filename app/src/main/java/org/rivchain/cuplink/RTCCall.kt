@@ -83,8 +83,8 @@ class RTCCall : DataChannel.Observer {
         this.commSocket = commSocket
         listener = null
         this.binder = binder
-        ownPublicKey = binder.settings.publicKey
-        ownSecretKey = binder.settings.secretKey
+        ownPublicKey = binder.settings.publicKey!!
+        ownSecretKey = binder.settings.secretKey!!
         this.offer = offer
 
         // usually empty
@@ -102,8 +102,8 @@ class RTCCall : DataChannel.Observer {
         commSocket = null
         this.listener = listener
         this.binder = binder
-        ownPublicKey = binder.settings.publicKey
-        ownSecretKey = binder.settings.secretKey
+        ownPublicKey = binder.settings.publicKey!!
+        ownSecretKey = binder.settings.secretKey!!
         log("RTCCall created")
 
         // usually empty
@@ -554,7 +554,7 @@ class RTCCall : DataChannel.Observer {
         CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR
     }
 
-    interface OnStateChangeListener {
+    fun interface OnStateChangeListener {
         fun OnStateChange(state: CallState?)
     }
 

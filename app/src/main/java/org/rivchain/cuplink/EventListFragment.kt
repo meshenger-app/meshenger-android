@@ -28,7 +28,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         eventListView = view.findViewById(R.id.eventList)
         fabDelete = view.findViewById(R.id.fabDelete)
         fabDelete.setOnClickListener(View.OnClickListener { v: View? ->
-            mainActivity!!.binder.clearEvents()
+            mainActivity!!.binder!!.clearEvents()
             refreshEventList()
         })
         eventListAdapter = EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
@@ -43,8 +43,8 @@ class EventListFragment : Fragment(), OnItemClickListener {
             log("refreshEventList early return")
             return
         }
-        val events = mainActivity!!.binder.eventsCopy
-        val contacts = mainActivity!!.binder.contactsCopy
+        val events = mainActivity!!.binder!!.eventsCopy
+        val contacts = mainActivity!!.binder!!.contactsCopy
         Handler(Looper.getMainLooper()).post {
             log("refreshEventList update: " + events.size)
             eventListAdapter!!.update(events, contacts)
@@ -58,7 +58,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                 val block = res.getString(R.string.block)
                 val unblock = res.getString(R.string.unblock)
                 val qr = "QR-ify"
-                val contact = mainActivity!!.binder.getContactByPublicKey(event.pubKey)
+                val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
 
                 // allow to add unknown caller
                 if (contact == null) {
@@ -92,10 +92,10 @@ class EventListFragment : Fragment(), OnItemClickListener {
     }
 
     private fun setBlocked(event: CallEvent, blocked: Boolean) {
-        val contact = mainActivity!!.binder.getContactByPublicKey(event.pubKey)
+        val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
         if (contact != null) {
             contact.setBlocked(blocked)
-            mainActivity!!.binder.saveDatabase()
+            mainActivity!!.binder!!.saveDatabase()
         } else {
             // unknown contact
         }
@@ -114,12 +114,12 @@ class EventListFragment : Fragment(), OnItemClickListener {
                 Toast.makeText(mainActivity, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (mainActivity!!.binder.getContactByName(name) != null) {
+            if (mainActivity!!.binder!!.getContactByName(name) != null) {
                 Toast.makeText(mainActivity, R.string.contact_name_exists, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             val address = Utils.getGeneralizedAddress(event.address)
-            mainActivity!!.binder.addContact(
+            mainActivity!!.binder!!.addContact(
                     Contact(name, event.pubKey, Arrays.asList(address))
             )
             Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
@@ -137,7 +137,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         val event = eventListAdapter!!.getItem(i)
         val address = Utils.getGeneralizedAddress(event.address)
         val contact = Contact("", event.pubKey, Arrays.asList(address))
-        contact.setLastWorkingAddress(Utils.parseInetSocketAddress(address, MainService.serverPort))
+        contact.setLastWorkingAddress(Utils.parseInetSocketAddress(address, MainService.serverPort)!!)
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

@@ -29,43 +29,6 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity
-            android:name="org.rivchain.cuplink.MainActivity"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name="org.rivchain.cuplink.QRShowActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="org.rivchain.cuplink.QRScanActivity"
-            android:screenOrientation="portrait" />
-
-        <service
-            android:name="org.rivchain.cuplink.MainService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <activity
-            android:name="org.rivchain.cuplink.StartActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="org.rivchain.cuplink.CallActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="org.rivchain.cuplink.SettingsActivity" />
-        <activity android:name="org.rivchain.cuplink.AboutActivity" />
-        <activity android:name="org.rivchain.cuplink.AddressActivity" />
-        <activity android:name="org.rivchain.cuplink.LicenseActivity" />
     </application>
 
 </manifest>

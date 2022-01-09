@@ -28,6 +28,7 @@ android {
 }
 
 dependencies {
+    implementation 'ch.acra:acra-core:5.8.3'
     implementation 'ch.acra:acra-http:5.8.3'
     implementation 'ch.acra:acra-dialog:5.8.3'
     implementation fileTree(include: ['*.jar'], dir: 'libs')

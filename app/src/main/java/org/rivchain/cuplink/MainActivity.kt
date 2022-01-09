@@ -226,7 +226,9 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         binder = iBinder as MainBinder
         refreshContactList()
         // call it here because EventListFragment.onResume is triggered twice
-        binder!!.pingContacts()
+        if(binder!!.settings.publicKey != null) {
+            binder!!.pingContacts()
+        }
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

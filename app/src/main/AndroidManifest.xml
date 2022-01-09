@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup"
         android:usesCleartextTraffic="true"
@@ -62,10 +62,10 @@
         <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="org.rivchain.cuplink.SettingsActivity" />
-        <activity android:name="org.rivchain.cuplink.AboutActivity" />
-        <activity android:name="org.rivchain.cuplink.AddressActivity" />
-        <activity android:name="org.rivchain.cuplink.LicenseActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".AddressActivity" />
+        <activity android:name=".LicenseActivity" />
     </application>
 
 </manifest>

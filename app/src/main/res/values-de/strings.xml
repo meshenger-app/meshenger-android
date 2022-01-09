@@ -68,10 +68,12 @@
     <string name="contact_key_conflict">Ein Kontakt mit dem Schlüssel existiert bereits.</string>
     <string name="contact_name_empty">Der Name is leer.</string>
     <string name="contact_name_exists">Der Name existiert bereits.</string>
-    <string name="contact_remove">Kontakt löschen?</string>
+    <string name="contact_remove">Kontakt löschen\?</string>
     <string name="ok">Ok</string>
     <string name="skip">Überspringen</string>
     <string name="exit">Beenden</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="report_dialog_text">Die Anwendung ist leider abgestürzt.</string>
+    <string name="report_dialog_comment">Bitte beschreiben Sie, was Sie beim Absturz der App gemacht haben:</string>
 </resources>

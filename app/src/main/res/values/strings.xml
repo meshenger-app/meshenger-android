@@ -69,10 +69,12 @@
     <string name="contact_key_conflict">A contact with the same key exists.</string>
     <string name="contact_name_empty">Contact name is empty.</string>
     <string name="contact_name_exists">A contact with that name exists already.</string>
-    <string name="contact_remove">Remove contact?</string>
+    <string name="contact_remove">Remove contact\?</string>
     <string name="ok">Ok</string>
     <string name="skip">Skip</string>
     <string name="exit">Exit</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="report_dialog_text">Sorry, the application crashed.</string>
+    <string name="report_dialog_comment">Please describe what were you doing when the app crashed:</string>
 </resources>

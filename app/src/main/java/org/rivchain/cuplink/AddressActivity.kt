@@ -101,13 +101,13 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
                 addressEditText.setText(systemAddressList.get(pos).address)
             }
         })
-        pickStoredAddressButton.setOnClickListener(View.OnClickListener { v: View? ->
+        pickStoredAddressButton.setOnClickListener { v: View? ->
             val pos = storedAddressSpinner.getSelectedItemPosition()
             if (pos > -1 && !storedAddressListAdapter!!.isEmpty) {
                 addressEditText.setText(storedAddressList.get(pos).address)
             }
-        })
-        saveButton.setOnClickListener(View.OnClickListener { v: View? ->
+        }
+        saveButton.setOnClickListener { v: View? ->
             val addresses = ArrayList<String>()
             for (ae in storedAddressList) {
                 addresses.add(ae.address)
@@ -116,8 +116,8 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             initKeyPair()
             binder!!.saveDatabase()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
-        })
-        abortButton.setOnClickListener(View.OnClickListener { v: View? -> finish() })
+        }
+        abortButton.setOnClickListener { v: View? -> finish() }
         bindService()
     }
 
@@ -165,11 +165,7 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         } else {
             removeButton!!.isEnabled = false
             val valid = Utils.isMAC(address) || Utils.isDomain(address) || Utils.isIP(address)
-            if (valid) {
-                addButton!!.isEnabled = true
-            } else {
-                addButton!!.isEnabled = false
-            }
+            addButton!!.isEnabled = valid
         }
         val nightMode = binder!!.settings.nightMode
         if (nightMode) {
@@ -267,13 +263,13 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             return 0
         }
 
-        override fun getView(position: Int, view: View, parent: ViewGroup): View {
+        override fun getView(position: Int, view: View?, parent: ViewGroup): View {
             var view = view
             if (view == null) {
                 val inflater = context.layoutInflater
                 view = inflater.inflate(R.layout.activity_address_item, parent, false)
             }
-            val label = view.findViewById<TextView>(R.id.label)
+            val label = view!!.findViewById<TextView>(R.id.label)
             if (isEmpty) {
                 label.text = resources.getString(R.string.empty_list_item)
                 label.setTextColor(Color.GRAY)

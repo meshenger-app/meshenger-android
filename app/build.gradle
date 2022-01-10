@@ -5,10 +5,10 @@ android {
     signingConfigs {
     }
     compileSdkVersion 31
+    buildToolsVersion '30.0.2'
     defaultConfig {
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
-        compileSdkVersion 31
         targetSdkVersion 31
         versionCode 324
         versionName "0.4.0.3"

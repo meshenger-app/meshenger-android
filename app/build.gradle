@@ -48,7 +48,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
-    //back to 3.3.0 instead of 3.4.0 sue to https://github.com/zxing/zxing/issues/1170
+    //back to 3.3.0 instead of 3.4.0 due to https://github.com/zxing/zxing/issues/1170
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'org.webrtc:google-webrtc:1.0.22672'
 }

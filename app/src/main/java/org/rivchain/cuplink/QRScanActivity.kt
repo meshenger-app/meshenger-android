@@ -24,7 +24,7 @@ import org.json.JSONObject
 import org.rivchain.cuplink.MainService.MainBinder
 
 class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
-    private lateinit var barcodeView: DecoratedBarcodeView
+    private var barcodeView: DecoratedBarcodeView? = null
     private var binder: MainBinder? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -206,9 +206,9 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
     private fun initCamera() {
         barcodeView = findViewById(R.id.barcodeScannerView)
         val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
-        barcodeView.getBarcodeView().decoderFactory = DefaultDecoderFactory(formats)
-        barcodeView.decodeContinuous(this)
-        barcodeView.resume()
+        barcodeView!!.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
+        barcodeView!!.decodeContinuous(this)
+        barcodeView!!.resume()
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {

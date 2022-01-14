@@ -22,7 +22,6 @@
     <string name="settings_change_language">Change Language</string>
     <string name="settings_change_address">Change Address</string>
     <string name="settings_change_password">Change Password</string>
-    <string name="settings_change_ice_servers">Change ICE Servers</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_development_mode">Development Mode</string>
@@ -44,7 +43,6 @@
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
     <string name="empty_list_item">Empty</string>
-    <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
     <string name="call_connected">Connected.</string>
     <string name="call_denied">Declined</string>
     <string name="call_ringing">Ringing...</string>

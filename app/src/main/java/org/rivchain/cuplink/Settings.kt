@@ -13,10 +13,10 @@ class Settings {
     var nightMode = false
     var blockUnknown = false
     var developmentMode = false
-    var addresses: MutableList<String>
+    var addresses: MutableList<String> = ArrayList()
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
-    var iceServers: MutableList<String>
+    var iceServers: MutableList<String> = ArrayList()
 
     fun addAddress(address: String) {
         for (addr in addresses) {
@@ -88,8 +88,4 @@ class Settings {
         }
     }
 
-    init {
-        addresses = ArrayList()
-        iceServers = ArrayList()
-    }
 }

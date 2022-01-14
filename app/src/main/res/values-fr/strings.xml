@@ -22,7 +22,6 @@
     <string name="settings_change_language">Changer de langue</string>
     <string name="settings_change_address">Changement d’adresse</string>
     <string name="settings_change_password">Changer le mot de passe</string>
-    <string name="settings_change_ice_servers">Changez les serveurs ICE</string>
     <string name="settings_nightmode">Mode nuit</string>
     <string name="settings_block_unknown">Ignorer les appelants inconnus</string>
     <string name="settings_development_mode">Mode de développement</string>
@@ -43,7 +42,6 @@
     <string name="permission_mic">La permission du microphone est nécessaire pour passer des appels</string>
     <string name="hello">Bonjour !</string>
     <string name="empty_list_item">Vide</string>
-    <string name="set_ice_servers_description">Définissez des serveurs ICE publics qui pourront vous aider à traverser les frontières du réseau.</string>
     <string name="call_connected">Connecté.</string>
     <string name="call_denied">Décliné</string>
     <string name="call_ringing">Entrain de sonner …</string>

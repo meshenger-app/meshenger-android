@@ -361,12 +361,10 @@ class MainService: Service(), Runnable {
             get() = ArrayList(database!!.contacts)
 
         fun addCallEvent(contact: Contact, type: CallEvent.Type?) {
-            val last_working = contact.lastWorkingAddress
             events!!.add(CallEvent(
-                    contact.publicKey!!,
-                    last_working?.address!!,
-                    type!!
-            ))
+                contact.publicKey!!,
+                contact.allSocketAddresses[0].address!!,
+                type!!))
             LocalBroadcastManager.getInstance(this@MainService).sendBroadcast(Intent("refresh_event_list"))
         }
 

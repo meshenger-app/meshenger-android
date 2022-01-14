@@ -275,7 +275,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             vibrator!!.cancel()
             vibrator = null
         }
-        ringtone!!.stop()
+        ringtone?.stop()
     }
 
     private fun chooseVoiceMode(button: ImageButton) {

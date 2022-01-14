@@ -51,7 +51,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private var contact: Contact? = null
     private var callEventType: CallEvent.Type? = null
     private var vibrator: Vibrator? = null
-    private lateinit var ringtone: Ringtone
+    private var ringtone: Ringtone? = null
     private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
         override fun onStatsDelivered(rtcStatsReport: RTCStatsReport) {
@@ -266,7 +266,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             return
         }
         ringtone = RingtoneManager.getRingtone(this, RingtoneManager.getActualDefaultRingtoneUri(applicationContext, RingtoneManager.TYPE_RINGTONE))
-        ringtone.play()
+        ringtone!!.play()
     }
 
     private fun stopRinging() {
@@ -275,9 +275,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             vibrator!!.cancel()
             vibrator = null
         }
-        if (ringtone != null) {
-            ringtone!!.stop()
-        }
+        ringtone!!.stop()
     }
 
     private fun chooseVoiceMode(button: ImageButton) {

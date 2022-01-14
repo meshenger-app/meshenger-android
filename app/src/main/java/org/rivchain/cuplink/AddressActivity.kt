@@ -125,10 +125,10 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         val ae = storedAddressList!![storedAddressList!!.size - 1]
         // create secret/public key pair
         val publicKey = Utils.parseInetSocketAddress(ae.address, 0)!!.address.address
-        val secretKey: ByteArray? = null
+        //val secretKey: ByteArray? = null
         val settings = binder!!.settings
         settings.publicKey = publicKey
-        settings.secretKey = secretKey
+        //settings.secretKey = secretKey
     }
 
     override fun onDestroy() {

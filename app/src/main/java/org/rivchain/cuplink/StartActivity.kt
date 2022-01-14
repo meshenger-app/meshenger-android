@@ -128,10 +128,10 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
     private fun initKeyPair() {
         // create secret/public key pair
         val publicKey: ByteArray? = null
-        val secretKey: ByteArray? = null
+        //val secretKey: ByteArray? = null
         val settings = binder!!.settings
         settings.publicKey = publicKey
-        settings.secretKey = secretKey
+        //settings.secretKey = secretKey
         try {
             binder!!.saveDatabase()
         } catch (e: Exception) {

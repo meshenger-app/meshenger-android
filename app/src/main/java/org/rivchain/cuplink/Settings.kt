@@ -7,7 +7,7 @@ import java.util.ArrayList
 
 class Settings {
     private var username = ""
-    var secretKey: ByteArray? = null
+    var secretKey: ByteArray = ByteArray(0)
     var publicKey: ByteArray? = null
     private var language = ""
     var nightMode = false

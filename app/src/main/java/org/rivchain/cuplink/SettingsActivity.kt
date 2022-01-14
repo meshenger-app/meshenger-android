@@ -56,9 +56,9 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             startActivity(intent)
         }
         findViewById<View>(R.id.changePasswordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
-        val username = binder!!.settings.getUsername()
+        val username = binder!!.settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text = if (username.length == 0) resources.getString(R.string.none) else username
-        val addresses = binder!!.settings.getAddresses()
+        val addresses = binder!!.settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text = if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
         val password: String? = binder!!.getDatabasePassword()
         (findViewById<View>(R.id.passwordTv) as TextView).text = if (password!!.isEmpty()) resources.getString(R.string.none) else "********"
@@ -67,10 +67,10 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
         blockUnknownCB.isChecked = blockUnknown
         blockUnknownCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // save value
-            binder!!.settings.setBlockUnknown(isChecked)
+            binder!!.settings.blockUnknown = isChecked
             binder!!.saveDatabase()
         }
-        val nightMode = binder!!.settings.getNightMode()
+        val nightMode = binder!!.settings.nightMode
         val nightModeCB = findViewById<CheckBox>(R.id.checkBoxNightMode)
         nightModeCB.isChecked = nightMode
         nightModeCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
@@ -80,18 +80,18 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             )
 
             // save value
-            binder!!.settings.setNightMode(isChecked)
+            binder!!.settings.nightMode = isChecked
             binder!!.saveDatabase()
 
             // apply theme
             recreate()
         }
-        val developmentMode = binder!!.settings.getDevelopmentMode()
+        val developmentMode = binder!!.settings.developmentMode
         val developmentModeCB = findViewById<CheckBox>(R.id.checkBoxDevelopmentMode)
         developmentModeCB.isChecked = developmentMode
         developmentModeCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // save value
-            binder!!.settings.setDevelopmentMode(isChecked)
+            binder!!.settings.developmentMode = isChecked
             binder!!.saveDatabase()
         }
         locale
@@ -102,8 +102,8 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             val config = resources.configuration
             val locale = config.locale
             val language = locale.displayLanguage
-            if (binder!!.settings.getLanguage() != language) {
-                binder!!.settings.setLanguage(language)
+            if (binder!!.settings.language != language) {
+                binder!!.settings.language = language
                 binder!!.saveDatabase()
             }
             (findViewById<View>(R.id.localeTv) as TextView).text = language
@@ -130,7 +130,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
                     val config1 = Configuration()
                     config1.locale = locales[position]
                     resources.updateConfiguration(config1, resources.displayMetrics)
-                    binder!!.settings.setLanguage(locale.displayLanguage)
+                    binder!!.settings.language = locale.displayLanguage
                     binder!!.saveDatabase()
                     finish()
                     startActivity(Intent(applicationContext, this.javaClass))
@@ -140,7 +140,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
         }
 
     private fun showChangeNameDialog() {
-        val username = binder!!.settings.getUsername()
+        val username = binder!!.settings.username
         val et = EditText(this)
         et.setText(username)
         et.setSelection(username.length)
@@ -150,7 +150,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
                 .setPositiveButton(R.string.ok) { dialogInterface, i ->
                     val new_username = et.text.toString().trim { it <= ' ' }
                     if (Utils.isValidName(new_username)) {
-                        binder!!.settings.setUsername(new_username)
+                        binder!!.settings.username = new_username
                         binder!!.saveDatabase()
                         initViews()
                     } else {

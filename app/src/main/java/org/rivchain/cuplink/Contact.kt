@@ -71,16 +71,6 @@ class Contact : Serializable {
             return addrs
         }
 
-    @JvmName("getName1")
-    fun getName(): String {
-        return name
-    }
-
-    @JvmName("setName1")
-    fun setName(name: String) {
-        this.name = name
-    }
-
     fun getBlocked(): Boolean {
         return blocked
     }

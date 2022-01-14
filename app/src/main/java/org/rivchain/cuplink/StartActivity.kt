@@ -59,7 +59,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             }
             3 -> {
                 log("init 3: check username")
-                if (binder!!.settings.getUsername().isEmpty()) {
+                if (binder!!.settings.username.isEmpty()) {
                     // set username
                     showMissingUsernameDialog()
                 } else {
@@ -85,7 +85,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             6 -> {
                 log("init 6: start contact list")
                 // set night mode
-                val nightMode = binder!!.settings.getNightMode()
+                val nightMode = binder!!.settings.nightMode
                 AppCompatDelegate.setDefaultNightMode(
                         if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
@@ -211,7 +211,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
             val username = et.text.toString()
             if (Utils.isValidName(username)) {
-                binder!!.settings.setUsername(username)
+                binder!!.settings.username = username
                 try {
                     binder!!.saveDatabase()
                 } catch (e: Exception) {

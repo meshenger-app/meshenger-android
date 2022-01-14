@@ -97,9 +97,9 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                     val title = menuItem.title.toString()
                     val publicKey = contact.publicKey
                     if (title == delete) {
-                        showDeleteDialog(publicKey, contact.getName())
+                        showDeleteDialog(publicKey, contact.name)
                     } else if (title == rename) {
-                        showContactEditDialog(publicKey, contact.getName())
+                        showContactEditDialog(publicKey, contact.name)
                     } else if (title == share) {
                         shareContact(contact)
                     } else if (title == block) {
@@ -165,10 +165,10 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                 .setNegativeButton(resources.getString(R.string.cancel), null)
                 .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
                     val newName = et.text.toString()
-                    if (newName.length > 0) {
+                    if (newName.isNotEmpty()) {
                         val contact = binder!!.getContactByPublicKey(publicKey)
                         if (contact != null) {
-                            contact.setName(newName)
+                            contact.name = newName
                             binder!!.addContact(contact)
                         }
                     }

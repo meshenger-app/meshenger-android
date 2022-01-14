@@ -55,7 +55,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
 
         // lookup existing contacts by key and name
         val existing_pubkey_contact = binder!!.getContactByPublicKey(new_contact.publicKey)
-        val existing_name_contact = binder!!.getContactByName(new_contact.getName())
+        val existing_name_contact = binder!!.getContactByName(new_contact.name)
         if (existing_pubkey_contact != null) {
             // contact with that public key exists
             showPubkeyConflictDialog(new_contact, existing_pubkey_contact)
@@ -75,7 +75,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         val nameTextView = dialog.findViewById<TextView>(R.id.NameTextView)
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         val replaceButton = dialog.findViewById<Button>(R.id.ReplaceButton)
-        nameTextView.text = other_contact.getName()
+        nameTextView.text = other_contact.name
         replaceButton.setOnClickListener { v: View? ->
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
@@ -99,7 +99,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         val replaceButton = dialog.findViewById<Button>(R.id.ReplaceButton)
         val renameButton = dialog.findViewById<Button>(R.id.RenameButton)
-        nameEditText.setText(other_contact.getName())
+        nameEditText.setText(other_contact.name)
         replaceButton.setOnClickListener { v: View? ->
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
@@ -121,7 +121,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
             }
 
             // rename
-            new_contact.setName(name)
+            new_contact.name = name
             binder!!.addContact(new_contact)
 
             // done

@@ -265,11 +265,6 @@ class MainService: Service(), Runnable {
         Log.d(this, data)
     }
 
-    @JvmName("setDatabasePassword1")
-    fun setDatabasePassword(databasePassword: String) {
-        this.databasePassword=databasePassword
-    }
-
     /*
      * Allows communication between MainService and other objects
      */
@@ -288,7 +283,7 @@ class MainService: Service(), Runnable {
         }
 
         fun setDatabasePassword(databasePassword: String) {
-            return this@MainService.setDatabasePassword(databasePassword)
+            this@MainService.databasePassword = databasePassword
         }
 
         fun getContactByPublicKey(pubKey: ByteArray?): Contact? {
@@ -302,7 +297,7 @@ class MainService: Service(), Runnable {
 
         fun getContactByName(name: String): Contact? {
             for (contact in database!!.contacts) {
-                if (contact.getName() == name) {
+                if (contact.name == name) {
                     return contact
                 }
             }
@@ -403,7 +398,7 @@ class MainService: Service(), Runnable {
                     }
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
-                    log("send ping to " + contact.getName())
+                    log("send ping to " + contact.name)
                     val encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", publicKey, ownPublicKey, ownSecretKey)
                     if (encrypted == null) {
                         socket.close()

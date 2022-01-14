@@ -42,7 +42,7 @@ internal class EventListAdapter(context: Context, resource: Int, private var eve
         var name = ""
         for (contact in contacts) {
             if (Arrays.equals(contact.publicKey, event.pubKey)) {
-                name = contact.getName()
+                name = contact.name
                 break
             }
         }

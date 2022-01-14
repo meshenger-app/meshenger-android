@@ -6,10 +6,10 @@ import org.json.JSONObject
 import java.util.ArrayList
 
 class Settings {
-    private var username = ""
+    var username = ""
     var secretKey: ByteArray = ByteArray(0)
     var publicKey: ByteArray? = null
-    private var language = ""
+    var language = ""
     var nightMode = false
     var blockUnknown = false
     var developmentMode = false
@@ -18,74 +18,13 @@ class Settings {
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
     var iceServers: MutableList<String>
 
-    fun getUsername(): String {
-        return username
-    }
-
-    fun setUsername(username: String) {
-        this.username = username
-    }
-
-    fun getLanguage(): String {
-        return language
-    }
-
-    fun setLanguage(language: String) {
-        this.language = language
-    }
-
-    @JvmName("getNightMode1")
-    fun getNightMode(): Boolean {
-        return nightMode
-    }
-
-    @JvmName("setNightMode1")
-    fun setNightMode(nightMode: Boolean) {
-        this.nightMode = nightMode
-    }
-
-    @JvmName("setBlockUnknown1")
-    fun setBlockUnknown(blockUnknown: Boolean) {
-        this.blockUnknown = blockUnknown
-    }
-
-    @JvmName("getDevelopmentMode1")
-    fun getDevelopmentMode(): Boolean {
-        return developmentMode
-    }
-
-    @JvmName("setDevelopmentMode1")
-    fun setDevelopmentMode(developmentMode: Boolean) {
-        this.developmentMode = developmentMode
-    }
-
-    @JvmName("getAddresses1")
-    fun getAddresses(): List<String> {
-        return addresses
-    }
-
-    @JvmName("setAddresses1")
-    fun setAddresses(addresses: MutableList<String>) {
-        this.addresses = addresses
-    }
-
     fun addAddress(address: String) {
-        for (addr in getAddresses()) {
+        for (addr in addresses) {
             if (addr.equals(address, ignoreCase = true)) {
                 return
             }
         }
         addresses.add(address)
-    }
-
-    @JvmName("getIceServers1")
-    fun getIceServers(): List<String> {
-        return iceServers
-    }
-
-    @JvmName("setIceServers1")
-    fun setIceServers(iceServers: MutableList<String>) {
-        this.iceServers = iceServers
     }
 
     val ownContact: Contact

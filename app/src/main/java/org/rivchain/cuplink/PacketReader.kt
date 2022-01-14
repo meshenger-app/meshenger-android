@@ -9,6 +9,7 @@ internal class PacketReader(socket: Socket) {
     val `is`: InputStream
     val buffer: ByteArray
     var pos: Int
+
     @Throws(IOException::class)
     fun readMessage(): ByteArray? {
         while (true) {

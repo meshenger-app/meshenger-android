@@ -11,13 +11,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
 
-class MainService: Service(), Runnable {
+class MainService : Service(), Runnable {
 
     var isFirstStart = false
         get() = field
@@ -90,8 +89,13 @@ class MainService: Service(), Runnable {
                     if (contact.state === Contact.State.OFFLINE) {
                         continue
                     }
-                    val encrypted = Crypto.encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey)
-                            ?: continue
+                    val encrypted = Crypto.encryptMessage(
+                        message,
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    )
+                        ?: continue
                     var socket: Socket? = null
                     try {
                         socket = contact.createSocket()
@@ -138,7 +142,8 @@ class MainService: Service(), Runnable {
             log("incoming connection from $remote_address")
             while (true) {
                 val request = pr.readMessage() ?: break
-                val decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
+                val decrypted =
+                    Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
                 if (decrypted == null) {
                     log("decryption failed")
                     break
@@ -177,7 +182,7 @@ class MainService: Service(), Runnable {
 
                 // remember last good address (the outgoing port is random and not the server port)
                 contact.setLastWorkingAddress(
-                        InetSocketAddress(remote_address.address, serverPort)
+                    InetSocketAddress(remote_address.address, serverPort)
                 )
                 val obj = JSONObject(decrypted)
                 val action = obj.optString("action", "")
@@ -190,7 +195,12 @@ class MainService: Service(), Runnable {
                         currentCall = RTCCall(this, MainBinder(), contact, client, offer)
 
                         // respond that we accept the call
-                        val encrypted = Crypto.encryptMessage("{\"action\":\"ringing\"}", contact.publicKey, ownPublicKey, ownSecretKey)
+                        val encrypted = Crypto.encryptMessage(
+                            "{\"action\":\"ringing\"}",
+                            contact.publicKey,
+                            ownPublicKey,
+                            ownSecretKey
+                        )
                         pw.writeMessage(encrypted)
                         val intent = Intent(this, CallActivity::class.java)
                         intent.action = "ACTION_INCOMING_CALL"
@@ -203,7 +213,12 @@ class MainService: Service(), Runnable {
                         log("ping...")
                         // someone wants to know if we are online
                         setClientState(contact, Contact.State.ONLINE)
-                        val encrypted = Crypto.encryptMessage("{\"action\":\"pong\"}", contact.publicKey, ownPublicKey, ownSecretKey)
+                        val encrypted = Crypto.encryptMessage(
+                            "{\"action\":\"pong\"}",
+                            contact.publicKey,
+                            ownPublicKey,
+                            ownSecretKey
+                        )
                         pw.writeMessage(encrypted)
                     }
                     "status_change" -> {
@@ -307,13 +322,15 @@ class MainService: Service(), Runnable {
         fun addContact(contact: Contact?) {
             database!!.addContact(contact!!)
             saveDatabase()
-            LocalBroadcastManager.getInstance(this@MainService).sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(this@MainService)
+                .sendBroadcast(Intent("refresh_contact_list"))
         }
 
         fun deleteContact(pubKey: ByteArray?) {
             database!!.deleteContact(pubKey)
             saveDatabase()
-            LocalBroadcastManager.getInstance(this@MainService).sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(this@MainService)
+                .sendBroadcast(Intent("refresh_contact_list"))
         }
 
         fun shutdown() {
@@ -336,11 +353,13 @@ class MainService: Service(), Runnable {
         }
 
         fun pingContacts() {
-            Thread(PingRunnable(
+            Thread(
+                PingRunnable(
                     this@MainService,
                     contactsCopy,
                     settings.publicKey!!,
-                    settings.secretKey!!)
+                    settings.secretKey!!
+                )
             ).start()
         }
 
@@ -356,11 +375,15 @@ class MainService: Service(), Runnable {
             get() = ArrayList(database!!.contacts)
 
         fun addCallEvent(contact: Contact, type: CallEvent.Type?) {
-            events!!.add(CallEvent(
-                contact.publicKey!!,
-                contact.allSocketAddresses[0].address!!,
-                type!!))
-            LocalBroadcastManager.getInstance(this@MainService).sendBroadcast(Intent("refresh_event_list"))
+            events!!.add(
+                CallEvent(
+                    contact.publicKey!!,
+                    contact.allSocketAddresses[0].address!!,
+                    type!!
+                )
+            )
+            LocalBroadcastManager.getInstance(this@MainService)
+                .sendBroadcast(Intent("refresh_event_list"))
         }
 
         // return a cloned list
@@ -369,7 +392,8 @@ class MainService: Service(), Runnable {
 
         fun clearEvents() {
             events!!.clear()
-            LocalBroadcastManager.getInstance(this@MainService).sendBroadcast(Intent("refresh_event_list"))
+            LocalBroadcastManager.getInstance(this@MainService)
+                .sendBroadcast(Intent("refresh_event_list"))
         }
 
         fun isFirstStart(): Boolean {
@@ -377,7 +401,12 @@ class MainService: Service(), Runnable {
         }
     }
 
-    internal inner class PingRunnable(var context: Context, private val contacts: List<Contact>, var ownPublicKey: ByteArray, var ownSecretKey: ByteArray) : Runnable {
+    internal inner class PingRunnable(
+        var context: Context,
+        private val contacts: List<Contact>,
+        var ownPublicKey: ByteArray,
+        var ownSecretKey: ByteArray
+    ) : Runnable {
         var binder: MainBinder
         private fun setState(publicKey: ByteArray?, state: Contact.State) {
             val contact = binder.getContactByPublicKey(publicKey)
@@ -399,7 +428,12 @@ class MainService: Service(), Runnable {
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
                     log("send ping to " + contact.name)
-                    val encrypted = Crypto.encryptMessage("{\"action\":\"ping\"}", publicKey, ownPublicKey, ownSecretKey)
+                    val encrypted = Crypto.encryptMessage(
+                        "{\"action\":\"ping\"}",
+                        publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    )
                     if (encrypted == null) {
                         socket.close()
                         continue
@@ -410,7 +444,8 @@ class MainService: Service(), Runnable {
                         socket.close()
                         continue
                     }
-                    val decrypted = Crypto.decryptMessage(request, publicKey, ownPublicKey, ownSecretKey)
+                    val decrypted =
+                        Crypto.decryptMessage(request, publicKey, ownPublicKey, ownSecretKey)
                     if (decrypted == null) {
                         log("decryption failed")
                         socket.close()

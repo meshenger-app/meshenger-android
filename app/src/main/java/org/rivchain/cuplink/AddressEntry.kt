@@ -3,7 +3,11 @@ package org.rivchain.cuplink
 /*
  * Item for address management (AddressActivity)
  */
-class AddressEntry internal constructor(var address: String, var device: String, var multicast: Boolean) : Comparable<AddressEntry?> {
+class AddressEntry internal constructor(
+    var address: String,
+    var device: String,
+    var multicast: Boolean
+) : Comparable<AddressEntry?> {
     override operator fun compareTo(other: AddressEntry?): Int {
         return address.compareTo(other!!.address)
     }

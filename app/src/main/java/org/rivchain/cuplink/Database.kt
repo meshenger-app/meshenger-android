@@ -55,6 +55,7 @@ class Database {
 
     companion object {
         var version = "3.0.3" // current version
+
         @Throws(IOException::class, JSONException::class)
         fun load(path: String?, password: String?): Database {
             // read database file
@@ -68,7 +69,7 @@ class Database {
                 }
             }
             val obj = JSONObject(
-                    String(data!!, Charset.forName("UTF-8"))
+                String(data!!, Charset.forName("UTF-8"))
             )
             val upgraded = upgradeDatabase(obj.getString("version"), version, obj)
             val db = fromJSON(obj)
@@ -135,7 +136,7 @@ class Database {
             var i = 0
             while (i < array.length()) {
                 db.contacts.add(
-                        Contact.importJSON(array.getJSONObject(i), true)
+                    Contact.importJSON(array.getJSONObject(i), true)
                 )
                 i += 1
             }

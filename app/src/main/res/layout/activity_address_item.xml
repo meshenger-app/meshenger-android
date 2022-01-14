@@ -13,7 +13,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:gravity="center_vertical"
-        android:textColor="?attr/secondaryTextColor"/>
+        android:textColor="?attr/secondaryTextColor" />
 
     <ImageView
         android:layout_width="wrap_content"

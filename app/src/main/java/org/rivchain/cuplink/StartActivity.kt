@@ -3,7 +3,6 @@ package org.rivchain.cuplink
 import android.app.Dialog
 import android.content.ComponentName
 import android.content.DialogInterface
-import android.content.DialogInterface.OnShowListener
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Typeface
@@ -20,7 +19,6 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import org.rivchain.cuplink.MainService.MainBinder
-import java.lang.Exception
 
 /*
 * Show splash screen, name setup dialog, database password dialog and
@@ -87,7 +85,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
                 // set night mode
                 val nightMode = binder!!.settings.nightMode
                 AppCompatDelegate.setDefaultNightMode(
-                        if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                    if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
                 // all done - show contact list
@@ -166,7 +164,10 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
         layout.orientation = LinearLayout.VERTICAL
         layout.addView(tw)
         val et = EditText(this)
-        et.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        et.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         et.isSingleLine = true
         layout.addView(et)
         layout.setPadding(40, 80, 40, 40)
@@ -184,7 +185,12 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
         dialog.setOnShowListener { newDialog: DialogInterface ->
             val okButton = (newDialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
             et.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                override fun beforeTextChanged(
+                    charSequence: CharSequence,
+                    i: Int,
+                    i1: Int,
+                    i2: Int
+                ) {
                     // nothing to do
                 }
 

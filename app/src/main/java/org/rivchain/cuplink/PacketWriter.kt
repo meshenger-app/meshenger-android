@@ -8,6 +8,7 @@ import java.net.Socket
 internal class PacketWriter(socket: Socket) {
     val os: OutputStream
     val header: ByteArray
+
     @Throws(IOException::class)
     fun writeMessage(message: ByteArray) {
         writeMessageHeader(header, message.size)

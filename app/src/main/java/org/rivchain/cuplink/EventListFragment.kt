@@ -22,7 +22,11 @@ class EventListFragment : Fragment(), OnItemClickListener {
     private lateinit var eventListView: ListView
     private var eventListAdapter: EventListAdapter? = null
     private lateinit var fabDelete: FloatingActionButton
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_event_list, container, false)
         mainActivity = activity as MainActivity?
         eventListView = view.findViewById(R.id.eventList)
@@ -31,7 +35,8 @@ class EventListFragment : Fragment(), OnItemClickListener {
             mainActivity!!.binder!!.clearEvents()
             refreshEventList()
         })
-        eventListAdapter = EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
+        eventListAdapter =
+            EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
         eventListView.setAdapter(eventListAdapter)
         eventListView.setOnItemClickListener(this)
         return view
@@ -50,44 +55,45 @@ class EventListFragment : Fragment(), OnItemClickListener {
             eventListAdapter!!.update(events, contacts)
             eventListAdapter!!.notifyDataSetChanged()
             eventListView!!.adapter = eventListAdapter
-            eventListView!!.onItemLongClickListener = OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
-                val event = events[i]
-                val menu = PopupMenu(mainActivity!!, view!!)
-                val res = resources
-                val add = res.getString(R.string.add)
-                val block = res.getString(R.string.block)
-                val unblock = res.getString(R.string.unblock)
-                val qr = "QR-ify"
-                val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
+            eventListView!!.onItemLongClickListener =
+                OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
+                    val event = events[i]
+                    val menu = PopupMenu(mainActivity!!, view!!)
+                    val res = resources
+                    val add = res.getString(R.string.add)
+                    val block = res.getString(R.string.block)
+                    val unblock = res.getString(R.string.unblock)
+                    val qr = "QR-ify"
+                    val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
 
-                // allow to add unknown caller
-                if (contact == null) {
-                    menu.menu.add(add)
-                }
+                    // allow to add unknown caller
+                    if (contact == null) {
+                        menu.menu.add(add)
+                    }
 
-                // we can only block/unblock contacts
-                // (or we need to need maintain a separate bocklist)
-                if (contact != null) {
-                    if (contact.getBlocked()) {
-                        menu.menu.add(unblock)
-                    } else {
-                        menu.menu.add(block)
+                    // we can only block/unblock contacts
+                    // (or we need to need maintain a separate bocklist)
+                    if (contact != null) {
+                        if (contact.getBlocked()) {
+                            menu.menu.add(unblock)
+                        } else {
+                            menu.menu.add(block)
+                        }
                     }
-                }
-                menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-                    val title = menuItem.title.toString()
-                    if (title == add) {
-                        showAddDialog(event)
-                    } else if (title == block) {
-                        setBlocked(event, true)
-                    } else if (title == unblock) {
-                        setBlocked(event, false)
+                    menu.setOnMenuItemClickListener { menuItem: MenuItem ->
+                        val title = menuItem.title.toString()
+                        if (title == add) {
+                            showAddDialog(event)
+                        } else if (title == block) {
+                            setBlocked(event, true)
+                        } else if (title == unblock) {
+                            setBlocked(event, false)
+                        }
+                        false
                     }
-                    false
+                    menu.show()
+                    true
                 }
-                menu.show()
-                true
-            }
         }
     }
 
@@ -120,7 +126,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             }
             val address = Utils.getGeneralizedAddress(event.address)
             mainActivity!!.binder!!.addContact(
-                    Contact(name, event.pubKey, Arrays.asList(address))
+                Contact(name, event.pubKey, Arrays.asList(address))
             )
             Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
@@ -137,7 +143,12 @@ class EventListFragment : Fragment(), OnItemClickListener {
         val event = eventListAdapter!!.getItem(i)
         val address = Utils.getGeneralizedAddress(event.address)
         val contact = Contact("", event.pubKey, Arrays.asList(address))
-        contact.setLastWorkingAddress(Utils.parseInetSocketAddress(address, MainService.serverPort)!!)
+        contact.setLastWorkingAddress(
+            Utils.parseInetSocketAddress(
+                address,
+                MainService.serverPort
+            )!!
+        )
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

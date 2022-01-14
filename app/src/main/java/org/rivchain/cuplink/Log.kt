@@ -8,13 +8,13 @@ import android.util.Log
 class Log {
 
     companion object {
-    private fun contextString(context: Any): String {
-        return if (context is String) {
-            context
-        } else {
-            context.javaClass.simpleName
+        private fun contextString(context: Any): String {
+            return if (context is String) {
+                context
+            } else {
+                context.javaClass.simpleName
+            }
         }
-    }
 
         fun d(context: Any, message: String?) {
             if (BuildConfig.DEBUG) {

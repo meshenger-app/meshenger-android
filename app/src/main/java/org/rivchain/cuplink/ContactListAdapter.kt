@@ -11,7 +11,11 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 
-internal class ContactListAdapter(context: Context, resource: Int, private val contacts: List<Contact>) : ArrayAdapter<Contact?>(context, resource, contacts) {
+internal class ContactListAdapter(
+    context: Context,
+    resource: Int,
+    private val contacts: List<Contact>
+) : ArrayAdapter<Contact?>(context, resource, contacts) {
     private val inflater: LayoutInflater
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView

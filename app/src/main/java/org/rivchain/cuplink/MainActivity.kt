@@ -57,15 +57,34 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         fabScan = findViewById(R.id.fabScan)
         fabGen = findViewById(R.id.fabGenerate)
         contactListView = findViewById(R.id.contactList)
-        fabScan.setOnClickListener(View.OnClickListener { v: View? -> startActivity(Intent(this, QRScanActivity::class.java)) })
-        fabGen.setOnClickListener(View.OnClickListener { v: View? -> startActivity(Intent(this, QRShowActivity::class.java)) })
+        fabScan.setOnClickListener(View.OnClickListener { v: View? ->
+            startActivity(
+                Intent(
+                    this,
+                    QRScanActivity::class.java
+                )
+            )
+        })
+        fabGen.setOnClickListener(View.OnClickListener { v: View? ->
+            startActivity(
+                Intent(
+                    this,
+                    QRShowActivity::class.java
+                )
+            )
+        })
         fab.setOnClickListener(View.OnClickListener { fab: View -> runFabAnimation(fab) })
 
         // ask for audio recording permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 2)
         }
-        LocalBroadcastManager.getInstance(this).registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
     }
 
     fun refreshContactList() {
@@ -74,48 +93,49 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
             val contacts = binder!!.contactsCopy
             contactListView!!.adapter = ContactListAdapter(this, R.layout.item_contact, contacts)
             contactListView!!.onItemClickListener = this
-            contactListView!!.onItemLongClickListener = OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
-                val contact = contacts[i]
-                val menu = PopupMenu(this, view)
-                val res = resources
-                val delete = res.getString(R.string.delete)
-                val rename = res.getString(R.string.rename)
-                val block = res.getString(R.string.block)
-                val unblock = res.getString(R.string.unblock)
-                val share = res.getString(R.string.share)
-                val qr = "QR-ify"
-                menu.menu.add(delete)
-                menu.menu.add(rename)
-                menu.menu.add(share)
-                if (contact.getBlocked()) {
-                    menu.menu.add(unblock)
-                } else {
-                    menu.menu.add(block)
-                }
-                menu.menu.add(qr)
-                menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-                    val title = menuItem.title.toString()
-                    val publicKey = contact.publicKey
-                    if (title == delete) {
-                        showDeleteDialog(publicKey, contact.name)
-                    } else if (title == rename) {
-                        showContactEditDialog(publicKey, contact.name)
-                    } else if (title == share) {
-                        shareContact(contact)
-                    } else if (title == block) {
-                        setBlocked(publicKey, true)
-                    } else if (title == unblock) {
-                        setBlocked(publicKey, false)
-                    } else if (title == qr) {
-                        val intent = Intent(this, QRShowActivity::class.java)
-                        intent.putExtra("EXTRA_CONTACT", contact)
-                        startActivity(intent)
+            contactListView!!.onItemLongClickListener =
+                OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
+                    val contact = contacts[i]
+                    val menu = PopupMenu(this, view)
+                    val res = resources
+                    val delete = res.getString(R.string.delete)
+                    val rename = res.getString(R.string.rename)
+                    val block = res.getString(R.string.block)
+                    val unblock = res.getString(R.string.unblock)
+                    val share = res.getString(R.string.share)
+                    val qr = "QR-ify"
+                    menu.menu.add(delete)
+                    menu.menu.add(rename)
+                    menu.menu.add(share)
+                    if (contact.getBlocked()) {
+                        menu.menu.add(unblock)
+                    } else {
+                        menu.menu.add(block)
                     }
-                    false
+                    menu.menu.add(qr)
+                    menu.setOnMenuItemClickListener { menuItem: MenuItem ->
+                        val title = menuItem.title.toString()
+                        val publicKey = contact.publicKey
+                        if (title == delete) {
+                            showDeleteDialog(publicKey, contact.name)
+                        } else if (title == rename) {
+                            showContactEditDialog(publicKey, contact.name)
+                        } else if (title == share) {
+                            shareContact(contact)
+                        } else if (title == block) {
+                            setBlocked(publicKey, true)
+                        } else if (title == unblock) {
+                            setBlocked(publicKey, false)
+                        } else if (title == qr) {
+                            val intent = Intent(this, QRShowActivity::class.java)
+                            intent.putExtra("EXTRA_CONTACT", contact)
+                            startActivity(intent)
+                        }
+                        false
+                    }
+                    menu.show()
+                    true
                 }
-                menu.show()
-                true
-            }
         }
     }
 
@@ -160,19 +180,19 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         val et = EditText(this)
         et.setText(name)
         val dialog = AlertDialog.Builder(this)
-                .setTitle(R.string.contact_edit)
-                .setView(et)
-                .setNegativeButton(resources.getString(R.string.cancel), null)
-                .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
-                    val newName = et.text.toString()
-                    if (newName.isNotEmpty()) {
-                        val contact = binder!!.getContactByPublicKey(publicKey)
-                        if (contact != null) {
-                            contact.name = newName
-                            binder!!.addContact(contact)
-                        }
+            .setTitle(R.string.contact_edit)
+            .setView(et)
+            .setNegativeButton(resources.getString(R.string.cancel), null)
+            .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
+                val newName = et.text.toString()
+                if (newName.isNotEmpty()) {
+                    val contact = binder!!.getContactByPublicKey(publicKey)
+                    if (contact != null) {
+                        contact.name = newName
+                        binder!!.addContact(contact)
                     }
-                }.show()
+                }
+            }.show()
     }
 
     private fun runFabAnimation(fab: View) {
@@ -226,7 +246,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         binder = iBinder as MainBinder
         refreshContactList()
         // call it here because EventListFragment.onResume is triggered twice
-        if(binder!!.settings.publicKey != null) {
+        if (binder!!.settings.publicKey != null) {
             binder!!.pingContacts()
         }
     }
@@ -285,7 +305,11 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, R.string.permission_mic, Toast.LENGTH_LONG).show()

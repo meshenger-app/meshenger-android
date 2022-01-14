@@ -20,10 +20,12 @@ class LicenseActivity : CupLinkActivity() {
                 val reader = BufferedReader(InputStreamReader(assets.open("license.txt")))
                 var line: String
                 while (reader.readLine().also { line = it } != null) {
-                    buffer.append("""
+                    buffer.append(
+                        """
     ${line.trim { it <= ' ' }}
     
-    """.trimIndent())
+    """.trimIndent()
+                    )
                 }
                 reader.close()
                 runOnUiThread {

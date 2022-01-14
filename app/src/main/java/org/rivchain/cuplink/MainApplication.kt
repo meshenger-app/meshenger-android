@@ -3,7 +3,8 @@ package org.rivchain.cuplink
 import android.app.Application
 import android.content.Context
 import org.acra.BuildConfig
-import org.acra.config.*
+import org.acra.config.dialog
+import org.acra.config.httpSender
 import org.acra.data.StringFormat
 import org.acra.ktx.initAcra
 import org.acra.sender.HttpSender
@@ -17,7 +18,7 @@ class MainApplication : Application() {
             //each plugin you chose above can be configured in a block like this:
             httpSender {
                 uri = "http://acrarium.rivchain.org/acrarium-1.4.6/report"
-                basicAuthLogin="KOF7CEnt5tfTqIhj"
+                basicAuthLogin = "KOF7CEnt5tfTqIhj"
                 basicAuthPassword = "F4cCIqo9EjpihcPt"
                 httpMethod = HttpSender.Method.POST
             }

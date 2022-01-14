@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import org.rivchain.cuplink.MainService.MainBinder
-import java.lang.Exception
 import java.util.*
 
 class AddressActivity : CupLinkActivity(), ServiceConnection {
@@ -46,8 +45,10 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         abortButton = findViewById(R.id.AbortButton)
         systemAddressList = Utils.collectAddresses()
         storedAddressList = ArrayList()
-        storedAddressListAdapter = AddressListAdapter(this, Color.parseColor("#39b300")) //dark green
-        systemAddressListAdapter = AddressListAdapter(this, Color.parseColor("#b3b7b2")) //light grey
+        storedAddressListAdapter =
+            AddressListAdapter(this, Color.parseColor("#39b300")) //dark green
+        systemAddressListAdapter =
+            AddressListAdapter(this, Color.parseColor("#b3b7b2")) //light grey
         storedAddressSpinner.setAdapter(storedAddressListAdapter)
         systemAddressSpinner.setAdapter(systemAddressListAdapter)
         addressEditText.addTextChangedListener(object : TextWatcher {
@@ -70,11 +71,16 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             }
             val entry = parseAddress(address)
             if (entry.multicast) {
-                Toast.makeText(this, "Multicast addresses are not supported.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Multicast addresses are not supported.", Toast.LENGTH_SHORT)
+                    .show()
                 return@OnClickListener
             }
             if (Utils.isIP(address) && !systemAddressList.contains(entry)) {
-                Toast.makeText(this, "You can only choose a IP address that is used by the system.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "You can only choose a IP address that is used by the system.",
+                    Toast.LENGTH_LONG
+                ).show()
                 return@OnClickListener
             }
             storedAddressList.add(entry)
@@ -235,7 +241,8 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         Log.d(this, s)
     }
 
-    inner class AddressListAdapter(private val context: Activity, private val markColor: Int) : BaseAdapter() {
+    inner class AddressListAdapter(private val context: Activity, private val markColor: Int) :
+        BaseAdapter() {
         private var addressEntries: List<AddressEntry>?
         private var addressEntriesMarked: List<AddressEntry>?
         override fun isEmpty(): Boolean {

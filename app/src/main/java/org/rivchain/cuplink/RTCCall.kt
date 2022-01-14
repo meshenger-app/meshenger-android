@@ -2,7 +2,6 @@ package org.rivchain.cuplink
 
 import android.content.ContentValues
 import android.content.Context
-import android.content.res.Resources.Theme
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
@@ -14,11 +13,9 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.rivchain.cuplink.MainService.MainBinder
 import org.rivchain.cuplink.RTCCall.*
-import org.rivchain.cuplink.RTCCall.CallState
 import org.webrtc.*
 import org.webrtc.PeerConnection.*
 import java.io.IOException
-import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.ByteBuffer
@@ -59,9 +56,18 @@ class RTCCall : DataChannel.Observer {
                     capturer!!.stopCapture()
                 }
                 val `object` = JSONObject()
-                `object`.put(StateChangeMessage, if (enabled) CameraEnabledMessage else CameraDisabledMessage)
+                `object`.put(
+                    StateChangeMessage,
+                    if (enabled) CameraEnabledMessage else CameraDisabledMessage
+                )
                 log("setVideoEnabled: $`object`")
-                dataChannel!!.send(DataChannel.Buffer(ByteBuffer.wrap(`object`.toString().toByteArray()), false))
+                dataChannel!!.send(
+                    DataChannel.Buffer(
+                        ByteBuffer.wrap(
+                            `object`.toString().toByteArray()
+                        ), false
+                    )
+                )
             } catch (e: JSONException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
@@ -77,7 +83,13 @@ class RTCCall : DataChannel.Observer {
     private var binder: MainBinder
 
     // called for incoming calls
-    constructor(context: Context, binder: MainBinder, contact: Contact, commSocket: Socket?, offer: String?) {
+    constructor(
+        context: Context,
+        binder: MainBinder,
+        contact: Contact,
+        commSocket: Socket?,
+        offer: String?
+    ) {
         this.context = context
         this.contact = contact
         this.commSocket = commSocket
@@ -96,7 +108,12 @@ class RTCCall : DataChannel.Observer {
     }
 
     // called for outgoing calls
-    private constructor(context: Context, binder: MainBinder, contact: Contact, listener: OnStateChangeListener) {
+    private constructor(
+        context: Context,
+        binder: MainBinder,
+        contact: Contact,
+        listener: OnStateChangeListener
+    ) {
         this.context = context
         this.contact = contact
         commSocket = null
@@ -131,13 +148,14 @@ class RTCCall : DataChannel.Observer {
                                 //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return
                             }
-                            val remote_address = commSocket!!.remoteSocketAddress as InetSocketAddress
+                            val remote_address =
+                                commSocket!!.remoteSocketAddress as InetSocketAddress
                             val otherPublicKey = remote_address.address.address
                             log("outgoing call from remote address: $remote_address")
 
                             // remember latest working address
                             contact.setLastWorkingAddress(
-                                    InetSocketAddress(remote_address.address, MainService.serverPort)
+                                InetSocketAddress(remote_address.address, MainService.serverPort)
                             )
                             log("connect..")
                             val pr = PacketReader(commSocket!!)
@@ -146,7 +164,12 @@ class RTCCall : DataChannel.Observer {
                                 val obj = JSONObject()
                                 obj.put("action", "call")
                                 obj.put("offer", connection!!.localDescription.description)
-                                val encrypted = Crypto.encryptMessage(obj.toString(), contact.publicKey, ownPublicKey, ownSecretKey)
+                                val encrypted = Crypto.encryptMessage(
+                                    obj.toString(),
+                                    contact.publicKey,
+                                    ownPublicKey,
+                                    ownSecretKey
+                                )
                                 if (encrypted == null) {
                                     log("encrypted var is null")
                                     closeCommSocket()
@@ -159,8 +182,17 @@ class RTCCall : DataChannel.Observer {
                             }
                             run {
                                 val response = pr.readMessage()
-                                val decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey)
-                                if (decrypted == null || !Arrays.equals(contact.publicKey, otherPublicKey)) {
+                                val decrypted = Crypto.decryptMessage(
+                                    response,
+                                    otherPublicKey,
+                                    ownPublicKey,
+                                    ownSecretKey
+                                )
+                                if (decrypted == null || !Arrays.equals(
+                                        contact.publicKey,
+                                        otherPublicKey
+                                    )
+                                ) {
                                     log("decrypted var is null or pubkey does not match")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -180,8 +212,17 @@ class RTCCall : DataChannel.Observer {
                             }
                             run {
                                 val response = pr.readMessage()
-                                val decrypted = Crypto.decryptMessage(response, otherPublicKey, ownPublicKey, ownSecretKey)
-                                if (decrypted == null || !Arrays.equals(contact.publicKey, otherPublicKey)) {
+                                val decrypted = Crypto.decryptMessage(
+                                    response,
+                                    otherPublicKey,
+                                    ownPublicKey,
+                                    ownSecretKey
+                                )
+                                if (decrypted == null || !Arrays.equals(
+                                        contact.publicKey,
+                                        otherPublicKey
+                                    )
+                                ) {
                                     log("decrypted (201) var is null or pubkey does not match")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -379,7 +420,12 @@ class RTCCall : DataChannel.Observer {
         private get() {
             capturer = createCapturer()
             localRender.setTarget(localRenderer)
-            Handler(Looper.getMainLooper()).post { localRenderer!!.init(rootEglBase.eglBaseContext, null) }
+            Handler(Looper.getMainLooper()).post {
+                localRenderer!!.init(
+                    rootEglBase.eglBaseContext,
+                    null
+                )
+            }
             val videoSource = factory!!.createVideoSource(capturer)
             val localVideoTrack = factory!!.createVideoTrack("video1", videoSource)
             localVideoTrack.setEnabled(true)
@@ -387,12 +433,20 @@ class RTCCall : DataChannel.Observer {
             return localVideoTrack
         }
     private val audioTrack: AudioTrack
-        private get() = factory!!.createAudioTrack("audio1", factory!!.createAudioSource(MediaConstraints()))
+        private get() = factory!!.createAudioTrack(
+            "audio1",
+            factory!!.createAudioSource(MediaConstraints())
+        )
 
     private fun initRTC(c: Context) {
-        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(c).createInitializationOptions())
+        PeerConnectionFactory.initialize(
+            PeerConnectionFactory.InitializationOptions.builder(c).createInitializationOptions()
+        )
         factory = PeerConnectionFactory.builder().createPeerConnectionFactory()
-        factory.setVideoHwAccelerationOptions(rootEglBase.eglBaseContext, rootEglBase.eglBaseContext)
+        factory.setVideoHwAccelerationOptions(
+            rootEglBase.eglBaseContext,
+            rootEglBase.eglBaseContext
+        )
         constraints = MediaConstraints()
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
@@ -424,7 +478,12 @@ class RTCCall : DataChannel.Observer {
 
     fun accept(statsCollector: RTCStatsCollectorCallback?) {
         val scheduleTaskExecutor = Executors.newScheduledThreadPool(1)
-        scheduleTaskExecutor.scheduleAtFixedRate({ connection!!.getStats(statsCollector) }, 1, 5, TimeUnit.SECONDS)
+        scheduleTaskExecutor.scheduleAtFixedRate(
+            { connection!!.getStats(statsCollector) },
+            1,
+            5,
+            TimeUnit.SECONDS
+        )
     }
 
     fun accept(listener: OnStateChangeListener?) {
@@ -440,7 +499,12 @@ class RTCCall : DataChannel.Observer {
                             val obj = JSONObject()
                             obj.put("action", "connected")
                             obj.put("answer", connection!!.localDescription.description)
-                            val encrypted = Crypto.encryptMessage(obj.toString(), contact.publicKey, ownPublicKey, ownSecretKey)
+                            val encrypted = Crypto.encryptMessage(
+                                obj.toString(),
+                                contact.publicKey,
+                                ownPublicKey,
+                                ownSecretKey
+                            )
                             if (encrypted != null) {
                                 pw.writeMessage(encrypted)
                                 reportStateChange(CallState.CONNECTED)
@@ -485,7 +549,10 @@ class RTCCall : DataChannel.Observer {
                         override fun onCreateSuccess(sessionDescription: SessionDescription) {
                             log("onCreateSuccess")
                             super.onCreateSuccess(sessionDescription)
-                            connection!!.setLocalDescription(DefaultSdpObserver(), sessionDescription)
+                            connection!!.setLocalDescription(
+                                DefaultSdpObserver(),
+                                sessionDescription
+                            )
                         }
 
                         override fun onCreateFailure(s: String) {
@@ -504,7 +571,12 @@ class RTCCall : DataChannel.Observer {
                 log("declining...")
                 if (commSocket != null) {
                     val pw = PacketWriter(commSocket!!)
-                    val encrypted = Crypto.encryptMessage("{\"action\":\"dismissed\"}", contact.publicKey, ownPublicKey, ownSecretKey)
+                    val encrypted = Crypto.encryptMessage(
+                        "{\"action\":\"dismissed\"}",
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    )
                     pw.writeMessage(encrypted)
                 }
             } catch (e: IOException) {
@@ -533,7 +605,12 @@ class RTCCall : DataChannel.Observer {
             try {
                 if (commSocket != null) {
                     val pw = PacketWriter(commSocket!!)
-                    val encrypted = Crypto.encryptMessage("{\"action\":\"dismissed\"}", contact.publicKey, ownPublicKey, ownSecretKey)
+                    val encrypted = Crypto.encryptMessage(
+                        "{\"action\":\"dismissed\"}",
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    )
                     pw.writeMessage(encrypted)
                 }
                 closeCommSocket()
@@ -577,7 +654,12 @@ class RTCCall : DataChannel.Observer {
     }
 
     companion object {
-        fun startCall(context: Context, binder: MainBinder, contact: Contact, listener: OnStateChangeListener): RTCCall {
+        fun startCall(
+            context: Context,
+            binder: MainBinder,
+            contact: Contact,
+            listener: OnStateChangeListener
+        ): RTCCall {
             return RTCCall(context, binder, contact, listener)
         }
     }

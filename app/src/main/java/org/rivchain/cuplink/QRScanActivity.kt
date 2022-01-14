@@ -141,24 +141,28 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         val b = AlertDialog.Builder(this)
         val et = EditText(this)
         b.setTitle(R.string.paste_invitation)
-                .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                    try {
-                        val data = et.text.toString()
-                        addContact(data)
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                        Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show()
-                    }
+            .setPositiveButton(R.string.ok) { dialogInterface, i ->
+                try {
+                    val data = et.text.toString()
+                    addContact(data)
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show()
                 }
-                .setNegativeButton(R.string.cancel) { dialog, i ->
-                    dialog.cancel()
-                    barcodeView!!.resume()
-                }
-                .setView(et)
+            }
+            .setNegativeButton(R.string.cancel) { dialog, i ->
+                dialog.cancel()
+                barcodeView!!.resume()
+            }
+            .setView(et)
         b.show()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             initCamera()

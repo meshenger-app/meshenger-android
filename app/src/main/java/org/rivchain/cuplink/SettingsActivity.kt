@@ -57,11 +57,14 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
         }
         findViewById<View>(R.id.changePasswordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
         val username = binder!!.settings.username
-        (findViewById<View>(R.id.nameTv) as TextView).text = if (username.length == 0) resources.getString(R.string.none) else username
+        (findViewById<View>(R.id.nameTv) as TextView).text =
+            if (username.length == 0) resources.getString(R.string.none) else username
         val addresses = binder!!.settings.addresses
-        (findViewById<View>(R.id.addressTv) as TextView).text = if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
+        (findViewById<View>(R.id.addressTv) as TextView).text =
+            if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
         val password: String? = binder!!.getDatabasePassword()
-        (findViewById<View>(R.id.passwordTv) as TextView).text = if (password!!.isEmpty()) resources.getString(R.string.none) else "********"
+        (findViewById<View>(R.id.passwordTv) as TextView).text =
+            if (password!!.isEmpty()) resources.getString(R.string.none) else "********"
         val blockUnknown = binder!!.settings.blockUnknown
         val blockUnknownCB = findViewById<CheckBox>(R.id.checkBoxBlockUnknown)
         blockUnknownCB.isChecked = blockUnknown
@@ -76,7 +79,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
         nightModeCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // apply value
             AppCompatDelegate.setDefaultNightMode(
-                    if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
             )
 
             // save value
@@ -145,20 +148,24 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
         et.setText(username)
         et.setSelection(username.length)
         AlertDialog.Builder(this)
-                .setTitle(resources.getString(R.string.settings_change_name))
-                .setView(et)
-                .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                    val new_username = et.text.toString().trim { it <= ' ' }
-                    if (Utils.isValidName(new_username)) {
-                        binder!!.settings.username = new_username
-                        binder!!.saveDatabase()
-                        initViews()
-                    } else {
-                        Toast.makeText(this, resources.getString(R.string.invalid_name), Toast.LENGTH_SHORT).show()
-                    }
+            .setTitle(resources.getString(R.string.settings_change_name))
+            .setView(et)
+            .setPositiveButton(R.string.ok) { dialogInterface, i ->
+                val new_username = et.text.toString().trim { it <= ' ' }
+                if (Utils.isValidName(new_username)) {
+                    binder!!.settings.username = new_username
+                    binder!!.saveDatabase()
+                    initViews()
+                } else {
+                    Toast.makeText(
+                        this,
+                        resources.getString(R.string.invalid_name),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-                .setNegativeButton(resources.getText(R.string.cancel), null)
-                .show()
+            }
+            .setNegativeButton(resources.getText(R.string.cancel), null)
+            .show()
     }
 
     private fun showChangePasswordDialog() {
@@ -168,16 +175,16 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
         et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et.setSelection(password!!.length)
         AlertDialog.Builder(this)
-                .setTitle(resources.getString(R.string.settings_change_password))
-                .setView(et)
-                .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                    val new_password = et.text.toString()
-                    binder!!.setDatabasePassword(new_password)
-                    binder!!.saveDatabase()
-                    initViews()
-                }
-                .setNegativeButton(resources.getText(R.string.cancel), null)
-                .show()
+            .setTitle(resources.getString(R.string.settings_change_password))
+            .setView(et)
+            .setPositiveButton(R.string.ok) { dialogInterface, i ->
+                val new_password = et.text.toString()
+                binder!!.setDatabasePassword(new_password)
+                binder!!.saveDatabase()
+                initViews()
+            }
+            .setNegativeButton(resources.getText(R.string.cancel), null)
+            .show()
     }
 
     override fun onResume() {

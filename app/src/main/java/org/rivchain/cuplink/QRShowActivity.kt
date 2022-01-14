@@ -1,7 +1,6 @@
 package org.rivchain.cuplink
 
 import android.content.*
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
@@ -11,10 +10,8 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import org.rivchain.cuplink.MainService.MainBinder
-import java.lang.Exception
 
 class QRShowActivity : CupLinkActivity(), ServiceConnection {
     private var contact: Contact? = null
@@ -31,7 +28,10 @@ class QRShowActivity : CupLinkActivity(), ServiceConnection {
         if (intent.hasExtra("EXTRA_CONTACT")) {
             contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
             findViewById<View>(R.id.fabPresenter).visibility = View.GONE
-            val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val params = RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE)
             params.rightMargin = 80

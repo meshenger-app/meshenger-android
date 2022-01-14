@@ -24,9 +24,7 @@ import org.rivchain.cuplink.RTCCall.OnStateChangeListener
 import org.rivchain.cuplink.util.StatsReportUtil
 import org.webrtc.RTCStatsCollectorCallback
 import org.webrtc.RTCStatsReport
-import org.webrtc.SurfaceViewRenderer
 import java.io.IOException
-import java.lang.Exception
 
 class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
@@ -153,10 +151,10 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainBinder
                     currentCall = RTCCall.startCall(
-                            this@CallActivity,
-                            binder!!,
-                            contact!!,
-                            activeCallback
+                        this@CallActivity,
+                        binder!!,
+                        contact!!,
+                        activeCallback
                     )
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
                     currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
@@ -184,7 +182,8 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             callEventType = CallEvent.Type.INCOMING_UNKNOWN
             calledWhileScreenOff = !(getSystemService(POWER_SERVICE) as PowerManager).isScreenOn
             passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
-                    PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK, "cuplink:wakeup"
+                PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
+                "cuplink:wakeup"
             )
             passiveWakeLock.acquire(10000)
             connection = this
@@ -242,10 +241,19 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             findViewById<View>(R.id.callAccept).setOnClickListener(acceptListener)
             findViewById<View>(R.id.callDecline).setOnClickListener(declineListener)
         }
-        findViewById<View>(R.id.speakerMode).setOnClickListener { button: View -> chooseVoiceMode(button as ImageButton) }
-        findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View -> switchVideoEnabled(button as ImageButton) }
+        findViewById<View>(R.id.speakerMode).setOnClickListener { button: View ->
+            chooseVoiceMode(
+                button as ImageButton
+            )
+        }
+        findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View ->
+            switchVideoEnabled(
+                button as ImageButton
+            )
+        }
         findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall!!.switchFrontFacing() }
-        LocalBroadcastManager.getInstance(this).registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
     }
 
     private fun startRinging() {
@@ -265,7 +273,13 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
             return
         }
-        ringtone = RingtoneManager.getRingtone(this, RingtoneManager.getActualDefaultRingtoneUri(applicationContext, RingtoneManager.TYPE_RINGTONE))
+        ringtone = RingtoneManager.getRingtone(
+            this,
+            RingtoneManager.getActualDefaultRingtoneUri(
+                applicationContext,
+                RingtoneManager.TYPE_RINGTONE
+            )
+        )
         ringtone!!.play()
     }
 
@@ -300,7 +314,16 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             return
         }
         currentCall!!.isVideoEnabled = !currentCall!!.isVideoEnabled
-        val animation = ScaleAnimation(1.0f, 0.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+        val animation = ScaleAnimation(
+            1.0f,
+            0.0f,
+            1.0f,
+            1.0f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f
+        )
         animation.duration = buttonAnimationDuration / 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
@@ -309,7 +332,16 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
             override fun onAnimationEnd(animation: Animation) {
                 button.setImageResource(if (currentCall!!.isVideoEnabled) R.drawable.baseline_camera_alt_off_48 else R.drawable.baseline_camera_alt_48)
-                val a: Animation = ScaleAnimation(0.0f, 1.0f, 1.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+                val a: Animation = ScaleAnimation(
+                    0.0f,
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f
+                )
                 a.duration = buttonAnimationDuration / 2
                 button.startAnimation(a)
             }
@@ -321,11 +353,29 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         val frontSwitch = findViewById<View>(R.id.frontFacingSwitch)
         if (currentCall!!.isVideoEnabled) {
             frontSwitch.visibility = View.VISIBLE
-            val scale: Animation = ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+            val scale: Animation = ScaleAnimation(
+                0f,
+                1f,
+                0f,
+                1f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+            )
             scale.duration = buttonAnimationDuration
             frontSwitch.startAnimation(scale)
         } else {
-            val scale: Animation = ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+            val scale: Animation = ScaleAnimation(
+                1f,
+                0f,
+                1f,
+                0f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+            )
             scale.duration = buttonAnimationDuration
             scale.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {
@@ -345,11 +395,19 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         button.startAnimation(animation)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Camera permission needed in order to start video", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Camera permission needed in order to start video",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return
             }
             switchVideoEnabled(findViewById(R.id.videoStreamSwitch))
@@ -358,7 +416,10 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
     private fun startSensor() {
         powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager!!.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "meshenger:proximity")
+        wakeLock = powerManager!!.newWakeLock(
+            PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
+            "meshenger:proximity"
+        )
         wakeLock.acquire()
     }
 
@@ -426,11 +487,17 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         log("sensor changed: " + sensorEvent.values[0])
         if (sensorEvent.values[0] == 0.0f) {
             wakeLock = (getSystemService(POWER_SERVICE) as PowerManager)
-                    .newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, "meshenger:tag")
+                .newWakeLock(
+                    PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    "meshenger:tag"
+                )
             wakeLock.acquire()
         } else {
             wakeLock = (getSystemService(POWER_SERVICE) as PowerManager)
-                    .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, "meshenger:tag")
+                .newWakeLock(
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    "meshenger:tag"
+                )
             wakeLock.acquire()
         }
     }

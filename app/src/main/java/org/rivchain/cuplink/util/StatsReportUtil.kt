@@ -1,6 +1,5 @@
 package org.rivchain.cuplink.util
 
-import org.webrtc.RTCStats
 import org.webrtc.RTCStatsReport
 import java.math.BigInteger
 
@@ -66,7 +65,8 @@ class StatsReportUtil {
                 val members = stats.members
                 if (members["kind"] == "video") {
                     width = if (members["frameWidth"] == null) 0 else members["frameWidth"] as Long
-                    height = if (members["frameHeight"] == null) 0 else members["frameHeight"] as Long
+                    height =
+                        if (members["frameHeight"] == null) 0 else members["frameHeight"] as Long
                 }
             }
         }

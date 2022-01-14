@@ -11,7 +11,12 @@ import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal class EventListAdapter(context: Context, resource: Int, private var events: List<CallEvent>, private var contacts: List<Contact>) : ArrayAdapter<CallEvent>(context, resource, events) {
+internal class EventListAdapter(
+    context: Context,
+    resource: Int,
+    private var events: List<CallEvent>,
+    private var contacts: List<Contact>
+) : ArrayAdapter<CallEvent>(context, resource, events) {
     private val inflater: LayoutInflater
     fun update(events: List<CallEvent>, contacts: List<Contact>) {
         this.events = events
@@ -62,10 +67,18 @@ internal class EventListAdapter(context: Context, resource: Int, private var eve
         }
         val type_iv = view.findViewById<ImageView>(R.id.call_type)
         when (event.type) {
-            CallEvent.Type.INCOMING_ACCEPTED, CallEvent.Type.INCOMING_DECLINED -> type_iv.setImageResource(R.drawable.call_incoming)
-            CallEvent.Type.INCOMING_UNKNOWN, CallEvent.Type.INCOMING_MISSED, CallEvent.Type.INCOMING_ERROR -> type_iv.setImageResource(R.drawable.call_incoming_missed)
-            CallEvent.Type.OUTGOING_ACCEPTED, CallEvent.Type.OUTGOING_DECLINED -> type_iv.setImageResource(R.drawable.call_outgoing)
-            CallEvent.Type.OUTGOING_UNKNOWN, CallEvent.Type.OUTGOING_MISSED, CallEvent.Type.OUTGOING_ERROR -> type_iv.setImageResource(R.drawable.call_outgoing_missed)
+            CallEvent.Type.INCOMING_ACCEPTED, CallEvent.Type.INCOMING_DECLINED -> type_iv.setImageResource(
+                R.drawable.call_incoming
+            )
+            CallEvent.Type.INCOMING_UNKNOWN, CallEvent.Type.INCOMING_MISSED, CallEvent.Type.INCOMING_ERROR -> type_iv.setImageResource(
+                R.drawable.call_incoming_missed
+            )
+            CallEvent.Type.OUTGOING_ACCEPTED, CallEvent.Type.OUTGOING_DECLINED -> type_iv.setImageResource(
+                R.drawable.call_outgoing
+            )
+            CallEvent.Type.OUTGOING_UNKNOWN, CallEvent.Type.OUTGOING_MISSED, CallEvent.Type.OUTGOING_ERROR -> type_iv.setImageResource(
+                R.drawable.call_outgoing_missed
+            )
         }
         val address_tv = view.findViewById<TextView>(R.id.call_address)
         if (event.address != null) {

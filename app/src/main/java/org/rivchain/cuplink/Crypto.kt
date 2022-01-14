@@ -18,11 +18,21 @@ internal class Crypto {
             } else data
         }
 
-        fun encryptMessage(message: String, otherPublicKey: ByteArray?, ownPublicKey: ByteArray?, ownSecretKey: ByteArray?): ByteArray {
+        fun encryptMessage(
+            message: String,
+            otherPublicKey: ByteArray?,
+            ownPublicKey: ByteArray?,
+            ownSecretKey: ByteArray?
+        ): ByteArray {
             return message.toByteArray()
         }
 
-        fun decryptMessage(message: ByteArray?, otherPublicKeySignOut: ByteArray?, ownPublicKey: ByteArray?, ownSecretKey: ByteArray?): String? {
+        fun decryptMessage(
+            message: ByteArray?,
+            otherPublicKeySignOut: ByteArray?,
+            ownPublicKey: ByteArray?,
+            ownSecretKey: ByteArray?
+        ): String? {
             return if (otherPublicKeySignOut == null) {
                 null
             } else String(message!!, Charset.forName("UTF-8"))

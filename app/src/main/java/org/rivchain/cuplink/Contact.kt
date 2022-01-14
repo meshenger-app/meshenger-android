@@ -4,7 +4,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.Serializable
-import java.lang.Exception
 import java.net.ConnectException
 import java.net.InetSocketAddress
 import java.net.Socket

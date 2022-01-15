@@ -38,7 +38,7 @@ class RTCCall : DataChannel.Observer {
     private var remoteRenderer: SurfaceViewRenderer? = null
     private var localRenderer: SurfaceViewRenderer? = null
     private var capturer: CameraVideoCapturer? = null
-    private lateinit var upStream: MediaStream
+    private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
     var isSpeakerEnabled = false
     var isVideoEnabled = false
@@ -401,8 +401,8 @@ class RTCCall : DataChannel.Observer {
 
     private fun createStream(): MediaStream? {
         upStream = factory!!.createLocalMediaStream("stream1")
-        upStream.addTrack(audioTrack)
-        upStream.addTrack(videoTrack)
+        upStream!!.addTrack(audioTrack)
+        upStream!!.addTrack(videoTrack)
         return upStream
     }
 

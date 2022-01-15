@@ -74,4 +74,5 @@
     <string name="no">Non</string>
     <string name="report_dialog_text">Désolé, l\'application a planté.</string>
     <string name="report_dialog_comment">Veuillez décrire ce que vous faisiez lorsque l\'application a planté :</string>
+    <string name="choose_address">Choose your address in Settings</string>
 </resources>

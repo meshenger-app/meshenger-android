@@ -353,12 +353,15 @@ class MainService : Service(), Runnable {
         }
 
         fun pingContacts() {
+            if(settings == null){
+                return
+            }
             Thread(
                 PingRunnable(
                     this@MainService,
                     contactsCopy,
-                    settings.publicKey!!,
-                    settings.secretKey!!
+                    settings?.publicKey!!,
+                    settings?.secretKey!!
                 )
             ).start()
         }
@@ -367,8 +370,8 @@ class MainService : Service(), Runnable {
             this@MainService.saveDatabase()
         }
 
-        val settings: Settings
-            get() = database!!.settings
+        val settings: Settings?
+            get() = database?.settings
 
         // return a cloned list
         val contactsCopy: List<Contact>

@@ -87,7 +87,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
             .registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
     }
 
-    fun refreshContactList() {
+    private fun refreshContactList() {
         log("refreshContactList")
         Handler(mainLooper).post {
             val contacts = binder!!.contactsCopy
@@ -245,8 +245,12 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         log("OnServiceConnected")
         binder = iBinder as MainBinder
         refreshContactList()
+        if(binder!!.settings == null){
+            Toast.makeText(this, R.string.choose_address, Toast.LENGTH_LONG).show()
+            return;
+        }
         // call it here because EventListFragment.onResume is triggered twice
-        if (binder!!.settings.publicKey != null) {
+        if (binder!!.settings?.publicKey != null) {
             binder!!.pingContacts()
         }
     }

@@ -8,8 +8,8 @@ import java.nio.charset.Charset
 import java.util.*
 
 class Database {
-    var settings: Settings
-    var contacts: ArrayList<Contact>
+    var settings: Settings = Settings()
+    var contacts: ArrayList<Contact> = ArrayList()
     fun addContact(contact: Contact) {
         val idx = findContact(contact.publicKey)
         if (idx >= 0) {
@@ -27,7 +27,7 @@ class Database {
         }
     }
 
-    fun findContact(publicKey: ByteArray?): Int {
+    private fun findContact(publicKey: ByteArray?): Int {
         var i = 0
         while (i < contacts.size) {
             if (Arrays.equals(contacts[i].publicKey, publicKey)) {
@@ -152,8 +152,4 @@ class Database {
         }
     }
 
-    init {
-        contacts = ArrayList()
-        settings = Settings()
-    }
 }

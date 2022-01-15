@@ -57,7 +57,7 @@
     <string name="about_version">App Version:</string>
     <string name="about_info">App Info:</string>
     <string name="app_info">CupLink app allows voice and video communication without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
-    <string name="address_management">Address Management</string>
+    <string name="choose_network">Choose network</string>
     <string name="qr_code_address_list">QR-Code Address List</string>
     <string name="currently_active">Currently Active</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code.</string>

@@ -75,4 +75,5 @@
     <string name="no">No</string>
     <string name="report_dialog_text">Sorry, the application crashed.</string>
     <string name="report_dialog_comment">Please describe what were you doing when the app crashed:</string>
+    <string name="configure_address">Please choose your IP address first in Settings menu</string>
 </resources>

@@ -43,6 +43,10 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
         log("onItemClick")
         val contact = binder!!.contactsCopy[i]
+        if(binder!!.getDatabase()?.settings?.addresses?.size  == 0){
+            Toast.makeText(this, R.string.configure_address, Toast.LENGTH_LONG).show()
+            return;
+        }
         val intent = Intent(this, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)
@@ -57,14 +61,14 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         fabScan = findViewById(R.id.fabScan)
         fabGen = findViewById(R.id.fabGenerate)
         contactListView = findViewById(R.id.contactList)
-        fabScan.setOnClickListener(View.OnClickListener { v: View? ->
+        fabScan.setOnClickListener { v: View? ->
             startActivity(
                 Intent(
                     this,
                     QRScanActivity::class.java
                 )
             )
-        })
+        }
         fabGen.setOnClickListener(View.OnClickListener { v: View? ->
             startActivity(
                 Intent(

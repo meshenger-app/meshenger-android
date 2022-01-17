@@ -293,6 +293,10 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         super.onPause()
     }
 
+    override fun onBackPressed() {
+        moveTaskToBack(true)
+    }
+
     override fun onStop() {
         super.onStop()
         unbindService(this)

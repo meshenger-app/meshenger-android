@@ -7,13 +7,12 @@ android {
     signingConfigs {
     }
     compileSdkVersion 31
-    buildToolsVersion '30.0.2'
     defaultConfig {
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 332
-        versionName "0.4.1.1"
+        versionCode 333
+        versionName "0.4.1.2"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)

@@ -2,7 +2,6 @@ package org.rivchain.cuplink
 
 import android.app.Application
 import android.content.Context
-import org.acra.BuildConfig
 import org.acra.config.dialog
 import org.acra.config.httpSender
 import org.acra.data.StringFormat

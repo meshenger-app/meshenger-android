@@ -1,5 +1,7 @@
 # Meshenger
 
+*Want to work on Meshenger? Now possible via [Google Summer of Code 2022](https://projects.freifunk.net/#/projects?project=call_a_friend&lang=en). Open to everyone >18 years old.*
+
  Voice- and video calls without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
 
 Features:

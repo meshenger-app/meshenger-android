@@ -16,7 +16,7 @@ class MainApplication : Application() {
             reportFormat = StringFormat.JSON
             //each plugin you chose above can be configured in a block like this:
             httpSender {
-                uri = "http://acrarium.rivchain.org:8080/acrarium/report"
+                uri = "https://acrarium.rivchain.org/acrarium/report"
                 basicAuthLogin = "TaQSCEkjRDuoCBCi"
                 basicAuthPassword = "j4LeJkjPoAtU2afo"
                 httpMethod = HttpSender.Method.POST

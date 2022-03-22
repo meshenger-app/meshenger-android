@@ -25,7 +25,6 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
 

@@ -418,7 +418,7 @@ class RTCCall : DataChannel.Observer {
 
     private val videoTrack: VideoTrack
         private get() {
-            //capturer = createCapturer()
+            capturer = createCapturer()
             localRender.setTarget(localRenderer)
             Handler(Looper.getMainLooper()).post {
                 localRenderer!!.init(

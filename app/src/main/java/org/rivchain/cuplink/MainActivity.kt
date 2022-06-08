@@ -119,17 +119,17 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                     menu.menu.add(qr)
                     menu.setOnMenuItemClickListener { menuItem: MenuItem ->
                         val title = menuItem.title.toString()
-                        val publicKey = contact.publicKey
+                        val ip = contact.getAddresses().get(0).address.hostAddress
                         if (title == delete) {
-                            showDeleteDialog(publicKey, contact.name)
+                            showDeleteDialog(ip, contact.name)
                         } else if (title == rename) {
-                            showContactEditDialog(publicKey, contact.name)
+                            showContactEditDialog(ip, contact.name)
                         } else if (title == share) {
                             shareContact(contact)
                         } else if (title == block) {
-                            setBlocked(publicKey, true)
+                            setBlocked(ip, true)
                         } else if (title == unblock) {
-                            setBlocked(publicKey, false)
+                            setBlocked(ip, false)
                         } else if (title == qr) {
                             val intent = Intent(this, QRShowActivity::class.java)
                             intent.putExtra("EXTRA_CONTACT", contact)
@@ -143,13 +143,13 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         }
     }
 
-    private fun showDeleteDialog(publicKey: ByteArray?, name: String) {
+    private fun showDeleteDialog(ip: String, name: String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.confirm)
         builder.setMessage(resources.getString(R.string.contact_remove) + " " + name)
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, id: Int ->
-            binder!!.deleteContact(publicKey)
+            binder!!.deleteContact(ip)
             dialog.cancel()
         }
         builder.setNegativeButton(R.string.no) { dialog: DialogInterface, id: Int -> dialog.cancel() }
@@ -159,8 +159,8 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         alert.show()
     }
 
-    private fun setBlocked(publicKey: ByteArray?, blocked: Boolean) {
-        val contact = binder!!.getContactByPublicKey(publicKey)
+    private fun setBlocked(ip: String, blocked: Boolean) {
+        val contact = binder!!.getContactByIp(ip)
         if (contact != null) {
             contact.setBlocked(blocked)
             binder!!.addContact(contact)
@@ -179,7 +179,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         }
     }
 
-    private fun showContactEditDialog(publicKey: ByteArray?, name: String) {
+    private fun showContactEditDialog(ip: String, name: String) {
         log("showContactEditDialog")
         val et = EditText(this)
         et.setText(name)
@@ -190,7 +190,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
             .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
                 val newName = et.text.toString()
                 if (newName.isNotEmpty()) {
-                    val contact = binder!!.getContactByPublicKey(publicKey)
+                    val contact = binder!!.getContactByIp(ip)
                     if (contact != null) {
                         contact.name = newName
                         binder!!.addContact(contact)
@@ -250,7 +250,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         binder = iBinder as MainBinder
         refreshContactList()
         // call it here because EventListFragment.onResume is triggered twice
-        if (binder!!.settings.publicKey != null) {
+        if (binder!!.settings.addresses.size > 0) {
             binder!!.pingContacts()
         }
     }

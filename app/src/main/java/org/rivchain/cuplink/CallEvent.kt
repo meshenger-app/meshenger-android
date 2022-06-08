@@ -4,7 +4,6 @@ import java.net.InetAddress
 import java.util.*
 
 class CallEvent(
-    var pubKey: ByteArray, // may be null in case the call attempt failed
     var address: InetAddress, var type: Type
 ) {
     var date: Date = Date()

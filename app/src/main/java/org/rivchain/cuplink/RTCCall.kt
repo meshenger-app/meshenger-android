@@ -76,8 +76,6 @@ class RTCCall : DataChannel.Observer {
         }
     private var context: Context
     private var contact: Contact
-    private var ownPublicKey: ByteArray
-    private var ownSecretKey: ByteArray
     private var iceServers: MutableList<IceServer>
     private var listener: OnStateChangeListener?
     private var binder: MainBinder
@@ -95,8 +93,6 @@ class RTCCall : DataChannel.Observer {
         this.commSocket = commSocket
         listener = null
         this.binder = binder
-        ownPublicKey = binder.settings.publicKey!!
-        ownSecretKey = binder.settings.secretKey!!
         this.offer = offer
 
         // usually empty
@@ -119,8 +115,6 @@ class RTCCall : DataChannel.Observer {
         commSocket = null
         this.listener = listener
         this.binder = binder
-        ownPublicKey = binder.settings.publicKey!!
-        ownSecretKey = binder.settings.secretKey!!
         log("RTCCall created")
 
         // usually empty
@@ -150,7 +144,7 @@ class RTCCall : DataChannel.Observer {
                             }
                             val remote_address =
                                 commSocket!!.remoteSocketAddress as InetSocketAddress
-                            val otherPublicKey = remote_address.address.address
+                            val ip = remote_address.address.hostAddress
                             log("outgoing call from remote address: $remote_address")
 
                             // remember latest working address
@@ -165,34 +159,18 @@ class RTCCall : DataChannel.Observer {
                                 obj.put("action", "call")
                                 obj.put("offer", connection!!.localDescription.description)
                                 val encrypted = Crypto.encryptMessage(
-                                    obj.toString(),
-                                    contact.publicKey,
-                                    ownPublicKey,
-                                    ownSecretKey
+                                    obj.toString()
                                 )
-                                if (encrypted == null) {
-                                    log("encrypted var is null")
-                                    closeCommSocket()
-                                    reportStateChange(CallState.ERROR)
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
-                                    return
-                                }
                                 val pw = PacketWriter(commSocket!!)
                                 pw.writeMessage(encrypted)
                             }
                             run {
                                 val response = pr.readMessage()
                                 val decrypted = Crypto.decryptMessage(
-                                    response,
-                                    otherPublicKey,
-                                    ownPublicKey,
-                                    ownSecretKey
+                                    response
                                 )
-                                if (decrypted == null || !Arrays.equals(
-                                        contact.publicKey,
-                                        otherPublicKey
-                                    )
-                                ) {
+                                if (!contact.getAddresses()[0].address.hostAddress.equals(ip))
+                                {
                                     log("decrypted var is null or pubkey does not match")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -213,16 +191,10 @@ class RTCCall : DataChannel.Observer {
                             run {
                                 val response = pr.readMessage()
                                 val decrypted = Crypto.decryptMessage(
-                                    response,
-                                    otherPublicKey,
-                                    ownPublicKey,
-                                    ownSecretKey
+                                    response
                                 )
-                                if (decrypted == null || !Arrays.equals(
-                                        contact.publicKey,
-                                        otherPublicKey
-                                    )
-                                ) {
+                                if (contact.getAddresses()[0].address.hostAddress.equals(ip))
+                                {
                                     log("decrypted (201) var is null or pubkey does not match")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -532,10 +504,7 @@ class RTCCall : DataChannel.Observer {
                             obj.put("action", "connected")
                             obj.put("answer", connection!!.localDescription.description)
                             val encrypted = Crypto.encryptMessage(
-                                obj.toString(),
-                                contact.publicKey,
-                                ownPublicKey,
-                                ownSecretKey
+                                obj.toString()
                             )
                             if (encrypted != null) {
                                 pw.writeMessage(encrypted)
@@ -604,10 +573,7 @@ class RTCCall : DataChannel.Observer {
                 if (commSocket != null) {
                     val pw = PacketWriter(commSocket!!)
                     val encrypted = Crypto.encryptMessage(
-                        "{\"action\":\"dismissed\"}",
-                        contact.publicKey,
-                        ownPublicKey,
-                        ownSecretKey
+                        "{\"action\":\"dismissed\"}"
                     )
                     pw.writeMessage(encrypted)
                 }
@@ -638,10 +604,7 @@ class RTCCall : DataChannel.Observer {
                 if (commSocket != null) {
                     val pw = PacketWriter(commSocket!!)
                     val encrypted = Crypto.encryptMessage(
-                        "{\"action\":\"dismissed\"}",
-                        contact.publicKey,
-                        ownPublicKey,
-                        ownSecretKey
+                        "{\"action\":\"dismissed\"}"
                     )
                     pw.writeMessage(encrypted)
                 }

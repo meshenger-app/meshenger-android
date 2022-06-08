@@ -31,10 +31,10 @@ class EventListFragment : Fragment(), OnItemClickListener {
         mainActivity = activity as MainActivity?
         eventListView = view.findViewById(R.id.eventList)
         fabDelete = view.findViewById(R.id.fabDelete)
-        fabDelete.setOnClickListener(View.OnClickListener { v: View? ->
+        fabDelete.setOnClickListener {
             mainActivity!!.binder!!.clearEvents()
             refreshEventList()
-        })
+        }
         eventListAdapter =
             EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
         eventListView.setAdapter(eventListAdapter)
@@ -64,7 +64,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                     val block = res.getString(R.string.block)
                     val unblock = res.getString(R.string.unblock)
                     val qr = "QR-ify"
-                    val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
+                    val contact = mainActivity!!.binder!!.getContactByIp(event.address.hostAddress)
 
                     // allow to add unknown caller
                     if (contact == null) {
@@ -98,7 +98,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
     }
 
     private fun setBlocked(event: CallEvent, blocked: Boolean) {
-        val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
+        val contact = mainActivity!!.binder!!.getContactByIp(event.address.hostAddress)
         if (contact != null) {
             contact.setBlocked(blocked)
             mainActivity!!.binder!!.saveDatabase()
@@ -126,7 +126,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             }
             val address = Utils.getGeneralizedAddress(event.address)
             mainActivity!!.binder!!.addContact(
-                Contact(name, event.pubKey, Arrays.asList(address))
+                Contact(name, Arrays.asList(address))
             )
             Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
@@ -142,7 +142,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         log("onItemClick")
         val event = eventListAdapter!!.getItem(i)
         val address = Utils.getGeneralizedAddress(event.address)
-        val contact = Contact("", event.pubKey, Arrays.asList(address))
+        val contact = Contact("", Arrays.asList(address))
         contact.setLastWorkingAddress(
             Utils.parseInetSocketAddress(
                 address,

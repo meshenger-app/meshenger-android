@@ -12,8 +12,6 @@ import java.util.*
 
 class Contact : Serializable {
     var name: String
-    var publicKey: ByteArray?
-        private set
     private var blocked: Boolean
     private var addresses: MutableList<InetSocketAddress>
 
@@ -24,9 +22,8 @@ class Contact : Serializable {
     var lastWorkingAddress: InetSocketAddress? = null
         private set
 
-    constructor(name: String, pubkey: ByteArray?, addresses: MutableList<String>) {
+    constructor(name: String, addresses: MutableList<String>) {
         this.name = name
-        publicKey = pubkey
         blocked = false
         this.addresses = ArrayList()
         for (addr in addresses) {
@@ -36,15 +33,11 @@ class Contact : Serializable {
 
     private constructor() {
         name = ""
-        publicKey = null
         blocked = false
         addresses = ArrayList()
     }
 
-    fun getAddresses(): List<InetSocketAddress>? {
-        if (addresses.size==0){
-            return null
-        }
+    fun getAddresses(): List<InetSocketAddress> {
         return addresses
     }
 
@@ -139,7 +132,6 @@ class Contact : Serializable {
             val `object` = JSONObject()
             val array = JSONArray()
             `object`.put("name", contact.name)
-            `object`.put("public_key", Utils.byteArrayToHexString(contact.publicKey))
             for (address in contact.getAddresses()!!) {
                 array.put(address.address.hostAddress)
             }
@@ -154,12 +146,8 @@ class Contact : Serializable {
         fun importJSON(`object`: JSONObject, all: Boolean): Contact {
             val contact = Contact()
             contact.name = `object`.getString("name")
-            contact.publicKey = Utils.hexStringToByteArray(`object`.getString("public_key"))
             if (!Utils.isValidName(contact.name)) {
                 throw JSONException("Invalid Name.")
-            }
-            if (contact.publicKey == null) {
-                throw JSONException("Invalid Public Key.")
             }
             val array = `object`.getJSONArray("addresses")
             var i = 0

@@ -46,7 +46,6 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         val publicKey = Utils.parseInetSocketAddress(ae.address, 0)!!.address.address
         //val secretKey: ByteArray? = null
         val settings = binder!!.settings
-        settings.publicKey = publicKey
         //settings.secretKey = secretKey
     }
 

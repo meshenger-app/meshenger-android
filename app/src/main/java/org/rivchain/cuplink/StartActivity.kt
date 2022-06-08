@@ -61,10 +61,6 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             }
             4 -> {
                 log("init 4: check key pair")
-                if (binder!!.settings.publicKey == null) {
-                    // generate key pair
-                    initKeyPair()
-                }
                 continueInit()
             }
             5 -> {
@@ -116,20 +112,6 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
     override fun onPause() {
         super.onPause()
         unbindService(this)
-    }
-
-    private fun initKeyPair() {
-        // create secret/public key pair
-        val publicKey: ByteArray? = null
-        //val secretKey: ByteArray? = null
-        val settings = binder!!.settings
-        settings.publicKey = publicKey
-        //settings.secretKey = secretKey
-        try {
-            binder!!.saveDatabase()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     private fun showMissingAddressDialog() {

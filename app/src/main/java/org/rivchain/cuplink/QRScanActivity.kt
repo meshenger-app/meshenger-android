@@ -54,7 +54,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         }
 
         // lookup existing contacts by key and name
-        val existing_pubkey_contact = binder!!.getContactByPublicKey(new_contact.publicKey)
+        val existing_pubkey_contact = binder!!.getContactByIp(new_contact.getAddresses()[0].address.hostAddress)
         val existing_name_contact = binder!!.getContactByName(new_contact.name)
         if (existing_pubkey_contact != null) {
             // contact with that public key exists
@@ -77,7 +77,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         val replaceButton = dialog.findViewById<Button>(R.id.ReplaceButton)
         nameTextView.text = other_contact.name
         replaceButton.setOnClickListener { v: View? ->
-            binder!!.deleteContact(other_contact.publicKey)
+            binder!!.deleteContact(other_contact.getAddresses()[0].address.hostAddress)
             binder!!.addContact(new_contact)
 
             // done
@@ -101,7 +101,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         val renameButton = dialog.findViewById<Button>(R.id.RenameButton)
         nameEditText.setText(other_contact.name)
         replaceButton.setOnClickListener { v: View? ->
-            binder!!.deleteContact(other_contact.publicKey)
+            binder!!.deleteContact(other_contact.getAddresses()[0].address.hostAddress)
             binder!!.addContact(new_contact)
 
             // done

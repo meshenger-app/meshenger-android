@@ -11,7 +11,7 @@ class Database {
     var settings: Settings = Settings()
     var contacts: ArrayList<Contact> = ArrayList()
     fun addContact(contact: Contact) {
-        val idx = findContact(contact.publicKey)
+        val idx = findContact(contact.getAddresses()?.get(0)?.address?.hostAddress)
         if (idx >= 0) {
             // contact exists - replace
             contacts[idx] = contact
@@ -20,17 +20,17 @@ class Database {
         }
     }
 
-    fun deleteContact(publicKey: ByteArray?) {
-        val idx = findContact(publicKey)
+    fun deleteContact(address: String?) {
+        val idx = findContact(address)
         if (idx >= 0) {
             contacts.removeAt(idx)
         }
     }
 
-    private fun findContact(publicKey: ByteArray?): Int {
+    private fun findContact(address: String?): Int {
         var i = 0
         while (i < contacts.size) {
-            if (Arrays.equals(contacts[i].publicKey, publicKey)) {
+            if (contacts[i].getAddresses()?.get(0)?.address?.hostAddress.equals(address)) {
                 return i
             }
             i += 1
@@ -39,76 +39,31 @@ class Database {
     }
 
     fun onDestroy() {
-        // zero keys from memory
-        if (settings.secretKey != null) {
-            Arrays.fill(settings.secretKey, 0.toByte())
-        }
-        if (settings.publicKey != null) {
-            Arrays.fill(settings.publicKey, 0.toByte())
-        }
-        for (contact in contacts) {
-            if (contact.publicKey != null) {
-                Arrays.fill(contact.publicKey, 0.toByte())
-            }
-        }
+
     }
 
     companion object {
         var version = "3.0.3" // current version
 
         @Throws(IOException::class, JSONException::class)
-        fun load(path: String?, password: String?): Database {
+        fun load(path: String?): Database {
             // read database file
             var data = Utils.readExternalFile(path!!)
 
-            // encrypt database
-            if (password != null && password.length > 0) {
-                data = Crypto.decryptDatabase(data, password.toByteArray())
-                if (data == null) {
-                    throw IOException("wrong database password.")
-                }
-            }
             val obj = JSONObject(
-                String(data!!, Charset.forName("UTF-8"))
+                String(data, Charset.forName("UTF-8"))
             )
-            val upgraded = upgradeDatabase(obj.getString("version"), version, obj)
             val db = fromJSON(obj)
-            if (upgraded) {
-                log("store updated database")
-                store(path, db, password)
-            }
             return db
         }
 
         @Throws(IOException::class, JSONException::class)
-        fun store(path: String?, db: Database, password: String?) {
+        fun store(path: String?, db: Database) {
             val obj = toJSON(db)
             var data: ByteArray? = obj.toString().toByteArray()
 
-            // encrypt database
-            if (password != null && password.length > 0) {
-                data = Crypto.encryptDatabase(data, password.toByteArray())
-            }
-
             // write database file
             Utils.writeExternalFile(path!!, data)
-        }
-
-        @Throws(JSONException::class)
-        private fun upgradeDatabase(from: String, to: String, obj: JSONObject): Boolean {
-            var from = from
-            if (from == to) {
-                return false
-            }
-            log("upgrade database from $from to $to")
-
-            // 3.0.2 => 3.0.3
-            if (from == "3.0.2") {
-                // nothing to do
-                from = "3.0.3"
-            }
-            obj.put("version", from)
-            return true
         }
 
         @Throws(JSONException::class)

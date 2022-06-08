@@ -8,7 +8,6 @@ import java.util.*
 class Settings {
     var username = ""
     var secretKey: ByteArray = ByteArray(0)
-    var publicKey: ByteArray? = null
     var language = ""
     var nightMode = false
     var blockUnknown = false
@@ -29,7 +28,7 @@ class Settings {
     }
 
     val ownContact: Contact
-        get() = Contact(username, publicKey, addresses)
+        get() = Contact(username, addresses)
 
     companion object {
         @Throws(JSONException::class)
@@ -37,7 +36,6 @@ class Settings {
             val s = Settings()
             s.username = obj.getString("username")
             s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))
-            s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
             s.language = obj.getString("language")
             s.nightMode = obj.getBoolean("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
@@ -65,7 +63,6 @@ class Settings {
             val obj = JSONObject()
             obj.put("username", s.username)
             obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey))
-            obj.put("public_key", Utils.byteArrayToHexString(s.publicKey))
             obj.put("language", s.language)
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)

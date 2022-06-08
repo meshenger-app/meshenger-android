@@ -45,7 +45,7 @@ class MainService : Service(), Runnable {
         try {
             if (File(database_path).exists()) {
                 // open existing database
-                database = Database.load(database_path, databasePassword)
+                database = Database.load(database_path)
                 isFirstStart = false
             } else {
                 // create new database
@@ -59,7 +59,7 @@ class MainService : Service(), Runnable {
 
     private fun saveDatabase() {
         try {
-            Database.store(database_path, database!!, databasePassword)
+            Database.store(database_path, database!!)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -73,7 +73,7 @@ class MainService : Service(), Runnable {
         // database password was supplied to open it.
         if (database != null) {
             try {
-                Database.store(database_path, database!!, databasePassword)
+                Database.store(database_path, database!!)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -82,19 +82,12 @@ class MainService : Service(), Runnable {
         // shutdown listening socket and say goodbye
         if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
             try {
-                val ownPublicKey = database!!.settings.publicKey
-                val ownSecretKey = database!!.settings.secretKey
                 val message = "{\"action\": \"status_change\", \"status\", \"offline\"}"
                 for (contact in database!!.contacts) {
                     if (contact.state === Contact.State.OFFLINE) {
                         continue
                     }
-                    val encrypted = Crypto.encryptMessage(
-                        message,
-                        contact.publicKey,
-                        ownPublicKey,
-                        ownSecretKey
-                    )
+                    val encrypted = Crypto.encryptMessage(message)
                         ?: continue
                     var socket: Socket? = null
                     try {
@@ -131,26 +124,24 @@ class MainService : Service(), Runnable {
     }
 
     private fun handleClient(client: Socket) {
-        val ownSecretKey = database!!.settings.secretKey
-        val ownPublicKey = database!!.settings.publicKey
         try {
             val pw = PacketWriter(client)
             val pr = PacketReader(client)
             var contact: Contact? = null
             val remote_address = client.remoteSocketAddress as InetSocketAddress
-            val clientPublicKey = remote_address.address.address
+
             log("incoming connection from $remote_address")
             while (true) {
                 val request = pr.readMessage() ?: break
                 val decrypted =
-                    Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
+                    Crypto.decryptMessage(request)
                 if (decrypted == null) {
                     log("decryption failed")
                     break
                 }
                 if (contact == null) {
                     for (c in database!!.contacts) {
-                        if (Arrays.equals(c.publicKey, clientPublicKey)) {
+                        if (c.getAddresses()[0].address.hostAddress.equals(remote_address.address.hostAddress)) {
                             contact = c
                         }
                     }
@@ -170,18 +161,12 @@ class MainService : Service(), Runnable {
                     }
                     if (contact == null) {
                         // unknown caller
-                        contact = Contact("", clientPublicKey.clone(), ArrayList())
+                        contact = Contact("", ArrayList())
                     }
                 }
 
-                // suspicious change of identity in during connection...
-                if (!Arrays.equals(contact.publicKey, clientPublicKey)) {
-                    log("suspicious change of key")
-                    continue
-                }
-
                 // remember last good address (the outgoing port is random and not the server port)
-                contact.setLastWorkingAddress(
+                contact!!.setLastWorkingAddress(
                     InetSocketAddress(remote_address.address, serverPort)
                 )
                 val obj = JSONObject(decrypted)
@@ -196,10 +181,7 @@ class MainService : Service(), Runnable {
 
                         // respond that we accept the call
                         val encrypted = Crypto.encryptMessage(
-                            "{\"action\":\"ringing\"}",
-                            contact.publicKey,
-                            ownPublicKey,
-                            ownSecretKey
+                            "{\"action\":\"ringing\"}"
                         )
                         pw.writeMessage(encrypted)
                         val intent = Intent(this, CallActivity::class.java)
@@ -212,12 +194,9 @@ class MainService : Service(), Runnable {
                     "ping" -> {
                         log("ping...")
                         // someone wants to know if we are online
-                        setClientState(contact, Contact.State.ONLINE)
+                        setClientState(contact!!, Contact.State.ONLINE)
                         val encrypted = Crypto.encryptMessage(
-                            "{\"action\":\"pong\"}",
-                            contact.publicKey,
-                            ownPublicKey,
-                            ownSecretKey
+                            "{\"action\":\"pong\"}"
                         )
                         pw.writeMessage(encrypted)
                     }
@@ -293,9 +272,9 @@ class MainService : Service(), Runnable {
             return currentCall
         }
 
-        fun getContactByPublicKey(pubKey: ByteArray?): Contact? {
+        fun getContactByIp(ip: String): Contact? {
             for (contact in database!!.contacts) {
-                if (Arrays.equals(contact.publicKey, pubKey)) {
+                if (contact.getAddresses()[0].address.hostAddress?.equals(ip) == true) {
                     return contact
                 }
             }
@@ -318,8 +297,8 @@ class MainService : Service(), Runnable {
                 .sendBroadcast(Intent("refresh_contact_list"))
         }
 
-        fun deleteContact(pubKey: ByteArray?) {
-            database!!.deleteContact(pubKey)
+        fun deleteContact(ip: String) {
+            database!!.deleteContact(ip)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
@@ -333,24 +312,11 @@ class MainService : Service(), Runnable {
             this@MainService.loadDatabase()
         }
 
-        fun replaceDatabase(db: Database?) {
-            if (db != null) {
-                if (database == null) {
-                    database = db
-                } else {
-                    database = db
-                    saveDatabase()
-                }
-            }
-        }
-
         fun pingContacts() {
             Thread(
                 PingRunnable(
                     this@MainService,
-                    contactsCopy,
-                    settings.publicKey!!,
-                    settings.secretKey!!
+                    contactsCopy
                 )
             ).start()
         }
@@ -370,7 +336,6 @@ class MainService : Service(), Runnable {
             if(contact.getAddresses()!=null) {
                 events!!.add(
                     CallEvent(
-                        contact.publicKey!!,
                         contact.getAddresses()!![0].address!!,
                         type!!
                     )
@@ -397,13 +362,13 @@ class MainService : Service(), Runnable {
 
     internal inner class PingRunnable(
         var context: Context,
-        private val contacts: List<Contact>,
-        var ownPublicKey: ByteArray,
-        var ownSecretKey: ByteArray
+        private val contacts: List<Contact>
     ) : Runnable {
+
         var binder: MainBinder
-        private fun setState(publicKey: ByteArray?, state: Contact.State) {
-            val contact = binder.getContactByPublicKey(publicKey)
+
+        private fun setState(ip: String, state: Contact.State) {
+            val contact = binder.getContactByIp(ip)
             if (contact != null) {
                 contact.state = state
             }
@@ -412,21 +377,18 @@ class MainService : Service(), Runnable {
         override fun run() {
             for (contact in contacts) {
                 var socket: Socket? = null
-                val publicKey = contact.publicKey
+                var ip = socket!!.inetAddress.hostAddress
                 try {
                     socket = contact.createSocket()
                     if (socket == null) {
-                        setState(publicKey, Contact.State.OFFLINE)
+                        setState(ip, Contact.State.OFFLINE)
                         continue
                     }
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
                     log("send ping to " + contact.name)
                     val encrypted = Crypto.encryptMessage(
-                        "{\"action\":\"ping\"}",
-                        publicKey,
-                        ownPublicKey,
-                        ownSecretKey
+                        "{\"action\":\"ping\"}"
                     )
                     if (encrypted == null) {
                         socket.close()
@@ -439,7 +401,7 @@ class MainService : Service(), Runnable {
                         continue
                     }
                     val decrypted =
-                        Crypto.decryptMessage(request, publicKey, ownPublicKey, ownSecretKey)
+                        Crypto.decryptMessage(request)
                     if (decrypted == null) {
                         log("decryption failed")
                         socket.close()
@@ -449,11 +411,11 @@ class MainService : Service(), Runnable {
                     val action = obj.optString("action", "")
                     if (action == "pong") {
                         log("got pong")
-                        setState(publicKey, Contact.State.ONLINE)
+                        setState(ip, Contact.State.ONLINE)
                     }
                     socket.close()
                 } catch (e: Exception) {
-                    setState(publicKey, Contact.State.OFFLINE)
+                    setState(ip, Contact.State.OFFLINE)
                     if (socket != null) {
                         try {
                             socket.close()

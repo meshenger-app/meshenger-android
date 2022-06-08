@@ -55,16 +55,14 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             val intent = Intent(this, AddressActivity::class.java)
             startActivity(intent)
         }
-        findViewById<View>(R.id.changePasswordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
+
         val username = binder!!.settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text =
             if (username.length == 0) resources.getString(R.string.none) else username
         val addresses = binder!!.settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
             if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
-        val password: String? = binder!!.getDatabasePassword()
-        (findViewById<View>(R.id.passwordTv) as TextView).text =
-            if (password!!.isEmpty()) resources.getString(R.string.none) else "********"
+
         val blockUnknown = binder!!.settings.blockUnknown
         val blockUnknownCB = findViewById<CheckBox>(R.id.checkBoxBlockUnknown)
         blockUnknownCB.isChecked = blockUnknown
@@ -163,25 +161,6 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
-            .setNegativeButton(resources.getText(R.string.cancel), null)
-            .show()
-    }
-
-    private fun showChangePasswordDialog() {
-        val password: String? = binder!!.getDatabasePassword()
-        val et = EditText(this)
-        et.setText(password)
-        et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        et.setSelection(password!!.length)
-        AlertDialog.Builder(this)
-            .setTitle(resources.getString(R.string.settings_change_password))
-            .setView(et)
-            .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                val new_password = et.text.toString()
-                binder!!.setDatabasePassword(new_password)
-                binder!!.saveDatabase()
-                initViews()
             }
             .setNegativeButton(resources.getText(R.string.cancel), null)
             .show()

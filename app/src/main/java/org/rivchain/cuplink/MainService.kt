@@ -293,14 +293,6 @@ class MainService : Service(), Runnable {
             return currentCall
         }
 
-        fun getDatabasePassword(): String? {
-            return this@MainService.databasePassword
-        }
-
-        fun setDatabasePassword(databasePassword: String) {
-            this@MainService.databasePassword = databasePassword
-        }
-
         fun getContactByPublicKey(pubKey: ByteArray?): Contact? {
             for (contact in database!!.contacts) {
                 if (Arrays.equals(contact.publicKey, pubKey)) {

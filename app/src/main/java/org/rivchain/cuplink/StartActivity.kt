@@ -48,12 +48,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             }
             2 -> {
                 log("init 2: check database")
-                if (binder!!.getDatabase() == null) {
-                    // database is probably encrypted
-                    showDatabasePasswordDialog()
-                } else {
-                    continueInit()
-                }
+                continueInit()
             }
             3 -> {
                 log("init 3: check username")
@@ -232,34 +227,6 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
                 Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    // ask for database password
-    private fun showDatabasePasswordDialog() {
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_database_password)
-        val passwordEditText = dialog.findViewById<EditText>(R.id.PasswordEditText)
-        val exitButton = dialog.findViewById<Button>(R.id.ExitButton)
-        val okButton = dialog.findViewById<Button>(R.id.OkButton)
-        okButton.setOnClickListener { v: View? ->
-            val password = passwordEditText.text.toString()
-            binder!!.setDatabasePassword(password)
-            binder!!.loadDatabase()
-            if (binder!!.getDatabase() == null) {
-                Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
-            } else {
-                // close dialog
-                dialog.dismiss()
-                continueInit()
-            }
-        }
-        exitButton.setOnClickListener { v: View? ->
-            // shutdown app
-            dialog.dismiss()
-            binder!!.shutdown()
-            finish()
-        }
-        dialog.show()
     }
 
     private fun log(s: String) {

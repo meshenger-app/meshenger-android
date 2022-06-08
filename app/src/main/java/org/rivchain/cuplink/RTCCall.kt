@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import org.json.JSONException
 import org.json.JSONObject
 import org.rivchain.cuplink.MainService.MainBinder
-import org.rivchain.cuplink.RTCCall.*
 import org.webrtc.*
 import org.webrtc.PeerConnection.*
 import java.io.IOException
@@ -22,6 +21,7 @@ import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+
 
 class RTCCall : DataChannel.Observer {
     private val StateChangeMessage = "StateChange"
@@ -418,7 +418,7 @@ class RTCCall : DataChannel.Observer {
 
     private val videoTrack: VideoTrack
         private get() {
-            capturer = createCapturer()
+            //capturer = createCapturer()
             localRender.setTarget(localRenderer)
             Handler(Looper.getMainLooper()).post {
                 localRenderer!!.init(
@@ -426,7 +426,7 @@ class RTCCall : DataChannel.Observer {
                     null
                 )
             }
-            val videoSource = factory!!.createVideoSource(capturer)
+            val videoSource = factory!!.createVideoSource(false)
             val localVideoTrack = factory!!.createVideoTrack("video1", videoSource)
             localVideoTrack.setEnabled(true)
             localVideoTrack.addSink(localRenderer)
@@ -440,13 +440,28 @@ class RTCCall : DataChannel.Observer {
 
     private fun initRTC(c: Context) {
         PeerConnectionFactory.initialize(
-            PeerConnectionFactory.InitializationOptions.builder(c).createInitializationOptions()
+            PeerConnectionFactory.InitializationOptions.builder(c)
+                .setEnableInternalTracer(true)
+                .createInitializationOptions()
         )
-        factory = PeerConnectionFactory.builder().createPeerConnectionFactory()
-        factory.setVideoHwAccelerationOptions(
-            rootEglBase.eglBaseContext,
-            rootEglBase.eglBaseContext
-        )
+        val videoCodecHwAcceleration = true
+        val encoderFactory: VideoEncoderFactory
+        val decoderFactory: VideoDecoderFactory
+        if (videoCodecHwAcceleration) {
+            encoderFactory = DefaultVideoEncoderFactory(
+                rootEglBase.eglBaseContext, true /* enableIntelVp8Encoder */, true
+            )
+            decoderFactory = DefaultVideoDecoderFactory(rootEglBase.eglBaseContext)
+        } else {
+            encoderFactory = SoftwareVideoEncoderFactory()
+            decoderFactory = SoftwareVideoDecoderFactory()
+        }
+
+        factory = PeerConnectionFactory.builder()
+            .setVideoEncoderFactory(encoderFactory)
+            .setVideoDecoderFactory(decoderFactory)
+            .createPeerConnectionFactory()
+
         constraints = MediaConstraints()
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))

@@ -12,7 +12,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 339
-        versionName "0.4.1.7"
+        versionName "0.4.2.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)
@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
-    //back to 3.3.0 instead of 3.4.0 due to https://github.com/zxing/zxing/issues/1170
     implementation 'com.google.zxing:core:3.4.1'
-    implementation 'org.webrtc:google-webrtc:1.0.22672'
+    //implementation 'org.webrtc:google-webrtc:1.0.23995'
+    implementation 'org.webrtc:google-webrtc:1.0.32006'
 }

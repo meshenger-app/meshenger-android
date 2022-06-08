@@ -74,7 +74,7 @@ class Contact : Serializable {
      */
     fun createSocket(): Socket? {
         var socket: Socket? = null
-        val connectionTimeout = 300
+        val connectionTimeout = 1000
 
         // try last successful address first
         if (lastWorkingAddress != null) {

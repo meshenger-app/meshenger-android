@@ -43,7 +43,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private lateinit var currentCall: RTCCall
     private var calledWhileScreenOff = false
     private var powerManager: PowerManager? = null
-    private lateinit var wakeLock: WakeLock
+    private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
     private var permissionRequested = false
     private var contact: Contact? = null
@@ -420,7 +420,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
             "meshenger:proximity"
         )
-        wakeLock.acquire()
+        wakeLock?.acquire()
     }
 
     override fun onPause() {
@@ -449,7 +449,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         //if (binder != null) {
         unbindService(connection)
         //}
-        wakeLock.release()
+        wakeLock?.release()
         if (currentCall.commSocket != null && currentCall.commSocket!!.isConnected && !currentCall.commSocket!!.isClosed) {
             try {
                 currentCall.commSocket!!.close()
@@ -488,14 +488,14 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                     PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
                     "meshenger:tag"
                 )
-            wakeLock.acquire()
+            wakeLock?.acquire()
         } else {
             wakeLock = (getSystemService(POWER_SERVICE) as PowerManager)
                 .newWakeLock(
                     PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
                     "meshenger:tag"
                 )
-            wakeLock.acquire()
+            wakeLock?.acquire()
         }
     }
 

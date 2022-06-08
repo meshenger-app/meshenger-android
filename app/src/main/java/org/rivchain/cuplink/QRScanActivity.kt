@@ -49,7 +49,7 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
     private fun addContact(data: String) {
         val `object` = JSONObject(data)
         val new_contact = Contact.importJSON(`object`, false)
-        if (new_contact.getAddresses().isEmpty()) {
+        if (new_contact.getAddresses() == null) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show()
         }
 

@@ -24,11 +24,14 @@ class Contact : Serializable {
     var lastWorkingAddress: InetSocketAddress? = null
         private set
 
-    constructor(name: String, pubkey: ByteArray?, addresses: MutableList<InetSocketAddress>) {
+    constructor(name: String, pubkey: ByteArray?, addresses: MutableList<String>) {
         this.name = name
         publicKey = pubkey
         blocked = false
-        this.addresses = addresses
+        this.addresses = ArrayList()
+        for (addr in addresses) {
+            addAddress(addr)
+        }
     }
 
     private constructor() {

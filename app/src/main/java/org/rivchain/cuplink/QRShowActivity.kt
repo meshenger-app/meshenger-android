@@ -82,7 +82,7 @@ class QRShowActivity : CupLinkActivity(), ServiceConnection {
         val barcodeEncoder = BarcodeEncoder()
         val bitmap = barcodeEncoder.createBitmap(bitMatrix)
         (findViewById<View>(R.id.QRView) as ImageView).setImageBitmap(bitmap)
-        if (contact!!.getAddresses().isEmpty()) {
+        if (contact!!.getAddresses() == null) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
         }
     }

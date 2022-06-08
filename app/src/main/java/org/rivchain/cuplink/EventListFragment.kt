@@ -58,7 +58,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             eventListView!!.onItemLongClickListener =
                 OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
                     val event = events[i]
-                    val menu = PopupMenu(mainActivity!!, view!!)
+                    val menu = PopupMenu(mainActivity!!, requireView())
                     val res = resources
                     val add = res.getString(R.string.add)
                     val block = res.getString(R.string.block)

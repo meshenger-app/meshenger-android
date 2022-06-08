@@ -14,6 +14,7 @@ class Settings {
     var blockUnknown = false
     var developmentMode = false
     var addresses: MutableList<String> = ArrayList()
+    var videoCodec = "H264"
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
     var iceServers: MutableList<String> = ArrayList()
@@ -55,6 +56,7 @@ class Settings {
                 s.iceServers.add(iceServers.getString(i))
                 i += 1
             }
+            s.videoCodec = obj.getString("videoCodec")
             return s
         }
 
@@ -84,8 +86,8 @@ class Settings {
                 i += 1
             }
             obj.put("ice_servers", iceServers)
+            obj.put("videoCodec", s.videoCodec)
             return obj
         }
     }
-
 }

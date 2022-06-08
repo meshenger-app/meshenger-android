@@ -27,7 +27,7 @@ class RTCCall : DataChannel.Observer {
     private val StateChangeMessage = "StateChange"
     private val CameraDisabledMessage = "CameraDisabled"
     private val CameraEnabledMessage = "CameraEnabled"
-    private val rootEglBase = EglBase.create()
+    private val eglBaseContext = EglBase.create().eglBaseContext
     private val localRender = ProxyVideoSink()
     var state: CallState? = null
     var commSocket: Socket?
@@ -61,7 +61,7 @@ class RTCCall : DataChannel.Observer {
                     if (enabled) CameraEnabledMessage else CameraDisabledMessage
                 )
                 log("setVideoEnabled: $`object`")
-                dataChannel!!.send(
+                dataChannel.send(
                     DataChannel.Buffer(
                         ByteBuffer.wrap(
                             `object`.toString().toByteArray()
@@ -321,6 +321,7 @@ class RTCCall : DataChannel.Observer {
 
     fun setLocalRenderer(localRenderer: SurfaceViewRenderer?) {
         this.localRenderer = localRenderer
+        this.localRenderer?.setMirror(true);
     }
 
     fun switchFrontFacing() {
@@ -394,13 +395,13 @@ class RTCCall : DataChannel.Observer {
             return
         }
         Handler(Looper.getMainLooper()).post {
-            remoteRenderer!!.init(rootEglBase.eglBaseContext, null)
+            remoteRenderer!!.init(eglBaseContext, null)
             stream.videoTracks[0].addSink(remoteRenderer)
         }
     }
 
     private fun createStream(): MediaStream? {
-        upStream = factory!!.createLocalMediaStream("stream1")
+        upStream = factory.createLocalMediaStream("stream1")
         upStream!!.addTrack(audioTrack)
         upStream!!.addTrack(videoTrack)
         return upStream
@@ -421,7 +422,7 @@ class RTCCall : DataChannel.Observer {
             capturer = createCapturer()
             if (capturer != null) {
                 val surfaceTextureHelper =
-                    SurfaceTextureHelper.create("CaptureThread", rootEglBase.eglBaseContext)
+                    SurfaceTextureHelper.create("CaptureThread", eglBaseContext)
                 val videoSource = factory.createVideoSource(capturer!!.isScreencast())
                 capturer!!.initialize(
                     surfaceTextureHelper,
@@ -431,21 +432,21 @@ class RTCCall : DataChannel.Observer {
                 localRender.setTarget(localRenderer)
                 Handler(Looper.getMainLooper()).post {
                     localRenderer!!.init(
-                        rootEglBase.eglBaseContext,
+                        eglBaseContext,
                         null
                     )
                 }
-                val localVideoTrack = factory!!.createVideoTrack("video1", videoSource)
-                localVideoTrack.setEnabled(true)
+                val localVideoTrack = factory.createVideoTrack("video1", videoSource)
                 localVideoTrack.addSink(localRenderer)
+                localVideoTrack.setEnabled(true)
                 return localVideoTrack
             }
             return null
         }
     private val audioTrack: AudioTrack
-        private get() = factory!!.createAudioTrack(
+        private get() = factory.createAudioTrack(
             "audio1",
-            factory!!.createAudioSource(MediaConstraints())
+            factory.createAudioSource(MediaConstraints())
         )
 
     private fun initRTC(c: Context) {
@@ -458,10 +459,16 @@ class RTCCall : DataChannel.Observer {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
         if (videoCodecHwAcceleration) {
-            encoderFactory = DefaultVideoEncoderFactory(
-                rootEglBase.eglBaseContext, true /* enableIntelVp8Encoder */, true
-            )
-            decoderFactory = DefaultVideoDecoderFactory(rootEglBase.eglBaseContext)
+            if(binder.settings.videoCodec=="H264") {
+                encoderFactory = DefaultVideoEncoderFactory(
+                    eglBaseContext, false /* enableIntelVp8Encoder */, true
+                )
+            } else {
+                encoderFactory = DefaultVideoEncoderFactory(
+                    eglBaseContext, true /* enableIntelVp8Encoder */, false
+                )
+            }
+            decoderFactory = DefaultVideoDecoderFactory(eglBaseContext)
         } else {
             encoderFactory = SoftwareVideoEncoderFactory()
             decoderFactory = SoftwareVideoDecoderFactory()
@@ -514,7 +521,7 @@ class RTCCall : DataChannel.Observer {
     fun accept(listener: OnStateChangeListener?) {
         this.listener = listener
         Thread {
-            connection = factory!!.createPeerConnection(iceServers, object : DefaultObserver() {
+            connection = factory.createPeerConnection(iceServers, object : DefaultObserver() {
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {

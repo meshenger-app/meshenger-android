@@ -15,7 +15,7 @@ class Contact : Serializable {
     var publicKey: ByteArray?
         private set
     private var blocked: Boolean
-    private var addresses: MutableList<String>
+    private var addresses: MutableList<InetSocketAddress>
 
     // contact state
     var state = State.PENDING
@@ -24,7 +24,7 @@ class Contact : Serializable {
     var lastWorkingAddress: InetSocketAddress? = null
         private set
 
-    constructor(name: String, pubkey: ByteArray?, addresses: MutableList<String>) {
+    constructor(name: String, pubkey: ByteArray?, addresses: MutableList<InetSocketAddress>) {
         this.name = name
         publicKey = pubkey
         blocked = false
@@ -38,7 +38,10 @@ class Contact : Serializable {
         addresses = ArrayList()
     }
 
-    fun getAddresses(): List<String> {
+    fun getAddresses(): List<InetSocketAddress>? {
+        if (addresses.size==0){
+            return null
+        }
         return addresses
     }
 
@@ -47,28 +50,12 @@ class Contact : Serializable {
             return
         }
         for (addr in addresses) {
-            if (addr.equals(address, ignoreCase = true)) {
+            if (addr.address.hostAddress.equals(address, ignoreCase = true)) {
                 return
             }
         }
-        addresses.add(address)
+        addresses.add(Utils.parseInetSocketAddress(address, MainService.serverPort)!!)
     }
-
-    // also resolves domains
-    val allSocketAddresses: List<InetSocketAddress>
-        get() {
-            val addrs: MutableList<InetSocketAddress> = ArrayList()
-            for (address in addresses) {
-                try {
-                    // also resolves domains
-                    addrs.add(Utils.parseInetSocketAddress(address, MainService.serverPort)!!)
-                } catch (e: Exception) {
-                    log("invalid address: $address")
-                    e.printStackTrace()
-                }
-            }
-            return addrs
-        }
 
     fun getBlocked(): Boolean {
         return blocked
@@ -94,7 +81,7 @@ class Contact : Serializable {
                 return socket
             }
         }
-        for (address in allSocketAddresses) {
+        for (address in addresses) {
             log("try address: '" + address.hostName + "', port: " + address.port)
             socket = establishConnection(address, connectionTimeout)
             if (socket != null) {
@@ -150,7 +137,7 @@ class Contact : Serializable {
             val array = JSONArray()
             `object`.put("name", contact.name)
             `object`.put("public_key", Utils.byteArrayToHexString(contact.publicKey))
-            for (address in contact.getAddresses()) {
+            for (address in contact.getAddresses()!!) {
                 array.put(address)
             }
             `object`.put("addresses", array)
@@ -160,7 +147,7 @@ class Contact : Serializable {
             return `object`
         }
 
-        @Throws(JSONException::class)
+        @Throws(Exception::class)
         fun importJSON(`object`: JSONObject, all: Boolean): Contact {
             val contact = Contact()
             contact.name = `object`.getString("name")

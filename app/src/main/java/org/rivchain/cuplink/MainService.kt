@@ -378,7 +378,7 @@ class MainService : Service(), Runnable {
             events!!.add(
                 CallEvent(
                     contact.publicKey!!,
-                    contact.allSocketAddresses[0].address!!,
+                    contact.getAddresses()!![0].address!!,
                     type!!
                 )
             )

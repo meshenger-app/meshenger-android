@@ -377,23 +377,16 @@ class MainService : Service(), Runnable {
         override fun run() {
             for (contact in contacts) {
                 var socket: Socket? = null
-                var ip = socket!!.inetAddress.hostAddress
+
                 try {
                     socket = contact.createSocket()
-                    if (socket == null) {
-                        setState(ip, Contact.State.OFFLINE)
-                        continue
-                    }
+                    var ip = socket!!.inetAddress.hostAddress
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
                     log("send ping to " + contact.name)
                     val encrypted = Crypto.encryptMessage(
                         "{\"action\":\"ping\"}"
                     )
-                    if (encrypted == null) {
-                        socket.close()
-                        continue
-                    }
                     pw.writeMessage(encrypted)
                     val request = pr.readMessage()
                     if (request == null) {
@@ -402,11 +395,6 @@ class MainService : Service(), Runnable {
                     }
                     val decrypted =
                         Crypto.decryptMessage(request)
-                    if (decrypted == null) {
-                        log("decryption failed")
-                        socket.close()
-                        continue
-                    }
                     val obj = JSONObject(decrypted)
                     val action = obj.optString("action", "")
                     if (action == "pong") {
@@ -415,7 +403,7 @@ class MainService : Service(), Runnable {
                     }
                     socket.close()
                 } catch (e: Exception) {
-                    setState(ip, Contact.State.OFFLINE)
+                    //setState(ip, Contact.State.OFFLINE)
                     if (socket != null) {
                         try {
                             socket.close()

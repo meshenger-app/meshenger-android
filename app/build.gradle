@@ -11,8 +11,8 @@ android {
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 340
-        versionName "0.4.2.0"
+        versionCode 341
+        versionName "0.4.2.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)

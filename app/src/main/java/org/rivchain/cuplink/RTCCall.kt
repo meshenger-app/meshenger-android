@@ -46,7 +46,7 @@ class RTCCall : DataChannel.Observer {
             field = enabled
             try {
                 if (enabled) {
-                    capturer!!.startCapture(500, 500, 30)
+                    capturer!!.startCapture(1024, 720, 30)
                     Handler(Looper.getMainLooper()).post {
                         localRenderer!!.visibility = View.VISIBLE
                         localRenderer!!.setZOrderOnTop(true)
@@ -416,21 +416,31 @@ class RTCCall : DataChannel.Observer {
         return null
     }
 
-    private val videoTrack: VideoTrack
+    private val videoTrack: VideoTrack?
         private get() {
             capturer = createCapturer()
-            localRender.setTarget(localRenderer)
-            Handler(Looper.getMainLooper()).post {
-                localRenderer!!.init(
-                    rootEglBase.eglBaseContext,
-                    null
+            if (capturer != null) {
+                val surfaceTextureHelper =
+                    SurfaceTextureHelper.create("CaptureThread", rootEglBase.eglBaseContext)
+                val videoSource = factory.createVideoSource(capturer!!.isScreencast())
+                capturer!!.initialize(
+                    surfaceTextureHelper,
+                    this@RTCCall.context,
+                    videoSource.getCapturerObserver()
                 )
+                localRender.setTarget(localRenderer)
+                Handler(Looper.getMainLooper()).post {
+                    localRenderer!!.init(
+                        rootEglBase.eglBaseContext,
+                        null
+                    )
+                }
+                val localVideoTrack = factory!!.createVideoTrack("video1", videoSource)
+                localVideoTrack.setEnabled(true)
+                localVideoTrack.addSink(localRenderer)
+                return localVideoTrack
             }
-            val videoSource = factory!!.createVideoSource(false)
-            val localVideoTrack = factory!!.createVideoTrack("video1", videoSource)
-            localVideoTrack.setEnabled(true)
-            localVideoTrack.addSink(localRenderer)
-            return localVideoTrack
+            return null
         }
     private val audioTrack: AudioTrack
         private get() = factory!!.createAudioTrack(

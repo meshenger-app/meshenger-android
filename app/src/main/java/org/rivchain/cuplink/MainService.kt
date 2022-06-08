@@ -333,12 +333,14 @@ class MainService : Service(), Runnable {
             get() = ArrayList(database!!.contacts)
 
         fun addCallEvent(contact: Contact, type: CallEvent.Type?) {
-            events!!.add(
-                CallEvent(
-                    contact.getAddresses()[0].address!!,
-                    type!!
+            if(contact.getAddresses().isNotEmpty()){
+                events!!.add(
+                    CallEvent(
+                        contact.getAddresses()[0].address!!,
+                        type!!
+                    )
                 )
-            )
+            }
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_event_list"))
         }

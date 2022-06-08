@@ -445,9 +445,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             currentCall.decline()
         }
         currentCall.cleanup()
-        if(contact!=null) {
-            binder!!.addCallEvent(contact!!, callEventType)
-        }
+        binder?.addCallEvent(contact!!, callEventType)
         //if (binder != null) {
         unbindService(connection)
         //}

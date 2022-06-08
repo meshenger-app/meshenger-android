@@ -141,7 +141,7 @@ class Contact : Serializable {
             `object`.put("name", contact.name)
             `object`.put("public_key", Utils.byteArrayToHexString(contact.publicKey))
             for (address in contact.getAddresses()!!) {
-                array.put(address)
+                array.put(address.address.hostAddress)
             }
             `object`.put("addresses", array)
             if (all) {

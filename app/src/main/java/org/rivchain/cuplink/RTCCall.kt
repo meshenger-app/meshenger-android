@@ -193,7 +193,7 @@ class RTCCall : DataChannel.Observer {
                                 val decrypted = Crypto.decryptMessage(
                                     response
                                 )
-                                if (contact.getAddresses()[0].address.hostAddress.equals(ip))
+                                if (!contact.getAddresses()[0].address.hostAddress.equals(ip))
                                 {
                                     log("decrypted (201) var is null or pubkey does not match")
                                     closeCommSocket()

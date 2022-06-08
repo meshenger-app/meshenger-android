@@ -441,26 +441,25 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         log("onDestroy")
         LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver)
         stopRinging()
-        if (currentCall!!.state == CallState.CONNECTED) {
-            currentCall!!.decline()
+        if (currentCall.state == CallState.CONNECTED) {
+            currentCall.decline()
         }
-        currentCall!!.cleanup()
-        binder!!.addCallEvent(contact!!, callEventType)
-
+        currentCall.cleanup()
+        if(contact!=null) {
+            binder!!.addCallEvent(contact!!, callEventType)
+        }
         //if (binder != null) {
-        unbindService(connection!!)
+        unbindService(connection)
         //}
-        if (wakeLock != null) {
-            wakeLock!!.release()
-        }
-        if (currentCall != null && currentCall!!.commSocket != null && currentCall!!.commSocket!!.isConnected && !currentCall!!.commSocket!!.isClosed) {
+        wakeLock.release()
+        if (currentCall.commSocket != null && currentCall.commSocket!!.isConnected && !currentCall.commSocket!!.isClosed) {
             try {
-                currentCall!!.commSocket!!.close()
+                currentCall.commSocket!!.close()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
-        currentCall!!.releaseCamera()
+        currentCall.releaseCamera()
     }
 
     private fun setStatusText(text: String) {

@@ -19,18 +19,14 @@ import java.util.*
 class MainService : Service(), Runnable {
 
     var isFirstStart = false
-        get() = field
         private set
     private var database_path = ""
-    var databasePassword = ""
-        get() = field
-        set(password) {
-            databasePassword = password
-        }
+
     private var server: ServerSocket? = null
 
     @Volatile
     private var run = true
+
     private var events: ArrayList<CallEvent>? = null
     override fun onCreate() {
         super.onCreate()
@@ -135,28 +131,21 @@ class MainService : Service(), Runnable {
                 val request = pr.readMessage() ?: break
                 val decrypted =
                     Crypto.decryptMessage(request)
-                if (decrypted == null) {
-                    log("decryption failed")
-                    break
-                }
                 if (contact == null) {
                     for (c in database!!.contacts) {
                         if (c.getAddresses()[0].address.hostAddress.equals(remote_address.address.hostAddress)) {
                             contact = c
+                            break
                         }
                     }
                     if (contact == null && database!!.settings.blockUnknown) {
-                        if (currentCall != null) {
-                            log("block unknown contact => decline")
-                            currentCall!!.decline()
-                        }
+                        log("block unknown contact => decline")
+                        currentCall.decline()
                         break
                     }
                     if (contact != null && contact.getBlocked()) {
-                        if (currentCall != null) {
-                            log("blocked contact => decline")
-                            currentCall!!.decline()
-                        }
+                        log("blocked contact => decline")
+                        currentCall.decline()
                         break
                     }
                     if (contact == null) {
@@ -166,7 +155,7 @@ class MainService : Service(), Runnable {
                 }
 
                 // remember last good address (the outgoing port is random and not the server port)
-                contact!!.setLastWorkingAddress(
+                contact.setLastWorkingAddress(
                     InetSocketAddress(remote_address.address, serverPort)
                 )
                 val obj = JSONObject(decrypted)
@@ -194,7 +183,7 @@ class MainService : Service(), Runnable {
                     "ping" -> {
                         log("ping...")
                         // someone wants to know if we are online
-                        setClientState(contact!!, Contact.State.ONLINE)
+                        setClientState(contact, Contact.State.ONLINE)
                         val encrypted = Crypto.encryptMessage(
                             "{\"action\":\"pong\"}"
                         )
@@ -214,9 +203,7 @@ class MainService : Service(), Runnable {
         } catch (e: Exception) {
             e.printStackTrace()
             log("client disconnected (exception)")
-            if (currentCall != null) {
-                currentCall!!.decline()
-            }
+            currentCall.decline()
         }
     }
 
@@ -251,7 +238,7 @@ class MainService : Service(), Runnable {
         }
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         return MainBinder()
     }
 
@@ -268,7 +255,7 @@ class MainService : Service(), Runnable {
             return database
         }
 
-        fun getCurrentCall(): RTCCall? {
+        fun getCurrentCall(): RTCCall {
             return currentCall
         }
 
@@ -423,13 +410,13 @@ class MainService : Service(), Runnable {
         }
     }
 
+    lateinit var currentCall: RTCCall
+
     companion object {
+
         const val serverPort = 10001
 
-        var currentCall: RTCCall? = null
-
         var database: Database? = null
-            get() = field
             private set
     }
 }

@@ -11,7 +11,7 @@ class Database {
     var settings: Settings = Settings()
     var contacts: ArrayList<Contact> = ArrayList()
     fun addContact(contact: Contact) {
-        val idx = findContact(contact.getAddresses()?.get(0)?.address?.hostAddress)
+        val idx = findContact(contact.getAddresses()[0].address?.hostAddress)
         if (idx >= 0) {
             // contact exists - replace
             contacts[idx] = contact
@@ -30,7 +30,7 @@ class Database {
     private fun findContact(address: String?): Int {
         var i = 0
         while (i < contacts.size) {
-            if (contacts[i].getAddresses()?.get(0)?.address?.hostAddress.equals(address)) {
+            if (contacts[i].getAddresses()[0].address?.hostAddress.equals(address)) {
                 return i
             }
             i += 1

@@ -72,7 +72,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 val devMode = binder!!.settings.developmentMode
                 Handler(mainLooper).post {
                     if (devMode) {
-                        currentCall!!.accept(statsCollector)
+                        currentCall.accept(statsCollector)
                         callStats!!.visibility = View.VISIBLE
                     } else {
                         callStats!!.visibility = View.GONE
@@ -98,6 +98,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 log("activeCallback: ERROR")
                 stopDelayed(getString(R.string.call_error))
             }
+            else -> {}
         }
     }
     private val passiveCallback = OnStateChangeListener { callState: CallState? ->
@@ -111,7 +112,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
                     findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
                     if (devMode) {
-                        currentCall!!.accept(statsCollector)
+                        currentCall.accept(statsCollector)
                         callStats!!.visibility = View.VISIBLE
                     } else {
                         callStats!!.visibility = View.GONE
@@ -172,7 +173,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             bindService(Intent(this, MainService::class.java), connection, 0)
             val declineListener = View.OnClickListener { view: View? ->
                 // end call
-                currentCall!!.hangUp()
+                currentCall.hangUp()
                 callEventType = CallEvent.Type.OUTGOING_DECLINED
                 finish()
             }
@@ -197,12 +198,12 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             startRinging()
 
             // decline call
-            val declineListener = View.OnClickListener { view: View? ->
+            val declineListener = View.OnClickListener { _: View? ->
                 stopRinging()
                 log("declining call...")
-                currentCall!!.decline()
-                if (passiveWakeLock != null && passiveWakeLock!!.isHeld) {
-                    passiveWakeLock!!.release()
+                currentCall.decline()
+                if (passiveWakeLock != null && passiveWakeLock.isHeld) {
+                    passiveWakeLock.release()
                 }
                 callEventType = CallEvent.Type.INCOMING_DECLINED
                 finish()
@@ -212,9 +213,9 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             val hangupListener = View.OnClickListener { view: View? ->
                 stopRinging() // make sure ringing has stopped ;-)
                 log("hangup call...")
-                currentCall!!.decline()
+                currentCall.decline()
                 if (passiveWakeLock != null && passiveWakeLock!!.isHeld) {
-                    passiveWakeLock!!.release()
+                    passiveWakeLock.release()
                 }
                 callEventType = CallEvent.Type.INCOMING_ACCEPTED
                 finish()
@@ -223,11 +224,11 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 stopRinging()
                 log("accepted call...")
                 try {
-                    currentCall!!.setRemoteRenderer(findViewById(R.id.remoteRenderer))
-                    currentCall!!.setLocalRenderer(findViewById(R.id.localRenderer))
-                    currentCall!!.accept(passiveCallback)
-                    if (passiveWakeLock != null && passiveWakeLock!!.isHeld) {
-                        passiveWakeLock!!.release()
+                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
+                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
+                    currentCall.accept(passiveCallback)
+                    if (passiveWakeLock != null && passiveWakeLock.isHeld) {
+                        passiveWakeLock.release()
                     }
                     findViewById<View>(R.id.callDecline).setOnClickListener(hangupListener)
                     startSensor()
@@ -251,7 +252,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 button as ImageButton
             )
         }
-        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall!!.switchFrontFacing() }
+        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall.switchFrontFacing() }
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
     }
@@ -294,8 +295,8 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
     private fun chooseVoiceMode(button: ImageButton) {
         val audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
-        currentCall!!.isSpeakerEnabled = !currentCall!!.isSpeakerEnabled
-        if (currentCall!!.isSpeakerEnabled) {
+        currentCall.isSpeakerEnabled = !currentCall.isSpeakerEnabled
+        if (currentCall.isSpeakerEnabled) {
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             audioManager.isSpeakerphoneOn = true
             button.alpha = 1.0f
@@ -313,7 +314,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             permissionRequested = true
             return
         }
-        currentCall!!.isVideoEnabled = !currentCall!!.isVideoEnabled
+        currentCall.isVideoEnabled = !currentCall.isVideoEnabled
         val animation = ScaleAnimation(
             1.0f,
             0.0f,
@@ -331,7 +332,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             }
 
             override fun onAnimationEnd(animation: Animation) {
-                button.setImageResource(if (currentCall!!.isVideoEnabled) R.drawable.baseline_camera_alt_off_48 else R.drawable.baseline_camera_alt_48)
+                button.setImageResource(if (currentCall.isVideoEnabled) R.drawable.baseline_camera_alt_off_48 else R.drawable.baseline_camera_alt_48)
                 val a: Animation = ScaleAnimation(
                     0.0f,
                     1.0f,
@@ -351,7 +352,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             }
         })
         val frontSwitch = findViewById<View>(R.id.frontFacingSwitch)
-        if (currentCall!!.isVideoEnabled) {
+        if (currentCall.isVideoEnabled) {
             frontSwitch.visibility = View.VISIBLE
             val scale: Animation = ScaleAnimation(
                 0f,

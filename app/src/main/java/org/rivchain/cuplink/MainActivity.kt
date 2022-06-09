@@ -213,15 +213,15 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
             generateAnimnation = TranslateAnimation(0f, 0f, (-distance * 2).toFloat(), 0f)
             alphaAnimation = AlphaAnimation(1.0f, 0.0f)
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
-            fabScan!!.y = fabScan!!.y + distance
-            fabGen!!.y = fabGen!!.y + distance * 2
+            fabScan.y = fabScan.y + distance
+            fabGen.y = fabGen.y + distance * 2
         } else {
             scanAnimation = TranslateAnimation(0f, 0f, distance.toFloat(), 0f)
             generateAnimnation = TranslateAnimation(0f, 0f, (distance * 2).toFloat(), 0f)
             alphaAnimation = AlphaAnimation(0.0f, 1.0f)
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-            fabScan!!.y = fabScan!!.y - distance
-            fabGen!!.y = fabGen!!.y - distance * 2
+            fabScan.y = fabScan.y - distance
+            fabGen.y = fabGen.y - distance * 2
         }
         scanSet.addAnimation(scanAnimation)
         scanSet.addAnimation(alphaAnimation)
@@ -231,10 +231,10 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         generateSet.fillAfter = true
         scanSet.duration = duration.toLong()
         generateSet.duration = duration.toLong()
-        fabScan!!.show()
-        fabGen!!.show()
-        fabScan!!.startAnimation(scanSet)
-        fabGen!!.startAnimation(generateSet)
+        fabScan.show()
+        fabGen.show()
+        fabScan.startAnimation(scanSet)
+        fabGen.startAnimation(generateSet)
         fabExpanded = !fabExpanded
     }
 

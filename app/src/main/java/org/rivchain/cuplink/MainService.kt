@@ -17,6 +17,8 @@ import java.net.Socket
 
 class MainService : Service(), Runnable {
 
+    private var connectionThread: Thread? = null
+
     var isFirstStart = false
         private set
     private var database_path = ""
@@ -30,10 +32,14 @@ class MainService : Service(), Runnable {
     override fun onCreate() {
         super.onCreate()
         database_path = this.filesDir.toString() + "/database.bin"
-
-        // handle incoming connections
-        Thread(this).start()
         events = ArrayList()
+        if(connectionThread!=null) {
+            connectionThread!!.interrupt()
+            connectionThread = null
+        }
+        // handle incoming connections
+        connectionThread = Thread(this)
+        connectionThread!!.start()
     }
 
     private fun loadDatabase() {
@@ -103,6 +109,7 @@ class MainService : Service(), Runnable {
                     }
                 }
                 server!!.close()
+                connectionThread!!.interrupt()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -231,6 +238,7 @@ class MainService : Service(), Runnable {
             e.printStackTrace()
             Handler(mainLooper).post { Toast.makeText(this, e.message, Toast.LENGTH_LONG).show() }
             stopSelf()
+            connectionThread!!.interrupt()
             return
         }
     }

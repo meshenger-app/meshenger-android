@@ -29,7 +29,7 @@
         <TextView
             android:id="@+id/callStats"
             android:layout_width="220dp"
-            android:layout_height="wrap_content"
+            android:layout_height="195dp"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="5dp"
             android:layout_marginBottom="80dp"
@@ -81,7 +81,8 @@
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/baseline_phone_48"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:contentDescription="accept call"/>
 
             <ImageButton
                 android:id="@+id/callDecline"
@@ -90,7 +91,8 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/baseline_phone_missed_48" />
+                android:src="@drawable/baseline_phone_missed_48"
+                android:contentDescription="decline call" />
 
             <RelativeLayout
                 android:id="@+id/videoStreamSwitchLayout"
@@ -105,7 +107,8 @@
                     android:background="@drawable/accept_button_round"
                     android:padding="@dimen/call_button_image_padding"
                     android:scaleType="fitXY"
-                    android:src="@drawable/baseline_camera_alt_48" />
+                    android:src="@drawable/baseline_camera_alt_48"
+                    android:contentDescription="switch camera on"/>
 
             </RelativeLayout>
 
@@ -118,7 +121,8 @@
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/baseline_switch_camera_48"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:contentDescription="change camera"/>
 
             <ImageButton
                 android:id="@+id/speakerMode"
@@ -130,7 +134,8 @@
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@android:drawable/ic_lock_silent_mode_off"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:contentDescription="speaker on" />
         </LinearLayout>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

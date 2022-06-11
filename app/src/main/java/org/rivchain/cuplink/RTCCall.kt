@@ -55,16 +55,16 @@ class RTCCall : DataChannel.Observer {
                     Handler(Looper.getMainLooper()).post { localRenderer!!.visibility = View.GONE }
                     capturer!!.stopCapture()
                 }
-                val `object` = JSONObject()
-                `object`.put(
+                val o = JSONObject()
+                o.put(
                     StateChangeMessage,
                     if (enabled) CameraEnabledMessage else CameraDisabledMessage
                 )
-                log("setVideoEnabled: $`object`")
+                log("setVideoEnabled: $o")
                 dataChannel.send(
                     DataChannel.Buffer(
                         ByteBuffer.wrap(
-                            `object`.toString().toByteArray()
+                            o.toString().toByteArray()
                         ), false
                     )
                 )
@@ -76,7 +76,7 @@ class RTCCall : DataChannel.Observer {
         }
     private var context: Context
     private var contact: Contact
-    private var iceServers: MutableList<IceServer>
+    private var iceServers: MutableList<IceServer> = ArrayList()
     private var listener: OnStateChangeListener?
     private var binder: MainBinder
 
@@ -96,11 +96,10 @@ class RTCCall : DataChannel.Observer {
         this.offer = offer
 
         // usually empty
-        iceServers = ArrayList()
         for (server in binder.settings.iceServers) {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
-        initRTC(context)
+        initVideo(context)
     }
 
     // called for outgoing calls
@@ -118,18 +117,17 @@ class RTCCall : DataChannel.Observer {
         log("RTCCall created")
 
         // usually empty
-        iceServers = ArrayList()
         for (server in binder.settings.iceServers) {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
-        initRTC(context)
+        initVideo(context)
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             context.setTheme(R.style.AppTheme_Dark)
         } else {
             context.setTheme(R.style.AppTheme_Light)
         }
-        Thread(label@ Runnable {
-            connection = factory!!.createPeerConnection(emptyList(), object : DefaultObserver() {
+        Thread {
+            connection = factory.createPeerConnection(emptyList(), object : DefaultObserver() {
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
@@ -169,8 +167,7 @@ class RTCCall : DataChannel.Observer {
                                 val decrypted = Crypto.decryptMessage(
                                     response
                                 )
-                                if (!contact.getAddresses()[0].address.hostAddress.equals(ip))
-                                {
+                                if (!contact.getAddresses()[0].address.hostAddress.equals(ip)) {
                                     log("decrypted var is null or pubkey does not match")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -193,8 +190,7 @@ class RTCCall : DataChannel.Observer {
                                 val decrypted = Crypto.decryptMessage(
                                     response
                                 )
-                                if (!contact.getAddresses()[0].address.hostAddress.equals(ip))
-                                {
+                                if (!contact.getAddresses()[0].address.hostAddress.equals(ip)) {
                                     log("decrypted (201) var is null or pubkey does not match")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -248,19 +244,19 @@ class RTCCall : DataChannel.Observer {
                     dataChannel.registerObserver(this@RTCCall)
                 }
             })
+            dataChannel = connection!!.createDataChannel("data", DataChannel.Init())
+            dataChannel.registerObserver(this)
             val config = RTCConfiguration(iceServers)
             config.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
             connection!!.setConfiguration(config)
             connection!!.addStream(createStream())
-            dataChannel = connection!!.createDataChannel("data", DataChannel.Init())
-            dataChannel.registerObserver(this)
             connection!!.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
                     super.onCreateSuccess(sessionDescription)
                     connection!!.setLocalDescription(DefaultSdpObserver(), sessionDescription)
                 }
             }, constraints)
-        }).start()
+        }.start()
     }
 
     private fun closeCommSocket() {
@@ -314,12 +310,12 @@ class RTCCall : DataChannel.Observer {
         val data = ByteArray(buffer.data.remaining())
         buffer.data[data]
         val s = String(data)
-        var `object`: JSONObject? = null
+        var o: JSONObject? = null
         try {
             log("onMessage: $s")
-            `object` = JSONObject(s)
-            if (`object`.has(StateChangeMessage)) {
-                val state = `object`.getString(StateChangeMessage)
+            o = JSONObject(s)
+            if (o.has(StateChangeMessage)) {
+                val state = o.getString(StateChangeMessage)
                 when (state) {
                     CameraEnabledMessage, CameraDisabledMessage -> {
                         setRemoteVideoEnabled(state == CameraEnabledMessage)
@@ -421,7 +417,7 @@ class RTCCall : DataChannel.Observer {
             factory.createAudioSource(MediaConstraints())
         )
 
-    private fun initRTC(c: Context) {
+    private fun initVideo(c: Context) {
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(c)
                 .setEnableInternalTracer(true)
@@ -455,7 +451,6 @@ class RTCCall : DataChannel.Observer {
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
         constraints!!.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
-
         //initVideoTrack();
     }
 
@@ -506,12 +501,8 @@ class RTCCall : DataChannel.Observer {
                             val encrypted = Crypto.encryptMessage(
                                 obj.toString()
                             )
-                            if (encrypted != null) {
-                                pw.writeMessage(encrypted)
-                                reportStateChange(CallState.CONNECTED)
-                            } else {
-                                reportStateChange(CallState.ERROR)
-                            }
+                            pw.writeMessage(encrypted)
+                            reportStateChange(CallState.CONNECTED)
                             //new Thread(new SpeakerRunnable(commSocket)).start();
                         } catch (e: Exception) {
                             e.printStackTrace()

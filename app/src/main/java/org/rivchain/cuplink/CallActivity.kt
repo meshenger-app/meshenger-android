@@ -131,6 +131,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 log("passiveCallback: ERROR")
                 stopDelayed(getString(R.string.call_error))
             }
+            else -> {}
         }
     }
 
@@ -202,7 +203,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 stopRinging()
                 log("declining call...")
                 currentCall.decline()
-                if (passiveWakeLock != null && passiveWakeLock.isHeld) {
+                if (passiveWakeLock.isHeld) {
                     passiveWakeLock.release()
                 }
                 callEventType = CallEvent.Type.INCOMING_DECLINED
@@ -214,7 +215,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 stopRinging() // make sure ringing has stopped ;-)
                 log("hangup call...")
                 currentCall.decline()
-                if (passiveWakeLock != null && passiveWakeLock!!.isHeld) {
+                if (passiveWakeLock.isHeld) {
                     passiveWakeLock.release()
                 }
                 callEventType = CallEvent.Type.INCOMING_ACCEPTED
@@ -227,7 +228,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
                     currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
                     currentCall.accept(passiveCallback)
-                    if (passiveWakeLock != null && passiveWakeLock.isHeld) {
+                    if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()
                     }
                     findViewById<View>(R.id.callDecline).setOnClickListener(hangupListener)
@@ -474,7 +475,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
-        currentCall = binder!!.getCurrentCall()!!
+        currentCall = binder!!.getCurrentCall()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

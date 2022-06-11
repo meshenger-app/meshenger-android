@@ -11,8 +11,8 @@ android {
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 349
-        versionName "0.4.3.5"
+        versionCode 350
+        versionName "0.4.3.6"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)
@@ -48,6 +48,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.4.1'
-    //implementation 'org.webrtc:google-webrtc:1.0.23995'
     implementation 'org.webrtc:google-webrtc:1.0.32006'
 }

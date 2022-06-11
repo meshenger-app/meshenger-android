@@ -292,14 +292,10 @@ class RTCCall : DataChannel.Observer {
 
     fun setLocalRenderer(localRenderer: SurfaceViewRenderer?) {
         this.localRenderer = localRenderer
-        this.localRenderer?.setMirror(true)
+        this.localRenderer?.setMirror(!mIsCameraSwitched)
     }
 
-    fun switchFrontFacing() {
-        if (capturer != null) {
-            capturer!!.switchCamera(null)
-        }
-    }
+    private var mIsCameraSwitched = false;
 
     override fun onBufferedAmountChange(l: Long) {
         // nothing to do
@@ -385,6 +381,14 @@ class RTCCall : DataChannel.Observer {
             }
         }
         return null
+    }
+
+    fun switchFrontFacing() {
+        if (capturer != null) {
+            capturer!!.switchCamera(null)
+            mIsCameraSwitched = !mIsCameraSwitched
+            this.localRenderer?.setMirror(!mIsCameraSwitched)
+        }
     }
 
     private val videoTrack: VideoTrack?

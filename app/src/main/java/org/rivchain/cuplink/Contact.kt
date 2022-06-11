@@ -19,10 +19,10 @@ class Contact : Serializable {
     var state = State.PENDING
 
     // last working address (use this address next connection and for unknown contact initialization)
-    var lastWorkingAddress: InetSocketAddress? = null
+    private var lastWorkingAddress: InetSocketAddress? = null
         private set
 
-    constructor(name: String, addresses: MutableList<String>) {
+    constructor(name: String, addresses: List<String>) {
         this.name = name
         blocked = false
         this.addresses = ArrayList()
@@ -71,7 +71,7 @@ class Contact : Serializable {
 
         // try last successful address first
         if (lastWorkingAddress != null) {
-            log("try latest address: " + lastWorkingAddress)
+            log("try latest address: $lastWorkingAddress")
             socket = establishConnection(lastWorkingAddress!!, connectionTimeout)
             if (socket != null) {
                 return socket
@@ -132,7 +132,7 @@ class Contact : Serializable {
             val `object` = JSONObject()
             val array = JSONArray()
             `object`.put("name", contact.name)
-            for (address in contact.getAddresses()!!) {
+            for (address in contact.getAddresses()) {
                 array.put(address.address.hostAddress)
             }
             `object`.put("addresses", array)
@@ -152,7 +152,7 @@ class Contact : Serializable {
             val array = `object`.getJSONArray("addresses")
             var i = 0
             while (i < array.length()) {
-                contact.addAddress(array.getString(i).toLowerCase(Locale.ROOT).trim { it <= ' ' })
+                contact.addAddress(array.getString(i).lowercase(Locale.ROOT).trim { it <= ' ' })
                 i += 1
             }
             if (all) {

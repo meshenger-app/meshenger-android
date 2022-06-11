@@ -7,7 +7,7 @@ import java.net.Socket
 /* Write the message header before the message is send */
 internal class PacketWriter(socket: Socket) {
     val os: OutputStream
-    val header: ByteArray
+    private val header: ByteArray
 
     @Throws(IOException::class)
     fun writeMessage(message: ByteArray) {

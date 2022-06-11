@@ -45,7 +45,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
         val contact = binder!!.contactsCopy[i]
         if(binder!!.getDatabase()?.settings?.addresses?.size  == 0){
             Toast.makeText(this, R.string.configure_address, Toast.LENGTH_LONG).show()
-            return;
+            return
         }
         val intent = Intent(this, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
@@ -69,7 +69,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                 )
             )
         }
-        fabGen.setOnClickListener(View.OnClickListener { v: View? ->
+        fabGen.setOnClickListener({ v: View? ->
             startActivity(
                 Intent(
                     this,
@@ -77,7 +77,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                 )
             )
         })
-        fab.setOnClickListener(View.OnClickListener { fab: View -> runFabAnimation(fab) })
+        fab.setOnClickListener({ fab: View -> runFabAnimation(fab) })
 
         // ask for audio recording permissions
         if (ContextCompat.checkSelfPermission(
@@ -91,7 +91,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
             .registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
     }
 
-    fun refreshContactList() {
+    private fun refreshContactList() {
         log("refreshContactList")
         Handler(mainLooper).post {
             val contacts = binder!!.contactsCopy
@@ -119,21 +119,28 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                     menu.menu.add(qr)
                     menu.setOnMenuItemClickListener { menuItem: MenuItem ->
                         val title = menuItem.title.toString()
-                        val ip = contact.getAddresses().get(0).address.hostAddress
-                        if (title == delete) {
-                            showDeleteDialog(ip, contact.name)
-                        } else if (title == rename) {
-                            showContactEditDialog(ip, contact.name)
-                        } else if (title == share) {
-                            shareContact(contact)
-                        } else if (title == block) {
-                            setBlocked(ip, true)
-                        } else if (title == unblock) {
-                            setBlocked(ip, false)
-                        } else if (title == qr) {
-                            val intent = Intent(this, QRShowActivity::class.java)
-                            intent.putExtra("EXTRA_CONTACT", contact)
-                            startActivity(intent)
+                        val ip = contact.getAddresses()[0].address.hostAddress
+                        when (title) {
+                            delete -> {
+                                showDeleteDialog(ip, contact.name)
+                            }
+                            rename -> {
+                                showContactEditDialog(ip, contact.name)
+                            }
+                            share -> {
+                                shareContact(contact)
+                            }
+                            block -> {
+                                setBlocked(ip, true)
+                            }
+                            unblock -> {
+                                setBlocked(ip, false)
+                            }
+                            qr -> {
+                                val intent = Intent(this, QRShowActivity::class.java)
+                                intent.putExtra("EXTRA_CONTACT", contact)
+                                startActivity(intent)
+                            }
                         }
                         false
                     }
@@ -262,8 +269,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         log("onOptionsItemSelected")
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -304,11 +310,11 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
 
     private fun collapseFab() {
         if (fabExpanded) {
-            fab!!.setImageResource(R.drawable.qr_glass)
-            fabScan!!.clearAnimation()
-            fabGen!!.clearAnimation()
-            fabScan!!.y = fabScan!!.y + 200
-            fabGen!!.y = fabGen!!.y + 200 * 2
+            fab.setImageResource(R.drawable.qr_glass)
+            fabScan.clearAnimation()
+            fabGen.clearAnimation()
+            fabScan.y = fabScan.y + 200
+            fabGen.y = fabGen.y + 200 * 2
             fabExpanded = false
         }
     }

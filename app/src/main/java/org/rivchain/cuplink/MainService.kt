@@ -83,7 +83,6 @@ class MainService : Service(), Runnable {
                         continue
                     }
                     val encrypted = Crypto.encryptMessage(message)
-                        ?: continue
                     var socket: Socket? = null
                     try {
                         socket = contact.createSocket()
@@ -132,7 +131,7 @@ class MainService : Service(), Runnable {
                     Crypto.decryptMessage(request)
                 if (contact == null) {
                     for (c in database!!.contacts) {
-                        if (c.getAddresses()[0].address.hostAddress.equals(remote_address.address.hostAddress)) {
+                        if (c.getAddresses()[0].address.hostAddress?.equals(remote_address.address.hostAddress)!!) {
                             contact = c
                             break
                         }
@@ -158,8 +157,7 @@ class MainService : Service(), Runnable {
                     InetSocketAddress(remote_address.address, serverPort)
                 )
                 val obj = JSONObject(decrypted)
-                val action = obj.optString("action", "")
-                when (action) {
+                when (obj.optString("action", "")) {
                     "call" -> {
 
                         // someone calls us
@@ -351,7 +349,7 @@ class MainService : Service(), Runnable {
         private val contacts: List<Contact>
     ) : Runnable {
 
-        var binder: MainBinder
+        var binder: MainBinder = MainBinder()
 
         private fun setState(ip: String, state: Contact.State) {
             val contact = binder.getContactByIp(ip)
@@ -366,7 +364,10 @@ class MainService : Service(), Runnable {
 
                 try {
                     socket = contact.createSocket()
-                    var ip = socket!!.inetAddress.hostAddress
+                    if(socket==null){
+                        return
+                    }
+                    val ip = socket.inetAddress.hostAddress
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
                     log("send ping to " + contact.name)
@@ -404,9 +405,6 @@ class MainService : Service(), Runnable {
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_contact_list"))
         }
 
-        init {
-            binder = MainBinder()
-        }
     }
 
     lateinit var currentCall: RTCCall

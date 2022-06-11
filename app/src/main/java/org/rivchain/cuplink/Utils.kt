@@ -92,12 +92,12 @@ class Utils {
 
         fun split(str: String): List<String> {
             val parts = str.split("\\s*,\\s*".toRegex()).toTypedArray()
-            return Arrays.asList(*parts)
+            return listOf(*parts)
         }
 
         // check for a name that has no funny unicode characters to not let them look to much like other names
         fun isValidName(name: String?): Boolean {
-            if (name == null || name.length == 0) {
+            if (name == null || name.isEmpty()) {
                 return false
             }
             return if (name != name.trim { it <= ' ' }) {
@@ -136,7 +136,7 @@ class Utils {
         }
 
         fun parseInetSocketAddress(addr: String?, defaultPort: Int): InetSocketAddress? {
-            return if (addr == null || addr.length == 0) {
+            return if (addr == null || addr.isEmpty()) {
                 null
             } else try {
                 if (isIPv6(addr)) {
@@ -149,12 +149,12 @@ class Utils {
             }
         }
 
-        fun bytesToMacAddress(mac: ByteArray): String {
+        private fun bytesToMacAddress(mac: ByteArray): String {
             val sb = StringBuilder()
             for (b in mac) {
                 sb.append(String.format("%02X:", b))
             }
-            if (sb.length > 0) {
+            if (sb.isNotEmpty()) {
                 sb.deleteCharAt(sb.length - 1)
             }
             return sb.toString()
@@ -193,7 +193,7 @@ class Utils {
         }
 
         private fun isHexChar(c: Char): Boolean {
-            return c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F'
+            return c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F'
         }
 
         // check if a string is a MAC address (heuristic)
@@ -216,7 +216,7 @@ class Utils {
 
         // check if string is a domain (heuristic)
         fun isDomain(domain: String?): Boolean {
-            if (domain == null || domain.length == 0) {
+            if (domain == null || domain.isEmpty()) {
                 return false
             }
             if (domain.startsWith(".") || domain.endsWith(".")) {
@@ -240,7 +240,7 @@ class Utils {
                     || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches())
         }
 
-        fun isIPv6(address: String?): Boolean {
+        private fun isIPv6(address: String?): Boolean {
             return (IPV6_STD_PATTERN.matcher(address).matches()
                     || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches())
         }
@@ -301,7 +301,7 @@ class Utils {
         }
 
         // Check if the given MAC address is in the IPv6 address
-        fun getEUI64MAC(addr6: Inet6Address): ByteArray? {
+        private fun getEUI64MAC(addr6: Inet6Address): ByteArray? {
             val bytes = addr6.address
             if (bytes[11] != 0xFF.toByte() || bytes[12] != 0xFE.toByte()) {
                 return null

@@ -45,7 +45,7 @@ internal class EventListAdapter(
         // find name
         var name = ""
         for (contact in contacts) {
-            if (contact.getAddresses()?.get(0)?.address?.hostAddress?.equals(event.address.hostAddress)!!) {
+            if (contact.getAddresses()[0].address?.hostAddress?.equals(event.address.hostAddress)!!) {
                 name = contact.name
                 break
             }

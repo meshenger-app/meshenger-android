@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"></com.google.android.material.appbar.AppBarLayout>
+        android:theme="@style/AppTheme.AppBarOverlay" />
 
     <include
         layout="@layout/fragment_contact_list"

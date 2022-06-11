@@ -182,8 +182,8 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
                 }
 
                 override fun afterTextChanged(editable: Editable) {
-                    okButton.isClickable = editable.length > 0
-                    okButton.alpha = if (editable.length > 0) 1.0f else 0.5f
+                    okButton.isClickable = editable.isNotEmpty()
+                    okButton.alpha = if (editable.isNotEmpty()) 1.0f else 0.5f
                 }
             })
             okButton.isClickable = false

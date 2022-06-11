@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatDelegate
 * Activity base class to apply night mode
 */
 open class CupLinkActivity : AppCompatActivity() {
-    var dark_active // dark mode
+    private var dark_active // dark mode
             = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,13 +21,13 @@ open class CupLinkActivity : AppCompatActivity() {
 
     fun hideActionBar(view: View?) {
         if (view != null) {
-            val params: WindowManager.LayoutParams = window.getAttributes()
+            val params: WindowManager.LayoutParams = window.attributes
             params.flags = params.flags or (WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             params.flags = params.flags or WindowManager.LayoutParams.FLAG_FULLSCREEN
-            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_FULLSCREEN)
-            window.attributes = params;
+            view.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_FULLSCREEN
+            window.attributes = params
         }
     }
 

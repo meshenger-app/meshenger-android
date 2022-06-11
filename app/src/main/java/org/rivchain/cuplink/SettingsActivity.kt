@@ -57,7 +57,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
 
         val username = binder!!.settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text =
-            if (username.length == 0) resources.getString(R.string.none) else username
+            if (username.isEmpty()) resources.getString(R.string.none) else username
         val addresses = binder!!.settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
             if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)

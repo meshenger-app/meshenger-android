@@ -47,7 +47,7 @@ class Database {
         @Throws(IOException::class, JSONException::class)
         fun load(path: String?): Database {
             // read database file
-            var data = Utils.readExternalFile(path!!)
+            val data = Utils.readExternalFile(path!!)
 
             val obj = JSONObject(
                 String(data, Charset.forName("UTF-8"))
@@ -59,7 +59,7 @@ class Database {
         @Throws(IOException::class, JSONException::class)
         fun store(path: String?, db: Database) {
             val obj = toJSON(db)
-            var data: ByteArray? = obj.toString().toByteArray()
+            val data: ByteArray? = obj.toString().toByteArray()
 
             // write database file
             Utils.writeExternalFile(path!!, data)

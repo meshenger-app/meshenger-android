@@ -37,12 +37,12 @@ class EventListFragment : Fragment(), OnItemClickListener {
         }
         eventListAdapter =
             EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
-        eventListView.setAdapter(eventListAdapter)
-        eventListView.setOnItemClickListener(this)
+        eventListView.adapter = eventListAdapter
+        eventListView.onItemClickListener = this
         return view
     }
 
-    fun refreshEventList() {
+    private fun refreshEventList() {
         log("refreshEventList")
         if (mainActivity == null || mainActivity!!.binder == null) {
             log("refreshEventList early return")
@@ -54,8 +54,8 @@ class EventListFragment : Fragment(), OnItemClickListener {
             log("refreshEventList update: " + events.size)
             eventListAdapter!!.update(events, contacts)
             eventListAdapter!!.notifyDataSetChanged()
-            eventListView!!.adapter = eventListAdapter
-            eventListView!!.onItemLongClickListener =
+            eventListView.adapter = eventListAdapter
+            eventListView.onItemLongClickListener =
                 OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
                     val event = events[i]
                     val menu = PopupMenu(mainActivity!!, requireView())
@@ -82,12 +82,16 @@ class EventListFragment : Fragment(), OnItemClickListener {
                     }
                     menu.setOnMenuItemClickListener { menuItem: MenuItem ->
                         val title = menuItem.title.toString()
-                        if (title == add) {
-                            showAddDialog(event)
-                        } else if (title == block) {
-                            setBlocked(event, true)
-                        } else if (title == unblock) {
-                            setBlocked(event, false)
+                        when (title) {
+                            add -> {
+                                showAddDialog(event)
+                            }
+                            block -> {
+                                setBlocked(event, true)
+                            }
+                            unblock -> {
+                                setBlocked(event, false)
+                            }
                         }
                         false
                     }
@@ -126,7 +130,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             }
             val address = Utils.getGeneralizedAddress(event.address)
             mainActivity!!.binder!!.addContact(
-                Contact(name, Arrays.asList(address))
+                Contact(name, listOf(address))
             )
             Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
@@ -142,7 +146,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         log("onItemClick")
         val event = eventListAdapter!!.getItem(i)
         val address = Utils.getGeneralizedAddress(event.address)
-        val contact = Contact("", Arrays.asList(address))
+        val contact = Contact("", listOf(address))
         contact.setLastWorkingAddress(
             Utils.parseInetSocketAddress(
                 address,

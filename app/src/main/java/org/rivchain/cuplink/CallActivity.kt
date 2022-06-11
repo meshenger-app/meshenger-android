@@ -30,7 +30,7 @@ import java.io.IOException
 class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
     private val CAMERA_PERMISSION_REQUEST_CODE = 2
-    var declineBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private var declineBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             log("declineBroadcastCastReceiver onReceive")
             finish()
@@ -168,9 +168,9 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 }
             }
             if (contact!!.name.isEmpty()) {
-                nameTextView.setText(resources.getString(R.string.unknown_caller))
+                nameTextView.text = resources.getString(R.string.unknown_caller)
             } else {
-                nameTextView.setText(contact!!.name)
+                nameTextView.text = contact!!.name
             }
             bindService(Intent(this, MainService::class.java), connection, 0)
             val declineListener = View.OnClickListener { view: View? ->
@@ -192,15 +192,15 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             connection = this
             bindService(Intent(this, MainService::class.java), this, 0)
             if (contact!!.name.isEmpty()) {
-                nameTextView.setText(resources.getString(R.string.unknown_caller))
+                nameTextView.text = resources.getString(R.string.unknown_caller)
             } else {
-                nameTextView.setText(contact!!.name)
+                nameTextView.text = contact!!.name
             }
             findViewById<View>(R.id.callAccept).visibility = View.VISIBLE
             startRinging()
 
             // decline call
-            val declineListener = View.OnClickListener { _: View? ->
+            val declineListener = View.OnClickListener {
                 stopRinging()
                 log("declining call...")
                 currentCall.decline()

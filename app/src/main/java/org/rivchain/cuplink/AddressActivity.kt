@@ -15,10 +15,10 @@ import java.util.*
 
 class AddressActivity : CupLinkActivity(), ServiceConnection {
 
-    lateinit var systemAddressSpinner: ListView
-    lateinit var systemAddressList: List<AddressEntry>
+    private lateinit var systemAddressSpinner: ListView
+    private lateinit var systemAddressList: List<AddressEntry>
     private var storedAddressList: MutableList<AddressEntry> = ArrayList<AddressEntry>()
-    var systemAddressListAdapter: ArrayAdapter<AddressEntry>? = null
+    private var systemAddressListAdapter: ArrayAdapter<AddressEntry>? = null
     private var binder: MainBinder? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         systemAddressSpinner.choiceMode = CHOICE_MODE_SINGLE
         systemAddressListAdapter =
             ArrayAdapter(this, R.layout.activity_address_item, systemAddressList)
-        systemAddressSpinner.adapter = systemAddressListAdapter;
+        systemAddressSpinner.adapter = systemAddressListAdapter
         systemAddressSpinner.setOnItemClickListener { adapterView, view, i, l ->
             val addresses = ArrayList<String>()
             addresses.add(systemAddressList[i].address)
@@ -66,7 +66,7 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
 
         // get from settings
         for (address in binder!!.settings.addresses) {
-            storedAddressList!!.add(parseAddress(address))
+            storedAddressList.add(parseAddress(address))
         }
         updateSpinners()
     }
@@ -87,7 +87,7 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             }
         }
         Collections.sort(systemAddressList, compareAddressEntries)
-        systemAddressSpinner!!.adapter = systemAddressListAdapter
+        systemAddressSpinner.adapter = systemAddressListAdapter
         systemAddressListAdapter!!.notifyDataSetChanged()
 
     }
@@ -96,16 +96,16 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
      * Create AddressEntry from address string.
      * Do not perform any domain lookup
      */
-    fun parseAddress(address: String?): AddressEntry {
+    private fun parseAddress(address: String?): AddressEntry {
         // instead of parsing, lookup in known addresses first
         val ae = AddressEntry.findAddressEntry(systemAddressList, address!!)
         return if (ae != null) {
             // known address
-            AddressEntry(address!!, ae.device, ae.multicast)
+            AddressEntry(address, ae.device, ae.multicast)
         } else if (Utils.isMAC(address)) {
             // MAC address
             val mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address))
-            AddressEntry(address!!, "", mc)
+            AddressEntry(address, "", mc)
         } else if (Utils.isIP(address)) {
             // IP address
             var mc = false
@@ -114,19 +114,10 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             } catch (e: Exception) {
                 // ignore
             }
-            AddressEntry(address!!, "", mc)
+            AddressEntry(address, "", mc)
         } else {
             // domain
-            AddressEntry(address!!, "", false)
+            AddressEntry(address, "", false)
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
-    }
-
 }

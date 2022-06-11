@@ -7,8 +7,8 @@ import java.net.Socket
 /* Read the message size from the header and return the message of the correct size */
 internal class PacketReader(socket: Socket) {
     val `is`: InputStream
-    val buffer: ByteArray
-    var pos: Int
+    private val buffer: ByteArray
+    private var pos: Int
 
     @Throws(IOException::class)
     fun readMessage(): ByteArray? {

@@ -197,22 +197,26 @@ class RTCCall : DataChannel.Observer {
                                 }
                                 val obj = JSONObject(decrypted)
                                 val action = obj.getString("action")
-                                if (action == "connected") {
-                                    reportStateChange(CallState.CONNECTED)
-                                    handleAnswer(obj.getString("answer"))
-                                    // contact accepted receiving call
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
-                                } else if (action == "dismissed") {
-                                    log("dismissed")
-                                    closeCommSocket()
-                                    reportStateChange(CallState.DISMISSED)
-                                    // contact declined receiving call
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
-                                } else {
-                                    log("unknown action reply: $action")
-                                    closeCommSocket()
-                                    reportStateChange(CallState.ERROR)
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                when (action) {
+                                    "connected" -> {
+                                        reportStateChange(CallState.CONNECTED)
+                                        handleAnswer(obj.getString("answer"))
+                                        // contact accepted receiving call
+                                        //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
+                                    }
+                                    "dismissed" -> {
+                                        log("dismissed")
+                                        closeCommSocket()
+                                        reportStateChange(CallState.DISMISSED)
+                                        // contact declined receiving call
+                                        //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
+                                    }
+                                    else -> {
+                                        log("unknown action reply: $action")
+                                        closeCommSocket()
+                                        reportStateChange(CallState.ERROR)
+                                        //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
+                                    }
                                 }
                             }
                         } catch (e: Exception) {
@@ -288,7 +292,7 @@ class RTCCall : DataChannel.Observer {
 
     fun setLocalRenderer(localRenderer: SurfaceViewRenderer?) {
         this.localRenderer = localRenderer
-        this.localRenderer?.setMirror(true);
+        this.localRenderer?.setMirror(true)
     }
 
     fun switchFrontFacing() {
@@ -314,8 +318,7 @@ class RTCCall : DataChannel.Observer {
             log("onMessage: $s")
             o = JSONObject(s)
             if (o.has(StateChangeMessage)) {
-                val state = o.getString(StateChangeMessage)
-                when (state) {
+                when (val state = o.getString(StateChangeMessage)) {
                     CameraEnabledMessage, CameraDisabledMessage -> {
                         setRemoteVideoEnabled(state == CameraEnabledMessage)
                     }
@@ -390,11 +393,11 @@ class RTCCall : DataChannel.Observer {
             if (capturer != null) {
                 val surfaceTextureHelper =
                     SurfaceTextureHelper.create("CaptureThread", eglBaseContext)
-                val videoSource = factory.createVideoSource(capturer!!.isScreencast())
+                val videoSource = factory.createVideoSource(capturer!!.isScreencast)
                 capturer!!.initialize(
                     surfaceTextureHelper,
                     this@RTCCall.context,
-                    videoSource.getCapturerObserver()
+                    videoSource.capturerObserver
                 )
                 localRender.setTarget(localRenderer)
                 Handler(Looper.getMainLooper()).post {
@@ -426,12 +429,12 @@ class RTCCall : DataChannel.Observer {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
         if (videoCodecHwAcceleration) {
-            if(binder.settings.videoCodec=="H264") {
-                encoderFactory = DefaultVideoEncoderFactory(
+            encoderFactory = if(binder.settings.videoCodec=="H264") {
+                DefaultVideoEncoderFactory(
                     eglBaseContext, false /* enableIntelVp8Encoder */, true
                 )
             } else {
-                encoderFactory = DefaultVideoEncoderFactory(
+                DefaultVideoEncoderFactory(
                     eglBaseContext, true /* enableIntelVp8Encoder */, false
                 )
             }
@@ -470,7 +473,7 @@ class RTCCall : DataChannel.Observer {
     private fun reportStateChange(state: CallState) {
         this.state = state
         if (listener != null) {
-            listener!!.OnStateChange(state)
+            listener!!.onStateChange(state)
         }
     }
 
@@ -617,7 +620,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun interface OnStateChangeListener {
-        fun OnStateChange(state: CallState?)
+        fun onStateChange(state: CallState?)
     }
 
     private class ProxyVideoSink : VideoSink {

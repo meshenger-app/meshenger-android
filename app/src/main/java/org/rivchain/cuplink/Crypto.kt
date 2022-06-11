@@ -7,16 +7,6 @@ internal class Crypto {
     //public static boolean disable_crypto = true;
     // decrypt database using a password
     companion object {
-        fun decryptDatabase(encrypted_message: ByteArray, password: ByteArray?): ByteArray {
-            return encrypted_message
-        }
-
-        // encrypt database using a password
-        fun encryptDatabase(data: ByteArray?, password: ByteArray?): ByteArray? {
-            return if (data == null || password == null) {
-                null
-            } else data
-        }
 
         fun encryptMessage(
             message: String

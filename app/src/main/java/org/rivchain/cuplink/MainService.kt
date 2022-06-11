@@ -226,7 +226,7 @@ class MainService : Service(), Runnable {
                 }
             }
             server = ServerSocket(serverPort)
-            while (run) {
+            while (run && connectionThread!!.isAlive && !connectionThread!!.isInterrupted) {
                 try {
                     val socket = server!!.accept()
                     Thread { handleClient(socket) }.start()

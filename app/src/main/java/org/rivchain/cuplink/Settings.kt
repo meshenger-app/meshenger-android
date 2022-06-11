@@ -3,7 +3,6 @@ package org.rivchain.cuplink
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 
 class Settings {
     var username = ""

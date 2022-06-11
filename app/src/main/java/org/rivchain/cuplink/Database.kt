@@ -5,7 +5,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
-import java.util.*
 
 class Database {
     var settings: Settings = Settings()

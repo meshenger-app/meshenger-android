@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import java.text.SimpleDateFormat
-import java.util.*
 
 internal class EventListAdapter(
     context: Context,

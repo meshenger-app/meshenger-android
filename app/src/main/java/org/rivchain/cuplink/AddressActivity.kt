@@ -5,11 +5,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.*
 import android.widget.AbsListView.CHOICE_MODE_SINGLE
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.Toast
 import org.rivchain.cuplink.MainService.MainBinder
 import java.util.*
-import android.widget.Toast
 
 
 class AddressActivity : CupLinkActivity(), ServiceConnection {

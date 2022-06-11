@@ -34,15 +34,17 @@ class QRScanActivity : CupLinkActivity(), BarcodeCallback, ServiceConnection {
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, 1)
         }
-
+        val fabScan = findViewById<View>(R.id.fabScan)
         // qr show button
-        findViewById<View>(R.id.fabScan).setOnClickListener { view: View? ->
+        fabScan.setOnClickListener { view: View? ->
             startActivity(Intent(this, QRShowActivity::class.java))
             finish()
         }
 
         // manual input button
         findViewById<View>(R.id.fabManualInput).setOnClickListener { view: View? -> startManualInput() }
+
+        hideActionBar(fabScan.rootView)
     }
 
     @Throws(JSONException::class)

@@ -9,7 +9,7 @@
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/barcodeScannerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.journeyapps.barcodescanner.DecoratedBarcodeView>
+        android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabManualInput"

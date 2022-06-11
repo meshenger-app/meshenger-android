@@ -31,10 +31,13 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
-        (findViewById<View>(R.id.splashText) as TextView).typeface = type
+        val splashText = findViewById<View>(R.id.splashText)
+        ( splashText as TextView).typeface = type
 
         // start MainService and call back via onServiceConnected()
         startService(Intent(this, MainService::class.java))
+
+        hideActionBar(splashText.rootView)
     }
 
     private fun continueInit() {
@@ -62,6 +65,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             4 -> {
                 log("init 4: check key pair")
                 continueInit()
+                Thread.sleep(500)
             }
             5 -> {
                 log("init 5: check addresses")

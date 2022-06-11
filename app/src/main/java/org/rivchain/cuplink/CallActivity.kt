@@ -26,6 +26,7 @@ import org.webrtc.RTCStatsCollectorCallback
 import org.webrtc.RTCStatsReport
 import java.io.IOException
 
+
 class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
     private val CAMERA_PERMISSION_REQUEST_CODE = 2
@@ -256,6 +257,8 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall.switchFrontFacing() }
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
+
+        hideActionBar(statusTextView?.rootView)
     }
 
     private fun startRinging() {

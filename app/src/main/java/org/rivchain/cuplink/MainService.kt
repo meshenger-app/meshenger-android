@@ -226,13 +226,20 @@ class MainService : Service(), Runnable {
                 }
             }
             server = ServerSocket(serverPort)
+            server!!.soTimeout = SocksConstants.LISTEN_TIMEOUT;
             while (run && connectionThread!!.isAlive && !connectionThread!!.isInterrupted) {
                 try {
                     val socket = server!!.accept()
+                    socket.soTimeout = SocksConstants.DEFAULT_SERVER_TIMEOUT;
                     Thread { handleClient(socket) }.start()
                 } catch (e: IOException) {
                     // ignore
                 }
+            }
+            try {
+                server!!.close()
+            } catch (e: IOException) {
+                // ignore
             }
         } catch (e: IOException) {
             e.printStackTrace()

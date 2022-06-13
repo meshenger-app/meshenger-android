@@ -161,6 +161,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                     )
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
                     currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
+                    currentCall.setVideoStreamSwitchLayout(findViewById(R.id.videoStreamSwitchLayout))
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -228,6 +229,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 try {
                     currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
                     currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
+                    currentCall.setVideoStreamSwitchLayout(findViewById(R.id.videoStreamSwitchLayout))
                     currentCall.accept(passiveCallback)
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()

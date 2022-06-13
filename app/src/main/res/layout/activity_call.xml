@@ -98,7 +98,8 @@
                 android:id="@+id/videoStreamSwitchLayout"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginStart="30dp">
+                android:layout_marginStart="30dp"
+                android:visibility="gone">
 
                 <ImageButton
                     android:id="@+id/videoStreamSwitch"

@@ -21,7 +21,6 @@ import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-
 class RTCCall : DataChannel.Observer {
     private val StateChangeMessage = "StateChange"
     private val CameraDisabledMessage = "CameraDisabled"
@@ -31,11 +30,12 @@ class RTCCall : DataChannel.Observer {
     var state: CallState? = null
     var commSocket: Socket?
     private lateinit var factory: PeerConnectionFactory
-    private var connection: PeerConnection? = null
+    private lateinit var connection: PeerConnection
     private var constraints: MediaConstraints? = null
     private var offer: String? = null
     private var remoteRenderer: SurfaceViewRenderer? = null
     private var localRenderer: SurfaceViewRenderer? = null
+    private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
     private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
@@ -154,7 +154,7 @@ class RTCCall : DataChannel.Observer {
                             run {
                                 val obj = JSONObject()
                                 obj.put("action", "call")
-                                obj.put("offer", connection!!.localDescription.description)
+                                obj.put("offer", connection.localDescription.description)
                                 val encrypted = Crypto.encryptMessage(
                                     obj.toString()
                                 )
@@ -244,19 +244,22 @@ class RTCCall : DataChannel.Observer {
                 override fun onDataChannel(dataChannel: DataChannel) {
                     super.onDataChannel(dataChannel)
                     this@RTCCall.dataChannel = dataChannel
-                    dataChannel.registerObserver(this@RTCCall)
+                    this@RTCCall.dataChannel.registerObserver(this@RTCCall)
                 }
-            })
-            dataChannel = connection!!.createDataChannel("data", DataChannel.Init())
+            })!!
+            dataChannel = connection.createDataChannel("data", DataChannel.Init())
             dataChannel.registerObserver(this)
+            //enable video button
+            Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
+
             val config = RTCConfiguration(iceServers)
             config.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
-            connection!!.setConfiguration(config)
-            connection!!.addStream(createStream())
-            connection!!.createOffer(object : DefaultSdpObserver() {
+            connection.setConfiguration(config)
+            connection.addStream(createStream())
+            connection.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
                     super.onCreateSuccess(sessionDescription)
-                    connection!!.setLocalDescription(DefaultSdpObserver(), sessionDescription)
+                    connection.setLocalDescription(DefaultSdpObserver(), sessionDescription)
                 }
             }, constraints)
         }.start()
@@ -276,13 +279,10 @@ class RTCCall : DataChannel.Observer {
 
     private fun closePeerConnection() {
         log("closePeerConnection")
-        if (connection != null) {
-            try {
-                connection!!.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            connection = null
+        try {
+            connection.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -293,6 +293,10 @@ class RTCCall : DataChannel.Observer {
     fun setLocalRenderer(localRenderer: SurfaceViewRenderer?) {
         this.localRenderer = localRenderer
         this.localRenderer?.setMirror(!mIsCameraSwitched)
+    }
+
+    fun setVideoStreamSwitchLayout(videoStreamSwitchLayout: View?) {
+        this.videoStreamSwitchLayout = videoStreamSwitchLayout
     }
 
     private var mIsCameraSwitched = false;
@@ -392,7 +396,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private val videoTrack: VideoTrack?
-        private get() {
+        get() {
             capturer = createCapturer()
             if (capturer != null) {
                 val surfaceTextureHelper =
@@ -418,7 +422,7 @@ class RTCCall : DataChannel.Observer {
             return null
         }
     private val audioTrack: AudioTrack
-        private get() = factory.createAudioTrack(
+        get() = factory.createAudioTrack(
             "audio1",
             factory.createAudioSource(MediaConstraints())
         )
@@ -453,7 +457,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun handleAnswer(remoteDesc: String) {
-        connection!!.setRemoteDescription(object : DefaultSdpObserver() {
+        connection.setRemoteDescription(object : DefaultSdpObserver() {
             override fun onSetSuccess() {
                 super.onSetSuccess()
                 log("onSetSuccess")
@@ -476,7 +480,7 @@ class RTCCall : DataChannel.Observer {
     fun accept(statsCollector: RTCStatsCollectorCallback?) {
         val scheduleTaskExecutor = Executors.newScheduledThreadPool(1)
         scheduleTaskExecutor.scheduleAtFixedRate(
-            { connection!!.getStats(statsCollector) },
+            { connection.getStats(statsCollector) },
             1,
             5,
             TimeUnit.SECONDS
@@ -495,7 +499,7 @@ class RTCCall : DataChannel.Observer {
                             val pw = PacketWriter(commSocket!!)
                             val obj = JSONObject()
                             obj.put("action", "connected")
-                            obj.put("answer", connection!!.localDescription.description)
+                            obj.put("answer", connection.localDescription.description)
                             val encrypted = Crypto.encryptMessage(
                                 obj.toString()
                             )
@@ -526,20 +530,22 @@ class RTCCall : DataChannel.Observer {
                 override fun onDataChannel(dataChannel: DataChannel) {
                     super.onDataChannel(dataChannel)
                     this@RTCCall.dataChannel = dataChannel
-                    dataChannel.registerObserver(this@RTCCall)
+                    this@RTCCall.dataChannel.registerObserver(this@RTCCall)
+                    //enable video button
+                    Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
                 }
-            })
-            connection!!.addStream(createStream())
+            })!!
+            connection.addStream(createStream())
             log("setting remote description")
-            connection!!.setRemoteDescription(object : DefaultSdpObserver() {
+            connection.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {
                     super.onSetSuccess()
                     log("creating answer...")
-                    connection!!.createAnswer(object : DefaultSdpObserver() {
+                    connection.createAnswer(object : DefaultSdpObserver() {
                         override fun onCreateSuccess(sessionDescription: SessionDescription) {
                             log("onCreateSuccess")
                             super.onCreateSuccess(sessionDescription)
-                            connection!!.setLocalDescription(
+                            connection.setLocalDescription(
                                 DefaultSdpObserver(),
                                 sessionDescription
                             )

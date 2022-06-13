@@ -45,7 +45,7 @@ class RTCCall : DataChannel.Observer {
             field = enabled
             try {
                 if (enabled) {
-                    capturer!!.startCapture(1024, 720, 30)
+                    capturer!!.startCapture(1280, 720, 25)
                     Handler(Looper.getMainLooper()).post {
                         localRenderer!!.visibility = View.VISIBLE
                         localRenderer!!.setZOrderOnTop(true)
@@ -433,16 +433,8 @@ class RTCCall : DataChannel.Observer {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
         if (videoCodecHwAcceleration) {
-            encoderFactory = if(binder.settings.videoCodec=="H264") {
-                DefaultVideoEncoderFactory(
-                    eglBaseContext, false /* enableIntelVp8Encoder */, true
-                )
-            } else {
-                DefaultVideoEncoderFactory(
-                    eglBaseContext, true /* enableIntelVp8Encoder */, false
-                )
-            }
-            decoderFactory = DefaultVideoDecoderFactory(eglBaseContext)
+            encoderFactory = HWVideoEncoderFactory(eglBaseContext, true, true)
+            decoderFactory = HWVideoDecoderFactory(eglBaseContext)
         } else {
             encoderFactory = SoftwareVideoEncoderFactory()
             decoderFactory = SoftwareVideoDecoderFactory()

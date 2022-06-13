@@ -207,7 +207,9 @@ class MainService : Service(), Runnable {
         } catch (e: Exception) {
             e.printStackTrace()
             log("client disconnected (exception)")
-            currentCall.decline()
+            if (::currentCall.isInitialized) {
+                currentCall.decline()
+            }
         }
     }
 
@@ -231,7 +233,9 @@ class MainService : Service(), Runnable {
                 try {
                     val socket = server!!.accept()
                     socket.soTimeout = SocksConstants.DEFAULT_SERVER_TIMEOUT;
-                    Thread { handleClient(socket) }.start()
+                    Thread {
+                        handleClient(socket)
+                    }.start()
                 } catch (e: IOException) {
                     // ignore
                 }

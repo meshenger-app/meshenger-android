@@ -437,8 +437,12 @@ class RTCCall : DataChannel.Observer {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
         if (videoCodecHwAcceleration) {
-            encoderFactory = HWVideoEncoderFactory(eglBaseContext, true, true)
-            decoderFactory = HWVideoDecoderFactory(eglBaseContext)
+            encoderFactory = HardwareExtendedVideoEncoderFactory(
+                eglBaseContext,
+                true,
+                true
+            )
+            decoderFactory = DefaultVideoDecoderFactory(eglBaseContext)
         } else {
             encoderFactory = SoftwareVideoEncoderFactory()
             decoderFactory = SoftwareVideoDecoderFactory()

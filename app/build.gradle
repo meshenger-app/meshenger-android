@@ -49,5 +49,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.4.1'
-    implementation 'org.webrtc:google-webrtc:1.0.32006'
+    implementation ("org.webrtc:google-webrtc:1.0.32006") {
+        exclude group: 'org.webrtc', module: 'VideoCodecMimeType'
+    }
 }

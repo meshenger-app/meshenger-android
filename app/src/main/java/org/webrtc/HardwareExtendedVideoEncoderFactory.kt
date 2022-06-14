@@ -24,6 +24,10 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
     codecAllowedPredicate: Predicate<MediaCodecInfo>? =  /* codecAllowedPredicate= */
         null
 ) : VideoEncoderFactory {
+    val MTK_PREFIX = "OMX.MTK."
+    val MTK_IMG_TOPAZ = "OMX.IMG.TOPAZ."
+    val MTK_HISI = "OMX.hisi."
+    val MTK_K3 = "OMX.k3."
     private var sharedContext: EglBase14.Context? = null
     private val enableIntelVp8Encoder: Boolean
     private val enableH264HighProfile: Boolean
@@ -75,8 +79,8 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         // Generate a list of supported codecs in order of preference:
         // H264 (high profile), H264 (baseline profile), VP8, VP9 and AV1.
         for (type in arrayOf(
-            VideoCodecMimeType.H264, VideoCodecMimeType.VP8,
-            VideoCodecMimeType.VP9//, VideoCodecMimeType.AV1
+            VideoCodecMimeType.VP9, VideoCodecMimeType.VP8, VideoCodecMimeType.H264
+            //, VideoCodecMimeType.AV1
         )) {
             val codec = findCodecForType(type)
             if (codec != null) {
@@ -208,6 +212,8 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         } else BaseBitrateAdjuster()
         // Other codecs don't need bitrate adjustment.
     }
+
+
 
     private fun isH264HighProfileSupported(info: MediaCodecInfo): Boolean {
         return enableH264HighProfile && Build.VERSION.SDK_INT > Build.VERSION_CODES.M && info.name.startsWith(

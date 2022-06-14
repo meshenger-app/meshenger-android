@@ -12,7 +12,7 @@ package org.webrtc
 import android.media.MediaCodecInfo
 import android.media.MediaCodecList
 import android.os.Build
-import org.webrtc.MediaCodecUtils.SOFTWARE_IMPLEMENTATION_PREFIXES
+import org.webrtc.MediaCodecUtils.*
 import java.util.*
 
 /** Factory for android hardware video encoders.  */
@@ -151,7 +151,6 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
             VideoCodecMimeType.H264 -> isHardwareSupportedInCurrentSdkH264(info)
             //VideoCodecMimeType.AV1 -> false
         }
-        return false
     }
 
     private fun isHardwareSupportedInCurrentSdkVp8(info: MediaCodecInfo): Boolean {
@@ -177,7 +176,10 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         val name = info.name
         // #QCOM and Exynos H264 encoders are always supported.
         // exclude software codecs
-        return SOFTWARE_IMPLEMENTATION_PREFIXES.indexOf(name) < 0
+        //return SOFTWARE_IMPLEMENTATION_PREFIXES.indexOf(name) < 0
+        return name.startsWith(QCOM_PREFIX)
+                // Exynos H264 encoder is supported in LOLLIPOP or later.
+                || name.startsWith(EXYNOS_PREFIX)
     }
 
     private fun isMediaCodecAllowed(info: MediaCodecInfo): Boolean {

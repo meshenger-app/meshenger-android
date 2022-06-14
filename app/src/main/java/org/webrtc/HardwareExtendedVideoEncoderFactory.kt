@@ -38,7 +38,7 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
     }
 
     override fun createEncoder(input: VideoCodecInfo): VideoEncoder? {
-        val type = ExtendedVideoCodecMimeType.valueOf(input.getName())
+        val type = VideoCodecMimeType.valueOf(input.getName())
         val info = findCodecForType(type) ?: return null
         val codecName = info.name
         val mime = type.mimeType()
@@ -48,7 +48,7 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         val yuvColorFormat = MediaCodecUtils.selectColorFormat(
             MediaCodecUtils.ENCODER_COLOR_FORMATS, info.getCapabilitiesForType(mime)
         )
-        if (type == ExtendedVideoCodecMimeType.H264) {
+        if (type == VideoCodecMimeType.H264) {
             val isHighProfile = H264Utils.isSameH264Profile(
                 input.params, MediaCodecUtils.getCodecProperties(type,  /* highProfile= */true)
             )
@@ -75,15 +75,15 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         // Generate a list of supported codecs in order of preference:
         // H264 (high profile), H264 (baseline profile), VP8, VP9 and AV1.
         for (type in arrayOf(
-            ExtendedVideoCodecMimeType.H264, ExtendedVideoCodecMimeType.VP8,
-            ExtendedVideoCodecMimeType.VP9, ExtendedVideoCodecMimeType.AV1
+            VideoCodecMimeType.H264, VideoCodecMimeType.VP8,
+            VideoCodecMimeType.VP9, VideoCodecMimeType.AV1
         )) {
             val codec = findCodecForType(type)
             if (codec != null) {
                 val name = type.name
                 // TODO(sakal): Always add H264 HP once WebRTC correctly removes codecs that are not
                 // supported by the decoder.
-                if (type == ExtendedVideoCodecMimeType.H264 && isH264HighProfileSupported(codec)) {
+                if (type == VideoCodecMimeType.H264 && isH264HighProfileSupported(codec)) {
                     supportedCodecInfos.add(
                         VideoCodecInfo(
                             name, MediaCodecUtils.getCodecProperties(type,  /* highProfile= */true)
@@ -100,7 +100,7 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         return supportedCodecInfos.toTypedArray()
     }
 
-    private fun findCodecForType(type: ExtendedVideoCodecMimeType): MediaCodecInfo? {
+    private fun findCodecForType(type: VideoCodecMimeType): MediaCodecInfo? {
         for (i in 0 until MediaCodecList.getCodecCount()) {
             var info: MediaCodecInfo? = null
             try {
@@ -119,7 +119,7 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
     }
 
     // Returns true if the given MediaCodecInfo indicates a supported encoder for the given type.
-    private fun isSupportedCodec(info: MediaCodecInfo, type: ExtendedVideoCodecMimeType): Boolean {
+    private fun isSupportedCodec(info: MediaCodecInfo, type: VideoCodecMimeType): Boolean {
         if (!MediaCodecUtils.codecSupportsType(info, type)) {
             return false
         }
@@ -137,15 +137,15 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
     // current SDK.
     private fun isHardwareSupportedInCurrentSdk(
         info: MediaCodecInfo,
-        type: ExtendedVideoCodecMimeType
+        type: VideoCodecMimeType
     ): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             info.isHardwareAccelerated
         } else when (type) {
-            ExtendedVideoCodecMimeType.VP8 -> isHardwareSupportedInCurrentSdkVp8(info)
-            ExtendedVideoCodecMimeType.VP9 -> isHardwareSupportedInCurrentSdkVp9(info)
-            ExtendedVideoCodecMimeType.H264 -> isHardwareSupportedInCurrentSdkH264(info)
-            ExtendedVideoCodecMimeType.AV1 -> false
+            VideoCodecMimeType.VP8 -> isHardwareSupportedInCurrentSdkVp8(info)
+            VideoCodecMimeType.VP9 -> isHardwareSupportedInCurrentSdkVp9(info)
+            VideoCodecMimeType.H264 -> isHardwareSupportedInCurrentSdkH264(info)
+            VideoCodecMimeType.AV1 -> false
         }
         return false
     }
@@ -179,8 +179,8 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
         return codecAllowedPredicate?.test(info) ?: true
     }
 
-    private fun getForcedKeyFrameIntervalMs(type: ExtendedVideoCodecMimeType, codecName: String): Int {
-        if (type == ExtendedVideoCodecMimeType.VP8 && codecName.startsWith(MediaCodecUtils.QCOM_PREFIX)) {
+    private fun getForcedKeyFrameIntervalMs(type: VideoCodecMimeType, codecName: String): Int {
+        if (type == VideoCodecMimeType.VP8 && codecName.startsWith(MediaCodecUtils.QCOM_PREFIX)) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 return QCOM_VP8_KEY_FRAME_INTERVAL_ANDROID_L_MS
             }
@@ -193,11 +193,11 @@ class HardwareExtendedVideoEncoderFactory @JvmOverloads constructor(
     }
 
     private fun createBitrateAdjuster(
-        type: ExtendedVideoCodecMimeType,
+        type: VideoCodecMimeType,
         codecName: String
     ): BitrateAdjuster {
         return if (codecName.startsWith(MediaCodecUtils.EXYNOS_PREFIX)) {
-            if (type == ExtendedVideoCodecMimeType.VP8) {
+            if (type == VideoCodecMimeType.VP8) {
                 // Exynos VP8 encoders need dynamic bitrate adjustment.
                 DynamicBitrateAdjuster()
             } else {

@@ -10,7 +10,7 @@
 package org.webrtc
 
 /** Enumeration of supported video codec types.  */
-internal enum class ExtendedVideoCodecMimeType(private val mimeType: String) {
+internal enum class VideoCodecMimeType(private val mimeType: String) {
     VP8("video/x-vnd.on2.vp8"), VP9("video/x-vnd.on2.vp9"), H264("video/avc"), AV1("video/av01");
 
     fun mimeType(): String {

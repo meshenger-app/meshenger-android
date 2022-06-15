@@ -513,4 +513,8 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private fun log(s: String) {
         Log.d(this, s)
     }
+
+    override fun onBackPressed() {
+        moveTaskToBack(true)
+    }
 }

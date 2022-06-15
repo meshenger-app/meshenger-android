@@ -26,8 +26,11 @@ import org.rivchain.cuplink.MainService.MainBinder
 * Show splash screen, name setup dialog, database password dialog and
 * start background service before starting the MainActivity.
 */
-class StartActivity : CupLinkActivity(), ServiceConnection {
-    private var binder: MainBinder? = null
+class StartActivity : CupLinkActivity() {
+
+    private lateinit var mainServiceIntent: Intent
+    private lateinit var serviceConnection: ServiceConnection
+    private lateinit var binder: MainBinder
     private var startState = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +38,29 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
         val splashText = findViewById<View>(R.id.splashText)
         ( splashText as TextView).typeface = type
+        mainServiceIntent = Intent(this, MainService::class.java)
+        serviceConnection = object : ServiceConnection {
 
+            override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+                this@StartActivity.binder = binder as MainBinder
+                log("onServiceConnected")
+                if (startState == 0) {
+                    if (binder.isFirstStart()) {
+                        // show delayed splash page
+                        Handler().postDelayed({ continueInit() }, 1000)
+                    } else {
+                        // show contact list as fast as possible
+                        continueInit()
+                    }
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName) {
+                binder.shutdown()
+            }
+        }
         // start MainService and call back via onServiceConnected()
-        startService(Intent(this, MainService::class.java))
-
+        startService(mainServiceIntent)
         hideActionBar(splashText.rootView)
     }
 
@@ -48,7 +70,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             1 -> {
                 log("init 1: load database")
                 // open without password
-                binder!!.loadDatabase()
+                binder.loadDatabase()
                 continueInit()
             }
             2 -> {
@@ -57,7 +79,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             }
             3 -> {
                 log("init 3: check username")
-                if (binder!!.settings.username.isEmpty()) {
+                if (binder.settings.username.isEmpty()) {
                     // set username
                     showMissingUsernameDialog()
                 } else {
@@ -71,16 +93,18 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             }
             5 -> {
                 log("init 5: check addresses")
-                if (binder!!.isFirstStart()) {
-                    showMissingAddressDialog()
-                } else {
-                    continueInit()
-                }
+                //if (binder.isFirstStart()) {
+                    //showMissingAddressDialog()
+                    //do address setup after UI loading
+                //} else {
+                //    continueInit()
+                //}
+                continueInit()
             }
             6 -> {
                 log("init 6: start contact list")
                 // set night mode
-                val nightMode = binder!!.settings.nightMode
+                val nightMode = binder.settings.nightMode
                 AppCompatDelegate.setDefaultNightMode(
                     if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
@@ -92,32 +116,14 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
         }
     }
 
-    override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainBinder
-        log("onServiceConnected")
-        if (startState == 0) {
-            if (binder!!.isFirstStart()) {
-                // show delayed splash page
-                Handler().postDelayed({ continueInit() }, 1000)
-            } else {
-                // show contact list as fast as possible
-                continueInit()
-            }
-        }
-    }
-
-    override fun onServiceDisconnected(componentName: ComponentName) {
-        binder = null
-    }
-
     override fun onResume() {
         super.onResume()
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(mainServiceIntent, serviceConnection, BIND_AUTO_CREATE)
     }
 
     override fun onPause() {
         super.onPause()
-        unbindService(this)
+        unbindService(serviceConnection)
     }
 
     private fun showMissingAddressDialog() {
@@ -159,7 +165,7 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
         builder.setTitle(R.string.hello)
         builder.setView(layout)
         builder.setNegativeButton(R.string.cancel) { dialogInterface, i ->
-            binder!!.shutdown()
+            binder.shutdown()
             finish()
         }
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -200,9 +206,9 @@ class StartActivity : CupLinkActivity(), ServiceConnection {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
             val username = et.text.toString()
             if (Utils.isValidName(username)) {
-                binder!!.settings.username = username
+                binder.settings.username = username
                 try {
-                    binder!!.saveDatabase()
+                    binder.saveDatabase()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

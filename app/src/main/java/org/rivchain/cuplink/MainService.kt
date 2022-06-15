@@ -60,7 +60,7 @@ class MainService : Service(), Runnable {
 
     private fun saveDatabase() {
         try {
-            Database.store(database_path, database!!)
+            Database.store(database_path, database)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -72,19 +72,17 @@ class MainService : Service(), Runnable {
 
         // The database might be null here if no correct
         // database password was supplied to open it.
-        if (database != null) {
-            try {
-                Database.store(database_path, database!!)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        try {
+            Database.store(database_path, database)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         // shutdown listening socket and say goodbye
-        if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
+        if (server != null && server!!.isBound && !server!!.isClosed) {
             try {
                 val message = "{\"action\": \"status_change\", \"status\", \"offline\"}"
-                for (contact in database!!.contacts) {
+                for (contact in database.contacts) {
                     if (contact.state === Contact.State.OFFLINE) {
                         continue
                     }
@@ -114,10 +112,7 @@ class MainService : Service(), Runnable {
                 e.printStackTrace()
             }
         }
-        if (database != null) {
-            // zero keys from memory
-            database!!.onDestroy()
-        }
+        database.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -137,13 +132,13 @@ class MainService : Service(), Runnable {
                 val decrypted =
                     Crypto.decryptMessage(request)
                 if (contact == null) {
-                    for (c in database!!.contacts) {
+                    for (c in database.contacts) {
                         if (c.getAddresses()[0].address.hostAddress?.equals(remote_address.address.hostAddress)!!) {
                             contact = c
                             break
                         }
                     }
-                    if (contact == null && database!!.settings.blockUnknown) {
+                    if (contact == null && database.settings.blockUnknown) {
                         log("block unknown contact => decline")
                         currentCall.decline()
                         break
@@ -220,13 +215,14 @@ class MainService : Service(), Runnable {
     override fun run() {
         try {
             // wait until database is ready
+            /*should be ready
             while (database == null && run) {
                 try {
                     Thread.sleep(1000)
                 } catch (e: Exception) {
                     break
                 }
-            }
+            }*/
             server = ServerSocket(serverPort)
             server!!.soTimeout = SocksConstants.LISTEN_TIMEOUT;
             while (run && connectionThread!!.isAlive && !connectionThread!!.isInterrupted) {
@@ -267,7 +263,7 @@ class MainService : Service(), Runnable {
      */
     inner class MainBinder : Binder() {
 
-        fun getDatabase(): Database? {
+        fun getDatabase(): Database {
             return database
         }
 
@@ -276,7 +272,7 @@ class MainService : Service(), Runnable {
         }
 
         fun getContactByIp(ip: String): Contact? {
-            for (contact in database!!.contacts) {
+            for (contact in database.contacts) {
                 if (contact.getAddresses()[0].address.hostAddress?.equals(ip) == true) {
                     return contact
                 }
@@ -285,7 +281,7 @@ class MainService : Service(), Runnable {
         }
 
         fun getContactByName(name: String): Contact? {
-            for (contact in database!!.contacts) {
+            for (contact in database.contacts) {
                 if (contact.name == name) {
                     return contact
                 }
@@ -294,14 +290,14 @@ class MainService : Service(), Runnable {
         }
 
         fun addContact(contact: Contact?) {
-            database!!.addContact(contact!!)
+            database.addContact(contact!!)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
         }
 
         fun deleteContact(ip: String) {
-            database!!.deleteContact(ip)
+            database.deleteContact(ip)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
@@ -329,11 +325,11 @@ class MainService : Service(), Runnable {
         }
 
         val settings: Settings
-            get() = database!!.settings
+            get() = database.settings
 
         // return a cloned list
         val contactsCopy: List<Contact>
-            get() = ArrayList(database!!.contacts)
+            get() = ArrayList(database.contacts)
 
         fun addCallEvent(contact: Contact, type: CallEvent.Type?) {
             if(contact.getAddresses().isNotEmpty()){
@@ -432,7 +428,7 @@ class MainService : Service(), Runnable {
 
         const val serverPort = 10001
 
-        var database: Database? = null
+        lateinit var database: Database
             private set
     }
 }

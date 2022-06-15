@@ -43,7 +43,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
         log("onItemClick")
         val contact = binder!!.contactsCopy[i]
-        if(binder!!.getDatabase()?.settings?.addresses?.size  == 0){
+        if(binder!!.getDatabase().settings.addresses.size == 0){
             Toast.makeText(this, R.string.configure_address, Toast.LENGTH_LONG).show()
             return
         }
@@ -69,15 +69,15 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
                 )
             )
         }
-        fabGen.setOnClickListener({ v: View? ->
+        fabGen.setOnClickListener {
             startActivity(
                 Intent(
                     this,
                     QRShowActivity::class.java
                 )
             )
-        })
-        fab.setOnClickListener({ fab: View -> runFabAnimation(fab) })
+        }
+        fab.setOnClickListener { fab: View -> runFabAnimation(fab) }
 
         // ask for audio recording permissions
         if (ContextCompat.checkSelfPermission(
@@ -264,7 +264,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
 
     override fun onServiceDisconnected(componentName: ComponentName) {
         log("OnServiceDisconnected")
-        binder = null
+        binder!!.shutdown()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

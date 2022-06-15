@@ -112,7 +112,6 @@ class MainService : Service(), Runnable {
                 e.printStackTrace()
             }
         }
-        database.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

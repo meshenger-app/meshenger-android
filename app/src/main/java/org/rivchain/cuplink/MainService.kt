@@ -9,7 +9,6 @@ import android.os.IBinder
 import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.json.JSONObject
-import java.io.File
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.ServerSocket
@@ -21,7 +20,6 @@ class MainService : Service(), Runnable {
 
     var isFirstStart = false
         private set
-    private var database_path = ""
 
     private var server: ServerSocket? = null
 
@@ -31,7 +29,7 @@ class MainService : Service(), Runnable {
     private var events: ArrayList<CallEvent>? = null
     override fun onCreate() {
         super.onCreate()
-        database_path = this.filesDir.toString() + "/database.bin"
+        loadDatabase()
         events = ArrayList()
         if(connectionThread!=null) {
             connectionThread!!.interrupt()
@@ -44,7 +42,7 @@ class MainService : Service(), Runnable {
 
     private fun loadDatabase() {
         try {
-            var database = Database.load(this.baseContext)
+            val database = Database.load(this.baseContext)
             if (database != null) {
                 MainService.database = database
                 // open existing database
@@ -55,7 +53,7 @@ class MainService : Service(), Runnable {
                 isFirstStart = true
             }
         } catch (e: Exception) {
-            // ignore
+            e.printStackTrace()
         }
     }
 
@@ -70,9 +68,6 @@ class MainService : Service(), Runnable {
     override fun onDestroy() {
         super.onDestroy()
         run = false
-
-        // The database might be null here if no correct
-        // database password was supplied to open it.
         try {
             Database.store(database, this.baseContext)
         } catch (e: Exception) {
@@ -214,15 +209,6 @@ class MainService : Service(), Runnable {
 
     override fun run() {
         try {
-            // wait until database is ready
-            /*should be ready
-            while (database == null && run) {
-                try {
-                    Thread.sleep(1000)
-                } catch (e: Exception) {
-                    break
-                }
-            }*/
             server = ServerSocket(serverPort)
             server!!.soTimeout = SocksConstants.LISTEN_TIMEOUT;
             while (run && connectionThread!!.isAlive && !connectionThread!!.isInterrupted) {
@@ -233,13 +219,13 @@ class MainService : Service(), Runnable {
                         handleClient(socket)
                     }.start()
                 } catch (e: IOException) {
-                    // ignore
+                    e.printStackTrace()
                 }
             }
             try {
                 server!!.close()
             } catch (e: IOException) {
-                // ignore
+                e.printStackTrace()
             }
         } catch (e: IOException) {
             e.printStackTrace()
@@ -305,10 +291,6 @@ class MainService : Service(), Runnable {
 
         fun shutdown() {
             this@MainService.stopSelf()
-        }
-
-        fun loadDatabase() {
-            this@MainService.loadDatabase()
         }
 
         fun pingContacts() {

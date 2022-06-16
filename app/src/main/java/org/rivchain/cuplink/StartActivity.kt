@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import org.rivchain.cuplink.MainService.MainBinder
 
 /*
-* Show splash screen, name setup dialog, database password dialog and
+* Show splash screen, name setup dialog, and
 * start background service before starting the MainActivity.
 */
 class StartActivity : CupLinkActivity() {
@@ -39,6 +39,8 @@ class StartActivity : CupLinkActivity() {
         val splashText = findViewById<View>(R.id.splashText)
         ( splashText as TextView).typeface = type
         mainServiceIntent = Intent(this, MainService::class.java)
+        // start MainService and call back via onServiceConnected()
+        startService(mainServiceIntent)
         serviceConnection = object : ServiceConnection {
 
             override fun onServiceConnected(name: ComponentName, binder: IBinder) {
@@ -59,8 +61,6 @@ class StartActivity : CupLinkActivity() {
                 binder.shutdown()
             }
         }
-        // start MainService and call back via onServiceConnected()
-        startService(mainServiceIntent)
         hideActionBar(splashText.rootView)
     }
 
@@ -69,8 +69,8 @@ class StartActivity : CupLinkActivity() {
         when (startState) {
             1 -> {
                 log("init 1: load database")
-                // open without password
-                binder.loadDatabase()
+                //db loaded in MainService.onCreate() method
+                //binder.loadDatabase()
                 continueInit()
             }
             2 -> {

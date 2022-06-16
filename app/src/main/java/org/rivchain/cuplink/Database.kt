@@ -41,7 +41,7 @@ class Database {
     companion object {
         var version = "4.0.0" // current version
 
-        @Throws(IOException::class, JSONException::class)
+        @Throws(JSONException::class)
         fun load(context: Context): Database? {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             // read database
@@ -50,7 +50,7 @@ class Database {
             return fromJSON(obj)
         }
 
-        @Throws(IOException::class, JSONException::class)
+        @Throws(JSONException::class)
         fun store(db: Database, context: Context) {
             val obj = toJSON(db)
             // write database file
@@ -98,5 +98,4 @@ class Database {
             Log.d("Database", s)
         }
     }
-
 }

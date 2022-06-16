@@ -1,10 +1,11 @@
 package org.rivchain.cuplink
 
+import android.content.Context
+import androidx.preference.PreferenceManager
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.nio.charset.Charset
 
 class Database {
     var settings: Settings = Settings()
@@ -37,32 +38,25 @@ class Database {
         return -1
     }
 
-    fun onDestroy() {
-
-    }
-
     companion object {
-        var version = "3.0.3" // current version
+        var version = "4.0.0" // current version
 
         @Throws(IOException::class, JSONException::class)
-        fun load(path: String?): Database {
+        fun load(context: Context): Database {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             // read database file
-            val data = Utils.readExternalFile(path!!)
+            val data = preferences.getString("db", null)
 
-            val obj = JSONObject(
-                String(data, Charset.forName("UTF-8"))
-            )
-            val db = fromJSON(obj)
-            return db
+            val obj = JSONObject(data)
+            return fromJSON(obj)
         }
 
         @Throws(IOException::class, JSONException::class)
-        fun store(path: String?, db: Database) {
+        fun store(db: Database, context: Context) {
             val obj = toJSON(db)
-            val data: ByteArray? = obj.toString().toByteArray()
-
             // write database file
-            Utils.writeExternalFile(path!!, data)
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            preferences.edit().putString("db", obj.toString()).apply()
         }
 
         @Throws(JSONException::class)

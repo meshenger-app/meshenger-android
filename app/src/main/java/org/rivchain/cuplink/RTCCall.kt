@@ -494,8 +494,11 @@ class RTCCall : DataChannel.Observer {
         this.listener = listener
         Thread {
             connection = factory.createPeerConnection(iceServers, object : DefaultObserver() {
+
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
+
                     super.onIceGatheringChange(iceGatheringState)
+
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         log("onIceGatheringChange")
                         try {

@@ -46,7 +46,7 @@ class MainService : Service(), Runnable {
         try {
             if (File(database_path).exists()) {
                 // open existing database
-                database = Database.load(database_path)
+                database = Database.load(this.baseContext)
                 isFirstStart = false
             } else {
                 // create new database
@@ -60,7 +60,7 @@ class MainService : Service(), Runnable {
 
     private fun saveDatabase() {
         try {
-            Database.store(database_path, database)
+            Database.store(database, this.baseContext)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -73,7 +73,7 @@ class MainService : Service(), Runnable {
         // The database might be null here if no correct
         // database password was supplied to open it.
         try {
-            Database.store(database_path, database)
+            Database.store(database, this.baseContext)
         } catch (e: Exception) {
             e.printStackTrace()
         }

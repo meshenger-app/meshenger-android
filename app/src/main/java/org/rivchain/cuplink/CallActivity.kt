@@ -30,16 +30,10 @@ import java.io.IOException
 class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
     private val CAMERA_PERMISSION_REQUEST_CODE = 2
-    private var declineBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            log("declineBroadcastCastReceiver onReceive")
-            finish()
-        }
-    }
     private var statusTextView: TextView? = null
     private var callStats: TextView? = null
     private lateinit var nameTextView: TextView
-    private var binder: MainBinder? = null
+    private lateinit var binder: MainBinder
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
     private var calledWhileScreenOff = false
@@ -70,7 +64,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             }
             CallState.CONNECTED -> {
                 log("activeCallback: CONNECTED")
-                val devMode = binder!!.settings.developmentMode
+                val devMode = binder.settings.developmentMode
                 Handler(mainLooper).post {
                     if (devMode) {
                         currentCall.accept(statsCollector)
@@ -107,7 +101,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             CallState.CONNECTED -> {
                 log("passiveCallback: CONNECTED")
                 setStatusText(getString(R.string.call_connected))
-                val devMode = binder!!.settings.developmentMode
+                val devMode = binder.settings.developmentMode
                 runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
                 Handler(mainLooper).post {
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
@@ -149,13 +143,16 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
         log("onCreate: $action")
         if ("ACTION_OUTGOING_CALL" == action) {
+
             callEventType = CallEvent.Type.OUTGOING_UNKNOWN
+
             connection = object : ServiceConnection {
+
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainBinder
                     currentCall = RTCCall.startCall(
                         this@CallActivity,
-                        binder!!,
+                        binder,
                         contact!!,
                         activeCallback
                     )
@@ -223,7 +220,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
                 callEventType = CallEvent.Type.INCOMING_ACCEPTED
                 finish()
             }
-            val acceptListener = View.OnClickListener { view: View? ->
+            val acceptListener = View.OnClickListener {
                 stopRinging()
                 log("accepted call...")
                 try {
@@ -252,9 +249,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             )
         }
         findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View ->
-            switchVideoEnabled(
-                button as ImageButton
-            )
+            switchVideoEnabled(button as ImageButton)
         }
         findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall.switchFrontFacing() }
         LocalBroadcastManager.getInstance(this)
@@ -269,13 +264,21 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return
         }
-        vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
         val pattern = longArrayOf(1500, 800, 800, 800)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val vibe = VibrationEffect.createWaveform(pattern, 0)
-            vibrator!!.vibrate(vibe)
+            vibrator.vibrate(vibe)
         } else {
-            vibrator!!.vibrate(pattern, 0)
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(pattern, 0)
         }
         if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
             return
@@ -452,7 +455,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
             currentCall.decline()
         }
         currentCall.cleanup()
-        binder?.addCallEvent(contact!!, callEventType)
+        binder.addCallEvent(contact!!, callEventType)
         //if (binder != null) {
         unbindService(connection)
         //}
@@ -466,7 +469,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         }
         currentCall.releaseCamera()
     }
-
+    //{"name":"Vadym","addresses":["fc00:a404:ac48:7f94:7f"'""";6b:9a77:2016:6559"]}
     private fun setStatusText(text: String) {
         Handler(mainLooper).post { statusTextView!!.text = text }
     }
@@ -480,11 +483,11 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
-        currentCall = binder!!.getCurrentCall()
+        currentCall = binder.getCurrentCall()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        binder = null
+        binder.shutdown()
     }
 
     override fun onSensorChanged(sensorEvent: SensorEvent) {
@@ -508,6 +511,13 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
 
     override fun onAccuracyChanged(sensor: Sensor, i: Int) {
         // nothing to do
+    }
+
+    private var declineBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            log("declineBroadcastCastReceiver onReceive")
+            finish()
+        }
     }
 
     private fun log(s: String) {

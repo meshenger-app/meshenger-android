@@ -127,8 +127,11 @@ class RTCCall : DataChannel.Observer {
         }
         Thread {
             connection = factory.createPeerConnection(emptyList(), object : DefaultObserver() {
+
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
+
                     super.onIceGatheringChange(iceGatheringState)
+
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         log("transferring offer...")
                         try {
@@ -241,11 +244,11 @@ class RTCCall : DataChannel.Observer {
                     handleMediaStream(mediaStream)
                 }
 
-                override fun onDataChannel(dataChannel: DataChannel) {
-                    super.onDataChannel(dataChannel)
-                    this@RTCCall.dataChannel = dataChannel
-                    this@RTCCall.dataChannel.registerObserver(this@RTCCall)
-                }
+                //override fun onDataChannel(dataChannel: DataChannel) {
+                //    super.onDataChannel(dataChannel)
+                    //this@RTCCall.dataChannel = dataChannel
+                    //this@RTCCall.dataChannel.registerObserver(this@RTCCall)
+                //}
             })!!
             dataChannel = connection.createDataChannel("data", DataChannel.Init())
             dataChannel.registerObserver(this)

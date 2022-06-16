@@ -264,21 +264,14 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return
         }
-        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(VIBRATOR_SERVICE) as Vibrator
-        }
+        var vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
         val pattern = longArrayOf(1500, 800, 800, 800)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val vibe = VibrationEffect.createWaveform(pattern, 0)
+            val vibe = VibrationEffect.createWaveform(pattern, 1)
             vibrator.vibrate(vibe)
         } else {
             @Suppress("DEPRECATION")
-            vibrator.vibrate(pattern, 0)
+            vibrator.vibrate(pattern, 1)
         }
         if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
             return

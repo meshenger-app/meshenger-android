@@ -60,13 +60,18 @@ class RTCCall : DataChannel.Observer {
                     if (enabled) CameraEnabledMessage else CameraDisabledMessage
                 )
                 log("setVideoEnabled: $o")
-                dataChannel.send(
-                    DataChannel.Buffer(
-                        ByteBuffer.wrap(
-                            o.toString().toByteArray()
-                        ), false
+                Thread {
+                    while (!::dataChannel.isInitialized) {
+                        Thread.sleep(1000)
+                    }
+                    dataChannel.send(
+                        DataChannel.Buffer(
+                            ByteBuffer.wrap(
+                                o.toString().toByteArray()
+                            ), false
+                        )
                     )
-                )
+                }.start()
             } catch (e: JSONException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {

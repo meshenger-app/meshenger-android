@@ -44,13 +44,14 @@ class MainService : Service(), Runnable {
 
     private fun loadDatabase() {
         try {
-            if (File(database_path).exists()) {
+            var database = Database.load(this.baseContext)
+            if (database != null) {
+                MainService.database = database
                 // open existing database
-                database = Database.load(this.baseContext)
                 isFirstStart = false
             } else {
                 // create new database
-                database = Database()
+                MainService.database = Database()
                 isFirstStart = true
             }
         } catch (e: Exception) {

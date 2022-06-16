@@ -42,11 +42,10 @@ class Database {
         var version = "4.0.0" // current version
 
         @Throws(IOException::class, JSONException::class)
-        fun load(context: Context): Database {
+        fun load(context: Context): Database? {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            // read database file
-            val data = preferences.getString("db", null)
-
+            // read database
+            val data = preferences.getString("db", null) ?: return null
             val obj = JSONObject(data)
             return fromJSON(obj)
         }

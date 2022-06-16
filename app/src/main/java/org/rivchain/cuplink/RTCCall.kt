@@ -374,9 +374,14 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun createStream(): MediaStream? {
+
         upStream = factory.createLocalMediaStream("stream1")
-        upStream!!.addTrack(audioTrack)
-        upStream!!.addTrack(videoTrack)
+        try {
+            upStream!!.addTrack(audioTrack)
+            upStream!!.addTrack(videoTrack)
+        } catch (e: Exception){
+            e.printStackTrace()
+        }
         return upStream
     }
 

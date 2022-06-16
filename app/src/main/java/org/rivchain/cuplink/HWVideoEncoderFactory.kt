@@ -9,7 +9,7 @@ class HWVideoEncoderFactory(eglContext: EglBase.Context?,
                             enableH264HighProfile: Boolean
 ) : DefaultVideoEncoderFactory(eglContext, enableIntelVp8Encoder, enableH264HighProfile) {
 
-    private val priorities: List<String> = listOf("H264", "VP8", "VP9")
+    private val priorities: List<String> = listOf("VP8", "VP9", "H264")
 
     override fun getSupportedCodecs(): Array<VideoCodecInfo?> {
 

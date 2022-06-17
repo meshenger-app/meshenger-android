@@ -6,11 +6,11 @@ Features:
 
 - audio and video calls
 - encrypted communication
-- database backup and encryption
+- database backup
 - add custom addresses to reach contacts
 
 ## Documentation
 
-CupLink exchanges the contact name, public key and MAC address via QR-Code. The MAC address is used to create an IP address to connect to clients. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can trasmit audio and video.
+CupLink exchanges the contact name, public key and IP address via QR-Code. An IP address to connect to clients. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can trasmit audio and video.
 
 Details can be found in the [Documentation](docs/Documentation.md) or in the [FAQ](docs/faq.md).

@@ -3,6 +3,10 @@ plugins {
     id "org.jetbrains.kotlin.android" version "1.6.10"
 }
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs {
     }
@@ -32,6 +36,14 @@ android {
     }
     buildFeatures {
         viewBinding true
+    }
+    signingConfigs {
+        release {
+            storeFile file(keystoreProperties['KEYSTORE_FILE_PATH'])
+            storePassword keystoreProperties['KEYSTORE_PASSWORD']
+            keyAlias keystoreProperties['KEY_ALIAS']
+            keyPassword keystoreProperties['KEY_PASSWORD']
+        }
     }
 }
 

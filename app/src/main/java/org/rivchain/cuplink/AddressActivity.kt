@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.View
 import android.widget.AbsListView.CHOICE_MODE_SINGLE
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -34,20 +35,12 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
             val addresses = ArrayList<String>()
             addresses.add(systemAddressList[i].address)
             binder!!.settings.addresses = addresses
-            initKeyPair(systemAddressList[i])
             binder!!.saveDatabase()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
+            Thread.sleep(500)
+            finish()
         }
         bindService()
-    }
-
-    private fun initKeyPair(addressEntry: AddressEntry) {
-        val ae = addressEntry
-        // create secret/public key pair
-        val publicKey = Utils.parseInetSocketAddress(ae.address, 0)!!.address.address
-        //val secretKey: ByteArray? = null
-        val settings = binder!!.settings
-        //settings.secretKey = secretKey
     }
 
     override fun onDestroy() {
@@ -89,7 +82,6 @@ class AddressActivity : CupLinkActivity(), ServiceConnection {
         Collections.sort(systemAddressList, compareAddressEntries)
         systemAddressSpinner.adapter = systemAddressListAdapter
         systemAddressListAdapter!!.notifyDataSetChanged()
-
     }
 
     /*

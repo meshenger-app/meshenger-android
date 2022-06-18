@@ -38,6 +38,8 @@ class RTCCall : DataChannel.Observer {
     private var localRenderer: SurfaceViewRenderer? = null
     private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
+    //Migrated to Unified Plan
+    //private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
     var isSpeakerEnabled = false
     var isVideoEnabled = false
@@ -133,7 +135,7 @@ class RTCCall : DataChannel.Observer {
         Thread {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
-            //Unified Plan is the new standard for SDP semantics and is needed to use transceivers
+
             connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
@@ -254,8 +256,8 @@ class RTCCall : DataChannel.Observer {
 
                 //override fun onDataChannel(dataChannel: DataChannel) {
                 //    super.onDataChannel(dataChannel)
-                    //this@RTCCall.dataChannel = dataChannel
-                    //this@RTCCall.dataChannel.registerObserver(this@RTCCall)
+                //this@RTCCall.dataChannel = dataChannel
+                //this@RTCCall.dataChannel.registerObserver(this@RTCCall)
                 //}
             })!!
             dataChannel = connection.createDataChannel("data", DataChannel.Init())
@@ -263,10 +265,12 @@ class RTCCall : DataChannel.Observer {
             //enable video button
             Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
 
-            val config = RTCConfiguration(iceServers)
-            config.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
-            connection.setConfiguration(config)
-            addTransceivers()
+            //Migrated to Unified Plan
+            //val config = RTCConfiguration(iceServers)
+            //config.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
+            //connection.setConfiguration(config)
+
+            addTrack()
             connection.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
                     super.onCreateSuccess(sessionDescription)
@@ -381,10 +385,12 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    private fun addTransceivers() {
+    private fun addTrack() {
+        //Migrated to Unified Plan
+        //upStream = factory.createLocalMediaStream("stream1")
         try {
-            connection.addTransceiver(audioTrack)
-            connection.addTransceiver(videoTrack)
+            connection.addTrack(audioTrack, listOf("stream1"))
+            connection.addTrack(videoTrack, listOf("stream1"))
         } catch (e: Exception){
             e.printStackTrace()
         }
@@ -503,8 +509,9 @@ class RTCCall : DataChannel.Observer {
     fun accept(listener: OnStateChangeListener?) {
         this.listener = listener
         Thread {
-            val rtcConfig = RTCConfiguration(emptyList())
+            val rtcConfig = RTCConfiguration(iceServers)
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
+
             connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
@@ -553,7 +560,7 @@ class RTCCall : DataChannel.Observer {
                     Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
                 }
             })!!
-            addTransceivers()
+            addTrack()
             log("setting remote description")
             connection.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {

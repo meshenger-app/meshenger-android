@@ -135,6 +135,7 @@ class RTCCall : DataChannel.Observer {
         Thread {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
+            rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
 
             connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 
@@ -254,11 +255,6 @@ class RTCCall : DataChannel.Observer {
                     handleMediaStream(mediaStream)
                 }
 
-                //override fun onDataChannel(dataChannel: DataChannel) {
-                //    super.onDataChannel(dataChannel)
-                //this@RTCCall.dataChannel = dataChannel
-                //this@RTCCall.dataChannel.registerObserver(this@RTCCall)
-                //}
             })!!
             dataChannel = connection.createDataChannel("data", DataChannel.Init())
             dataChannel.registerObserver(this)
@@ -509,8 +505,9 @@ class RTCCall : DataChannel.Observer {
     fun accept(listener: OnStateChangeListener?) {
         this.listener = listener
         Thread {
-            val rtcConfig = RTCConfiguration(iceServers)
+            val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
+            rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
 
             connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 

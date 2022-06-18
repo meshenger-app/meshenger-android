@@ -11,6 +11,10 @@ Features:
 
 ## Documentation
 
-CupLink exchanges the contact name, public key and IP address via QR-Code. An IP address to connect to clients. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can trasmit audio and video.
+CupLink exchanges the contact name and IP address via QR-Code. An IP address is sufficient to connect to clients. This does not even need a DHCP server. 
 
 Details can be found in the [Documentation](docs/Documentation.md) or in the [FAQ](docs/faq.md).
+
+## Build
+
+Starting from version 0.4.6.x WebRTC library should be pre-built and places into app/libs directory. Corresponding instruction on how to build it can be found [here](https://dev.to/ethand91/webrtc-for-beginners-part-55-building-the-webrtc-android-library-e8l). Also 0.4.6.x migrated to [Unified Plan](https://www.callstats.io/blog/what-is-unified-plan-and-how-will-it-affect-your-webrtc-development).

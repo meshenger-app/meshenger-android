@@ -5,10 +5,9 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
-import android.util.TypedValue
 import android.view.View
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.color.MaterialColors
 import org.json.JSONException
 import org.json.JSONObject
 import org.rivchain.cuplink.MainService.MainBinder
@@ -20,6 +19,7 @@ import java.net.Socket
 import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+
 
 class RTCCall : DataChannel.Observer {
     private val StateChangeMessage = "StateChange"
@@ -37,7 +37,8 @@ class RTCCall : DataChannel.Observer {
     private var localRenderer: SurfaceViewRenderer? = null
     private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
-    private var upStream: MediaStream? = null
+    //Migrated to Unified Plan
+    //private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
     var isSpeakerEnabled = false
     var isVideoEnabled = false
@@ -131,7 +132,11 @@ class RTCCall : DataChannel.Observer {
             context.setTheme(R.style.AppTheme_Light)
         }
         Thread {
-            connection = factory.createPeerConnection(emptyList(), object : DefaultObserver() {
+            val rtcConfig = RTCConfiguration(emptyList())
+            rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
+            rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
+
+            connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
 
@@ -249,21 +254,18 @@ class RTCCall : DataChannel.Observer {
                     handleMediaStream(mediaStream)
                 }
 
-                //override fun onDataChannel(dataChannel: DataChannel) {
-                //    super.onDataChannel(dataChannel)
-                    //this@RTCCall.dataChannel = dataChannel
-                    //this@RTCCall.dataChannel.registerObserver(this@RTCCall)
-                //}
             })!!
             dataChannel = connection.createDataChannel("data", DataChannel.Init())
             dataChannel.registerObserver(this)
             //enable video button
             Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
 
-            val config = RTCConfiguration(iceServers)
-            config.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
-            connection.setConfiguration(config)
-            connection.addStream(createStream())
+            //Migrated to Unified Plan
+            //val config = RTCConfiguration(iceServers)
+            //config.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
+            //connection.setConfiguration(config)
+
+            addTrack()
             connection.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
                     super.onCreateSuccess(sessionDescription)
@@ -321,10 +323,9 @@ class RTCCall : DataChannel.Observer {
         val data = ByteArray(buffer.data.remaining())
         buffer.data[data]
         val s = String(data)
-        var o: JSONObject? = null
         try {
             log("onMessage: $s")
-            o = JSONObject(s)
+            var o = JSONObject(s)
             if (o.has(StateChangeMessage)) {
                 when (val state = o.getString(StateChangeMessage)) {
                     CameraEnabledMessage, CameraDisabledMessage -> {
@@ -340,13 +341,10 @@ class RTCCall : DataChannel.Observer {
     private fun setRemoteVideoEnabled(enabled: Boolean) {
         Handler(Looper.getMainLooper()).post {
             if (enabled) {
-                remoteRenderer!!.setBackgroundColor(Color.TRANSPARENT)
+                remoteRenderer?.setBackgroundColor(Color.TRANSPARENT)
             } else {
-                val typedValue = TypedValue()
-                val theme = context.theme
-                theme.resolveAttribute(R.attr.backgroundCardColor, typedValue, true)
-                @ColorInt val color = typedValue.data
-                remoteRenderer!!.setBackgroundColor(color)
+                val color = MaterialColors.getColor(context, R.attr.backgroundCardColor, Color.BLACK)
+                remoteRenderer?.setBackgroundColor(color)
             }
         }
     }
@@ -378,16 +376,15 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    private fun createStream(): MediaStream? {
-
-        upStream = factory.createLocalMediaStream("stream1")
+    private fun addTrack() {
+        //Migrated to Unified Plan
+        //upStream = factory.createLocalMediaStream("stream1")
         try {
-            upStream!!.addTrack(audioTrack)
-            upStream!!.addTrack(videoTrack)
+            connection.addTrack(audioTrack, listOf("stream1"))
+            connection.addTrack(videoTrack, listOf("stream1"))
         } catch (e: Exception){
             e.printStackTrace()
         }
-        return upStream
     }
 
     private fun createCapturer(): CameraVideoCapturer? {
@@ -503,7 +500,11 @@ class RTCCall : DataChannel.Observer {
     fun accept(listener: OnStateChangeListener?) {
         this.listener = listener
         Thread {
-            connection = factory.createPeerConnection(iceServers, object : DefaultObserver() {
+            val rtcConfig = RTCConfiguration(emptyList())
+            rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
+            rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
+
+            connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
 
@@ -551,7 +552,7 @@ class RTCCall : DataChannel.Observer {
                     Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
                 }
             })!!
-            connection.addStream(createStream())
+            addTrack()
             log("setting remote description")
             connection.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {
@@ -598,7 +599,7 @@ class RTCCall : DataChannel.Observer {
 
     fun cleanup() {
         closeCommSocket()
-        if (upStream != null && state == CallState.CONNECTED) {
+        if (state == CallState.CONNECTED) {
             /*for(AudioTrack track : this.upStream.audioTracks){
                 track.setEnabled(false);
                 track.dispose();

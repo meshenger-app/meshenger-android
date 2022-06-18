@@ -5,10 +5,9 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
-import android.util.TypedValue
 import android.view.View
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.color.MaterialColors
 import org.json.JSONException
 import org.json.JSONObject
 import org.rivchain.cuplink.MainService.MainBinder
@@ -324,10 +323,9 @@ class RTCCall : DataChannel.Observer {
         val data = ByteArray(buffer.data.remaining())
         buffer.data[data]
         val s = String(data)
-        var o: JSONObject? = null
         try {
             log("onMessage: $s")
-            o = JSONObject(s)
+            var o = JSONObject(s)
             if (o.has(StateChangeMessage)) {
                 when (val state = o.getString(StateChangeMessage)) {
                     CameraEnabledMessage, CameraDisabledMessage -> {
@@ -343,13 +341,10 @@ class RTCCall : DataChannel.Observer {
     private fun setRemoteVideoEnabled(enabled: Boolean) {
         Handler(Looper.getMainLooper()).post {
             if (enabled) {
-                remoteRenderer!!.setBackgroundColor(Color.TRANSPARENT)
+                remoteRenderer?.setBackgroundColor(Color.TRANSPARENT)
             } else {
-                val typedValue = TypedValue()
-                val theme = context.theme
-                theme.resolveAttribute(R.attr.backgroundCardColor, typedValue, true)
-                @ColorInt val color = typedValue.data
-                remoteRenderer!!.setBackgroundColor(color)
+                val color = MaterialColors.getColor(context, R.attr.backgroundCardColor, Color.BLACK)
+                remoteRenderer?.setBackgroundColor(color)
             }
         }
     }

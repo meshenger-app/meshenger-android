@@ -1,0 +1,1 @@
+1. Removed ViewPager and FragmentPagerAdapter: Replaced with ViewPager2 and Recyclerview.Adapter<>

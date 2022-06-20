@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/callName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unknown Caller"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/callStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calling..."
+            android:textColor="?android:textColorSecondary"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/callOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="30dp">
+
+        <ImageButton
+            android:id="@+id/callAccept"
+            android:layout_width="@dimen/call_button_size"
+            android:layout_height="@dimen/call_button_size"
+            android:layout_marginEnd="80dp"
+            android:background="@drawable/accept_button_round"
+            android:padding="@dimen/call_button_image_padding"
+            android:scaleType="fitXY"
+            android:src="@drawable/baseline_phone_black_48"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/callDecline"
+            android:layout_width="@dimen/call_button_size"
+            android:layout_height="@dimen/call_button_size"
+            android:background="@drawable/accept_button_round"
+            android:padding="@dimen/call_button_image_padding"
+            android:scaleType="fitXY"
+            android:src="@drawable/baseline_phone_missed_black_48" />
+
+    </LinearLayout>
+
+</RelativeLayout>

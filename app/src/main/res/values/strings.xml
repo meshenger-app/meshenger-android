@@ -1,0 +1,112 @@
+<resources>
+    <string name="app_name" translatable="false">Meshenger</string>
+    <string name="app_name_caps" translatable="false">MESHENGER</string>
+    <string name="action_settings">Settings</string>
+    <string name="name_prompt">What should be your name?</string>
+    <string name="scan_invitation">Scan This QR-Code</string>
+    <string name="scan_invited">QR-Code Scanning</string>
+    <string name="paste_invitation">Paste Data Here</string>
+    <string name="invalid_data">Invalid data</string>
+    <string name="invalid_name">Invalid name</string>
+    <string name="cancel">Cancel</string>
+    <string name="next">Next</string>
+    <string name="setup_address_title">Setup Network Address</string>
+    <string name="setup_address_message">No WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.</string>
+    <string name="enter_password">Enter password</string>
+    <string name="path_title">Import/Export Path</string>
+    <string name="password_title">Password</string>
+    <string name="camera_permission_request">Camera permission needed to scan codes</string>
+    <string name="invalid_qr">Invalid QR-Code</string>
+    <string name="network_connect_invitation">No information available, please connect to a network</string>
+    <string name="contact_has_no_address_warning">Warning: Contact has no address</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_license">License</string>
+    <string name="menu_backup">Backup</string>
+    <string name="menu_about">About</string>
+    <string name="menu_exit">Exit</string>
+    <string name="unknown_caller">Unknown Caller</string>
+    <string name="settings_change_name">Change Name</string>
+    <string name="settings_change_language">Change Language</string>
+    <string name="settings_change_address">Change Address</string>
+    <string name="settings_change_password">Change Password</string>
+    <string name="settings_change_ice_servers">Change ICE Servers</string>
+    <string name="settings_nightmode">Night Mode</string>
+    <string name="settings_block_unknown">Block Unknown Callers</string>
+    <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>
+    <string name="settings_settings_mode" translatable="false">Settings Mode</string> //TODO: Not Translated
+    <string name="settings_speakerphone" translatable="false">Speakerphone</string> //TODO: Not Translated
+    <string name="settings_video_resolutions" translatable="false">Video Resolutions</string> //TODO: Not Translated
+    <string name="settings_video_codecs" translatable="false">Video Codecs</string> //TODO: Not Translated
+    <string name="settings_audio_codecs" translatable="false">Audio Codecs</string> //TODO: Not Translated
+    <string name="settings_enable_microphone" translatable="false">Enable Microphone</string> //TODO: Not Translated
+    <string name="settings_enable_speaker" translatable="false">Enable Speaker</string> //TODO: Not Translated
+    <string name="settings_enable_camera" translatable="false">Enable Camera</string> //TODO: Not Translated
+    <string name="settings_enable_video" translatable="false">Enable Video</string> //TODO: Not Translated
+    <string name="settings_auto_accept_call" translatable="false">Accept Call Immediately</string> //TODO: Not Translated
+    <string name="settings_auto_connect_call" translatable="false">Start Calls Immediately</string> //TODO: Not Translated
+    <string name="about_source">Source Code:</string>
+    <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
+    <string name="about_license">License:</string>
+    <string name="about_license_version">GPL-3.0-or-later</string>
+    <string name="none">None</string>
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="share">Share</string>
+    <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
+    <string name="replace">Replace</string>
+    <string name="pick">Pick</string>
+    <string name="confirm">Confirm</string>
+    <string name="done">Done</string>
+    <string name="contact_edit">Edit Contact</string>
+    <string name="contact_exists">Contact Exists</string>
+    <string name="permission_mic">Microphone permission needed to make calls</string>
+    <string name="hello">Hello!</string>
+    <string name="empty_list_item">Empty</string>
+    <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
+    <string name="call_connecting">Calling…</string>
+    <string name="call_connected">Connected.</string>
+    <string name="call_denied">Declined</string>
+    <string name="call_ringing">Ringing…</string>
+    <string name="call_ended">Call Ended</string>
+    <string name="call_error">Error</string>
+    <string name="button_select">Select</string>
+    <string name="button_import">Import</string>
+    <string name="button_export">Export</string>
+    <string name="button_abort">Abort</string>
+    <string name="button_rename">Rename</string>
+    <string name="button_replace">Replace</string>
+    <string name="button_save">Save</string>
+    <string name="button_add">Add</string>
+    <string name="button_remove">Remove</string>
+    <string name="title_contacts">Contacts</string>
+    <string name="title_history">History</string>
+    <string name="about_version">App Version:</string>
+    <string name="about_info">App Info:</string>
+    <string name="app_info">Meshenger app allows voice and video communication without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
+    <string name="address_management">Address Management</string>
+    <string name="qr_code_address_list">QR-Code Address List</string>
+    <string name="currently_active">Currently Active</string>
+    <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. If no MAC address is visible, then enable your WiFi.</string>
+    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
+    <string name="file_does_not_exist">File does not exist</string>
+    <string name="no_path_selected">No path selected</string>
+    <string name="file_already_exists">File already exists</string>
+    <string name="invalid_address">Invalid Address</string>
+    <string name="no_file_name">No file name</string>
+    <string name="contact_already_exists">Contact already exists</string>
+    <string name="enter_contact_name">Enter contact name.</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="contact_name_conflict">A contact with the same name exists:</string>
+    <string name="contact_key_conflict">A contact with the same key exists:</string>
+    <string name="contact_name_empty">Contact name is empty.</string>
+    <string name="contact_name_exists">A contact with that name exists already:</string>
+    <string name="contact_remove">Remove contact?</string>
+    <string name="error">Error</string>
+    <string name="ok">Okay</string>
+    <string name="skip">Skip</string>
+    <string name="exit">Exit</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>

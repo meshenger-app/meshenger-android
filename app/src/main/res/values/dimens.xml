@@ -1,5 +1,0 @@
-<resources>
-    <dimen name="fab_margin">20dp</dimen>
-    <dimen name="call_button_size">60dp</dimen>
-    <dimen name="call_button_image_padding">10dp</dimen>
-</resources>

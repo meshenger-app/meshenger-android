@@ -1,8 +1,0 @@
-* check contact import for conflicting names and public keys
-* support detailed address management (MAC/IP-address, domains)
-* allow initial setup without address configuration
-* allow database backup with password
-* allow to block users
-* delay splash screen display only on first startup
-* hide 'unknown callers' option until implemented
-* better QR-Code input validation

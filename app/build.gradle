@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+apply plugin: 'kotlin-android'
+
+android {
+    signingConfigs {
+    }
+    compileSdkVersion 30
+    defaultConfig {
+        applicationId "d.d.meshenger"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 400
+        versionName "4.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs {
+                    'src/main/external'
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.core:core-ktx:1.3.2"
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
+    implementation 'com.google.zxing:core:3.4.0'
+//    implementation 'org.webrtc:google-webrtc:1.0.32006'
+    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.2'
+    implementation 'net.java.dev.jna:jna:4.5.2@aar'
+}
+
+//repositories {
+//    mavenCentral()
+//}

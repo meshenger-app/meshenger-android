@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO Make splash screen fullscreen -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:background="#FFEC3E3E">
+
+        <ImageView
+            android:id="@+id/meshenger_icon"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_meshenger_icon" />
+
+        <TextView
+            android:id="@+id/splashText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/meshenger_icon"
+            android:layout_centerHorizontal="true"
+            android:text="@string/app_name_caps"
+            android:textColor="#FFFFFF"
+            android:textSize="40sp"
+            android:fontFamily="@font/lato_bold"
+            android:paddingTop="2dp"/>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

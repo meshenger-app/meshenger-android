@@ -62,7 +62,7 @@ class StartActivity: MeshengerActivity(), ServiceConnection {
             }
             2 -> {
                 d(TAG, "init 2: check database")
-                if (MainService.instance!!.database == null) {
+                if (MainService.instance!!.database ==  null) {
                     // database is probably encrypted
                     showDatabasePasswordDialog()
                 } else {
@@ -140,7 +140,8 @@ class StartActivity: MeshengerActivity(), ServiceConnection {
         if (startState == 0) {
             if (MainService.instance!!.first_start) {
                 // show delayed splash page
-                Handler().postDelayed({ continueInit() }, 1000)
+
+                Handler(Looper.getMainLooper()).postDelayed({ continueInit() }, 1000)
             } else {
                 // show contact list as fast as possible
                 continueInit()

@@ -1,16 +1,16 @@
 package d.d.meshenger.activity
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -19,12 +19,15 @@ import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import d.d.meshenger.utils.Log.d
 import d.d.meshenger.service.MainService
-import d.d.meshenger.base.QRShowActivity
 import d.d.meshenger.R
 import d.d.meshenger.utils.Utils.hasCameraPermission
 import d.d.meshenger.utils.Utils.isValidContactName
 import d.d.meshenger.utils.Utils.requestCameraPermission
 import d.d.meshenger.base.MeshengerActivity
+import d.d.meshenger.dialog.ContactNameConflictDialog
+import d.d.meshenger.dialog.ContactPublicKeyConflictDialog
+import d.d.meshenger.dialog.PasteDataHereDialog
+import d.d.meshenger.dialog.QRShowDialog
 import d.d.meshenger.model.Contact
 import org.json.JSONException
 import org.json.JSONObject
@@ -37,7 +40,8 @@ class QRScanActivity: MeshengerActivity(), BarcodeCallback {
 
     }
 
-    private var barcodeView: DecoratedBarcodeView? = null
+    var barcodeView: DecoratedBarcodeView? = null
+    private lateinit var qrScanRoot: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,14 +51,16 @@ class QRScanActivity: MeshengerActivity(), BarcodeCallback {
             requestCameraPermission(this, 1)
         }
 
+        qrScanRoot = findViewById(R.id.qrscan_root)
         // qr show button
         findViewById<View>(R.id.fabScan).setOnClickListener { view: View? ->
-            startActivity(Intent(this, QRShowActivity::class.java))
-            finish()
+            //startActivity(Intent(this, QRShowActivity::class.java))
+            QRShowDialog(this, intent).show(supportFragmentManager, "QrShow Dialog")
         }
 
         // manual input button
-        findViewById<View>(R.id.fabManualInput).setOnClickListener { view: View? -> startManualInput() }
+        findViewById<View>(R.id.fabManualInput).setOnClickListener { view: View? ->
+            startManualInput() }
         if (hasCameraPermission(this)) {
             initCamera()
         }
@@ -78,12 +84,13 @@ class QRScanActivity: MeshengerActivity(), BarcodeCallback {
             }
             return contact
         } catch (e: JSONException) {
+            //Snackbar.make(qrScanRoot, R.string.invalid_data, Snackbar.LENGTH_SHORT).show()
             Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show()
         }
         return null
     }
 
-    private fun addContact(data: String) {
+    fun addContact(data: String) {
         val contact = parseContact(data)
         if (contact == null) {
             finish()
@@ -113,93 +120,20 @@ class QRScanActivity: MeshengerActivity(), BarcodeCallback {
     }
 
     private fun showPublicKeyConflictDialog(new_contact: Contact, old_contact: Contact) {
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_add_contact_key_conflict)
-        val contactTextView = dialog.findViewById<TextView>(R.id.NameTextView)
-        dialog.setCancelable(false)
-        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
-        val replaceButton = dialog.findViewById<Button>(R.id.ReplaceButton)
-        contactTextView.text = new_contact.name + " => " + old_contact.name
-        replaceButton.setOnClickListener { v: View? ->
-            val contacts = MainService.instance!!.getContacts()!!
-            contacts.deleteContact(old_contact.publicKey)
-            contacts.addContact(new_contact)
-
-            // done
-            Toast.makeText(this@QRScanActivity, R.string.done, Toast.LENGTH_SHORT).show()
-            dialog.cancel()
-            finish()
-        }
-        abortButton.setOnClickListener { v: View? ->
-            dialog.cancel()
-            barcodeView!!.resume()
-        }
-        dialog.show()
+        val dialog = ContactPublicKeyConflictDialog(this, old_contact, new_contact)
+        dialog.show(supportFragmentManager, "OnPublicKey Conflict")
     }
 
     private fun showNameConflictDialog(new_contact: Contact, old_contact: Contact) {
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_add_contact_name_conflict)
-        dialog.setCancelable(false)
-        val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
-        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
-        val replaceButton = dialog.findViewById<Button>(R.id.ReplaceButton)
-        val renameButton = dialog.findViewById<Button>(R.id.RenameButton)
-        nameEditText.setText(old_contact.name)
-        replaceButton.setOnClickListener { v: View? ->
-            val contacts = MainService.instance!!.getContacts()
-            contacts?.deleteContact(old_contact.publicKey)
-            contacts?.addContact(new_contact)
-
-            // done
-            Toast.makeText(this@QRScanActivity, R.string.done, Toast.LENGTH_SHORT).show()
-            dialog.cancel()
-            finish()
-        }
-        renameButton.setOnClickListener { v: View? ->
-            val name = nameEditText.text.toString()
-            val contacts = MainService.instance!!.getContacts()!!
-            if (name.isEmpty()) {
-                Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (contacts.getContactByName(name) != null) {
-                Toast.makeText(this, R.string.contact_name_exists, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // rename
-            new_contact.name = name
-            contacts.addContact(new_contact)
-
-            // done
-            Toast.makeText(this@QRScanActivity, R.string.done, Toast.LENGTH_SHORT).show()
-            dialog.cancel()
-            finish()
-        }
-        abortButton.setOnClickListener { v: View? ->
-            dialog.cancel()
-            barcodeView!!.resume()
-        }
-        dialog.show()
+        val dialog = ContactNameConflictDialog(this, old_contact, new_contact)
+        dialog.show(supportFragmentManager, ("OnConflict Contact"))
     }
 
     private fun startManualInput() {
         barcodeView!!.pause()
-        val builder = AlertDialog.Builder(this)
-        builder.setCancelable(false)
-        val et = EditText(this)
-        builder.setTitle(R.string.paste_invitation)
-            .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                val data = et.text.toString()
-                addContact(data)
-            }
-            .setNegativeButton(R.string.cancel) { dialog, i ->
-                dialog.cancel()
-                barcodeView!!.resume()
-            }
-            .setView(et)
-        builder.show()
+        val pasteDataHereDialog = PasteDataHereDialog(this)
+        pasteDataHereDialog.show(supportFragmentManager, "PasteDataHere Dialog")
+
     }
 
     override fun onRequestPermissionsResult(
@@ -245,6 +179,7 @@ class QRScanActivity: MeshengerActivity(), BarcodeCallback {
         val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
         barcodeView?.apply {
             barcodeView.decoderFactory = DefaultDecoderFactory(formats)
+
             decodeContinuous(this@QRScanActivity)
             resume()
         }

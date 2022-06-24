@@ -13,7 +13,7 @@ open class MeshengerActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dark_active = darkModeEnabled()
-        setTheme(if (dark_active) R.style.AppTheme_Dark else R.style.AppTheme_Light)
+        setTheme(if (dark_active) R.style.AppTheme_Dark_NoActionBar else R.style.AppTheme_Light_NoActionBar)
     }
 
     private fun darkModeEnabled(): Boolean {

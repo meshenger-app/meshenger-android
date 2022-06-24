@@ -112,5 +112,7 @@
 
     <string name="app_info_snippet">allows voice and video communication</string>
     <string name="app_name_caps" translatable="false">MESHENGER</string>
+    <string name="okay">Okay</string>
+    <string name="paste_data_here">Paste Data Here</string>
 </resources>
 

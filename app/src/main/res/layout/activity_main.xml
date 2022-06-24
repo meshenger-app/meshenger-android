@@ -13,20 +13,28 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-        <!--
+        android:background="@color/white"
+        >
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            android:background="@color/white"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/meshenger_logo"/>
 
         </androidx.appcompat.widget.Toolbar>
--->
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
+            android:layout_margin="16dp"
+            app:tabBackground="@drawable/tabs_selector"
+            style="@style/RoundedTabLayoutStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

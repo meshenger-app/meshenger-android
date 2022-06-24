@@ -1,4 +1,4 @@
-package d.d.meshenger.call
+package d.d.meshenger.activity
 
 import android.Manifest
 import android.app.AlertDialog
@@ -23,14 +23,18 @@ import d.d.meshenger.model.Event.CallType
 import d.d.meshenger.service.MainService
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.R
+import d.d.meshenger.call.*
 import d.d.meshenger.utils.Utils
 import d.d.meshenger.call.AppRTCAudioManager.AudioManagerEvents
 import d.d.meshenger.call.AppRTCClient.SignalingParameters
 import d.d.meshenger.call.DirectRTCClient.CallDirection
+import d.d.meshenger.fragment.CallFragment
+import d.d.meshenger.fragment.HudFragment
 import org.webrtc.*
 import org.webrtc.RendererCommon.ScalingType
 
-class CallActivity: MeshengerActivity(), AppRTCClient.SignalingEvents, PeerConnectionClient.PeerConnectionEvents,
+class CallActivity: MeshengerActivity(), AppRTCClient.SignalingEvents,
+    PeerConnectionClient.PeerConnectionEvents,
     CallFragment.OnCallEvents {
 
         companion object {
@@ -59,7 +63,7 @@ class CallActivity: MeshengerActivity(), AppRTCClient.SignalingEvents, PeerConne
                 override fun onFrame(frame: VideoFrame) {
                     if (target == null) {
                         Logging.d(
-                            CallActivity.TAG,
+                            TAG,
                             "Dropping frame in proxy because target is null."
                         )
                         return

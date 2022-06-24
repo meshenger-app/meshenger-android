@@ -45,10 +45,6 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".base.QRShowActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.QRScanActivity"
             android:screenOrientation="portrait" />
 
@@ -57,6 +53,7 @@
         <activity
             android:name=".activity.StartActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,7 +61,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".call.CallActivity"
+        <activity android:name=".activity.CallActivity"
             android:label="Meshenger"
             android:screenOrientation="fullUser"
             android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout">

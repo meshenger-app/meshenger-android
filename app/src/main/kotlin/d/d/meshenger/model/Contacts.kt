@@ -1,5 +1,6 @@
 package d.d.meshenger.model
 
+import d.d.meshenger.mock.MockContacts
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -36,7 +37,7 @@ class Contacts {
 
     }
 
-    val contactList = ArrayList<Contact>()
+    val contactList= MockContacts.generateMockContactList()
 
 
     fun getContactListCopy(): ArrayList<Contact> {

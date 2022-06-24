@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:padding="@dimen/padding_20"
+    android:layout_height="wrap_content"
+    android:background="@drawable/qrscan_background">
+
+    <TextView
+        android:id="@+id/scan_invite_tv"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_invitation"
+        android:gravity="center"
+        android:fontFamily="@font/lato_bold"
+        android:textColor="?android:textColorPrimary"/>
+
+    <ImageView
+        android:id="@+id/QRView"
+        android:layout_below="@id/scan_invite_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/QRView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/padding_10"
+        app:srcCompat="@android:drawable/ic_menu_share" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabPresenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/QRView"
+        android:layout_marginStart="@dimen/padding_20"
+        android:layout_marginTop="@dimen/padding_10"
+        android:layout_toEndOf="@id/fabShare"
+        app:srcCompat="@drawable/qr_glass" />
+
+</RelativeLayout>

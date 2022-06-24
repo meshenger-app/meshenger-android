@@ -3,7 +3,7 @@ package d.d.meshenger.call
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
-import d.d.meshenger.call.CallFragment.OnCallEvents
+import d.d.meshenger.fragment.CallFragment.OnCallEvents
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import java.util.*
 

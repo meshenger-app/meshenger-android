@@ -2,6 +2,7 @@ package d.d.meshenger.model
 
 import d.d.meshenger.model.Event.CallType
 import d.d.meshenger.call.DirectRTCClient.CallDirection
+import d.d.meshenger.mock.MockContacts
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -9,6 +10,7 @@ import java.util.*
 
 class Events() {
 
+    //var events = MockContacts.generateMockEventList();
     var events = ArrayList<Event>()
     private var eventsViewed = Date()
 
@@ -34,13 +36,11 @@ class Events() {
             }
 
             // sort by date / oldest first
-            Collections.sort(
-                events
-            ) { lhs: Event, rhs: Event ->
+            events.sortWith(Comparator { lhs: Event, rhs: Event ->
                 lhs.date.compareTo(
                     rhs.date
                 )
-            }
+            })
             val eventsViewed = Date(obj.getString("events_viewed").toLong(10))
             return Events(events, eventsViewed)
         }
@@ -86,7 +86,7 @@ class Events() {
     }
 
     fun getMissedCalls(): List<Event> {
-        val calls: MutableList<Event> = ArrayList()
+        val calls  = ArrayList<Event>()
         for (event in events) {
             if (event.isMissedCall() && event.date.time >= eventsViewed.time) {
                 calls.add(event)

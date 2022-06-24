@@ -22,7 +22,7 @@ import d.d.meshenger.utils.Log.d
 import d.d.meshenger.utils.Utils.readInternalFile
 import d.d.meshenger.utils.Utils.writeInternalFile
 import d.d.meshenger.activity.MainActivity
-import d.d.meshenger.call.CallActivity
+import d.d.meshenger.activity.CallActivity
 import d.d.meshenger.call.DirectRTCClient
 import d.d.meshenger.model.Contacts
 import d.d.meshenger.model.Database

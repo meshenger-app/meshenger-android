@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -36,8 +37,8 @@ class MainActivity: MeshengerActivity() {
 
         class SectionsPageAdapter(fm: FragmentManager?) :
             FragmentPagerAdapter(fm!!) {
-            private val mFragmentList: MutableList<Fragment> = ArrayList()
-            private val mFragmentTitleList: MutableList<String> = ArrayList()
+            private val mFragmentList= ArrayList<Fragment>()
+            private val mFragmentTitleList = ArrayList<String>()
             var missedCalls = 0
             fun addFragment(fragment: Fragment, title: String) {
                 mFragmentList.add(fragment)
@@ -66,7 +67,7 @@ class MainActivity: MeshengerActivity() {
 
     }
 
-    private lateinit var mViewPager: ViewPager
+    private lateinit var mViewPager: ViewPager //#TODO: change to ViewPager2 implementation
     private lateinit var contactListFragment: ContactListFragment
     private lateinit var eventListFragment: EventListFragment
     private lateinit var sectionsPageAdapter: SectionsPageAdapter
@@ -81,6 +82,9 @@ class MainActivity: MeshengerActivity() {
         mViewPager = findViewById(R.id.container)
         contactListFragment = ContactListFragment()
         eventListFragment = EventListFragment()
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
         tabLayout.setupWithViewPager(mViewPager)
         LocalBroadcastManager.getInstance(this)
@@ -98,7 +102,7 @@ class MainActivity: MeshengerActivity() {
             eventListFragment,
             this.resources.getString(R.string.title_history)
         )
-        mViewPager.setAdapter(sectionsPageAdapter)
+        mViewPager.adapter = sectionsPageAdapter
         mViewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(
                 position: Int,

@@ -17,7 +17,8 @@ import d.d.meshenger.utils.Log.d
 import d.d.meshenger.utils.Utils.isMAC
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.dialog.SetUsernameDialog
-import d.d.meshenger.dialog.SetupAddressDialog
+import d.d.meshenger.dialog.SetAddressDialog
+import d.d.meshenger.dialog.SetPasswordDialog
 import d.d.meshenger.service.MainService
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
@@ -186,7 +187,7 @@ class StartActivity: MeshengerActivity(), ServiceConnection {
     }
 
     fun showMissingAddressDialog() {
-        val showAddressDialog = SetupAddressDialog(this)
+        val showAddressDialog = SetAddressDialog(this)
         showAddressDialog.show(supportFragmentManager, "Setup Address")
     }
 
@@ -199,31 +200,9 @@ class StartActivity: MeshengerActivity(), ServiceConnection {
 
     // ask for database password
     private fun showDatabasePasswordDialog() {
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_database_password)
-        dialog.setCancelable(false)
-        val passwordEditText = dialog.findViewById<EditText>(R.id.PasswordEditText)
-        val exitButton = dialog.findViewById<Button>(R.id.ExitButton)
-        val okButton = dialog.findViewById<Button>(R.id.OkButton)
-        okButton.setOnClickListener { v: View? ->
-            val password = passwordEditText.text.toString()
-            MainService.instance!!.database_password = password
-            MainService.instance!!.loadDatabase()
-            if (MainService.instance!!.database == null) {
-                Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
-            } else {
-                // close dialog
-                dialog.dismiss()
-                continueInit()
-            }
-        }
-        exitButton.setOnClickListener { v: View? ->
-            // shutdown app
-            dialog.dismiss()
-            stopService(Intent(this, MainService::class.java))
-            finish()
-        }
-        dialog.show()
+        val dialog = SetPasswordDialog(this)
+        dialog.show(supportFragmentManager, "Show Password Dialog")
+
     }
 
 

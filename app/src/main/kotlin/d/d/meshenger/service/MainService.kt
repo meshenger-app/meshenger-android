@@ -189,7 +189,12 @@ class MainService: Service(), Runnable {
 
         // start MainActivity
         val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
+        val pendingNotificationIntent =
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                PendingIntent.getActivity(this, 0, notificationIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            else PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
         val mActivity = applicationContext
         notificationBuilder = NotificationCompat.Builder(mActivity, channelId) //.setOngoing(true)
             .setOnlyAlertOnce(true) // keep notification update from turning on the screen

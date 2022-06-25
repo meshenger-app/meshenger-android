@@ -11,6 +11,7 @@
     <color name="call_blue">#668DF2</color>
     <color name="call_red">#F44336</color>
     <color name="call_orange">#FF9800</color>
+    <color name="light_grey">#B1B1B1</color>
     <color name="white">#FFFFFF</color>
     <color name="selectedColor">#EC3E3F</color>
     <color name="unselectedColor">#1AEC3E3F</color>

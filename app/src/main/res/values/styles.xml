@@ -45,6 +45,15 @@
         <item name="tabTextColor">@color/selectedColor</item>
     </style>
 
+    <style name="RadioButtonTheme" parent="AppTheme">
+        <item name="colorControlNormal">@color/selectedColor</item>
+    </style>
+
+    <style name="CurvedImageViewStyle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10%</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -105,9 +106,9 @@ class QRShowDialog (val mContext: Context, var intent: Intent): DialogFragment()
         val bitmap = barcodeEncoder.createBitmap(bitMatrix)
        qrImageView.setImageBitmap(bitmap)
         if (contact!!.addresses.isEmpty()) {
-            val snackbar = Snackbar.make(qrImageView, R.string.contact_has_no_address_warning, Snackbar.LENGTH_SHORT)
-            snackbar.show()
-            //Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
+//            val snackbar = Snackbar.make(qrImageView, R.string.contact_has_no_address_warning, Snackbar.LENGTH_SHORT)
+//            snackbar.show()
+            Toast.makeText(context, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
         }
     }
 

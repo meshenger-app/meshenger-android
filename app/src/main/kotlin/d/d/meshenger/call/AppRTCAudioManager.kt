@@ -21,7 +21,7 @@ class AppRTCAudioManager private constructor(val context: Context, val useSpeake
 
     companion object {
         private const val TAG = "AppRTCAudioManager"
-        private const val SPEAKERPHONE_AUTO = "auto"
+//        private const val SPEAKERPHONE_AUTO = "auto"
         private const val SPEAKERPHONE_TRUE = "true"
         private const val SPEAKERPHONE_FALSE = "false"
 

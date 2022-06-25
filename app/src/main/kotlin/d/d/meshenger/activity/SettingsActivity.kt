@@ -2,6 +2,7 @@ package d.d.meshenger.activity
 
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,9 @@ import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import com.google.android.material.switchmaterial.SwitchMaterial
 import d.d.meshenger.R
 import d.d.meshenger.utils.Log.e
 import d.d.meshenger.utils.Utils.isValidContactName
@@ -33,10 +37,30 @@ class SettingsActivity: MeshengerActivity() {
         setContentView(R.layout.activity_settings)
         title = resources.getString(R.string.menu_settings)
         initViews()
+
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        initViews()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this@SettingsActivity, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun getIgnoreBatteryOptimizations(): Boolean {
@@ -49,6 +73,20 @@ class SettingsActivity: MeshengerActivity() {
 
     private fun initViews() {
         val settings = MainService.instance!!.getSettings()!!
+        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        toolbar.apply {
+            setNavigationIcon(R.drawable.ic_baseline_arrow_back_ios_new_24)
+            setNavigationOnClickListener {
+                finish()
+            }
+        }
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
+
         findViewById<View>(R.id.nameLayout).setOnClickListener { view: View? -> showChangeNameDialog() }
         findViewById<View>(R.id.addressLayout).setOnClickListener { view: View? ->
             val intent = Intent(this, AddressActivity::class.java)
@@ -69,29 +107,39 @@ class SettingsActivity: MeshengerActivity() {
         (findViewById<View>(R.id.iceServersTv) as TextView).text =
             if (iceServers.isEmpty()) resources.getString(R.string.none) else join(iceServers)
         val blockUnknown = settings.blockUnknown
-        val blockUnknownCB = findViewById<CheckBox>(R.id.checkBoxBlockUnknown)
-        blockUnknownCB.isChecked = blockUnknown
-        blockUnknownCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-            // save value
-            settings.blockUnknown = isChecked
-            MainService.instance!!.saveDatabase()
+        val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
+        blockUnknownCB.apply{
+            isChecked = blockUnknown
+            setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+                // save value
+                settings.blockUnknown = isChecked
+                MainService.instance!!.saveDatabase()
+            }
         }
         val nightMode = MainService.instance!!.getSettings()?.nightMode
-        val nightModeCB = findViewById<CheckBox>(R.id.checkBoxNightMode)
-        nightModeCB.isChecked = nightMode!!
-        nightModeCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-            // apply value
-            AppCompatDelegate.setDefaultNightMode(
-                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-            )
+        val nightModeCB = findViewById<SwitchMaterial>(R.id.switchButtonNightMode)
+        nightModeCB.apply {
+            isChecked = nightMode!!
+            setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
 
-            // save value
-            settings.nightMode = isChecked
-            MainService.instance!!.saveDatabase()
+                // apply value
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
-            // apply theme
-            recreate()
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+
+                    // save value
+                    settings.nightMode = isChecked
+                    MainService.instance!!.saveDatabase()
+
+                    // apply theme
+                    recreate()
+                }
         }
+
+
         val recordAudio = settings.recordAudio
         val recordAudioCB = findViewById<CheckBox>(R.id.checkBoxSendAudio)
         recordAudioCB.isChecked = recordAudio
@@ -153,20 +201,56 @@ class SettingsActivity: MeshengerActivity() {
                 this.startActivity(intent)
             }
         }
-        setupSpinner(settings.settingsMode,
-            R.id.spinnerSettingsMode,
-            R.array.settingsMode,
-            R.array.settingsModeValues,
-            object : SpinnerItemSelected {
-                override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.settingsMode = it
-                        MainService.instance!!.saveDatabase()
-                        applySettingsMode(it)
-                    }
 
-                }
-            })
+        fun setServiceAndSettings(str: String) {
+            settings.settingsMode = str
+            MainService.instance!!.saveDatabase()
+            applySettingsMode(str)
+        }
+
+        val selectedColor = ContextCompat.getColor(this, R.color.selectedColor)
+
+        val settingsRadioGroup = findViewById<RadioGroup>(R.id.settings_mode_radio_group)
+        val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
+        val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
+        val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)
+//        val settingsModeArrayValues = resources.getStringArray(R.array.settingsModeValues
+
+        basicRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                (compoundButton as RadioButton).setTextColor(selectedColor)
+                setServiceAndSettings("basic")
+            } else {
+                (compoundButton as RadioButton).setTextColor(Color.BLACK)
+
+            }
+        }
+
+        advancedRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                (compoundButton as RadioButton).setTextColor(selectedColor)
+                setServiceAndSettings("advanced")
+            } else {
+                (compoundButton as RadioButton).setTextColor(Color.BLACK)
+
+            }
+        }
+
+        expertRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                (compoundButton as RadioButton).setTextColor(selectedColor)
+                setServiceAndSettings("expert")
+            } else {
+                (compoundButton as RadioButton).setTextColor(Color.BLACK)
+
+            }
+        }
+
+        basicRadioButton.apply {
+            isSelected = true
+            setTextColor(selectedColor)
+        }
+
         setupSpinner(settings.videoCodec,
             R.id.spinnerVideoCodecs,
             R.array.videoCodecs,
@@ -206,21 +290,35 @@ class SettingsActivity: MeshengerActivity() {
 
                 }
             })
-        setupSpinner(settings.speakerphone,
-            R.id.spinnerSpeakerphone,
-            R.array.speakerphone,
-            R.array.speakerphoneValues,
-            object : SpinnerItemSelected {
-                override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.speakerphone = it
-                        MainService.instance!!.saveDatabase()
-                    }
+//        setupSpinner(settings.speakerphone,
+//            R.id.spinnerSpeakerphone,
+//            R.array.speakerphone,
+//            R.array.speakerphoneValues,
+//            object : SpinnerItemSelected {
+//                override fun call(newValue: String?) {
+//                    newValue?.let {
+//                        settings.speakerphone = it
+//                        MainService.instance!!.saveDatabase()
+//                    }
+//
+//                }
+//            })
 
+        val speakerSwitch = findViewById<SwitchMaterial>(R.id.speaker_switch)
+        speakerSwitch.apply {
+            setOnCheckedChangeListener { compoundButton, b ->
+                if (b) {
+                    settings.speakerphone = "true"
+                    MainService.instance!!.saveDatabase()
+                } else {
+                    settings.speakerphone = "false"
+                    MainService.instance!!.saveDatabase()
                 }
-            })
+            }
+        }
         applySettingsMode(settings.settingsMode)
     }
+
 
     private interface SpinnerItemSelected {
         fun call(newValue: String?)
@@ -349,18 +447,6 @@ class SettingsActivity: MeshengerActivity() {
         }
         abortButton.setOnClickListener { v: View? -> dialog.cancel() }
         dialog.show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        initViews()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val intent = Intent(this@SettingsActivity, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        startActivity(intent)
     }
 
 }

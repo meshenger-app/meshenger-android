@@ -10,7 +10,7 @@ import java.util.*
 
 class Events() {
 
-    //var events = MockContacts.generateMockEventList();
+//    var events = MockContacts.generateMockEventList();
     var events = ArrayList<Event>()
     private var eventsViewed = Date()
 

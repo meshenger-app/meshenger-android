@@ -67,10 +67,16 @@
             android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout">
         </activity>
 
-        <activity android:name=".activity.SettingsActivity" />
-        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.SettingsActivity"
+            android:parentActivityName=".activity.MainActivity"
+            />
+        <activity android:name=".activity.AboutActivity"
+            android:parentActivityName=".activity.MainActivity"
+            />
         <activity android:name=".activity.BackupActivity"
             android:configChanges="orientation|screenSize"
+            android:parentActivityName=".activity.MainActivity"
+
             />
         <activity android:name=".activity.AddressActivity" />
         <activity android:name=".activity.LicenseActivity" />

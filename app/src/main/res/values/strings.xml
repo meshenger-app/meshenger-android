@@ -114,5 +114,9 @@
     <string name="app_name_caps" translatable="false">MESHENGER</string>
     <string name="okay">Okay</string>
     <string name="paste_data_here">Paste Data Here</string>
+    <string name="settings">Settings</string>
+    <string name="basic">Basic</string>
+    <string name="advanced">Advanced</string>
+    <string name="expert">Expert</string>
 </resources>
 

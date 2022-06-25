@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
@@ -12,10 +13,10 @@ import androidx.core.content.ContextCompat
 import d.d.meshenger.R
 import java.io.*
 import java.util.*
+import java.util.Collections.replaceAll
 import java.util.regex.Pattern
 
-object Utils
-{
+object Utils {
 
     fun hasPermission(activity: Activity?, permission: String?): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -344,4 +345,13 @@ object Utils
         }
         return sb.toString()
     }
+
+    fun generateRandomUserName() = //foreach loop?
+        "User${UUID.randomUUID().toString().substring(0..7).replace(Pattern.quote("-"), "")}"
+
+
+
+    fun getUserAndroidVersion() = Build.VERSION.SDK_INT
+
+    fun getUserAndroidReleaseVersion() = Build.VERSION.RELEASE
 }

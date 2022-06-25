@@ -175,7 +175,7 @@ class Settings {
         audioProcessing = true
         videoCodec = "VP8"
         audioCodec = "OPUS"
-        speakerphone = "auto"
+        speakerphone = "true" //Previous value = auto. auto is disabled
         videoResolution = "default"
         addresses =  ArrayList()
         iceServers =  ArrayList()

@@ -98,4 +98,11 @@
     <string name="no">No</string>
     <string name="meshenger_app">Die Meshenger-App</string>
     <string name="app_info_snippet">ermöglicht Sprach- und Video kommunikation</string>
+
+    <string name="okay">Okay</string>
+    <string name="paste_data_here">Daten hier einfügen</string>
+    <string name="settings">Settings</string>
+    <string name="basic">Basic</string>
+    <string name="advanced">Advanced</string>
+    <string name="expert">Expert</string>
 </resources>

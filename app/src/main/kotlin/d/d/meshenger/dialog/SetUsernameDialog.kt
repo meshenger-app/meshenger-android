@@ -33,7 +33,7 @@ class SetUsernameDialog(context: Context): DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_set_username, container, false)
+    ): View? = inflater.inflate(R.layout.dialog_set_username, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,8 +48,18 @@ class SetUsernameDialog(context: Context): DialogFragment() {
         }
         skipButton.apply{
             setOnClickListener {
-                context.stopService(Intent(context, MainService::class.java))
-                startActivity.finish()
+                val generatedUsername = Utils.generateRandomUserName()
+                if (Utils.isValidContactName(generatedUsername)) {
+                    MainService.instance?.getSettings()?.username = generatedUsername
+                    MainService.instance?.saveDatabase()
+                    Toast.makeText(context, "Your Username is $generatedUsername", Toast.LENGTH_LONG).show()
+
+                    // close dialog
+                    dialog?.dismiss()
+                    //dialog.cancel(); // needed?
+                    startActivity.continueInit()
+
+                }
 
             }
         }

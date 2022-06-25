@@ -189,11 +189,11 @@ class Database {
 
     fun onDestroy() {
         // zero keys from memory
-        if (settings.secretKey != null) {
-            Arrays.fill(settings.secretKey, 0.toByte())
+        settings.secretKey?.let {
+            Arrays.fill(it, 0.toByte())
         }
-        if (settings.publicKey != null) {
-            Arrays.fill(settings.publicKey, 0.toByte())
+        settings.publicKey?.let {
+            Arrays.fill(it, 0.toByte())
         }
         for (contact in contacts.contactList) {
             Arrays.fill(contact.publicKey, 0.toByte())

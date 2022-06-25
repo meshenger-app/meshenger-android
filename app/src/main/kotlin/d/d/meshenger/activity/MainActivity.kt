@@ -239,7 +239,7 @@ class MainActivity: MeshengerActivity() {
 
     // update missed calls in events fragment title
     private fun updateMissedCallsCounter() {
-        val missedCalls = MainService.instance!!.getEvents()
+        val missedCalls = MainService.instance?.getEvents()
             ?.getMissedCalls()?.size
         if (missedCalls != null) {
             this.sectionsPageAdapter.missedCalls = missedCalls

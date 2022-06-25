@@ -2,4 +2,7 @@
 <resources>
     <!--TODO: Fix qr scan button spacing and placement -->
     <!--TODO: Fix rounded corners for main activity layout and dialogs -->
+    <!--TODO: Translations needs fixing -->
+    <!--TODO: Shared Toolbars? -->
+    <!--TODO: The settings layout is undone-->
 </resources>

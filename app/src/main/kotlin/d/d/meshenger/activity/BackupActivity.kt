@@ -9,6 +9,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import com.thekhaeng.pushdownanim.PushDownAnim
 import d.d.meshenger.*
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.model.Database
@@ -44,11 +46,24 @@ class BackupActivity: MeshengerActivity() {
     }
 
     private fun initViews() {
+        val toolbar = findViewById<Toolbar>(R.id.backup_toolbar)
+        toolbar.apply {
+            setNavigationOnClickListener {
+                finish()
+            }
+        }
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
+
         builder = AlertDialog.Builder(this)
         importButton = findViewById(R.id.ImportButton)
         exportButton = findViewById(R.id.ExportButton)
         selectButton = findViewById(R.id.SelectButton)
         passwordEditText = findViewById(R.id.PasswordEditText)
+        PushDownAnim.setPushDownAnimTo(importButton, exportButton, selectButton)
         importButton.setOnClickListener { v: View? ->
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -100,6 +115,12 @@ class BackupActivity: MeshengerActivity() {
             READ_REQUEST_CODE -> importDatabase(data.data)
             WRITE_REQUEST_CODE -> exportDatabase(data.data)
         }
+    }
+
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }
 

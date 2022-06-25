@@ -12,7 +12,7 @@ import com.thekhaeng.pushdownanim.PushDownAnim
 import d.d.meshenger.R
 import d.d.meshenger.activity.StartActivity
 
-class SetupAddressDialog(context: Context): DialogFragment() {
+class SetAddressDialog(context: Context): DialogFragment() {
 
     private lateinit var skipButton: Button
     private lateinit var okayButton: Button
@@ -22,7 +22,7 @@ class SetupAddressDialog(context: Context): DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_set_address, container, false)
+    ): View? = inflater.inflate(R.layout.dialog_set_address, container, false)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

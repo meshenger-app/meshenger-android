@@ -1,14 +1,21 @@
 package d.d.meshenger.activity
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintSet
+import com.thekhaeng.pushdownanim.PushDownAnim
 import d.d.meshenger.*
+import d.d.meshenger.adapter.AddressListAdapter
+import d.d.meshenger.adapter.AddressListAdapterFix
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.model.AddressEntry
 import d.d.meshenger.service.MainService
@@ -32,19 +39,62 @@ class AddressActivity: MeshengerActivity() {
     private lateinit var pickSystemAddressButton: Button
     private lateinit var addressEditText: EditText
     private lateinit var addButton: Button
-    private lateinit var removeButton: Button
+    private lateinit var removeButton: ImageButton
     private lateinit var saveButton: Button
     private lateinit var abortButton: Button
 
     private var systemAddressList = ArrayList<AddressEntry>()
     private var storedAddressList = ArrayList<AddressEntry>()
-    private lateinit var storedAddressListAdapter: AddressListAdapter
-    private lateinit var systemAddressListAdapter: AddressListAdapter
+    private lateinit var storedAddressListAdapter: AddressListAdapterFix
+    private lateinit var systemAddressListAdapter: AddressListAdapterFix
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_address)
-        setTitle(R.string.address_management)
+        initToolbar()
+       initViews()
+    }
+
+    private fun initToolbar() {
+        val toolbar = findViewById<Toolbar>(R.id.address_toolbar)
+        toolbar.apply {
+            setNavigationOnClickListener {
+                finish()
+            }
+        }
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
+    }
+
+    private fun initSpinners() {
+        storedAddressListAdapter =
+            AddressListAdapterFix(this,
+                R.layout.activity_address_item,
+                R.id.label,
+                Color.parseColor("#39b300"), storedAddressList) //dark green
+        systemAddressListAdapter =
+            AddressListAdapterFix(this,
+                R.layout.activity_address_item,
+                R.id.label,
+                Color.parseColor("#39b300"), systemAddressList) //dark green
+        storedAddressSpinner.adapter = storedAddressListAdapter
+
+        systemAddressSpinner.adapter = systemAddressListAdapter
+
+//        val storedAddressArrayAdapter: ArrayAdapter<AddressEntry> = ArrayAdapter(this, android.R.layout.simple_spinner_item, storedAddressList)
+//        storedAddressArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
+//        storedAddressSpinner.adapter = storedAddressArrayAdapter
+//
+//        val systemAddressArrayAdapter: ArrayAdapter<AddressEntry> = ArrayAdapter(this, android.R.layout.simple_spinner_item, storedAddressList)
+//        systemAddressArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
+//        systemAddressSpinner.adapter = systemAddressArrayAdapter
+
+    }
+
+    private fun initViews() {
         storedAddressSpinner = findViewById(R.id.StoredAddressSpinner)
         systemAddressSpinner = findViewById(R.id.SystemAddressSpinner)
         pickStoredAddressButton = findViewById(R.id.PickStoredAddressButton)
@@ -54,14 +104,15 @@ class AddressActivity: MeshengerActivity() {
         removeButton = findViewById(R.id.RemoveButton)
         saveButton = findViewById(R.id.SaveButton)
         abortButton = findViewById(R.id.AbortButton)
+        PushDownAnim.setPushDownAnimTo(addButton, removeButton, saveButton, abortButton,
+            pickStoredAddressButton, pickSystemAddressButton)
+
         systemAddressList = AddressUtils.getOwnAddresses()
         storedAddressList = ArrayList()
-        storedAddressListAdapter =
-            AddressListAdapter(this, Color.parseColor("#39b300")) //dark green
-        systemAddressListAdapter =
-            AddressListAdapter(this, Color.parseColor("#b3b7b2")) //light grey
-        storedAddressSpinner.adapter = storedAddressListAdapter
-        systemAddressSpinner.adapter = systemAddressListAdapter
+        initSpinners()
+
+
+        //val x = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, storedAddressList)
         addressEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 updateAddressEditTextButtons()
@@ -133,83 +184,24 @@ class AddressActivity: MeshengerActivity() {
             for (ae in storedAddressList) {
                 addresses.add(ae.address)
             }
-            MainService.instance!!.getSettings()?.addresses = addresses
+            MainService.instance!!.getSettings()!!.addresses = addresses
             MainService.instance!!.saveDatabase()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
         }
         abortButton.setOnClickListener { v: View? -> finish() }
 
         // get from settings
-        for (address in MainService.instance!!.getSettings()?.addresses!!) {
+        for (address in MainService.instance!!.getSettings()!!.addresses) {
             storedAddressList.add(parseAddress(address))
         }
-        updateSpinners()
+        //updateSpinners()
+
     }
 
-    inner class AddressListAdapter(private val context: Activity, private val markColor: Int) :
-        BaseAdapter() {
-        private var addressEntries: List<AddressEntry>
-        private var addressEntriesMarked: List<AddressEntry>
-        override fun isEmpty(): Boolean {
-            return addressEntries.isEmpty()
-        }
-
-        fun update(addressEntries: List<AddressEntry>, addressEntriesMarked: List<AddressEntry>) {
-            this.addressEntries = addressEntries
-            this.addressEntriesMarked = addressEntriesMarked
-        }
-
-        override fun getCount(): Int {
-            return if (isEmpty) {
-                1
-            } else addressEntries.size
-        }
-
-        override fun getItem(position: Int): Any? {
-            return if (isEmpty) {
-                null
-            } else addressEntries[position]
-        }
-
-        override fun getItemId(position: Int): Long {
-            return 0
-        }
-
-        override fun getView(position: Int, view: View, parent: ViewGroup): View {
-            var view = view
-            if (view == null) {
-                val inflater = context.layoutInflater
-                view = inflater.inflate(R.layout.activity_address_item, parent, false)
-            }
-            val label = view.findViewById<TextView>(R.id.label)
-            if (isEmpty) {
-                label.setText(getResources().getString(R.string.empty_list_item))
-                label.setTextColor(Color.BLACK)
-            } else {
-                val ae = addressEntries[position]
-                val info = java.util.ArrayList<String>()
-                if (ae.device.length > 0) {
-                    info.add(ae.device)
-                }
-                if (ae.multicast) {
-                    info.add("multicast")
-                }
-                label.text = ae.address + if (info.isEmpty()) "" else " (" + Utils.join(info) + ")"
-                if (AddressEntry.listIndexOf(addressEntriesMarked, ae) < 0) {
-                    label.setTextColor(Color.BLACK)
-                } else {
-                    label.setTextColor(markColor)
-                }
-            }
-            return view
-        }
-
-        init {
-            addressEntries = java.util.ArrayList()
-            addressEntriesMarked = java.util.ArrayList()
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
-
 
     private fun updateAddressEditTextButtons() {
         val address = addressEditText.text.toString()

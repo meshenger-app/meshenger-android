@@ -94,11 +94,11 @@ class MainActivity: MeshengerActivity() {
 
         // in case the language has changed
         sectionsPageAdapter = SectionsPageAdapter(supportFragmentManager)
-        sectionsPageAdapter!!.addFragment(
+        sectionsPageAdapter.addFragment(
             contactListFragment,
             this.resources.getString(R.string.title_contacts)
         )
-        sectionsPageAdapter!!.addFragment(
+        sectionsPageAdapter.addFragment(
             eventListFragment,
             this.resources.getString(R.string.title_history)
         )
@@ -143,8 +143,8 @@ class MainActivity: MeshengerActivity() {
     // TODO: move to CallActivity
     private fun checkPermissions() {
         d(TAG, "checkPermissions")
-        val settings = MainService.instance!!.getSettings()
-        if (settings!!.recordAudio) {
+        val settings = MainService.instance?.getSettings()
+        if (settings?.recordAudio == true) {
             if (!hasPermission(this, Manifest.permission.RECORD_AUDIO)) {
                 ActivityCompat.requestPermissions(
                     this,
@@ -154,7 +154,7 @@ class MainActivity: MeshengerActivity() {
                 return
             }
         }
-        if (settings.recordVideo) {
+        if (settings?.recordVideo == true) {
             if (!hasPermission(this, Manifest.permission.CAMERA)) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 2)
                 return

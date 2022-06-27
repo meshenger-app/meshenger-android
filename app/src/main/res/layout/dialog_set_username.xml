@@ -67,7 +67,7 @@
             android:text="@string/next"
             android:textAllCaps="false"
 
-            android:textColor="@color/black" />
+            android:textColor="@color/white" />
 
 
     </RelativeLayout>

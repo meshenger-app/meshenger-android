@@ -75,10 +75,13 @@
             />
         <activity android:name=".activity.BackupActivity"
             android:configChanges="orientation|screenSize"
-            android:parentActivityName=".activity.MainActivity"
+
 
             />
-        <activity android:name=".activity.AddressActivity" />
+        <activity android:name=".activity.AddressActivity"
+            android:parentActivityName=".activity.SettingsActivity"
+
+            />
         <activity android:name=".activity.LicenseActivity" />
     </application>
 

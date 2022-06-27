@@ -1,36 +1,25 @@
 package d.d.meshenger.fragment
 
-import android.app.Activity
-import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import android.widget.AdapterView.OnItemLongClickListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import d.d.meshenger.utils.AddressUtils.getEUI64MAC
-import d.d.meshenger.utils.Log.d
-import d.d.meshenger.utils.Log.w
-import d.d.meshenger.service.MainService
 import d.d.meshenger.R
-import d.d.meshenger.utils.Utils.bytesToMacAddress
 import d.d.meshenger.adapter.EventListAdapter
-import d.d.meshenger.activity.CallActivity
-import d.d.meshenger.call.DirectRTCClient
-import d.d.meshenger.mock.MockContacts
 import d.d.meshenger.model.Contact
 import d.d.meshenger.model.Event
+import d.d.meshenger.service.MainService
+import d.d.meshenger.utils.AddressUtils.getEUI64MAC
+import d.d.meshenger.utils.Log.d
+import d.d.meshenger.utils.Utils.bytesToMacAddress
 import java.net.Inet6Address
 import java.net.InetSocketAddress
-import kotlin.collections.ArrayList
 
 class EventListFragment: Fragment() {
 
@@ -76,7 +65,7 @@ class EventListFragment: Fragment() {
         }
 
         eventListAdapter =
-            EventListAdapter(activity!!, ArrayList<Event>(), this, ArrayList<Contact>())
+            EventListAdapter(requireActivity(), ArrayList<Event>(), this, ArrayList<Contact>())
 
         eventListView?.apply {
             adapter = eventListAdapter
@@ -90,19 +79,18 @@ class EventListFragment: Fragment() {
         d(TAG, "refreshEventList")
         Handler(Looper.getMainLooper()).post {
             val events =
-                MainService.instance!!.getEvents()!!
-                    .getEventListCopy()
+                MainService.instance!!.getEvents()!!.getEventListCopy()
             val contacts =
                 MainService.instance!!.getContacts()!!.getContactListCopy()
             d(
                 TAG,
-                "refreshEventList update: " + events!!.size
+                "refreshEventList update: " + events.size
             )
             eventListAdapter?.let {
                 eventListView?.adapter = it
                 eventListView?.layoutManager = LinearLayoutManager(requireContext())
                 it.update(events, contacts)
-                it.notifyDataSetChanged()
+                //it.notifyDataSetChanged() //Needed?
             }
 
         }

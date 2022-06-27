@@ -96,10 +96,10 @@ class SettingsActivity: MeshengerActivity() {
         findViewById<View>(R.id.iceServersLayout).setOnClickListener { view: View? -> showChangeIceServersDialog() }
         val username = settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text =
-            if (username.length == 0) resources.getString(R.string.none) else username
+            if (username.isEmpty()) resources.getString(R.string.none) else username
         val addresses: List<String?> = settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
-            if (addresses.size == 0) resources.getString(R.string.none) else join(addresses)
+            if (addresses.isEmpty()) resources.getString(R.string.none) else join(addresses)
         val password = MainService.instance!!.database_password
         (findViewById<View>(R.id.passwordTv) as TextView).text =
             if (password.isEmpty()) resources.getString(R.string.none) else "********"
@@ -249,6 +249,7 @@ class SettingsActivity: MeshengerActivity() {
         basicRadioButton.apply {
             isSelected = true
             setTextColor(selectedColor)
+            setServiceAndSettings("basic")
         }
 
         setupSpinner(settings.videoCodec,

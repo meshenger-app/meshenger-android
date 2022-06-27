@@ -12,6 +12,7 @@ import android.text.InputType
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -24,6 +25,7 @@ import d.d.meshenger.utils.Utils.join
 import d.d.meshenger.utils.Utils.split
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.service.MainService
+import d.d.meshenger.viewmodel.SettingsActivityViewModel
 
 class SettingsActivity: MeshengerActivity() {
 
@@ -31,6 +33,8 @@ class SettingsActivity: MeshengerActivity() {
         private const val TAG = "SettingsActivity"
 
     }
+
+    private val settingsViewModel: SettingsActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -220,6 +224,7 @@ class SettingsActivity: MeshengerActivity() {
             if (b) {
                 (compoundButton as RadioButton).setTextColor(selectedColor)
                 setServiceAndSettings("basic")
+                settingsViewModel.currentSettingsMode = 0
             } else {
                 (compoundButton as RadioButton).setTextColor(Color.BLACK)
 
@@ -230,6 +235,7 @@ class SettingsActivity: MeshengerActivity() {
             if (b) {
                 (compoundButton as RadioButton).setTextColor(selectedColor)
                 setServiceAndSettings("advanced")
+                settingsViewModel.currentSettingsMode = 1
             } else {
                 (compoundButton as RadioButton).setTextColor(Color.BLACK)
 
@@ -240,16 +246,17 @@ class SettingsActivity: MeshengerActivity() {
             if (b) {
                 (compoundButton as RadioButton).setTextColor(selectedColor)
                 setServiceAndSettings("expert")
+                settingsViewModel.currentSettingsMode = 2
             } else {
                 (compoundButton as RadioButton).setTextColor(Color.BLACK)
 
             }
         }
 
-        basicRadioButton.apply {
-            isSelected = true
-            setTextColor(selectedColor)
-            setServiceAndSettings("basic")
+        when(settingsViewModel.currentSettingsMode) {
+            0 -> basicRadioButton.isChecked = true
+            1 -> advancedRadioButton.isChecked = true
+            2 -> expertRadioButton.isChecked = true
         }
 
         setupSpinner(settings.videoCodec,

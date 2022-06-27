@@ -10,11 +10,12 @@ import android.widget.TextView
 import d.d.meshenger.R
 import d.d.meshenger.model.AddressEntry
 import d.d.meshenger.utils.Utils
+import org.w3c.dom.Text
 
-class AddressListAdapter(private val context: Activity, private val markColor: Int, private var addressEntries: ArrayList<AddressEntry>)
+class AddressListAdapter(private val mContext: Activity, private val markColor: Int, private var addressEntries: ArrayList<AddressEntry>)
     : BaseAdapter() {
 
-    private var addressEntriesMarked: ArrayList<AddressEntry>
+    private var addressEntriesMarked = ArrayList<AddressEntry>()
 
     override fun isEmpty(): Boolean {
         return addressEntries.isEmpty()
@@ -42,12 +43,12 @@ class AddressListAdapter(private val context: Activity, private val markColor: I
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val x = convertView?: context.layoutInflater.inflate(R.layout.activity_address_item, parent, false)
-        val label = x.findViewById<TextView>(R.id.label)
+        val x = convertView?: mContext.layoutInflater.inflate(R.layout.activity_address_item, parent, false)
+        val label = x as TextView
         //val label = super.getView(position, convertView, parent) as TextView
         label?.let {
             if (isEmpty) {
-                label.setText(context.resources.getString(R.string.empty_list_item))
+                label.setText(mContext.resources.getString(R.string.empty_list_item))
                 label.setTextColor(Color.BLACK)
             } else {
                 val ae = addressEntries[position]
@@ -70,8 +71,4 @@ class AddressListAdapter(private val context: Activity, private val markColor: I
         return x!!
     }
 
-    init {
-        addressEntries = java.util.ArrayList()
-        addressEntriesMarked = java.util.ArrayList()
-    }
 }

@@ -16,13 +16,14 @@
 
     <TextView
         android:id="@+id/encoder_stat_call"
+        android:fontFamily="@font/lato_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:textStyle="bold"
         android:textColor="#C000FF00"
-        android:textSize="12sp"
-        android:layout_margin="8dp"/>
+        android:textSize="@dimen/title_text_size"
+        android:layout_margin="@dimen/padding_10"/>
 
     <TableLayout
            android:id="@+id/hudview_container"
@@ -32,6 +33,7 @@
            <TableRow>
               <TextView
                  android:id="@+id/hud_stat_bwe"
+                  android:fontFamily="@font/poppins_regular"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:alpha="0.4"
@@ -40,7 +42,8 @@
                  android:textColor="@android:color/black" />
 
               <TextView
-                 android:id="@+id/hud_stat_connection"
+                  android:fontFamily="@font/poppins_regular"
+                  android:id="@+id/hud_stat_connection"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:alpha="0.4"
@@ -52,7 +55,9 @@
 
            <TableRow>
               <TextView
-                 android:id="@+id/hud_stat_video_send"
+                  android:fontFamily="@font/poppins_regular"
+
+                  android:id="@+id/hud_stat_video_send"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:alpha="0.4"
@@ -61,7 +66,9 @@
                  android:textColor="@android:color/black" />
 
               <TextView
-                 android:id="@+id/hud_stat_video_recv"
+                  android:fontFamily="@font/poppins_regular"
+
+                  android:id="@+id/hud_stat_video_recv"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:padding="2dip"

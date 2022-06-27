@@ -26,6 +26,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
     }
 
     sourceSets {
@@ -40,8 +44,14 @@ android {
 }
 
 dependencies {
+    def liveData = "2.4.1"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$liveData"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$liveData"
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation "androidx.core:core-ktx:1.8.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.appcompat:appcompat:1.4.2'

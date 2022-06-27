@@ -1,21 +1,15 @@
 package d.d.meshenger.activity
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintSet
 import com.thekhaeng.pushdownanim.PushDownAnim
 import d.d.meshenger.*
 import d.d.meshenger.adapter.AddressListAdapter
-import d.d.meshenger.adapter.AddressListAdapterFix
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.model.AddressEntry
 import d.d.meshenger.service.MainService
@@ -45,8 +39,8 @@ class AddressActivity: MeshengerActivity() {
 
     private var systemAddressList = ArrayList<AddressEntry>()
     private var storedAddressList = ArrayList<AddressEntry>()
-    private lateinit var storedAddressListAdapter: AddressListAdapterFix
-    private lateinit var systemAddressListAdapter: AddressListAdapterFix
+    private lateinit var storedAddressListAdapter: AddressListAdapter
+    private lateinit var systemAddressListAdapter: AddressListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,26 +65,14 @@ class AddressActivity: MeshengerActivity() {
 
     private fun initSpinners() {
         storedAddressListAdapter =
-            AddressListAdapterFix(this,
-                R.layout.activity_address_item,
-                R.id.label,
+            AddressListAdapter(this,
                 Color.parseColor("#39b300"), storedAddressList) //dark green
         systemAddressListAdapter =
-            AddressListAdapterFix(this,
-                R.layout.activity_address_item,
-                R.id.label,
+            AddressListAdapter(this,
                 Color.parseColor("#39b300"), systemAddressList) //dark green
         storedAddressSpinner.adapter = storedAddressListAdapter
 
         systemAddressSpinner.adapter = systemAddressListAdapter
-
-//        val storedAddressArrayAdapter: ArrayAdapter<AddressEntry> = ArrayAdapter(this, android.R.layout.simple_spinner_item, storedAddressList)
-//        storedAddressArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
-//        storedAddressSpinner.adapter = storedAddressArrayAdapter
-//
-//        val systemAddressArrayAdapter: ArrayAdapter<AddressEntry> = ArrayAdapter(this, android.R.layout.simple_spinner_item, storedAddressList)
-//        systemAddressArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
-//        systemAddressSpinner.adapter = systemAddressArrayAdapter
 
     }
 

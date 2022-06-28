@@ -1,3 +1,0 @@
-* apply dark mode in main view without restart
-* disable any debug output for releases
-* fix database version upgrade

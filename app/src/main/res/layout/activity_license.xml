@@ -61,7 +61,7 @@
                 android:layout_margin="2dp"
                 android:padding="@dimen/padding_10"
                 android:textAlignment="viewStart"
-                android:textColor="@color/dark_grey"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="12sp" />
 
         </LinearLayout>

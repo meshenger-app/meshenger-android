@@ -26,6 +26,7 @@ import d.d.meshenger.utils.Utils.join
 import d.d.meshenger.utils.Utils.split
 import d.d.meshenger.base.MeshengerActivity
 import d.d.meshenger.service.MainService
+import d.d.meshenger.utils.Utils
 import d.d.meshenger.viewmodel.SettingsActivityViewModel
 
 class SettingsActivity: MeshengerActivity() {
@@ -393,47 +394,59 @@ class SettingsActivity: MeshengerActivity() {
     private fun showChangeNameDialog() {
         val settings = MainService.instance!!.getSettings()!!
         val username = settings.username
-        val et = EditText(this)
-        et.setText(username)
-        et.setSelection(username.length)
-        AlertDialog.Builder(this)
-            .setTitle(resources.getString(R.string.settings_change_name))
-            .setView(et)
-            .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                val new_username = et.text.toString().trim { it <= ' ' }
-                if (isValidContactName(new_username)) {
-                    settings.username = new_username
-                    MainService.instance!!.saveDatabase()
-                    initViews()
-                } else {
-                    Toast.makeText(
-                        this,
-                        resources.getString(R.string.invalid_name),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+
+        // create dialog box
+        val alert = Dialog(this)
+        alert.setContentView(R.layout.dialog_change_username)
+        val cancelButton = alert.findViewById<Button>(R.id.change_username_cancel_button)
+        val okButton = alert.findViewById<Button>(R.id.change_username_cancel_button)
+        val editText = alert.findViewById<EditText>(R.id.change_username_edit_textview)
+        editText.setText(username)
+        editText.setSelection(username.length)
+        okButton.setOnClickListener {
+            val new_username = editText.text.toString().trim { it <= ' ' }
+            if (isValidContactName(new_username)) {
+                settings.username = new_username
+                MainService.instance!!.saveDatabase()
+                initViews()
+            } else {
+                Toast.makeText(
+                    this,
+                    resources.getString(R.string.invalid_name),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            .setNegativeButton(resources.getText(R.string.cancel), null)
-            .show()
+        }
+        cancelButton.setOnClickListener{
+            alert.cancel()
+        }
+        PushDownAnim.setPushDownAnimTo(cancelButton, okButton)
+        alert.show()
     }
 
     private fun showChangePasswordDialog() {
         val password = MainService.instance!!.database_password
-        val et = EditText(this)
+
+        // create dialog box
+        val alert = Dialog(this)
+        alert.setContentView(R.layout.dialog_change_password)
+        val cancelButton = alert.findViewById<Button>(R.id.change_password_cancel_button)
+        val okButton = alert.findViewById<Button>(R.id.change_password_ok_button)
+        val et = alert.findViewById<EditText>(R.id.change_password_edit_textview)
         et.setText(password)
         et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et.setSelection(password.length)
-        AlertDialog.Builder(this)
-            .setTitle(resources.getString(R.string.settings_change_password))
-            .setView(et)
-            .setPositiveButton(R.string.ok) { dialogInterface, i ->
-                val new_password = et.text.toString()
-                MainService.instance!!.database_password = new_password
-                MainService.instance!!.saveDatabase()
-                initViews()
-            }
-            .setNegativeButton(resources.getText(R.string.cancel), null)
-            .show()
+        okButton.setOnClickListener {
+            val new_password = et.text.toString()
+            MainService.instance!!.database_password = new_password
+            MainService.instance!!.saveDatabase()
+            initViews()
+        }
+        cancelButton.setOnClickListener{
+            alert.cancel()
+        }
+        PushDownAnim.setPushDownAnimTo(cancelButton, okButton)
+        alert.show()
     }
 
     private fun showChangeIceServersDialog() {

@@ -136,37 +136,46 @@ class ContactListAdapter(val context: Context, val contacts: ArrayList<Contact>)
     private fun showContactEditDialog(position: Int, publicKey: ByteArray, name: String) {
         Log.d(TAG, "showContactEditDialog")
         val contact = MainService.instance?.getContacts()?.getContactByPublicKey(publicKey)
-        val et = EditText(context)
-        et.setText(name)
-        AlertDialog.Builder(context)
-            .setTitle(R.string.contact_edit)
-            .setView(et)
-            .setNegativeButton(context.resources.getString(R.string.cancel), null)
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                val newName = et.text.toString().trim { it <= ' ' }
-                if (newName == contact!!.name) {
-                    // nothing to do
-                    return@setPositiveButton
-                }
-                if (!Utils.isValidContactName(newName)) {
-                    Toast.makeText(context, "Invalid name.", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                if (null != MainService.instance?.getContacts()?.getContactByName(newName)) {
-                    Toast.makeText(
-                        context,
-                        "A contact with that name already exists.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setPositiveButton
-                }
 
-                // rename contact
-                contact.name = newName
-                MainService.instance?.saveDatabase()
-                notifyItemChanged(position)
-                refreshContactListBroadcast()
-            }.show()
+        // create dialog box
+        val alert = Dialog(context)
+        alert.setContentView(R.layout.dialog_edit_contact)
+        val cancelButton = alert.findViewById<Button>(R.id.edit_contact_cancel_button)
+        val okButton = alert.findViewById<Button>(R.id.edit_contact_ok_button)
+        val editText = alert.findViewById<EditText>(R.id.edit_contact_edit_text)
+        okButton.setOnClickListener {
+            val newName = editText.text.toString().trim { it <= ' ' }
+            if (newName == contact!!.name) {
+                // nothing to do
+                Toast.makeText(context, "Contact already has that name.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!Utils.isValidContactName(newName)) {
+                Toast.makeText(context, "Invalid name.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (null != MainService.instance?.getContacts()?.getContactByName(newName)) {
+                Toast.makeText(
+                    context,
+                    "A Contact with that name already exists.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            // rename contact
+            contact.name = newName
+            MainService.instance?.saveDatabase()
+            Toast.makeText(context, "Done!", Toast.LENGTH_SHORT).show()
+            alert.cancel()
+            notifyItemChanged(position)
+            refreshContactListBroadcast()
+        }
+        cancelButton.setOnClickListener{
+            alert.cancel()
+        }
+        PushDownAnim.setPushDownAnimTo(cancelButton, okButton)
+        alert.show()
     }
 
     private fun shareContact(contact: Contact?) {

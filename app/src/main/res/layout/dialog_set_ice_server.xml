@@ -39,7 +39,6 @@
 
     <Button
         android:id="@+id/AbortButton"
-        android:text="@string/button_abort"
         android:layout_width="125dp"
         android:layout_height="@dimen/padding_50"
         android:layout_below="@id/iceServersEditText"
@@ -47,9 +46,9 @@
         android:layout_marginTop="@dimen/padding_20"
         android:background="@drawable/skip_button_background"
         android:fontFamily="@font/lato_bold"
+        android:text="@string/button_abort"
         android:textAllCaps="false"
-        android:textColor="?android:textColorPrimary"
-        />
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/SaveButton"

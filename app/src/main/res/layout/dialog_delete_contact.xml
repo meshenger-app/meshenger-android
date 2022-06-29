@@ -41,7 +41,7 @@
         android:fontFamily="@font/lato_bold"
         android:text="@string/no"
         android:textAllCaps="false"
-        android:textColor="?android:textColorPrimary" />
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/yesButton"

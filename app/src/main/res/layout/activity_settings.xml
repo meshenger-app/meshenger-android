@@ -44,6 +44,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:scrollbarThumbVertical="@color/call_red"
         app:layout_constraintTop_toBottomOf="@id/settings_appbar"
         app:layout_constraintStart_toStartOf="parent"
             android:layout_width="match_parent"

@@ -38,7 +38,6 @@
 
     <Button
         android:id="@+id/CancelButton"
-        android:text="@string/cancel"
         android:layout_width="125dp"
         android:layout_height="@dimen/padding_50"
         android:layout_below="@id/NameEditText"
@@ -46,8 +45,9 @@
         android:layout_marginTop="@dimen/padding_20"
         android:background="@drawable/skip_button_background"
         android:fontFamily="@font/lato_bold"
+        android:text="@string/cancel"
         android:textAllCaps="false"
-        android:textColor="?android:textColorPrimary" />
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/OkButton"

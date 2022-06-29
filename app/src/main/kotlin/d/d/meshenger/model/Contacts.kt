@@ -37,7 +37,8 @@ class Contacts {
 
     }
 
-    val contactList= MockContacts.generateMockContactList()
+    val contactList= ArrayList<Contact>()
+        //MockContacts.generateMockContactList()
 
 
     fun getContactListCopy(): ArrayList<Contact> {

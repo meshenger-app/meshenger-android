@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    //IODevBlue: The resources declared here are conflicting with the attributes
+    //           defined in the styles.xml. This file can be deleted
+<!--    <declare-styleable name="CTAppTheme">-->
+<!--        <attr name="primaryTextColor" format="color"/>-->
+<!--        <attr name="secondaryTextColor" format="color"/>-->
+<!--        <attr name="backgroundCardColor" format="color"/>-->
+<!--        <attr name="iconPlaceholder" format="integer"/> -->
+<!--    </declare-styleable>-->
+</resources>

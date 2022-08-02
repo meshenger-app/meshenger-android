@@ -9,6 +9,8 @@
     <string name="invalid_name">Invalid name</string>
     <string name="cancel">cancel</string>
     <string name="next">next</string>
+    <string name="setup_address_title">Setup Network Address</string>
+    <string name="setup_address_message">No WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.</string>
     <string name="enter_password">Enter password</string>
     <string name="path_title">Import/Export Path</string>
     <string name="password_title">Password</string>
@@ -20,8 +22,10 @@
     <string name="menu_license">License</string>
     <string name="menu_backup">Backup</string>
     <string name="menu_about">About</string>
+    <string name="menu_exit">Exit</string>
     <string name="call_connecting">Calling...</string>
     <string name="unknown_caller">Unknown Caller</string>
+
     <string name="settings_change_name">Change Name</string>
     <string name="settings_change_language">Change Language</string>
     <string name="settings_change_address">Change Address</string>
@@ -29,7 +33,18 @@
     <string name="settings_change_ice_servers">Change ICE Servers</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
-    <string name="settings_development_mode">Development Mode</string>
+    <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>
+    <string name="settings_settings_mode" translatable="false">Settings Mode</string>
+    <string name="settings_speakerphone" translatable="false">Speakerphone</string>
+    <string name="settings_video_resolutions" translatable="false">Video Resolutions</string>
+    <string name="settings_video_codecs" translatable="false">Video Codecs</string>
+    <string name="settings_audio_codecs" translatable="false">Audio Codecs</string>
+    <string name="settings_enable_microphone" translatable="false">Enable Microphone</string>
+    <string name="settings_enable_speaker" translatable="false">Enable Speaker</string>
+    <string name="settings_enable_camera" translatable="false">Enable Camera</string>
+    <string name="settings_enable_video" translatable="false">Enable Video</string>
+    <string name="settings_auto_accept_call" translatable="false">Accept Call Immediately</string>
+    <string name="settings_auto_connect_call" translatable="false">Start Calls Immediately</string>
     <string name="about_source">Source Code:</string>
     <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
     <string name="about_license">License:</string>
@@ -74,6 +89,7 @@
     <string name="qr_code_address_list">QR-Code Address List</string>
     <string name="currently_active">Currently Active</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. If no MAC address is visible, then enable your WiFi.</string>
+    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="file_does_not_exist">File does not exist</string>
     <string name="no_path_selected">No path selected</string>
     <string name="file_already_exists">File already exists</string>
@@ -93,4 +109,12 @@
     <string name="exit">Exit</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <string name="app_info_snippet">allows voice and video communication</string>
+    <string name="meshenger_app">Meshenger app</string>
+    <string name="app_name_caps" translatable="false">MESHENGER</string>
+    <string name="basic">Basic</string>
+    <string name="advanced">Advanced</string>
+    <string name="expert">Expert</string>
+    <string name="settings">Settings</string>
 </resources>

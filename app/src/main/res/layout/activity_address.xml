@@ -1,18 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
     android:orientation="vertical">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/address_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?android:windowBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/address_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_ios_new_24"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato_bold"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="20sp"
+                android:text="@string/address_management"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
     <TextView
+        android:layout_marginTop="@dimen/padding_20"
+        android:id="@+id/qr_address_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/lato_bold"
+        app:layout_constraintTop_toBottomOf="@id/address_appbar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/padding_25"
         android:text="@string/qr_code_address_list"
-        android:textColor="?attr/primaryTextColor"
-        android:textSize="25sp" />
+        android:textColor="?android:textColorPrimary"
+        android:textSize="@dimen/title_text_size" />
 
     <LinearLayout
+        android:id="@+id/pick_address_layout"
+        android:layout_margin="@dimen/padding_25"
+        app:layout_constraintTop_toBottomOf="@id/qr_address_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -21,11 +63,16 @@
         <Spinner
             android:id="@+id/StoredAddressSpinner"
             android:layout_width="0dp"
+            android:backgroundTint="@color/black"
+            android:layout_marginEnd="@dimen/padding_10"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center_vertical" />
 
         <Button
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@color/dark_grey"
+            android:background="@drawable/pick_button_background"
             android:id="@+id/PickStoredAddressButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,50 +81,81 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/add_remove_layout"
+        app:layout_constraintTop_toBottomOf="@id/pick_address_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:paddingBottom="@dimen/padding_5"
+        android:layout_margin="@dimen/padding_25"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/AddressEditText"
+            android:background="@drawable/edit_text_background"
+            android:hint="Addresses"
+            android:textColorHint="?android:textColorSecondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:textColor="@color/black"
+            android:maxLines="1"
             android:inputType="textNoSuggestions"
             android:textAlignment="center" />
 
         <Button
             android:id="@+id/AddButton"
             android:layout_width="0dp"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@color/white"
+            android:layout_marginStart="@dimen/padding_10"
+            android:background="@drawable/add_button_background"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/button_add" />
 
-        <Button
+        <ImageButton
             android:id="@+id/RemoveButton"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/zxing_transparent"
             android:layout_width="0dp"
+            android:src="@drawable/ic_baseline_delete_24"
             android:layout_height="wrap_content"
             android:layout_weight="1.3"
             android:text="@string/button_remove" />
 
     </LinearLayout>
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_1"
+        app:dividerInsetStart="@dimen/padding_25"
+        app:dividerInsetEnd="@dimen/padding_25"
+        app:layout_constraintTop_toBottomOf="@id/add_remove_layout"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_25"
+        android:layout_marginBottom="@dimen/padding_20"
+        app:dividerColor="@color/light_grey"
+        />
 
     <TextView
+        android:id="@+id/currently_active_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/padding_20"
+        android:layout_marginStart="@dimen/padding_25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/lato_bold"
         android:text="@string/currently_active"
-        android:textColor="?attr/primaryTextColor"
-        android:textSize="25sp" />
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintTop_toBottomOf="@id/divider_1"
+        android:textSize="@dimen/title_text_size" />
 
     <LinearLayout
+        android:layout_marginStart="@dimen/padding_25"
+        android:layout_marginEnd="@dimen/padding_25"
+        android:layout_marginTop="@dimen/padding_10"
+        android:id="@+id/pick_active_layout"
+        app:layout_constraintTop_toBottomOf="@id/currently_active_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -85,11 +163,16 @@
         <Spinner
             android:id="@+id/SystemAddressSpinner"
             android:layout_width="0dp"
+            android:layout_marginEnd="@dimen/padding_10"
+            android:backgroundTint="@color/black"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center_vertical" />
 
         <Button
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@color/dark_grey"
+            android:background="@drawable/pick_button_background"
             android:id="@+id/PickSystemAddressButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -97,51 +180,75 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/darker_gray" />
-
-    <LinearLayout
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_2"
+        app:dividerInsetEnd="@dimen/padding_25"
+        app:dividerInsetStart="@dimen/padding_25"
+        app:layout_constraintTop_toBottomOf="@id/pick_active_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="@dimen/padding_25"
+        android:layout_marginBottom="@dimen/padding_20"
+        app:dividerColor="@color/light_grey"
+        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/address_management_help_text"
-            android:textColor="?attr/primaryTextColor"
-            android:textSize="15sp" />
+    <TextView
+        app:layout_constraintTop_toBottomOf="@id/divider_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/select_address_textview"
+        android:fontFamily="@font/poppins_regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:paddingStart="@dimen/padding_20"
+        android:paddingEnd="@dimen/padding_20"
+        android:layout_margin="@dimen/padding_25"
+        android:text="@string/address_management_help_text"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="15sp" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
+    <RelativeLayout
+        app:layout_constraintTop_toBottomOf="@id/select_address_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_margin="@dimen/padding_20"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/AbortButton"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="78dp"
+            android:layout_height="@dimen/padding_50"
+
+            android:layout_marginStart="@dimen/padding_10"
+            android:layout_marginTop="@dimen/padding_20"
             android:layout_marginEnd="2dp"
-            android:layout_weight="1"
-            android:text="@string/button_abort" />
+            android:background="@drawable/skip_button_background"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/button_abort"
+            android:textAllCaps="false"
+
+            android:textColor="?android:textColorPrimary" />
 
         <Button
             android:id="@+id/SaveButton"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_weight="1"
-            android:text="@string/button_save" />
+            android:layout_width="78dp"
+            android:layout_height="@dimen/padding_50"
+            android:layout_marginStart="@dimen/padding_10"
+            android:layout_marginTop="@dimen/padding_20"
+            android:layout_toEndOf="@id/AbortButton"
+            android:background="@drawable/next_button_background"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/button_save"
+            android:textAllCaps="false"
 
-    </LinearLayout>
+            android:textColor="@color/white" />
 
-</LinearLayout>
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

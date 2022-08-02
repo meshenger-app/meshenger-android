@@ -6,7 +6,6 @@
     <!-- Backup Import/Export -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -14,6 +13,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -25,7 +27,8 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="true"/>
 
         <activity
             android:name=".QRShowActivity"
@@ -33,13 +36,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".QRScanActivity"
+            android:exported="true"
             android:screenOrientation="portrait" />
 
-        <service android:name=".MainService" />
+        <service android:name=".MainService"   android:exported="true"/>
 
         <activity
             android:name=".StartActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -49,11 +54,11 @@
         <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".BackupActivity" />
-        <activity android:name=".AddressActivity" />
-        <activity android:name=".LicenseActivity" />
+        <activity android:name=".SettingsActivity" android:parentActivityName=".MainActivity" android:exported="true"  />
+        <activity android:name=".AboutActivity" android:parentActivityName=".MainActivity" android:exported="true" />
+        <activity android:name=".BackupActivity" android:parentActivityName=".MainActivity" android:exported="true" />
+        <activity android:name=".AddressActivity" android:parentActivityName=".MainActivity" android:exported="true" />
+        <activity android:name=".LicenseActivity" android:parentActivityName=".MainActivity" android:exported="true" />
     </application>
 
 </manifest>

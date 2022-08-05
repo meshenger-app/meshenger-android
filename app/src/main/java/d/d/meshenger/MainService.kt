@@ -413,6 +413,7 @@ class MainService : Service(), Runnable {
 
         // return a cloned list
         val contactsCopy: List<Contact>
+
             get() = ArrayList(database!!.contacts)
 
         internal fun addCallEvent(contact: Contact, type: CallEvent.Type?) {

@@ -96,7 +96,10 @@ initToolbar()
         eventListFragment!!.onServiceConnected()
 
         // call it here because EventListFragment.onResume is triggered twice
-        binder!!.pingContacts()
+        try {
+            binder!!.pingContacts()
+        }catch (e:Exception){}
+
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

@@ -1,33 +1,29 @@
 package d.d.meshenger
 
 import android.app.Dialog
-import d.d.meshenger.MeshengerActivity
-import android.content.ServiceConnection
-import d.d.meshenger.MainService.MainBinder
-import android.os.Bundle
-import d.d.meshenger.R
-import org.libsodium.jni.NaCl
-import android.graphics.Typeface
-import android.content.Intent
-import d.d.meshenger.MainService
-import androidx.appcompat.app.AppCompatDelegate
-import d.d.meshenger.MainActivity
 import android.content.ComponentName
-import android.os.IBinder
-import org.libsodium.jni.Sodium
-import d.d.meshenger.AddressEntry
 import android.content.DialogInterface
-import android.view.Gravity
-import android.view.ViewGroup
-import android.content.DialogInterface.OnShowListener
+import android.content.Intent
+import android.content.ServiceConnection
+import android.graphics.Typeface
+import android.os.Bundle
 import android.os.Handler
-import android.text.TextWatcher
+import android.os.IBinder
 import android.text.Editable
+import android.text.TextWatcher
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import java.lang.Exception
+import androidx.appcompat.app.AppCompatDelegate
+import d.d.meshenger.MainService
+import d.d.meshenger.MainService.MainBinder
+import org.libsodium.jni.NaCl
+import org.libsodium.jni.Sodium
+import java.util.*
+import java.util.regex.Pattern
 
 /*
  * Show splash screen, name setup dialog, database password dialog and
@@ -183,8 +179,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
 //            } catch (e: Exception) {
 //                e.printStackTrace()
 //            }
-            continueInit()
-       // }
+        continueInit()
+        // }
     }
 
     // initial dialog to set the username
@@ -210,6 +206,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         builder.setTitle(R.string.hello)
         builder.setView(layout)
         builder.setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface?, i: Int ->
+
+
             binder!!.shutdown()
             finish()
         }
@@ -268,6 +266,25 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
             }
         }
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener { v: View? ->
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            val username = generateRandomUserName()
+            if (Utils.isValidName(username)) {
+                binder!!.settings.username = username
+                try {
+                    binder!!.saveDatabase()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                // close dialog
+                dialog.dismiss()
+                //dialog.cancel(); // needed?
+                continueInit()
+            } else {
+                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     // ask for database password
@@ -305,4 +322,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
     companion object {
         private var sodium: Sodium? = null
     }
+    fun generateRandomUserName() = //foreach loop?
+        "User${UUID.randomUUID().toString().substring(0..7).replace(Pattern.quote("-"), "")}"
+
 }

@@ -1,26 +1,23 @@
 package d.d.meshenger
 
 import android.app.Dialog
-import d.d.meshenger.MeshengerActivity
-import android.content.ServiceConnection
-import d.d.meshenger.MainService.MainBinder
+import android.content.*
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import d.d.meshenger.R
-import android.content.Intent
-import d.d.meshenger.MainService
-import android.content.ComponentName
 import android.os.IBinder
-import d.d.meshenger.AddressActivity
-import android.content.DialogInterface
+import android.os.PowerManager
+import android.provider.Settings
 import android.text.InputType
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
-import d.d.meshenger.MainActivity
-import d.d.meshenger.SettingsActivity
+import d.d.meshenger.MainService
+import d.d.meshenger.MainService.MainBinder
 
 class SettingsActivity : MeshengerActivity(), ServiceConnection {
     private var binder: MainBinder? = null
@@ -58,7 +55,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainBinder
+        binder = iBinder!! as MainBinder
         initViews()
     }
 
@@ -91,7 +88,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             if (iceServers.isEmpty()) resources.getString(R.string.none) else Utils.join(iceServers)
         val blockUnknown = binder!!.settings.blockUnknown
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
-        blockUnknownCB.apply{
+        blockUnknownCB.apply {
             isChecked = blockUnknown
             setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
                 binder!!.settings.blockUnknown = isChecked
@@ -103,23 +100,175 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         nightModeCB.apply {
             isChecked = nightMode!!
             setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+                try {
 
-                // apply value
-                if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    // apply value
+                    if (isChecked) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    }
+
+                    // save value
+                    binder!!.settings.nightMode = isChecked
+                    binder!!.saveDatabase()
+
+                    // apply theme
+                    recreate()
+                } finally {
+
+                    finish()
                 }
-
-                // save value
-                binder!!.settings.nightMode = isChecked
-                binder!!.saveDatabase()
-
-                // apply theme
-                recreate()
             }
         }
+
+
+        val selectedColor = ContextCompat.getColor(this, R.color.selectedColor)
+        val unselectedColor = ContextCompat.getColor(this, R.color.platform_grey)
+        val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
+        val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
+        val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)
+        applySettingsMode("basic");
+        basicRadioButton.isChecked = true
+        basicRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                (compoundButton as RadioButton).setTextColor(selectedColor)
+                setServiceAndSettings("basic")
+                // settingsViewModel.currentSettingsMode = 0
+            } else {
+                (compoundButton as RadioButton).setTextColor(unselectedColor)
+
+            }
+        }
+
+        advancedRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                (compoundButton as RadioButton).setTextColor(selectedColor)
+                setServiceAndSettings("advanced")
+                //settingsViewModel.currentSettingsMode = 1
+            } else {
+                (compoundButton as RadioButton).setTextColor(unselectedColor)
+
+            }
+        }
+
+        expertRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                (compoundButton as RadioButton).setTextColor(selectedColor)
+                setServiceAndSettings("expert")
+                // settingsViewModel.currentSettingsMode = 2
+            } else {
+                (compoundButton as RadioButton).setTextColor(unselectedColor)
+
+            }
+        }
+        setupSpinner(binder!!.settings.videoCodec,
+            R.id.spinnerVideoCodecs,
+            R.array.videoCodecs,
+            R.array.videoCodecs,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        binder!!.settings.videoCodec = it
+                        binder!!.saveDatabase()
+                    }
+
+                }
+            })
+        setupSpinner(binder!!.settings.audioCodec,
+            R.id.spinnerAudioCodecs,
+            R.array.audioCodecs,
+            R.array.audioCodecs,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        binder!!.settings.audioCodec = it
+                        binder!!.saveDatabase()
+                    }
+
+                }
+            })
+        setupSpinner(binder!!.settings.videoResolution,
+            R.id.spinnerVideoResolutions,
+            R.array.videoResolutions,
+            R.array.videoResolutionsValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        binder!!.settings.videoResolution = it
+                        binder!!.saveDatabase()
+                    }
+
+                }
+            })
+
+        val recordAudio = binder!!.settings.recordAudio
+        val recordAudioCB = findViewById<CheckBox>(R.id.checkBoxSendAudio)
+        recordAudioCB.isChecked = recordAudio
+        recordAudioCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // save value
+            binder!!.settings.recordVideo = isChecked
+            binder!!.saveDatabase()
+        }
+        val playAudio = binder!!.settings.playAudio
+        val playAudioCB = findViewById<CheckBox>(R.id.checkBoxPlayAudio)
+        playAudioCB.isChecked = playAudio
+        playAudioCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // save value
+            binder!!.settings.playAudio = isChecked
+            binder!!.saveDatabase()
+        }
+        val recordVideo = binder!!.settings.recordVideo
+        val recordVideoCB = findViewById<CheckBox>(R.id.checkBoxRecordVideo)
+        recordVideoCB.isChecked = recordVideo
+        recordVideoCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // save value
+            binder!!.settings.recordVideo = isChecked
+            binder!!.saveDatabase()
+        }
+        val playVideo = binder!!.settings.playVideo
+        val playVideoCB = findViewById<CheckBox>(R.id.checkBoxPlayVideo)
+        playVideoCB.isChecked = playVideo
+        playVideoCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // save value
+            binder!!.settings.playVideo = isChecked
+            binder!!.saveDatabase()
+        }
+        val autoAcceptCall = binder!!.settings.autoAcceptCall
+        val autoAcceptCallCB = findViewById<CheckBox>(R.id.checkBoxAutoAcceptCall)
+        autoAcceptCallCB.isChecked = autoAcceptCall
+        autoAcceptCallCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // save value
+            binder!!.settings.autoAcceptCall = isChecked
+            binder!!.saveDatabase()
+        }
+        val autoConnectCall = binder!!.settings.autoConnectCall
+        val autoConnectCallCB = findViewById<CheckBox>(R.id.checkBoxAutoConnectCall)
+        autoConnectCallCB.isChecked = autoConnectCall
+        autoConnectCallCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // save value
+            binder!!.settings.autoConnectCall = isChecked
+            binder!!.saveDatabase()
+        }
+
+
+        val ignoreBatteryOptimizations = getIgnoreBatteryOptimizations()
+        val ignoreBatteryOptimizationsCB =
+            findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations)
+        ignoreBatteryOptimizationsCB.isChecked = ignoreBatteryOptimizations
+        ignoreBatteryOptimizationsCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            // Only required for Android 6 or later
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val intent =
+                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                intent.data = Uri.parse("package:" + this.packageName)
+                this.startActivity(intent)
+            }
+        }
+
+
     }
 
     private fun showChangeNameDialog() {
@@ -205,5 +354,81 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
 
     private fun log(s: String) {
         Log.d(SettingsActivity::class.java.simpleName, s)
+    }
+
+    private fun applySettingsMode(settingsMode: String) {
+        when (settingsMode) {
+            "basic" -> {
+                findViewById<View>(R.id.basicSettingsLayout).visibility = View.VISIBLE
+                findViewById<View>(R.id.advancedSettingsLayout).visibility = View.INVISIBLE
+                findViewById<View>(R.id.expertSettingsLayout).visibility = View.INVISIBLE
+            }
+            "advanced" -> {
+                findViewById<View>(R.id.basicSettingsLayout).visibility = View.VISIBLE
+                findViewById<View>(R.id.advancedSettingsLayout).visibility = View.VISIBLE
+                findViewById<View>(R.id.expertSettingsLayout).visibility = View.INVISIBLE
+            }
+            "expert" -> {
+                findViewById<View>(R.id.basicSettingsLayout).visibility = View.VISIBLE
+                findViewById<View>(R.id.advancedSettingsLayout).visibility = View.VISIBLE
+                findViewById<View>(R.id.expertSettingsLayout).visibility = View.VISIBLE
+            }
+            else -> android.util.Log.e(
+                ContentValues.TAG,
+                "Invalid settings mode: $settingsMode"
+            )
+        }
+    }
+
+    fun setServiceAndSettings(str: String) {
+        //settings.settingsMode = str
+        // binder!!.saveDatabase()
+        applySettingsMode(str)
+    }
+
+    private fun getIgnoreBatteryOptimizations(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val pMgr = this.getSystemService(POWER_SERVICE) as PowerManager
+            return pMgr.isIgnoringBatteryOptimizations(this.packageName)
+        }
+        return false
+    }
+
+    private interface SpinnerItemSelected {
+        fun call(newValue: String?)
+    }
+
+    private fun setupSpinner(
+        settingsMode: String?,
+        spinnerId: Int,
+        entriesId: Int,
+        entryValuesId: Int,
+        callback: SpinnerItemSelected
+    ) {
+        val spinner = findViewById<Spinner>(spinnerId)
+        val spinnerAdapter: ArrayAdapter<*> =
+            ArrayAdapter.createFromResource(this, entriesId, R.layout.spinner_item_settings)
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_settings)
+        spinner.adapter = spinnerAdapter
+        spinner.setSelection(
+            (spinner.adapter as ArrayAdapter<CharSequence?>).getPosition(
+                settingsMode
+            )
+        )
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            var check = 0
+            override fun onItemSelected(parent: AdapterView<*>?, view: View, pos: Int, id: Long) {
+                if (check++ > 0) {
+                    val selectedValues = resources.obtainTypedArray(entryValuesId)
+                    val settingsMode = selectedValues.getString(pos)
+                    callback.call(settingsMode)
+
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // ignore
+            }
+        }
     }
 }

@@ -10,6 +10,43 @@ import org.json.JSONException
 import java.util.ArrayList
 
 class Settings {
+    var settingsMode: String
+    var recordVideo = false
+    var playVideo = false
+    var recordAudio = false
+    var playAudio = false
+
+    /*
+     * autoAcceptCall:
+     *
+     *  true  => accept incoming and no ringing
+     *  false => wait an incoming call to be accepted (default)
+     */
+    var autoAcceptCall = false
+
+    /*
+     * autoConnectCall:
+     *
+     *  true  => start outgoing call without prompt (default)
+     *  false => allow to change call settings before the call is started
+     */
+    var autoConnectCall = false
+    var audioProcessing = false
+    var videoCodec: String
+    var audioCodec: String
+
+    /*
+     * speakerphone:
+     *
+     *  "auto"  => enable/disable by proximity sensor (default)
+     *  "true"  => enable hands-free talking
+     *  "false" => disable hands-free talking
+     */
+    var speakerphone: String? = null
+    var videoResolution: String? = null
+
+
+
     var username = ""
     var secretKey: ByteArray? = null
     var publicKey: ByteArray? = null
@@ -53,6 +90,20 @@ class Settings {
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.developmentMode = obj.getBoolean("development_mode")
             val addresses = obj.getJSONArray("addresses")
+
+            s.settingsMode = obj.getString("settings_mode")
+            s.recordVideo = obj.getBoolean("record_video")
+            s.playVideo = obj.getBoolean("play_video")
+            s.recordAudio = obj.getBoolean("record_audio")
+            s.playAudio = obj.getBoolean("play_audio")
+            s.autoAcceptCall = obj.getBoolean("auto_accept_call")
+            s.autoConnectCall = obj.getBoolean("auto_connect_call")
+            s.audioProcessing = obj.getBoolean("audio_processing")
+            s.videoCodec = obj.getString("video_codec")
+            s.audioCodec = obj.getString("audio_codec")
+            s.speakerphone = obj.getString("speakerphone")
+
+
             run {
                 var i = 0
                 while (i < addresses.length()) {
@@ -79,6 +130,19 @@ class Settings {
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("development_mode", s.developmentMode)
+
+            obj.put("settings_mode", s.settingsMode)
+            obj.put("record_video", s.recordVideo)
+            obj.put("play_video", s.playVideo)
+            obj.put("record_audio", s.recordAudio)
+            obj.put("play_audio", s.playAudio)
+            obj.put("auto_accept_call", s.autoAcceptCall)
+            obj.put("auto_connect_call", s.autoConnectCall)
+            obj.put("audio_processing", s.audioProcessing)
+            obj.put("video_codec", s.videoCodec)
+            obj.put("audio_codec", s.audioCodec)
+            obj.put("speakerphone", s.speakerphone)
+
             val addresses = JSONArray()
             run {
                 var i = 0
@@ -102,5 +166,19 @@ class Settings {
     init {
         addresses = ArrayList()
         iceServers = ArrayList()
+
+
+        settingsMode = "basic"
+        recordVideo = true
+        playVideo = true
+        recordAudio = true
+        playAudio = true
+        autoAcceptCall = false
+        autoConnectCall = true
+        audioProcessing = true
+        videoCodec = "VP8"
+        audioCodec = "OPUS"
+        speakerphone = "true" //Previous value = auto. auto is disabled
+        videoResolution = "Default"
     }
 }

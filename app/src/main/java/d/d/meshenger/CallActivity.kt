@@ -28,7 +28,9 @@ import android.widget.Toast
 import d.d.meshenger.RTCCall.OnStateChangeListener
 import d.d.meshenger.RTCCall.CallState
 import android.hardware.SensorEvent
+import android.net.wifi.WifiManager
 import android.os.*
+import android.text.format.Formatter
 import android.view.View
 import android.view.animation.Animation
 import java.io.IOException
@@ -67,6 +69,24 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainBinder
+                    val addresses_s = ArrayList<String>()
+
+
+                    val addr = binder!!.settings.addresses
+
+                    if (addr.isEmpty()) {
+                        val wifiManager =
+                            applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                        if (wifiManager != null) {
+                            val ipAddress: String =
+                                Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
+                            if (ipAddress != null && !ipAddress.equals("0.0.0.0")) {
+                                addresses_s.add(ipAddress)
+                                binder!!.settings?.addresses = addresses_s
+                                binder!!.saveDatabase()
+                            }
+                        }
+                    }
                     currentCall = contact?.let {
                         RTCCall.startCall(
                             this@CallActivity,

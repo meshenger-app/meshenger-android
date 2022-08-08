@@ -1,34 +1,29 @@
 package d.d.meshenger
 
+
 import android.Manifest
 import android.content.*
-import d.d.meshenger.MeshengerActivity
-import d.d.meshenger.MainService.MainBinder
-import androidx.viewpager.widget.ViewPager
-import d.d.meshenger.ContactListFragment
-import d.d.meshenger.EventListFragment
-import android.os.Bundle
-import d.d.meshenger.R
-import com.google.android.material.tabs.TabLayout
-import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
+import android.net.wifi.WifiManager
 import android.os.Build
-import androidx.core.app.ActivityCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import android.os.Bundle
 import android.os.IBinder
+import android.text.format.Formatter
 import android.view.Menu
-import d.d.meshenger.MainActivity.SectionsPageAdapter
-import d.d.meshenger.SettingsActivity
-import d.d.meshenger.BackupActivity
-import d.d.meshenger.AboutActivity
 import android.view.MenuItem
-import d.d.meshenger.MainService
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import java.util.ArrayList
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
+import d.d.meshenger.BackupActivity
+import d.d.meshenger.MainService
+import d.d.meshenger.MainService.MainBinder
 
 // the main view with tabs
 class MainActivity : MeshengerActivity(), ServiceConnection {
@@ -86,7 +81,24 @@ initToolbar()
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         log("OnServiceConnected")
         binder = iBinder as MainBinder
+        val addresses_s = ArrayList<String>()
 
+
+        val addr = binder!!.settings.addresses
+
+        if (addr.isEmpty()) {
+            val wifiManager =
+                applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            if (wifiManager != null) {
+                val ipAddress: String =
+                    Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
+                if (ipAddress != null && !ipAddress.equals("0.0.0.0")) {
+                    addresses_s.add(ipAddress)
+                    binder!!.settings?.addresses = addresses_s
+                    binder!!.saveDatabase()
+                }
+            }
+        }
         // in case the language has changed
         val adapter = SectionsPageAdapter(supportFragmentManager)
         adapter.addFragment(contactListFragment, this.resources.getString(R.string.title_contacts))

@@ -35,6 +35,7 @@ import android.view.View
 import android.view.animation.Animation
 import java.io.IOException
 import java.lang.Exception
+import java.lang.NullPointerException
 
 class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener {
     private var statusTextView: TextView? = null
@@ -363,30 +364,35 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        log("onDestroy")
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver)
-        stopRinging()
-        if (currentCall!!.state == CallState.CONNECTED) {
-            currentCall!!.decline()
-        }
-        currentCall!!.cleanup()
-        binder!!.addCallEvent(contact!!, callEventType)
-
-        //if (binder != null) {
-        unbindService(connection!!)
-        //}
-        if (wakeLock != null) {
-            wakeLock!!.release()
-        }
-        if (currentCall != null && currentCall!!.commSocket != null && currentCall!!.commSocket!!.isConnected && !currentCall!!.commSocket!!.isClosed) {
-            try {
-                currentCall!!.commSocket?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
+        try {
+            log("onDestroy")
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver)
+            stopRinging()
+            if (currentCall!!.state == CallState.CONNECTED) {
+                currentCall!!.decline()
             }
+            currentCall!!.cleanup()
+
+            binder?.addCallEvent(contact!!, callEventType)
+
+            //if (binder != null) {
+            unbindService(connection!!)
+            //}
+            if (wakeLock != null) {
+                wakeLock!!.release()
+            }
+            if (currentCall != null && currentCall!!.commSocket != null && currentCall!!.commSocket!!.isConnected && !currentCall!!.commSocket!!.isClosed) {
+                try {
+                    currentCall!!.commSocket?.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            currentCall!!.releaseCamera()
+        } catch (e: NullPointerException){
+
         }
-        currentCall!!.releaseCamera()
+        super.onDestroy()
     }
 
     private val activeCallback = object : OnStateChangeListener {

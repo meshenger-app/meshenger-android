@@ -14,6 +14,7 @@ import d.d.meshenger.MainService
 import android.content.ComponentName
 import android.os.IBinder
 import android.app.Activity
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.view.ViewGroup
 import android.view.LayoutInflater
@@ -56,6 +57,10 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         setContentView(R.layout.activity_address)
         setTitle(R.string.address_management)
         initToolbar()
+        val sharedPreferences: SharedPreferences = this.getSharedPreferences("MESHENGER_PREF",
+            MODE_PRIVATE)
+        val editor: SharedPreferences.Editor =  sharedPreferences.edit()
+
         storedAddressSpinner = findViewById(R.id.StoredAddressSpinner)
         systemAddressSpinner = findViewById(R.id.SystemAddressSpinner)
         pickStoredAddressButton = findViewById(R.id.PickStoredAddressButton)
@@ -124,11 +129,38 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             }
         }
         pickSystemAddressButton.setOnClickListener(View.OnClickListener { v: View? ->
-            val pos = systemAddressSpinner.getSelectedItemPosition()
-            if (pos > -1 && !systemAddressListAdapter!!.isEmpty) {
-                addressEditText.setText(systemAddressList.get(pos).address)
+            val pos = systemAddressSpinner.selectedItemPosition
+            if (pos > -1 && !systemAddressListAdapter.isEmpty) {
+//                addressEditText.setText(systemAddressList.get(pos).address)
+
+                val address = systemAddressList.get(pos).address
+
+                val entry = parseAddress(address)
+                if (entry.multicast) {
+                    Toast.makeText(this, "Multicast addresses are not supported.", Toast.LENGTH_SHORT)
+                        .show()
+                    return@OnClickListener
+                }
+                if ((Utils.isMAC(address) || Utils.isIP(address)) && !systemAddressList.contains(entry)) {
+                    Toast.makeText(
+                        this,
+                        "You can only choose a MAC/IP address that is used by the system.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@OnClickListener
+                }
+                storedAddressList.add(entry)
+//                updateSpinners()
+
+                // select the added element
+                val idx = AddressEntry.listIndexOf(storedAddressList, entry)
+//                systemAddressSpinner.setSelection(idx)
+
+                editor.putInt("indx_no", pos)
+                editor.apply()
             }
         })
+
         pickStoredAddressButton.setOnClickListener(View.OnClickListener { v: View? ->
             val pos = storedAddressSpinner.getSelectedItemPosition()
             if (pos > -1 && !storedAddressListAdapter!!.isEmpty) {
@@ -136,16 +168,26 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             }
         })
         saveButton.setOnClickListener(View.OnClickListener { v: View? ->
-            val addresses = ArrayList<String>()
+            /*val addresses = ArrayList<String>()
             for (ae in storedAddressList) {
                 addresses.add(ae.address)
+            }*/
+
+            if (storedAddressList.size > 0){
+                val lastIndx = storedAddressList.size - 1
+
+                binder!!.settings.addresses.add(storedAddressList[lastIndx].address)
+                binder!!.saveDatabase()
+                Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             }
-            binder!!.settings?.addresses = addresses
-            binder!!.saveDatabase()
-            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
+
         })
         abortButton.setOnClickListener(View.OnClickListener { v: View? -> finish() })
         bindService()
+
+        val indx = sharedPreferences.getInt("indx_no", 0)
+        systemAddressSpinner.setSelection(indx)
+
     }
 
     override fun onDestroy() {
@@ -189,13 +231,13 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         override fun getCount(): Int {
             return if (isEmpty) {
                 1
-            } else addressEntries!!.size
+            } else addressEntries.size
         }
 
         override fun getItem(position: Int): AddressEntry? {
             return if (isEmpty) {
                 null
-            } else addressEntries!![position]
+            } else addressEntries[position]
         }
 
         override fun getItemId(position: Int): Long {
@@ -265,14 +307,14 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         }
         Collections.sort(storedAddressList, compareAddressEntries)
         Collections.sort(systemAddressList, compareAddressEntries)
-        storedAddressListAdapter!!.update(storedAddressList, systemAddressList)
-        storedAddressListAdapter!!.notifyDataSetChanged()
-        systemAddressListAdapter!!.update(systemAddressList, storedAddressList)
-        systemAddressListAdapter!!.notifyDataSetChanged()
-        systemAddressSpinner!!.adapter = storedAddressListAdapter
-        systemAddressSpinner!!.adapter = systemAddressListAdapter
-        pickStoredAddressButton!!.isEnabled = !storedAddressListAdapter!!.isEmpty
-        pickSystemAddressButton!!.isEnabled = !systemAddressListAdapter!!.isEmpty
+        storedAddressListAdapter.update(storedAddressList, systemAddressList)
+        storedAddressListAdapter.notifyDataSetChanged()
+        systemAddressListAdapter.update(systemAddressList, storedAddressList)
+        systemAddressListAdapter.notifyDataSetChanged()
+        systemAddressSpinner.adapter = storedAddressListAdapter
+        systemAddressSpinner.adapter = systemAddressListAdapter
+        pickStoredAddressButton.isEnabled = !storedAddressListAdapter.isEmpty
+        pickSystemAddressButton.isEnabled = !systemAddressListAdapter.isEmpty
         updateAddressEditTextButtons()
     }
 

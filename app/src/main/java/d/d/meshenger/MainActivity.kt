@@ -84,9 +84,9 @@ initToolbar()
         val addresses_s = ArrayList<String>()
 
 
-        val addr = binder!!.settings.addresses
+        val addr = binder?.settings?.addresses
 
-        if (addr.isEmpty()) {
+        if (addr!!.isEmpty()) {
             val wifiManager =
                 applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
             if (wifiManager != null) {

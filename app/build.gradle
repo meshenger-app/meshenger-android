@@ -5,7 +5,7 @@ android {
     }
     compileSdkVersion 31
     defaultConfig {
-        applicationId "d.d.meshenger"
+        applicationId "d.d.meshenger.test"
         minSdkVersion 19
         targetSdkVersion 31
         versionCode 400
@@ -13,7 +13,8 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
     }
-    ndkVersion '22.0.7026061'
+//    ndkVersion '22.0.7026061'
+    ndkVersion '21.0.6113669'
     buildTypes {
         release {
             minifyEnabled false

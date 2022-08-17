@@ -416,11 +416,11 @@ class MainService : Service(), Runnable {
 
             get() = ArrayList(database!!.contacts)
 
-        internal fun addCallEvent(contact: Contact, type: CallEvent.Type?) {
-            val last_working = contact.lastWorkingAddress
+        internal fun addCallEvent(contact: Contact?, type: CallEvent.Type?) {
+            val last_working = contact?.lastWorkingAddress
             events!!.add(
                 CallEvent(
-                    contact.publicKey!!,
+                    contact?.publicKey!!,
                     last_working?.address!!,
                     type!!
                 )

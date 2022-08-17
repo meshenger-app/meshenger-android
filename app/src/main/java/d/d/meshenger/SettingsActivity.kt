@@ -79,7 +79,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             if (username.length == 0) resources.getString(R.string.none) else username
         val addresses = binder!!.settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
-            if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
+            if (addresses.size == 0) resources.getString(R.string.none) else addresses[addresses.size-1]
         val password = binder!!.getService().databasePassword
         (findViewById<View>(R.id.passwordTv) as TextView).text =
             if (password.isEmpty()) resources.getString(R.string.none) else "********"

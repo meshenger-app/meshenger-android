@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
-
-
-<androidx.constraintlayout.widget.ConstraintLayout
-
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -54,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@id/address_appbar"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="@dimen/padding_25"
-        android:text="@string/qr_code_address_list"
+        android:text="@string/available_addresses"
         android:textColor="?android:textColorPrimary"
         android:textSize="@dimen/title_text_size" />
 
@@ -65,6 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:visibility="gone"
         android:orientation="horizontal">
 
         <Spinner
@@ -94,6 +87,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/padding_5"
         android:layout_margin="@dimen/padding_25"
+        android:visibility="gone"
         android:orientation="horizontal">
 
         <EditText
@@ -142,6 +136,7 @@
         android:layout_marginTop="@dimen/padding_25"
         android:layout_marginBottom="@dimen/padding_20"
         app:dividerColor="@color/light_grey"
+        android:visibility="gone"
         />
 
     <TextView
@@ -153,6 +148,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/lato_bold"
         android:text="@string/currently_active"
+        android:visibility="gone"
         android:textColor="?android:textColorPrimary"
         app:layout_constraintTop_toBottomOf="@id/divider_1"
         android:textSize="@dimen/title_text_size" />
@@ -174,6 +170,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/padding_10"
             android:layout_weight="1"
+            android:dropDownWidth="wrap_content"
             android:backgroundTint="@color/black" />
 
         <Button
@@ -207,7 +204,7 @@
         android:fontFamily="@font/poppins_regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="textStart"
+        android:textAlignment="center"
         android:paddingStart="@dimen/padding_20"
         android:paddingEnd="@dimen/padding_20"
         android:layout_margin="@dimen/padding_25"
@@ -219,7 +216,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_address_textview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:gravity="center"
         android:layout_margin="@dimen/padding_20"
         android:layout_height="wrap_content"
@@ -230,10 +227,10 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="78dp"
             android:layout_height="@dimen/padding_50"
-android:layout_marginBottom="30dp"
+            android:layout_marginBottom="30dp"
             android:layout_marginStart="@dimen/padding_10"
             android:layout_marginTop="@dimen/padding_20"
-            android:layout_marginEnd="2dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/skip_button_background"
             android:fontFamily="@font/lato_bold"
             android:text="@string/button_abort"
@@ -246,9 +243,9 @@ android:layout_marginBottom="30dp"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="78dp"
             android:layout_height="@dimen/padding_50"
-            android:layout_marginBottom="20dp"
             android:layout_marginStart="@dimen/padding_10"
             android:layout_marginTop="@dimen/padding_20"
+            android:layout_marginBottom="20dp"
             android:layout_toEndOf="@id/AbortButton"
             android:background="@drawable/next_button_background"
             android:fontFamily="@font/lato_bold"
@@ -260,4 +257,3 @@ android:layout_marginBottom="30dp"
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>

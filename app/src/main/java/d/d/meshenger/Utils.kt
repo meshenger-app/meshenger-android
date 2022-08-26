@@ -3,20 +3,17 @@ package d.d.meshenger
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import androidx.core.content.ContextCompat
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
 import android.text.TextUtils
-import d.d.meshenger.AddressEntry
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.io.*
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.Throws
-import kotlin.experimental.and
 import kotlin.experimental.xor
+
 
 internal object Utils {
     fun hasReadPermission(activity: Activity?): Boolean {
@@ -105,6 +102,7 @@ internal object Utils {
     }
 
     private val hexArray = "0123456789ABCDEF".toCharArray()
+
     @JvmStatic
     fun byteArrayToHexString(bytes: ByteArray?): String {
         if (bytes == null) {
@@ -297,6 +295,13 @@ internal object Utils {
             log("error: $ex")
         }
         return addressList
+    }
+
+    fun getDefaultWlan80Address(address: List<AddressEntry>): AddressEntry? {
+        return address.firstOrNull {
+            it.address.startsWith("fe80::") && it.device.startsWith("wlan")
+        } ?: address.firstOrNull { it.device.startsWith("wlan") }
+
     }
 
     // list all IP/MAC addresses of running network interfaces - for debugging only

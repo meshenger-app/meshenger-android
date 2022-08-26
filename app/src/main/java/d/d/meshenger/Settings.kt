@@ -7,7 +7,6 @@ import kotlin.Throws
 import org.json.JSONObject
 import org.json.JSONArray
 import org.json.JSONException
-import java.util.ArrayList
 
 class Settings {
     var settingsMode: String
@@ -46,7 +45,6 @@ class Settings {
     var videoResolution: String? = null
 
 
-
     var username = ""
     var secretKey: ByteArray? = null
     var publicKey: ByteArray? = null
@@ -55,6 +53,7 @@ class Settings {
     var blockUnknown = false
     var developmentMode = false
     var addresses: ArrayList<String>
+    var customAddress: ArrayList<String> = ArrayList()
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
     var iceServers: ArrayList<String>
@@ -90,6 +89,13 @@ class Settings {
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.developmentMode = obj.getBoolean("development_mode")
             val addresses = obj.getJSONArray("addresses")
+            s.customAddress.clear()
+            if (obj.has("custom_address")){
+                val address = obj.getJSONArray("custom_address")
+                for(i in 0 until address.length()){
+                    s.customAddress.add(address.getString(i))
+                }
+            }
 
             s.settingsMode = obj.getString("settings_mode")
             s.recordVideo = obj.getBoolean("record_video")
@@ -103,7 +109,9 @@ class Settings {
             s.audioCodec = obj.getString("audio_codec")
             s.speakerphone = obj.getString("speakerphone")
 
-
+            Utils.getDefaultWlan80Address(Utils.collectAddresses())?.let {
+                s.addresses.add(it.address)
+            }
             run {
                 var i = 0
                 while (i < addresses.length()) {
@@ -151,7 +159,16 @@ class Settings {
                     i += 1
                 }
             }
+            val customIps = JSONArray()
+            run {
+                var i = 0
+                while (i < s.customAddress.size) {
+                    customIps.put(s.customAddress[i])
+                    i += 1
+                }
+            }
             obj.put("addresses", addresses)
+            obj.put("custom_address", customIps)
             val iceServers = JSONArray()
             var i = 0
             while (i < s.iceServers.size) {

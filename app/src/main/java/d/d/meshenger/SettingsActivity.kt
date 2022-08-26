@@ -78,6 +78,11 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         (findViewById<View>(R.id.nameTv) as TextView).text =
             if (username.length == 0) resources.getString(R.string.none) else username
         val addresses = binder!!.settings.addresses
+         Utils.getDefaultWlan80Address(Utils.collectAddresses())?.let {
+             if (!addresses.contains(it.address)) {
+                addresses.add(0, it.address)
+            }
+        }
         (findViewById<View>(R.id.addressTv) as TextView).text =
             if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
         val password = binder!!.getService().databasePassword

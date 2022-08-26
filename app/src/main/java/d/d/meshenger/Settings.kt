@@ -1,5 +1,6 @@
 package d.d.meshenger
 
+import android.util.Log
 import d.d.meshenger.Utils.hexStringToByteArray
 import d.d.meshenger.Utils.byteArrayToHexString
 import d.d.meshenger.Contact
@@ -108,10 +109,6 @@ class Settings {
             s.videoCodec = obj.getString("video_codec")
             s.audioCodec = obj.getString("audio_codec")
             s.speakerphone = obj.getString("speakerphone")
-
-            Utils.getDefaultWlan80Address(Utils.collectAddresses())?.let {
-                s.addresses.add(it.address)
-            }
             run {
                 var i = 0
                 while (i < addresses.length()) {

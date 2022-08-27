@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id "org.jetbrains.kotlin.android" version "1.6.10"
+    id "org.jetbrains.kotlin.android" version "1.7.0"
 }
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -15,8 +15,8 @@ android {
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 373
-        versionName "0.4.6.3"
+        versionCode 374
+        versionName "0.4.6.4"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)

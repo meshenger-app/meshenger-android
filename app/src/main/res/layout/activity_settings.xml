@@ -27,7 +27,7 @@
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/settings"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -220,39 +220,41 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:theme="@style/RadioButtonTheme">
+                        android:theme="@style/RadioButtonTheme"
+                        android:weightSum="3">
 
                         <RadioButton
                             android:id="@+id/basic_radio_button"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/padding_40"
+                            android:layout_weight="1"
                             android:buttonTint="@color/selectedColor"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/basic"
                             android:textColor="@color/platform_grey"
-                            android:textSize="18sp" />
+                            android:textSize="16sp" />
 
                         <RadioButton
                             android:id="@+id/advanced_radio_button"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/padding_20"
+                            android:layout_weight="1"
                             android:buttonTint="@color/selectedColor"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/advanced"
                             android:textColor="@color/platform_grey"
-                            android:textSize="18sp" />
+                            android:textSize="16sp" />
 
                         <RadioButton
                             android:id="@+id/expert_radio_button"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:buttonTint="@color/selectedColor"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/expert"
                             android:textColor="@color/platform_grey"
-                            android:textSize="18sp" />
+                            android:textSize="16sp" />
                     </RadioGroup>
 
                     <!--                    <Spinner-->

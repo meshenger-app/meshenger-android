@@ -26,7 +26,7 @@
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/address_management"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -206,7 +206,8 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:layout_weight="1"
-            android:hint="Enter the ip no" />
+            android:textSize="16sp"
+            android:hint="ENTER CUSTOM ADDRESS" />
 
         <Button
             android:id="@+id/addIpBtn"
@@ -228,7 +229,7 @@
         android:text="@string/address_management_help_text"
         android:textAlignment="center"
         android:textColor="?android:textColorSecondary"
-        android:textSize="15sp"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/addIpContainer" />

@@ -14,6 +14,7 @@
         android:layout_centerHorizontal="true"
         android:fontFamily="@font/lato_bold"
         android:gravity="center"
+        android:textSize="18sp"
         android:text="@string/scan_invitation"
         android:textColor="@color/black" />
 

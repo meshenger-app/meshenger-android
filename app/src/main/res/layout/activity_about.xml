@@ -66,20 +66,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
+                android:fontFamily="@font/lato_bold"
                 android:text="@string/app_name"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="22sp"
-                android:fontFamily="@font/lato_bold"
-                />
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:fontFamily="@font/lato_bold"
                 android:text="@string/about_version"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="15sp"
-                android:fontFamily="@font/lato_bold"/>
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/versionTv"
@@ -93,10 +92,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:fontFamily="@font/lato_bold"
                 android:text="@string/about_info"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="15sp"
-                android:fontFamily="@font/lato_bold"/>
+                android:textSize="13sp" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -119,33 +118,34 @@
                     android:layout_toEndOf="@id/meshenger_app_link"
                     android:text="@string/app_info_snippet"
                     />
+
                 <TextView
-                    android:layout_below="@+id/meshenger_app_link"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/meshenger_app_link"
                     android:fontFamily="@font/lato_bold"
                     android:text="@string/app_info"
                     android:textColor="#7B7B7B"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
             </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:fontFamily="@font/lato_bold"
                 android:text="@string/about_license"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="15sp"
-                android:fontFamily="@font/lato_bold"/>
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/licenseTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/lato_bold"
                 android:text="@string/about_license_version"
                 android:textColor="#3F51B5"
-                android:textSize="15sp"
-                android:fontFamily="@font/lato_bold"/>
+                android:textSize="13sp" />
 
         </LinearLayout>
 

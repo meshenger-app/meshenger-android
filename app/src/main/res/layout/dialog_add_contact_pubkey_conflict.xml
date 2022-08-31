@@ -17,6 +17,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:textSize="11sp"
         android:fontFamily="@font/lato_bold"
         android:text="@string/contact_key_conflict"
         android:textColor="@color/black" />

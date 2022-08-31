@@ -16,6 +16,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/lato_bold"
+        android:textSize="11sp"
         android:text="@string/set_ice_servers_description"
         android:textColor="@color/black" />
 

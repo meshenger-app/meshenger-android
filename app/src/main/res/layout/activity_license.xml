@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lato_bold"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:text="@string/menu_license"/>
 
         </androidx.appcompat.widget.Toolbar>

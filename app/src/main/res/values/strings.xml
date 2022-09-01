@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Meshenger Test</string>
+    <string name="app_name" translatable="false">Meshenger</string>
     <string name="action_settings">Settings</string>
     <string name="name_prompt">What should be your name?</string>
     <string name="scan_invitation">Scan This QR-Code</string>
@@ -89,7 +89,7 @@
     <string name="qr_code_address_list">QR-Code Address List</string>
     <string name="currently_active">Currently Active</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. If no MAC address is visible, then enable your WiFi.</string>
-    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
+    <string name="listen_for_incoming_calls">Listening for calls in background.</string>
     <string name="file_does_not_exist">File does not exist</string>
     <string name="no_path_selected">No path selected</string>
     <string name="file_already_exists">File already exists</string>

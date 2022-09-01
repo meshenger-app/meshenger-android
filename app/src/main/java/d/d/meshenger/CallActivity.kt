@@ -144,7 +144,9 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                     passiveWakeLock!!.release()
                 }
                 callEventType = CallEvent.Type.INCOMING_DECLINED
-                finish()
+                startActivity(Intent(this, MainActivity::class.java))
+                finishAffinity()
+
             }
 
             // hangup call

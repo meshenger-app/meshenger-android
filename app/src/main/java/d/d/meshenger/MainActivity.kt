@@ -52,6 +52,7 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         setContentView(R.layout.activity_main)
         initToolbar()
         permissionToDrawOverlays();
+        MainService.start(this)
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container)
         contactListFragment = ContactListFragment()
@@ -104,7 +105,8 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         log("OnServiceConnected")
         binder = iBinder as MainBinder
         val addresses_s = ArrayList<String>()
-        val addr = binder?.settings?.addresses
+        var addr = binder?.settings?.addresses
+
 
         if (addr!!.isEmpty()) {
             val wifiManager =

@@ -2,39 +2,27 @@ package d.d.meshenger
 
 import android.app.*
 import android.content.Context
-import d.d.meshenger.Database.Companion.load
-import d.d.meshenger.Database.Companion.store
-import d.d.meshenger.Crypto.encryptMessage
-import d.d.meshenger.Crypto.decryptMessage
-import d.d.meshenger.Log.d
-import d.d.meshenger.Database
-import kotlin.jvm.Volatile
-import d.d.meshenger.RTCCall
-import d.d.meshenger.CallEvent
-import d.d.meshenger.Contact
-import d.d.meshenger.Crypto
-import d.d.meshenger.PacketWriter
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
-import org.libsodium.jni.Sodium
-import d.d.meshenger.PacketReader
-import d.d.meshenger.MainService
-import org.json.JSONObject
-import d.d.meshenger.MainService.MainBinder
-import d.d.meshenger.CallActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import android.widget.Toast
-import d.d.meshenger.MainService.PingRunnable
 import android.os.IBinder
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import d.d.meshenger.Crypto.decryptMessage
+import d.d.meshenger.Crypto.encryptMessage
+import d.d.meshenger.Database.Companion.load
+import d.d.meshenger.Database.Companion.store
+import d.d.meshenger.Log.d
+import d.d.meshenger.MainService
+import org.json.JSONObject
+import org.libsodium.jni.Sodium
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
@@ -53,11 +41,11 @@ class MainService : Service(), Runnable {
     override fun onCreate() {
         super.onCreate()
         database_path = this.filesDir.toString() + "/database.bin"
-
         // handle incoming connections
         Thread(this).start()
         events = ArrayList()
     }
+
     private val NOTIFICATION = 42
     private fun showNotification() {
         val channelId = "meshenger_service"
@@ -72,11 +60,10 @@ class MainService : Service(), Runnable {
             val service = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             service.createNotificationChannel(chan)
         }
-
         // start MainActivity
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingNotificationIntent =
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 PendingIntent.getActivity(this, 0, notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
             else PendingIntent.getActivity(this, 0, notificationIntent,
@@ -93,6 +80,7 @@ class MainService : Service(), Runnable {
             .build()
         startForeground(NOTIFICATION, notification)
     }
+
     private fun loadDatabase() {
         try {
             if (File(database_path).exists()) {
@@ -120,7 +108,6 @@ class MainService : Service(), Runnable {
     override fun onDestroy() {
         super.onDestroy()
         run = false
-
         // The database might be null here if no correct
         // database password was supplied to open it.
         if (database != null) {
@@ -130,7 +117,6 @@ class MainService : Service(), Runnable {
                 e.printStackTrace()
             }
         }
-
         // shutdown listening socket and say goodbye
         if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
             try {
@@ -175,7 +161,7 @@ class MainService : Service(), Runnable {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent == null || intent.action == null) {
+        if (intent.action == null) {
             // ignore
         } else if (intent.action == START_FOREGROUND_ACTION) {
             log("Received Start Foreground Intent")
@@ -231,13 +217,11 @@ class MainService : Service(), Runnable {
                         contact = Contact("", clientPublicKey.clone(), ArrayList())
                     }
                 }
-
                 // suspicious change of identity in during connection...
                 if (!Arrays.equals(contact.publicKey, clientPublicKey)) {
                     log("suspicious change of key")
                     continue
                 }
-
                 // remember last good address (the outgoing port is random and not the server port)
                 contact.setLastWorkingAddress(
                     InetSocketAddress(remote_address.address, serverPort)
@@ -246,12 +230,10 @@ class MainService : Service(), Runnable {
                 val action = obj.optString("action", "")
                 when (action) {
                     "call" -> {
-
                         // someone calls us
                         log("call...")
                         val offer = obj.getString("offer")
                         currentCall = RTCCall(this, MainBinder(), contact, client, offer)
-
                         // respond that we accept the call
                         val encrypted = encryptMessage(
                             "{\"action\":\"ringing\"}",
@@ -297,7 +279,6 @@ class MainService : Service(), Runnable {
                 currentCall!!.decline()
             }
         }
-
         // zero out key
         Arrays.fill(clientPublicKey, 0.toByte())
     }
@@ -337,7 +318,7 @@ class MainService : Service(), Runnable {
     * Allows communication between MainService and other objects
     */
     inner class MainBinder : Binder() {
-        fun getService():MainService=this@MainService
+        fun getService(): MainService = this@MainService
         fun getCurrentCall(): RTCCall? {
             return currentCall
         }
@@ -409,11 +390,10 @@ class MainService : Service(), Runnable {
         }
 
         val settings: Settings
-            get() = database!!.settings
+            get() = database?.settings!!
 
         // return a cloned list
         val contactsCopy: List<Contact>
-
             get() = ArrayList(database!!.contacts)
 
         internal fun addCallEvent(contact: Contact?, type: CallEvent.Type?) {
@@ -444,7 +424,7 @@ class MainService : Service(), Runnable {
         var context: Context,
         private val contacts: List<Contact>,
         var ownPublicKey: ByteArray?,
-        var ownSecretKey: ByteArray?
+        var ownSecretKey: ByteArray?,
     ) : Runnable {
         var binder: MainBinder
         private fun setState(publicKey: ByteArray?, state: Contact.State) {
@@ -529,7 +509,6 @@ class MainService : Service(), Runnable {
         const val serverPort = 10001
         const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
         const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
-
         private var server: ServerSocket? = null
         fun start(ctx: Context?) {
             val startIntent = Intent(ctx, MainService::class.java)

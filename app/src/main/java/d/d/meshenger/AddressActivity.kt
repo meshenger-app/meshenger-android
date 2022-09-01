@@ -28,6 +28,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
     private lateinit var pickSystemAddressButton: Button
     private lateinit var addressEditText: EditText
     private lateinit var addButton: Button
+    private lateinit var removeBtn: Button
     private lateinit var removeButton: ImageButton
     private lateinit var ipField: EditText
     private lateinit var saveButton: Button
@@ -73,6 +74,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         systemAddressSpinner = findViewById(R.id.SystemAddressSpinner)
         pickStoredAddressButton = findViewById(R.id.PickStoredAddressButton)
         pickSystemAddressButton = findViewById(R.id.PickSystemAddressButton)
+        removeBtn = findViewById(R.id.removeBtn1)
         addressEditText = findViewById(R.id.AddressEditText)
         addButton = findViewById(R.id.AddButton)
         removeButton = findViewById(R.id.RemoveButton)
@@ -106,6 +108,25 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                 updateAddressEditTextButtons()
             }
         })
+
+        removeBtn.setOnClickListener {
+            val pos = systemAddressSpinner.selectedItemPosition
+            if (pos > -1 && !systemAddressListAdapter.isEmpty) {
+//                addressEditText.setText(systemAddressList.get(pos).address)
+                val address = systemAddressList.get(pos).address
+                val entry = parseAddress(address)
+                if (storedAddressList.contains(entry)) {
+                    storedAddressList.remove(entry)
+                    binder!!.settings.addresses.remove(entry.address)
+                    binder!!.saveDatabase()
+                    updateSpinners()
+                    Toast.makeText(this, "$entry is removed!", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this, "This Entry is not saved!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         addButton.setOnClickListener { v: View? ->
             val address = addressEditText.getText().toString()
             if (address.isEmpty()) {
@@ -190,6 +211,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                 addressEditText.setText(storedAddressList.get(pos).address)
             }
         })
+
         saveButton.setOnClickListener(View.OnClickListener { v: View? ->
             /*val addresses = ArrayList<String>()
             for (ae in storedAddressList) {
@@ -224,15 +246,6 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                 if (!storedAddressList.contains(entry)) {
                     storedAddressList.add(entry)
                 }
-//                else
-//                {
-//                    storedAddressList.remove(entry)
-//                    updateSpinners(true)
-//
-//                    systemAddressList.removeAt(pos)
-//                    updateSpinners(true)
-//
-//                }
 //                updateSpinners()
                 // select the added element
                 val idx = AddressEntry.listIndexOf(storedAddressList, entry)
@@ -439,7 +452,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         storedAddressListAdapter.notifyDataSetChanged()
         systemAddressListAdapter.update(systemAddressList, storedAddressList)
         systemAddressListAdapter.notifyDataSetChanged()
-        systemAddressSpinner.adapter = storedAddressListAdapter
+        storedAddressSpinner.adapter = storedAddressListAdapter
         systemAddressSpinner.adapter = systemAddressListAdapter
         pickStoredAddressButton.isEnabled = !storedAddressListAdapter.isEmpty
         pickSystemAddressButton.isEnabled = !systemAddressListAdapter.isEmpty

@@ -1,7 +1,5 @@
 package d.d.meshenger
 
-import d.d.meshenger.AddressEntry
-
 /*
  * Item for address management (AddressActivity)
  */
@@ -9,7 +7,7 @@ class AddressEntry internal constructor(
     var address: String,
     var device: String,
     var multicast: Boolean,
-    val isCustom:Boolean=false,
+    val isCustom: Boolean = false,
 ) : Comparable<AddressEntry> {
     override fun compareTo(e: AddressEntry): Int {
         return address.compareTo(e.address)

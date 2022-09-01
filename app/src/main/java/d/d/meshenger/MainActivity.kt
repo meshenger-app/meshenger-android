@@ -1,13 +1,14 @@
 package d.d.meshenger
 
-
 import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
 import android.text.format.Formatter
 import android.view.Menu
 import android.view.MenuItem
@@ -21,8 +22,6 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import d.d.meshenger.BackupActivity
-import d.d.meshenger.MainService
 import d.d.meshenger.MainService.MainBinder
 
 // the main view with tabs
@@ -32,6 +31,7 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     private var mViewPager: ViewPager? = null
     private var contactListFragment: ContactListFragment? = null
     private var eventListFragment: EventListFragment? = null
+    val PERM_REQUEST_CODE_DRAW_OVERLAYS = 1234
     private fun initToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.apply {
@@ -45,18 +45,19 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
             setDisplayShowTitleEnabled(false)
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         log("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-initToolbar()
+        initToolbar()
+        permissionToDrawOverlays();
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container)
         contactListFragment = ContactListFragment()
         eventListFragment = EventListFragment()
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
         tabLayout.setupWithViewPager(mViewPager)
-
         // ask for audio recording permissions
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -71,6 +72,27 @@ initToolbar()
             .registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
     }
 
+    private fun permissionToDrawOverlays() {
+        if (Build.VERSION.SDK_INT >= 23) {   //Android M Or Over
+            if (!Settings.canDrawOverlays(this)) {
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse(
+                    "package:$packageName"))
+                startActivityForResult(intent, PERM_REQUEST_CODE_DRAW_OVERLAYS)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PERM_REQUEST_CODE_DRAW_OVERLAYS) {
+            if (Build.VERSION.SDK_INT >= 23) {   //Android M Or Over
+                if (!Settings.canDrawOverlays(this)) {
+                    // ADD UI FOR USER TO KNOW THAT UI for SYSTEM_ALERT_WINDOW permission was not granted earlier...
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         log("onDestroy")
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshEventListReceiver)
@@ -82,8 +104,6 @@ initToolbar()
         log("OnServiceConnected")
         binder = iBinder as MainBinder
         val addresses_s = ArrayList<String>()
-
-
         val addr = binder?.settings?.addresses
 
         if (addr!!.isEmpty()) {
@@ -106,12 +126,11 @@ initToolbar()
         mViewPager!!.adapter = adapter
         contactListFragment!!.onServiceConnected()
         eventListFragment!!.onServiceConnected()
-
         // call it here because EventListFragment.onResume is triggered twice
         try {
             binder!!.pingContacts()
-        }catch (e:Exception){}
-
+        } catch (e: Exception) {
+        }
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
@@ -172,7 +191,7 @@ initToolbar()
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {

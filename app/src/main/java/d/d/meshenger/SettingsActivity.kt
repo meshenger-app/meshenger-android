@@ -55,7 +55,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder!! as MainBinder
+        binder = iBinder as MainBinder
         initViews()
     }
 

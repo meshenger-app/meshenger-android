@@ -35,9 +35,9 @@
                 android:id="@+id/callName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CallerName"
+                android:text="@string/callername"
                 android:textColor="?attr/primaryTextColor"
-                android:textSize="30dp" />
+                android:textSize="30sp" />
 
             <TextView
                 android:id="@+id/callStatus"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/call_connecting"
                 android:textColor="?attr/secondaryTextColor"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -61,10 +61,12 @@
                 android:id="@+id/callAccept"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginRight="80dp"
+                android:layout_marginEnd="80dp"
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
+                android:contentDescription="Call Accept"
+
                 android:src="@drawable/baseline_phone_black_48"
                 android:visibility="gone"/>
 
@@ -75,6 +77,7 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
+                android:contentDescription="Call Decline"
                 android:src="@drawable/baseline_phone_missed_black_48" />
 
             <RelativeLayout

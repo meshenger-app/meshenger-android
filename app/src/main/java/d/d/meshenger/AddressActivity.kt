@@ -85,7 +85,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         if (cache != null) {
             customIpAddress.addAll(cache.toList())
             systemAddressList.addAll(cache.map {
-                AddressEntry(it.toString(), "Custom Ip", false, true)
+                AddressEntry(it.toString(), "Custom", false, true)
             })
         }
         storedAddressList = ArrayList()
@@ -121,7 +121,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                     binder!!.saveDatabase()
                     updateSpinners()
                     Toast.makeText(this, "$entry is removed!", Toast.LENGTH_SHORT).show()
-                }else{
+                } else {
                     Toast.makeText(this, "This Entry is not saved!", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -245,6 +245,10 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
 
                 if (!storedAddressList.contains(entry)) {
                     storedAddressList.add(entry)
+                } else {
+                    Toast.makeText(applicationContext,
+                        "THIS ADDRESS ALREADY EXISTS",
+                        Toast.LENGTH_LONG).show()
                 }
 //                updateSpinners()
                 // select the added element
@@ -271,12 +275,18 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                 Toast.makeText(this, "Please enter a valid domain name", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val entry = AddressEntry(text, "Custom Ip", false, true)
-            systemAddressList.add(entry)
-            customIpAddress.add(text)
-            updateSpinners(true)
-            saveCustomIpList(sharedPreferences, customIpAddress)
-            ipField.setText("")
+            val entry = AddressEntry(text, "Custom", false, true)
+
+            if (!systemAddressList.contains(entry)) {
+                systemAddressList.add(entry)
+                customIpAddress.add(text)
+                updateSpinners(true)
+                saveCustomIpList(sharedPreferences, customIpAddress)
+                ipField.setText("")
+            } else {
+                Toast.makeText(applicationContext, "THIS ADDRESS ALREADY EXISTS", Toast.LENGTH_LONG)
+                    .show()
+            }
         }
         abortButton.setOnClickListener(View.OnClickListener { v: View? -> finish() })
         bindService()

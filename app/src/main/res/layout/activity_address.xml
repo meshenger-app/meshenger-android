@@ -235,8 +235,9 @@
             android:id="@+id/addIpBtn"
             android:layout_width="wrap_content"
             android:layout_marginRight="12dp"
-            android:background="?selectableItemBackground"
+            android:background="@drawable/next_button_background"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
             android:text="Add" />
     </LinearLayout>
 

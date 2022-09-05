@@ -257,14 +257,6 @@
                             android:textSize="16sp" />
                     </RadioGroup>
 
-                    <!--                    <Spinner-->
-                    <!--                        android:id="@+id/spinnerSettingsMode"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:drawSelectorOnTop="true"-->
-                    <!--                        android:textSize="15dp"-->
-                    <!--                    />-->
-
                 </LinearLayout>
 
             </LinearLayout>
@@ -283,6 +275,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout

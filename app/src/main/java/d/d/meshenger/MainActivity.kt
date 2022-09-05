@@ -105,7 +105,7 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         log("OnServiceConnected")
         binder = iBinder as MainBinder
         val addresses_s = ArrayList<String>()
-        var addr = binder?.settings?.addresses
+        val addr = binder?.settings?.addresses
 
 
         if (addr!!.isEmpty()) {

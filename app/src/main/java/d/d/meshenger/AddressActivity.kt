@@ -13,7 +13,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import d.d.meshenger.MainService
@@ -39,16 +38,19 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
     private lateinit var storedAddressListAdapter: AddressListAdapter
     private lateinit var systemAddressListAdapter: AddressListAdapter
     private fun initToolbar() {
-        val toolbar = findViewById<Toolbar>(R.id.address_toolbar)
-        toolbar.apply {
-            setNavigationOnClickListener {
-                finish()
-            }
-        }
-        setSupportActionBar(toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowTitleEnabled(false)
+//        val toolbar = findViewById<Toolbar>(R.id.address_toolbar)
+//        toolbar.apply {
+//            setNavigationOnClickListener {
+//                finish()
+//            }
+//        }
+//        setSupportActionBar(toolbar)
+//        supportActionBar?.apply {
+//            setDisplayHomeAsUpEnabled(true)
+//            setDisplayShowTitleEnabled(false)
+//        }
+        findViewById<ImageView>(R.id.btnBack).setOnClickListener {
+            finish()
         }
     }
 
@@ -265,6 +267,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                     binder!!.settings.addresses.add(storedAddressList[lastIndx].address)
                     Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
                     binder!!.saveDatabase()
+                    updateSpinners()
                 }
             }
         })
@@ -479,47 +482,67 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                 putString("selected_ip_address", systemAddressList[fe890Wlan].address)
             }
             systemAddressSpinner.setSelection(fe890Wlan)
-        }
 
-        updateAddressEditTextButtons()
+//            systemAddressSpinner.onItemSelectedListener = object :
+//                AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(
+//                    parent: AdapterView<*>,
+//                    view: View,
+//                    position: Int,
+//                    id: Long,
+//                ) {
+////                    val selectedItem = parent.getItemAtPosition(position).toString()
+//                    (view as TextView).setTextColor(Color.BLACK)
+//                } // to close the onItemSelected
+//
+//                override fun onNothingSelected(parent: AdapterView<*>) {
+//                }
+//            }
+
+            updateAddressEditTextButtons()
+        }
     }
 
-    /*
-     * Create AddressEntry from address string.
-     * Do not perform any domain lookup
-    */
-    fun parseAddress(address: String): AddressEntry {
-        // instead of parsing, lookup in known addresses first
-        val ae = AddressEntry.findAddressEntry(systemAddressList, address)
-        return if (ae != null) {
-            // known address
-            AddressEntry(address, ae.device, ae.multicast)
-        } else if (Utils.isMAC(address)) {
-            // MAC address
-            val mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address))
-            AddressEntry(address, "", mc)
-        } else if (Utils.isIP(address)) {
-            // IP address
-            var mc = false
-            try {
-                Utils.parseInetSocketAddress(address, 0)?.let {
-                    mc = it.address.isMulticastAddress
+
+
+
+
+        /*
+         * Create AddressEntry from address string.
+         * Do not perform any domain lookup
+        */
+        fun parseAddress(address: String): AddressEntry {
+            // instead of parsing, lookup in known addresses first
+            val ae = AddressEntry.findAddressEntry(systemAddressList, address)
+            return if (ae != null) {
+                // known address
+                AddressEntry(address, ae.device, ae.multicast)
+            } else if (Utils.isMAC(address)) {
+                // MAC address
+                val mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address))
+                AddressEntry(address, "", mc)
+            } else if (Utils.isIP(address)) {
+                // IP address
+                var mc = false
+                try {
+                    Utils.parseInetSocketAddress(address, 0)?.let {
+                        mc = it.address.isMulticastAddress
+                    }
+                } catch (e: Exception) {
+                    // ignore
                 }
-            } catch (e: Exception) {
-                // ignore
+                AddressEntry(address, "", mc)
+            } else {
+                // domain
+                AddressEntry(address, "", false)
             }
-            AddressEntry(address, "", mc)
-        } else {
-            // domain
-            AddressEntry(address, "", false)
+        }
+
+        override fun onResume() {
+            super.onResume()
+        }
+
+        private fun log(s: String) {
+            Log.d(this, s)
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
-    }
-}

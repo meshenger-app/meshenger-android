@@ -326,6 +326,7 @@
                     android:id="@+id/addressLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible"
                     android:orientation="vertical">
 
                     <TextView
@@ -357,7 +358,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -382,7 +383,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -430,7 +431,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -438,7 +439,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -462,7 +463,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -470,7 +471,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -495,7 +496,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -503,7 +504,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -530,7 +531,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -538,7 +539,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -565,7 +566,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -573,7 +574,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -600,7 +601,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -608,7 +609,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -635,7 +636,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -643,7 +644,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -670,7 +671,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -678,7 +679,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -705,7 +706,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
                     android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -713,6 +714,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <TextView

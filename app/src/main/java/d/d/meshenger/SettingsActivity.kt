@@ -18,6 +18,10 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
 import d.d.meshenger.MainService
 import d.d.meshenger.MainService.MainBinder
+import java.net.NetworkInterface
+import java.net.SocketException
+import java.util.*
+import kotlin.experimental.and
 
 class SettingsActivity : MeshengerActivity(), ServiceConnection {
     private var binder: MainBinder? = null
@@ -39,6 +43,33 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         title = resources.getString(R.string.menu_settings)
         bindService()
         initViews()
+    }
+
+    private fun getMacAddress(): String {
+        try {
+            val networkInterfaceList: List<NetworkInterface> =
+                Collections.list(NetworkInterface.getNetworkInterfaces())
+            var stringMac = ""
+            for (networkInterface in networkInterfaceList) {
+                if (networkInterface.name.equals("wlon0", ignoreCase = true)) {
+                    run {
+                        for (i in networkInterface.hardwareAddress.indices) {
+                            var stringMacByte =
+                                Integer.toHexString((networkInterface.hardwareAddress[i] and 0xFF.toByte()).toInt())
+                            if (stringMacByte.length == 1) {
+                                stringMacByte = "0$stringMacByte"
+                            }
+                            stringMac =
+                                stringMac + stringMacByte.uppercase(Locale.getDefault()) + ":"
+                        }
+                    }
+                }
+                return stringMac
+            }
+        } catch (e: SocketException) {
+            e.printStackTrace()
+        }
+        return "0"
     }
 
     override fun onDestroy() {
@@ -67,6 +98,8 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         if (binder == null) {
             return
         }
+
+
         findViewById<View>(R.id.nameLayout).setOnClickListener { view: View? -> showChangeNameDialog() }
         findViewById<View>(R.id.addressLayout).setOnClickListener { view: View? ->
             val intent = Intent(this, AddressActivity::class.java)
@@ -78,8 +111,8 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         (findViewById<View>(R.id.nameTv) as TextView).text =
             if (username.length == 0) resources.getString(R.string.none) else username
         val addresses = binder!!.settings.addresses
-         Utils.getDefaultWlan80Address(Utils.collectAddresses())?.let {
-             if (!addresses.contains(it.address)) {
+        Utils.getDefaultWlan80Address(Utils.collectAddresses())?.let {
+            if (!addresses.contains(it.address)) {
                 addresses.add(0, it.address)
             }
         }
@@ -106,30 +139,22 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             isChecked = nightMode!!
             setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
                 try {
-
-
                     // apply value
                     if (isChecked) {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-
                     } else {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     }
-
                     // save value
                     binder!!.settings.nightMode = isChecked
                     binder!!.saveDatabase()
-
                     // apply theme
                     recreate()
                 } finally {
-
                     finish()
                 }
             }
         }
-
-
         val selectedColor = ContextCompat.getColor(this, R.color.selectedColor)
         val unselectedColor = ContextCompat.getColor(this, R.color.platform_grey)
         val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
@@ -154,7 +179,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 //settingsViewModel.currentSettingsMode = 1
             } else {
                 (compoundButton as RadioButton).setTextColor(unselectedColor)
-
             }
         }
 
@@ -165,7 +189,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 // settingsViewModel.currentSettingsMode = 2
             } else {
                 (compoundButton as RadioButton).setTextColor(unselectedColor)
-
             }
         }
         setupSpinner(binder!!.settings.videoCodec,
@@ -178,7 +201,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                         binder!!.settings.videoCodec = it
                         binder!!.saveDatabase()
                     }
-
                 }
             })
         setupSpinner(binder!!.settings.audioCodec,
@@ -191,7 +213,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                         binder!!.settings.audioCodec = it
                         binder!!.saveDatabase()
                     }
-
                 }
             })
         setupSpinner(binder!!.settings.videoResolution,
@@ -204,10 +225,8 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                         binder!!.settings.videoResolution = it
                         binder!!.saveDatabase()
                     }
-
                 }
             })
-
         val recordAudio = binder!!.settings.recordAudio
         val recordAudioCB = findViewById<CheckBox>(R.id.checkBoxSendAudio)
         recordAudioCB.isChecked = recordAudio
@@ -256,8 +275,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             binder!!.settings.autoConnectCall = isChecked
             binder!!.saveDatabase()
         }
-
-
         val ignoreBatteryOptimizations = getIgnoreBatteryOptimizations()
         val ignoreBatteryOptimizationsCB =
             findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations)
@@ -271,8 +288,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 this.startActivity(intent)
             }
         }
-
-
     }
 
     private fun showChangeNameDialog() {
@@ -335,7 +350,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             }
             val iceServers = list
             settings.iceServers = iceServers
-
             // done
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
@@ -407,7 +421,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         spinnerId: Int,
         entriesId: Int,
         entryValuesId: Int,
-        callback: SpinnerItemSelected
+        callback: SpinnerItemSelected,
     ) {
         val spinner = findViewById<Spinner>(spinnerId)
         val spinnerAdapter: ArrayAdapter<*> =
@@ -426,7 +440,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                     val selectedValues = resources.obtainTypedArray(entryValuesId)
                     val settingsMode = selectedValues.getString(pos)
                     callback.call(settingsMode)
-
                 }
             }
 

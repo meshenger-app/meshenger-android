@@ -58,7 +58,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call)
 
-        // keep screen on during call (prevents pausing the app and cancellation of the call)
+        // keep screen on during call(prevents pausing the app and cancellation of the call)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         statusTextView = findViewById(R.id.callStatus)
         nameTextView = findViewById(R.id.callName)

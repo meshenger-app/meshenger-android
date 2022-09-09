@@ -45,33 +45,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         initViews()
     }
 
-    private fun getMacAddress(): String {
-        try {
-            val networkInterfaceList: List<NetworkInterface> =
-                Collections.list(NetworkInterface.getNetworkInterfaces())
-            var stringMac = ""
-            for (networkInterface in networkInterfaceList) {
-                if (networkInterface.name.equals("wlon0", ignoreCase = true)) {
-                    run {
-                        for (i in networkInterface.hardwareAddress.indices) {
-                            var stringMacByte =
-                                Integer.toHexString((networkInterface.hardwareAddress[i] and 0xFF.toByte()).toInt())
-                            if (stringMacByte.length == 1) {
-                                stringMacByte = "0$stringMacByte"
-                            }
-                            stringMac =
-                                stringMac + stringMacByte.uppercase(Locale.getDefault()) + ":"
-                        }
-                    }
-                }
-                return stringMac
-            }
-        } catch (e: SocketException) {
-            e.printStackTrace()
-        }
-        return "0"
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         if (binder != null) {

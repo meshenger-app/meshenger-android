@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="d.d.meshenger"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="d.d.meshenger">
 
     <!-- Backup Import/Export -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.LOCAL_MAC_ADDRESS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        tools:ignore="CoarseFineLocation" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -17,21 +17,22 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
-        tools:replace="android:allowBackup"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
 
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:exported="true"/>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".QRShowActivity"
@@ -42,12 +43,14 @@
             android:exported="true"
             android:screenOrientation="portrait" />
 
-        <service android:name=".MainService"   android:exported="true"/>
+        <service
+            android:name=".MainService"
+            android:exported="true" />
 
         <activity
             android:name=".StartActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -57,11 +60,26 @@
         <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SettingsActivity" android:parentActivityName=".MainActivity" android:exported="true"  />
-        <activity android:name=".AboutActivity" android:parentActivityName=".MainActivity" android:exported="true" />
-        <activity android:name=".BackupActivity" android:parentActivityName=".MainActivity" android:exported="true" />
-        <activity android:name=".AddressActivity" android:parentActivityName=".MainActivity" android:exported="true" />
-        <activity android:name=".LicenseActivity" android:parentActivityName=".MainActivity" android:exported="true" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AboutActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".BackupActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AddressActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".LicenseActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

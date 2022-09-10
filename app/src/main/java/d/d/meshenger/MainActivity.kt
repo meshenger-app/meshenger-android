@@ -104,23 +104,6 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         log("OnServiceConnected")
         binder = iBinder as MainBinder
-        val addresses_s = ArrayList<String>()
-        val addr = binder?.settings?.addresses
-
-
-        if (addr!!.isEmpty()) {
-            val wifiManager =
-                applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            if (wifiManager != null) {
-                val ipAddress: String =
-                    Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
-                if (ipAddress != null && !ipAddress.equals("0.0.0.0")) {
-                    addresses_s.add(ipAddress)
-                    binder!!.settings?.addresses = addresses_s
-                    binder!!.saveDatabase()
-                }
-            }
-        }
         // in case the language has changed
         val adapter = SectionsPageAdapter(supportFragmentManager)
         adapter.addFragment(contactListFragment, this.resources.getString(R.string.title_contacts))

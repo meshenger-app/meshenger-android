@@ -332,8 +332,13 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             return addressEntries.isEmpty()
         }
 
-        fun update(addressEntries: List<AddressEntry>, addressEntriesMarked: List<AddressEntry>) {
+        fun update(
+            addressEntries: ArrayList<AddressEntry>,
+            addressEntriesMarked: List<AddressEntry>,
+        ) {
             this.addressEntries.clear()
+
+
             this.addressEntries.addAll(addressEntries)
             this.addressEntriesMarked = addressEntriesMarked
         }
@@ -482,7 +487,6 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                 putString("selected_ip_address", systemAddressList[fe890Wlan].address)
             }
             systemAddressSpinner.setSelection(fe890Wlan)
-
 //            systemAddressSpinner.onItemSelectedListener = object :
 //                AdapterView.OnItemSelectedListener {
 //                override fun onItemSelected(
@@ -498,51 +502,46 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
 //                override fun onNothingSelected(parent: AdapterView<*>) {
 //                }
 //            }
-
             updateAddressEditTextButtons()
         }
     }
 
-
-
-
-
-        /*
-         * Create AddressEntry from address string.
-         * Do not perform any domain lookup
-        */
-        fun parseAddress(address: String): AddressEntry {
-            // instead of parsing, lookup in known addresses first
-            val ae = AddressEntry.findAddressEntry(systemAddressList, address)
-            return if (ae != null) {
-                // known address
-                AddressEntry(address, ae.device, ae.multicast)
-            } else if (Utils.isMAC(address)) {
-                // MAC address
-                val mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address))
-                AddressEntry(address, "", mc)
-            } else if (Utils.isIP(address)) {
-                // IP address
-                var mc = false
-                try {
-                    Utils.parseInetSocketAddress(address, 0)?.let {
-                        mc = it.address.isMulticastAddress
-                    }
-                } catch (e: Exception) {
-                    // ignore
+    /*
+     * Create AddressEntry from address string.
+     * Do not perform any domain lookup
+    */
+    fun parseAddress(address: String): AddressEntry {
+        // instead of parsing, lookup in known addresses first
+        val ae = AddressEntry.findAddressEntry(systemAddressList, address)
+        return if (ae != null) {
+            // known address
+            AddressEntry(address, ae.device, ae.multicast)
+        } else if (Utils.isMAC(address)) {
+            // MAC address
+            val mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address))
+            AddressEntry(address, "", mc)
+        } else if (Utils.isIP(address)) {
+            // IP address
+            var mc = false
+            try {
+                Utils.parseInetSocketAddress(address, 0)?.let {
+                    mc = it.address.isMulticastAddress
                 }
-                AddressEntry(address, "", mc)
-            } else {
-                // domain
-                AddressEntry(address, "", false)
+            } catch (e: Exception) {
+                // ignore
             }
-        }
-
-        override fun onResume() {
-            super.onResume()
-        }
-
-        private fun log(s: String) {
-            Log.d(this, s)
+            AddressEntry(address, "", mc)
+        } else {
+            // domain
+            AddressEntry(address, "", false)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    private fun log(s: String) {
+        Log.d(this, s)
+    }
+}

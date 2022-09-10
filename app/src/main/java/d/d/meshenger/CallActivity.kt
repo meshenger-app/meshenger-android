@@ -58,7 +58,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call)
 
-        // keep screen on during call(prevents pausing the app and cancellation of the call)
+        // keep screen on during call (prevents pausing the app and cancellation of the call)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         statusTextView = findViewById(R.id.callStatus)
         nameTextView = findViewById(R.id.callName)
@@ -70,24 +70,6 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainBinder
-                    val addresses_s = ArrayList<String>()
-
-
-                    val addr = binder!!.settings.addresses
-
-                    if (addr.isEmpty()) {
-                        val wifiManager =
-                            applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-                        if (wifiManager != null) {
-                            val ipAddress: String =
-                                Formatter.formatIpAddress(wifiManager.connectionInfo.ipAddress)
-                            if (ipAddress != null && !ipAddress.equals("0.0.0.0")) {
-                                addresses_s.add(ipAddress)
-                                binder!!.settings?.addresses = addresses_s
-                                binder!!.saveDatabase()
-                            }
-                        }
-                    }
                     currentCall = contact?.let {
                         RTCCall.startCall(
                             this@CallActivity,

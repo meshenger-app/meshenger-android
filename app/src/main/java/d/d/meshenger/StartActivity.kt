@@ -35,7 +35,6 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
         // load libsodium for JNI access
         sodium = NaCl.sodium()
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
@@ -95,7 +94,6 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 AppCompatDelegate.setDefaultNightMode(
                     if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
-
                 // all done - show contact list
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
@@ -158,29 +156,29 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
 
     private fun showMissingAddressDialog() {
         val mac = getMacOfDevice("wlan0")
-//        if (mac.isEmpty()) {
-//            val builder = AlertDialog.Builder(this)
-//            builder.setTitle("Setup Address")
-//            builder.setMessage("No address of your WiFi card found. Enable WiFi now (not Internet needed) or skip to configure later.")
-//            builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, id: Int ->
-//                showMissingAddressDialog()
-//                dialog.cancel()
-//            }
-//            builder.setNegativeButton(R.string.skip) { dialog: DialogInterface, id: Int ->
-//                dialog.cancel()
-//                // continue with out address configuration
-//                continueInit()
-//            }
-//            builder.show()
-//        } else {
-//            binder!!.settings.addAddress(mac)
-//            try {
-//                binder!!.saveDatabase()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-        continueInit()
-        // }
+        if (mac.isEmpty()) {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Setup Address")
+            builder.setMessage("No address of your WiFi card found. Enable WiFi now (not Internet needed) or skip to configure later.")
+            builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, id: Int ->
+                showMissingAddressDialog()
+                dialog.cancel()
+            }
+            builder.setNegativeButton(R.string.skip) { dialog: DialogInterface, id: Int ->
+                dialog.cancel()
+                // continue with out address configuration
+                continueInit()
+            }
+            builder.show()
+        } else {
+            binder!!.settings.addAddress(mac)
+            try {
+                binder!!.saveDatabase()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            continueInit()
+        }
     }
 
     // initial dialog to set the username
@@ -206,8 +204,6 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         builder.setTitle(R.string.hello)
         builder.setView(layout)
         builder.setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface?, i: Int ->
-
-
             binder!!.shutdown()
             finish()
         }
@@ -223,7 +219,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                     charSequence: CharSequence,
                     i: Int,
                     i1: Int,
-                    i2: Int
+                    i2: Int,
                 ) {
                     // nothing to do
                 }
@@ -245,7 +241,6 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             }
         }
         dialog.show()
-
         // override handler (to be able to dismiss the dialog manually)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v: View? ->
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
@@ -257,7 +252,6 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
                 // close dialog
                 dialog.dismiss()
                 //dialog.cancel(); // needed?
@@ -276,7 +270,6 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
                 // close dialog
                 dialog.dismiss()
                 //dialog.cancel(); // needed?
@@ -322,7 +315,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
     companion object {
         private var sodium: Sodium? = null
     }
+
     fun generateRandomUserName() = //foreach loop?
         "User${UUID.randomUUID().toString().substring(0..7).replace(Pattern.quote("-"), "")}"
-
 }

@@ -3,7 +3,6 @@ package d.d.meshenger
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
@@ -13,7 +12,6 @@ import java.net.*
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.experimental.xor
-
 
 internal object Utils {
     fun hasReadPermission(activity: Activity?): Boolean {
@@ -268,26 +266,53 @@ internal object Utils {
                     continue
                 }
                 if (isValidMAC(mac)) {
-                    addressList.add(
-                        AddressEntry(
+                    if (!addressList.contains(AddressEntry(
                             bytesToMacAddress(mac),
                             nif.name,
                             isMulticastMAC(mac)
-                        )
+                        ))
                     )
+                        addressList.add(
+                            AddressEntry(
+                                bytesToMacAddress(mac),
+                                nif.name,
+                                isMulticastMAC(mac)
+                            )
+                        )
                 }
                 for (ia in nif.interfaceAddresses) {
                     val addr = ia.address
                     if (addr.isLoopbackAddress) {
                         continue
                     }
-                    addressList.add(
-                        AddressEntry(
+                    if (!addressList.contains(AddressEntry(
                             addr.hostAddress,
                             nif.name,
                             addr.isMulticastAddress
-                        )
+                        ))
                     )
+                        addressList.add(
+                            AddressEntry(
+                                addr.hostAddress,
+                                nif.name,
+                                addr.isMulticastAddress
+                            )
+                        )
+                    val mac = extractMacAddress(addr)
+                    if (mac != null && !addressList.contains(AddressEntry(
+                            bytesToMacAddress(mac),
+                            nif.name,
+                            isMulticastMAC(mac)
+                        ))
+                    ) {
+                        addressList.add(
+                            AddressEntry(
+                                bytesToMacAddress(mac),
+                                nif.name,
+                                isMulticastMAC(mac)
+                            )
+                        )
+                    }
                 }
             }
         } catch (ex: Exception) {
@@ -301,7 +326,6 @@ internal object Utils {
         return address.firstOrNull {
             it.address.startsWith("fe80::") && it.device.startsWith("wlan")
         } ?: address.firstOrNull { it.device.startsWith("wlan") }
-
     }
 
     // list all IP/MAC addresses of running network interfaces - for debugging only
@@ -338,7 +362,6 @@ internal object Utils {
             bytes[8] = (mac[0] xor 2) as Byte
             bytes[9] = mac[1]
             bytes[10] = mac[2]
-
             // already set, but doesn't harm
             bytes[11] = 0xFF.toByte()
             bytes[12] = 0xFE.toByte()
@@ -399,15 +422,17 @@ internal object Utils {
 
     // EUI-64 based address to MAC address
     @JvmStatic
-    fun getGeneralizedAddress(address: InetAddress): String {
-        if (address is Inet6Address) {
-            // if the IPv6 address contains a MAC address, take that.
-            val mac = getEUI64MAC(address)
-            if (mac != null) {
-                return bytesToMacAddress(mac)
-            }
-        }
+    fun getGeneralizedAddress(address: InetAddress): String? {
+        val mac = extractMacAddress(address)
+        if (mac != null) return bytesToMacAddress(mac)
         return address.hostAddress
+    }
+
+    private fun extractMacAddress(address: InetAddress): ByteArray? {
+        if (address is Inet6Address) {
+            return getEUI64MAC(address)
+        }
+        return null
     }
 
     // write file to external storage

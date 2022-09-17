@@ -53,7 +53,7 @@ class Settings {
     var language = ""
     var blockUnknown = false
     var developmentMode = false
-    var addresses: ArrayList<String>
+    var addresses: ArrayList<String> = ArrayList()
     var customAddress: ArrayList<String> = ArrayList()
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
@@ -178,7 +178,6 @@ class Settings {
     }
 
     init {
-        addresses = ArrayList()
         iceServers = ArrayList()
 
 

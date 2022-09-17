@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -176,6 +177,7 @@
         android:layout_marginTop="@dimen/padding_10"
         android:layout_marginEnd="@dimen/padding_25"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/currently_active_textview">
 
         <LinearLayout
@@ -233,13 +235,23 @@
         app:dividerInsetStart="@dimen/padding_25"
         app:layout_constraintTop_toBottomOf="@id/pick_active_layout" />
 
+    <com.androidbuts.multispinnerfilter.MultiSpinnerSearch
+        android:id="@+id/multipleItemSelectionSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:hintText="Multi Item Selection"
+
+        app:layout_constraintTop_toBottomOf="@+id/divider_2"
+        tools:ignore="MissingConstraints" />
+
     <LinearLayout
         android:id="@+id/addIpContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@+id/divider_2">
+        app:layout_constraintTop_toBottomOf="@+id/multipleItemSelectionSpinner">
 
         <EditText
             android:id="@+id/ipAdressField"

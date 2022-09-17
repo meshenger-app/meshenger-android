@@ -19,7 +19,8 @@ import java.util.*
 
 class Database {
     @JvmField
-    var settings: Settings
+    var settings: Settings = Settings()
+
     @JvmField
     var contacts: ArrayList<Contact> = ArrayList()
     fun addContact(contact: Contact) {
@@ -197,9 +198,5 @@ class Database {
         private fun log(s: String) {
             Log.d("Database", s)
         }
-    }
-
-    init {
-        settings = Settings()
     }
 }

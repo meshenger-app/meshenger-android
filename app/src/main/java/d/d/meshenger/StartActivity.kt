@@ -2,6 +2,7 @@ package d.d.meshenger
 
 import android.app.Dialog
 import android.content.ComponentName
+import android.content.Context.BIND_AUTO_CREATE
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
@@ -18,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat.getSystemService
 import d.d.meshenger.MainService
 import d.d.meshenger.MainService.MainBinder
 import org.libsodium.jni.NaCl
@@ -81,11 +83,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             }
             5 -> {
                 log("init 5: check addresses")
-                if (binder!!.getService()!!.isFirstStart) {
-                    showMissingAddressDialog()
-                } else {
                     continueInit()
-                }
+
             }
             6 -> {
                 log("init 6: start contact list")

@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="margin_basic_25">0.25dp</dimen>
+    <dimen name="font_size">15sp</dimen>
+</resources>

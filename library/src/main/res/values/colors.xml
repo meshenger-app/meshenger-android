@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#FFFFFF</color>
+    <color name="red">#FFFFFF</color>
+
+    <color name="gray">#D1D0CE</color>
+
+    <color name="list_even">#FFF5F5</color>
+    <color name="list_odd">#F3FFFF</color>
+    <color name="list_selected">#455FB6</color>
+    <color name="call_green">#4CAF50</color>
+
+    <color name="stroke_border">#000000</color>
+    <!-- FF5722, E64A19-->
+
+</resources>

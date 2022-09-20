@@ -27,7 +27,7 @@ internal class ContactListAdapter(
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_contact, null)
         }
-        (convertView!!.findViewById<View>(R.id.contact_name) as TextView).text = contact.getName()
+        (convertView!!.findViewById<View>(R.id.contact_name) as TextView).text = contact.name
         if (contact.state !== Contact.State.PENDING) {
             convertView.findViewById<View>(R.id.contact_waiting).visibility =
                 View.GONE
@@ -42,7 +42,7 @@ internal class ContactListAdapter(
                 p.color = -0x13c1c2 // red
             }
             canvas.drawCircle(100f, 100f, 100f, p)
-            if (contact.getBlocked()) {
+            if (contact.blocked) {
                 // draw smaller red circle on top
                 p.color = -0x13c1c2 // red
                 canvas.drawCircle(100f, 100f, 70f, p)

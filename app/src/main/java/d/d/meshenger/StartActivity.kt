@@ -144,22 +144,29 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         }
     }
 
-    private fun getMacOfDevice(device: String): String {
-        for (ae in Utils.collectAddresses()) {
-            // only MAC addresses
-            if (ae.device == "wlan0" && Utils.isMAC(ae.address)) {
-                return ae.address
-            }
+    private fun getDefaultAddress(): AddressEntry? {
+        val addresses = Utils.collectAddresses()
+
+        // preferable, since we can device fe80:: and other addresses from it
+        val macAddress = addresses.firstOrNull { it.device.startsWith("wlan") && Utils.isMACAddress(it.address) }
+        if (macAddress != null) {
+            return macAddress
         }
-        return ""
+
+        val fe80Address = addresses.firstOrNull { it.device.startsWith("wlan") && it.address.startsWith("fe80::") }
+        if (fe80Address != null) {
+            return fe80Address
+        }
+
+        return null
     }
 
     private fun showMissingAddressDialog() {
-        val mac = getMacOfDevice("wlan0")
-        if (mac.isEmpty()) {
+        val defaultAddress = getDefaultAddress()
+        if (defaultAddress == null) {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Setup Address")
-            builder.setMessage("No address of your WiFi card found. Enable WiFi now (not Internet needed) or skip to configure later.")
+            builder.setMessage("No address of your WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.")
             builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, id: Int ->
                 showMissingAddressDialog()
                 dialog.cancel()
@@ -171,7 +178,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             }
             builder.show()
         } else {
-            binder!!.settings.addAddress(mac)
+            binder!!.getSettings().addresses = mutableListOf(defaultAddress.address)
             try {
                 binder!!.saveDatabase()
             } catch (e: Exception) {

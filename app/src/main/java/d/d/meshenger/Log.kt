@@ -7,18 +7,36 @@ import android.util.Log
 */
 object Log {
     private fun contextString(context: Any): String {
-        return if (context is String) {
-            context
+        if (context is String) {
+            return context
         } else {
-            context.javaClass.simpleName
+            return context.javaClass.simpleName
         }
     }
 
-    @JvmStatic
-    fun d(context: Any, message: String?) {
+    fun d(context: Any, message: String) {
         if (BuildConfig.DEBUG) {
             val tag = contextString(context)
-            Log.d(tag, message!!)
+            Log.d(tag, message)
         }
+    }
+
+    fun i(context: Any, message: String) {
+        if (BuildConfig.DEBUG) {
+            val tag = contextString(context)
+            Log.i(tag, message)
+        }
+    }
+
+    fun w(context: Any, message: String) {
+        if (BuildConfig.DEBUG) {
+            val tag = contextString(context)
+            Log.w(tag, message)
+        }
+    }
+
+    fun e(context: Any, message: String) {
+        val tag = contextString(context)
+        Log.e(tag, message)
     }
 }

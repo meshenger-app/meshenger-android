@@ -1,11 +1,6 @@
 package d.d.meshenger
 
-import d.d.meshenger.Utils.isMAC
-import d.d.meshenger.Utils.getAddressPermutations
-import d.d.meshenger.Utils.parseInetSocketAddress
-import d.d.meshenger.Utils.byteArrayToHexString
-import d.d.meshenger.Utils.hexStringToByteArray
-import d.d.meshenger.Utils.isValidName
+import d.d.meshenger.Utils
 import d.d.meshenger.MainService
 import kotlin.Throws
 import d.d.meshenger.Contact
@@ -19,90 +14,44 @@ import java.net.ConnectException
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
-import java.util.ArrayList
+import java.util.*
 
-class Contact : Serializable {
+class Contact(
+    var name: String,
+    var publicKey: ByteArray,
+    var addresses: List<String>,
+    var blocked: Boolean = false
+) : Serializable {
     enum class State {
         ONLINE, OFFLINE, PENDING
     }
-
-    private var name: String
-    var publicKey: ByteArray?
-        private set
-    private var blocked: Boolean
-    private var addresses: MutableList<String>
 
     // contact state
     var state = State.PENDING
 
     // last working address (use this address next connection and for unknown contact initialization)
     var lastWorkingAddress: InetSocketAddress? = null
-        private set
-
-    constructor(name: String, pubkey: ByteArray?, addresses: MutableList<String>) {
-        this.name = name
-        publicKey = pubkey
-        blocked = false
-        this.addresses = addresses
-    }
-
-    private constructor() {
-        name = ""
-        publicKey = null
-        blocked = false
-        addresses = ArrayList()
-    }
-
-    fun getAddresses(): List<String> {
-        return addresses
-    }
-
-    fun addAddress(address: String) {
-        if (address.isEmpty()) {
-            return
-        }
-        for (addr in addresses) {
-            if (addr.equals(address, ignoreCase = true)) {
-                return
-            }
-        }
-        addresses.add(address)
-    }
 
     // also resolves domains
-    val allSocketAddresses: List<InetSocketAddress?>
-        get() {
-            val addrs: MutableList<InetSocketAddress?> = ArrayList()
-            for (address in addresses) {
-                try {
-                    if (isMAC(address)) {
-                        addrs.addAll(getAddressPermutations(address, MainService.serverPort))
-                    } else {
-                        // also resolves domains
-                        addrs.add(parseInetSocketAddress(address, MainService.serverPort))
+    fun getAllSocketAddresses(): List<InetSocketAddress> {
+        val addrs = mutableListOf<InetSocketAddress>()
+        for (address in this.addresses) {
+            try {
+                if (Utils.isMACAddress(address)) {
+                    addrs.addAll(Utils.getAddressPermutations(address, MainService.serverPort))
+                } else {
+                    // also resolves domains
+                    val addr = Utils.parseInetSocketAddress(address, MainService.serverPort)
+                    if (addr != null) {
+                        addrs.add(addr)
                     }
-                } catch (e: Exception) {
-                    log("invalid address: $address")
-                    e.printStackTrace()
                 }
+            } catch (e: Exception) {
+                log("invalid address: $address")
+                e.printStackTrace()
             }
-            return addrs
         }
-
-    fun getName(): String {
-        return name
-    }
-
-    fun setName(name: String) {
-        this.name = name
-    }
-
-    fun getBlocked(): Boolean {
-        return blocked
-    }
-
-    fun setBlocked(blocked: Boolean) {
-        this.blocked = blocked
+        return addrs
     }
 
     /*
@@ -121,7 +70,7 @@ class Contact : Serializable {
                 return socket
             }
         }
-        for (address in allSocketAddresses) {
+        for (address in getAllSocketAddresses()) {
             log("try address: '" + address!!.hostName + "', port: " + address.port)
             socket = establishConnection(address, connectionTimeout)
             if (socket != null) {
@@ -129,12 +78,6 @@ class Contact : Serializable {
             }
         }
         return null
-    }
-
-    // set good address to try first next time
-    fun setLastWorkingAddress(address: InetSocketAddress) {
-        log("setLatestWorkingAddress: $address")
-        lastWorkingAddress = address
     }
 
     private fun log(s: String) {
@@ -155,55 +98,66 @@ class Contact : Serializable {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            if (socket != null) {
-                try {
-                    socket.close()
-                } catch (e: Exception) {
-                    // ignore
-                }
+
+            try {
+                socket.close()
+            } catch (e: Exception) {
+                // ignore
             }
+
             return null
         }
 
-        @JvmStatic
         @Throws(JSONException::class)
         fun exportJSON(contact: Contact, all: Boolean): JSONObject {
-            val `object` = JSONObject()
+            val obj = JSONObject()
             val array = JSONArray()
-            `object`.put("name", contact.name)
-            `object`.put("public_key", byteArrayToHexString(contact.publicKey))
-            for (address in contact.getAddresses()) {
+            obj.put("name", contact.name)
+            val pubKey = contact.publicKey
+            if (pubKey != null) {
+                obj.put("public_key", Utils.byteArrayToHexString(pubKey))
+            }
+            for (address in contact.addresses) {
                 array.put(address)
             }
-            `object`.put("addresses", array)
+            obj.put("addresses", array)
             if (all) {
-                `object`.put("blocked", contact.blocked)
+                obj.put("blocked", contact.blocked)
             }
-            return `object`
+            return obj
         }
 
-        @JvmStatic
         @Throws(JSONException::class)
-        fun importJSON(`object`: JSONObject, all: Boolean): Contact {
-            val contact = Contact()
-            contact.name = `object`.getString("name")
-            contact.publicKey = hexStringToByteArray(`object`.getString("public_key"))
-            if (!isValidName(contact.name)) {
+        fun importJSON(obj: JSONObject, all: Boolean): Contact {
+            val name = obj.getString("name")
+            if (!Utils.isValidName(name)) {
                 throw JSONException("Invalid Name.")
             }
-            if (contact.publicKey == null || contact.publicKey!!.size != Sodium.crypto_sign_publickeybytes()) {
+            val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
+            if (publicKey == null || publicKey.size != Sodium.crypto_sign_publickeybytes()) {
                 throw JSONException("Invalid Public Key.")
             }
-            val array = `object`.getJSONArray("addresses")
-            var i = 0
-            while (i < array.length()) {
-                contact.addAddress(array.getString(i).toUpperCase().trim { it <= ' ' })
-                i += 1
+
+            val array = obj.getJSONArray("addresses")
+            val addresses = mutableListOf<String>()
+            for (i in 0 until array.length()) {
+                var address = array[i].toString()
+                if (Utils.isIPAddress(address) || Utils.isDomain(address)) {
+                    address = address.lowercase(Locale.ROOT)
+                } else if (Utils.isMACAddress(address)) {
+                    address = address.uppercase(Locale.ROOT)
+                } else {
+                    Log.d(this, "invalid address ${address}")
+                    continue
+                }
+                if (address !in addresses) {
+                    addresses.add(address)
+                }
             }
-            if (all) {
-                contact.blocked = `object`.getBoolean("blocked")
-            }
-            return contact
+
+            val blocked = obj.getBoolean("blocked") ?: false
+
+            return Contact(name, publicKey, addresses.toList(), blocked)
         }
     }
 }

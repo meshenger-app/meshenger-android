@@ -26,14 +26,12 @@ internal object Utils {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    @JvmStatic
     fun hasCameraPermission(activity: Activity?): Boolean {
         return ContextCompat.checkSelfPermission(
             activity!!, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    @JvmStatic
     fun requestCameraPermission(activity: Activity?, request_code: Int) {
         ActivityCompat.requestPermissions(
             activity!!, arrayOf(
@@ -89,7 +87,6 @@ internal object Utils {
     private val NAME_PATTERN = Pattern.compile("[\\w _-]+")
 
     // check for a name that has no funny unicode characters to not let them look to much like other names
-    @JvmStatic
     fun isValidName(name: String?): Boolean {
         if (name == null || name.length == 0) {
             return false
@@ -101,7 +98,6 @@ internal object Utils {
 
     private val hexArray = "0123456789ABCDEF".toCharArray()
 
-    @JvmStatic
     fun byteArrayToHexString(bytes: ByteArray?): String {
         if (bytes == null) {
             return ""
@@ -117,10 +113,9 @@ internal object Utils {
         return String(hexChars)
     }
 
-    @JvmStatic
-    fun hexStringToByteArray(str: String?): ByteArray {
+    fun hexStringToByteArray(str: String?): ByteArray? {
         if (str == null) {
-            return ByteArray(0)
+            return null
         }
         val len = str.length
         val data = ByteArray(len / 2)
@@ -133,12 +128,11 @@ internal object Utils {
         return data
     }
 
-    @JvmStatic
-    fun parseInetSocketAddress(addr: String?, defaultPort: Int): InetSocketAddress? {
-        var addr = addr
-        if (addr == null || addr.length == 0) {
+    fun parseInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {
+        if (address == null || address.isEmpty()) {
             return null
         }
+        var addr = address
         val firstColon = addr.indexOf(':')
         val lastColon = addr.lastIndexOf(':')
         var port = -1
@@ -202,116 +196,82 @@ internal object Utils {
         return c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F'
     }
 
-    // check if a string is a MAC address (heuristic)
-    @JvmStatic
-    fun isMAC(address: String?): Boolean {
-        if (address == null || address.length != 17) {
-            return false
-        }
-        for (i in intArrayOf(0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16)) {
-            if (!isHexChar(address[i])) {
-                return false
-            }
-        }
-        for (i in intArrayOf(2, 5, 8, 11, 14)) {
-            if (address[i] != ':') {
-                return false
-            }
-        }
-        return true
-    }
-
-    private val DOMAIN_PATTERN = Pattern.compile("[a-z0-9\\-.]+")
-
-    // check if string is a domain (heuristic)
-    fun isDomain(domain: String?): Boolean {
-        if (domain == null || domain.length == 0) {
-            return false
-        }
-        if (domain.startsWith(".") || domain.endsWith(".")) {
-            return false
-        }
-        if (domain.contains("..") || !domain.contains(".")) {
-            return false
-        }
-        if (domain.startsWith("-") || domain.endsWith("-")) {
-            return false
-        }
-        return if (domain.contains(".-") || domain.contains("-.")) {
-            false
-        } else DOMAIN_PATTERN.matcher(domain).matches()
-    }
-
     private val IPV4_PATTERN =
         Pattern.compile("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$")
     private val IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
     private val IPV6_HEX_COMPRESSED_PATTERN =
-        Pattern.compile("^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)$")
+        Pattern.compile("^((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)::((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)$")
+    private val DOMAIN_PATTERN = Pattern.compile("^([\\w]{2,63}.){1,6}[\\w]{2,63}$")
+    private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
 
     // check if a string is an IP address (heuristic)
-    fun isIP(address: String?): Boolean {
+    fun isIPAddress(address: String?): Boolean {
         return (IPV4_PATTERN.matcher(address).matches()
                 || IPV6_STD_PATTERN.matcher(address).matches()
                 || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches())
     }
 
+    fun isMACAddress(address: String): Boolean {
+        return MAC_PATTERN.matcher(address).matches()
+    }
+
+    fun isDomain(address: String): Boolean {
+        return DOMAIN_PATTERN.matcher(address).matches()
+    }
+
+    fun isAddress(address: String): Boolean {
+        return isMACAddress(address) || isIPAddress(address) || isDomain(address)
+    }
+
     fun collectAddresses(): List<AddressEntry> {
         val addressList = ArrayList<AddressEntry>()
         try {
-            val all: List<NetworkInterface> =
-                Collections.list(NetworkInterface.getNetworkInterfaces())
-            for (nif in all) {
-                val mac = nif.hardwareAddress
+            for (nif in Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 if (nif.isLoopback) {
                     continue
                 }
-                if (isValidMAC(mac)) {
-                    if (!addressList.contains(AddressEntry(
-                            bytesToMacAddress(mac),
-                            nif.name,
-                            isMulticastMAC(mac)
-                        ))
-                    )
-                        addressList.add(
-                            AddressEntry(
-                                bytesToMacAddress(mac),
-                                nif.name,
-                                isMulticastMAC(mac)
-                            )
-                        )
+
+                if (nif.name.startsWith("dummy")) {
+                    continue
                 }
+
+                val hardwareMAC = nif.hardwareAddress
+                if (isValidMAC(hardwareMAC)) {
+                    val macAddress = bytesToMacAddress(hardwareMAC)
+                    if (addressList.find { it.address == macAddress } == null) {
+                        addressList.add(AddressEntry(
+                            macAddress,
+                            nif.name,
+                            isMulticastMAC(hardwareMAC)
+                        ))
+                    }
+                }
+
                 for (ia in nif.interfaceAddresses) {
-                    val addr = ia.address
-                    if (addr.isLoopbackAddress) {
+                    if (ia.address.isLoopbackAddress) {
                         continue
                     }
-                    if (!addressList.contains(AddressEntry(
-                            addr.hostAddress,
+
+                    val hostAddress = ia.address.hostAddress
+                    if (hostAddress != null && addressList.find { it.address == hostAddress } == null) {
+                        addressList.add(AddressEntry(
+                            hostAddress,
                             nif.name,
-                            addr.isMulticastAddress
+                            ia.address.isMulticastAddress
                         ))
-                    )
-                        addressList.add(
-                            AddressEntry(
-                                addr.hostAddress,
+                    }
+
+                    // extract MAC address from fe80:: address if possible
+                    val softwareMAC = extractMacAddress(ia.address)
+                    if (softwareMAC != null) {
+                        val macAddress = bytesToMacAddress(softwareMAC)
+                        if (addressList.find { it.address == macAddress } == null) {
+                            addressList.add(AddressEntry(
+                                macAddress,
                                 nif.name,
-                                addr.isMulticastAddress
-                            )
-                        )
-                    val mac = extractMacAddress(addr)
-                    if (mac != null && !addressList.contains(AddressEntry(
-                            bytesToMacAddress(mac),
-                            nif.name,
-                            isMulticastMAC(mac)
-                        ))
-                    ) {
-                        addressList.add(
-                            AddressEntry(
-                                bytesToMacAddress(mac),
-                                nif.name,
-                                isMulticastMAC(mac)
-                            )
-                        )
+                                isMulticastMAC(softwareMAC)
+                            ))
+                        }
                     }
                 }
             }
@@ -320,12 +280,6 @@ internal object Utils {
             log("error: $ex")
         }
         return addressList
-    }
-
-    fun getDefaultWlan80Address(address: List<AddressEntry>): AddressEntry? {
-        return address.firstOrNull {
-            it.address.startsWith("fe80::") && it.device.startsWith("wlan")
-        } ?: address.firstOrNull { it.device.startsWith("wlan") }
     }
 
     // list all IP/MAC addresses of running network interfaces - for debugging only
@@ -342,7 +296,7 @@ internal object Utils {
             return null
         }
         val mac = ByteArray(6)
-        mac[0] = (bytes[8] xor 2) as Byte
+        mac[0] = (bytes[8] xor 2)
         mac[1] = bytes[9]
         mac[2] = bytes[10]
         mac[3] = bytes[13]
@@ -359,7 +313,7 @@ internal object Utils {
         // addr6 is expected to be a EUI64 address
         return try {
             val bytes = addr6.address
-            bytes[8] = (mac[0] xor 2) as Byte
+            bytes[8] = (mac[0] xor 2)
             bytes[9] = mac[1]
             bytes[10] = mac[2]
             // already set, but doesn't harm
@@ -379,7 +333,6 @@ internal object Utils {
     * If yes, replace the MAC address in it with the supplied one and return that address.
     * Also set the given port for those generated addresses.
     */
-    @JvmStatic
     fun getAddressPermutations(contact_mac: String, port: Int): List<InetSocketAddress> {
         val contact_mac_bytes = macAddressToBytes(contact_mac)
         val addrs = ArrayList<InetSocketAddress>()
@@ -396,17 +349,16 @@ internal object Utils {
                         continue
                     }
                     if (addr is Inet6Address) {
-                        val addr6 = addr
-                        val extracted_mac = getEUI64MAC(addr6)
+                        val extracted_mac = getEUI64MAC(addr)
                         if (extracted_mac != null && Arrays.equals(
                                 extracted_mac,
                                 nif.hardwareAddress
                             )
                         ) {
-                            // We found the interface MAC address in the IPv6 assigned to that interface in the EUI-64 scheme.
+                            // We found the interface MAC address in the IPv6 address (EUI-64).
                             // Now assume that the contact has an address with the same scheme.
                             val new_addr: InetAddress? =
-                                createEUI64Address(addr6, contact_mac_bytes)
+                                createEUI64Address(addr, contact_mac_bytes)
                             if (new_addr != null) {
                                 addrs.add(InetSocketAddress(new_addr, port))
                             }
@@ -421,7 +373,6 @@ internal object Utils {
     }
 
     // EUI-64 based address to MAC address
-    @JvmStatic
     fun getGeneralizedAddress(address: InetAddress): String? {
         val mac = extractMacAddress(address)
         if (mac != null) return bytesToMacAddress(mac)
@@ -436,7 +387,6 @@ internal object Utils {
     }
 
     // write file to external storage
-    @JvmStatic
     @Throws(IOException::class)
     fun writeExternalFile(filepath: String, data: ByteArray?) {
         val file = File(filepath)
@@ -452,7 +402,6 @@ internal object Utils {
     }
 
     // read file from external storage
-    @JvmStatic
     @Throws(IOException::class)
     fun readExternalFile(filepath: String): ByteArray {
         val file = File(filepath)

@@ -65,16 +65,16 @@ class RTCCall : DataChannel.Observer {
                 } else {
                     capturer!!.stopCapture()
                 }
-                val `object` = JSONObject()
-                `object`.put(
+                val obj = JSONObject()
+                obj.put(
                     StateChangeMessage,
                     if (enabled) CameraEnabledMessage else CameraDisabledMessage
                 )
-                log("setVideoEnabled: $`object`")
+                log("setVideoEnabled: $obj")
                 dataChannel!!.send(
                     DataChannel.Buffer(
                         ByteBuffer.wrap(
-                            `object`.toString().toByteArray()
+                            obj.toString().toByteArray()
                         ), false
                     )
                 )
@@ -343,12 +343,12 @@ class RTCCall : DataChannel.Observer {
         val data = ByteArray(buffer.data.remaining())
         buffer.data[data]
         val s = String(data)
-        var `object`: JSONObject? = null
+        var obj: JSONObject? = null
         try {
             log("onMessage: $s")
-            `object` = JSONObject(s)
-            if (`object`.has(StateChangeMessage)) {
-                val state = `object`.getString(StateChangeMessage)
+            obj = JSONObject(s)
+            if (obj.has(StateChangeMessage)) {
+                val state = obj.getString(StateChangeMessage)
                 when (state) {
                     CameraEnabledMessage, CameraDisabledMessage -> {
                         setRemoteVideoEnabled(state == CameraEnabledMessage)

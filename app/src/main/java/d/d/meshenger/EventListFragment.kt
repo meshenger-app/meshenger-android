@@ -83,7 +83,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                     // we can only block/unblock contacts
                     // (or we need to need maintain a separate bocklist)
                     if (contact != null) {
-                        if (contact.getBlocked()) {
+                        if (contact.blocked) {
                             menu.menu.add(unblock)
                         } else {
                             menu.menu.add(block)
@@ -109,7 +109,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
     private fun setBlocked(event: CallEvent, blocked: Boolean) {
         val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
         if (contact != null) {
-            contact.setBlocked(blocked)
+            contact.blocked = blocked
             mainActivity!!.binder!!.saveDatabase()
         } else {
             // unknown contact

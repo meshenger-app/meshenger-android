@@ -37,7 +37,8 @@ class MainService : Service(), Runnable {
     @Volatile
     private var run = true
     private var currentCall: RTCCall? = null
-    private var events: ArrayList<CallEvent>? = null
+    private var events = mutableListOf<CallEvent>()
+
     override fun onCreate() {
         super.onCreate()
         database_path = this.filesDir.toString() + "/database.bin"
@@ -205,7 +206,8 @@ class MainService : Service(), Runnable {
                         }
                         break
                     }
-                    if (contact != null && contact.getBlocked()) {
+
+                    if (contact != null && contact.blocked) {
                         if (currentCall != null) {
                             log("blocked contact => decline")
                             currentCall!!.decline()
@@ -223,9 +225,8 @@ class MainService : Service(), Runnable {
                     continue
                 }
                 // remember last good address (the outgoing port is random and not the server port)
-                contact.setLastWorkingAddress(
-                    InetSocketAddress(remote_address.address, serverPort)
-                )
+                contact.lastWorkingAddress = InetSocketAddress(remote_address.address, serverPort)
+
                 val obj = JSONObject(decrypted)
                 val action = obj.optString("action", "")
                 when (action) {
@@ -334,21 +335,21 @@ class MainService : Service(), Runnable {
 
         fun getContactByName(name: String): Contact? {
             for (contact in database!!.contacts) {
-                if (contact.getName() == name) {
+                if (contact.name == name) {
                     return contact
                 }
             }
             return null
         }
 
-        fun addContact(contact: Contact?) {
-            database!!.addContact(contact!!)
+        fun addContact(contact: Contact) {
+            database!!.addContact(contact)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
         }
 
-        fun deleteContact(pubKey: ByteArray?) {
+        fun deleteContact(pubKey: ByteArray) {
             database!!.deleteContact(pubKey)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
@@ -375,6 +376,7 @@ class MainService : Service(), Runnable {
         }
 
         fun pingContacts() {
+            val settings = database?.settings!!
             Thread(
                 PingRunnable(
                     this@MainService,
@@ -398,7 +400,7 @@ class MainService : Service(), Runnable {
 
         internal fun addCallEvent(contact: Contact?, type: CallEvent.Type?) {
             val last_working = contact?.lastWorkingAddress
-            events!!.add(
+            events.add(
                 CallEvent(
                     contact?.publicKey!!,
                     last_working?.address!!,
@@ -446,7 +448,7 @@ class MainService : Service(), Runnable {
                     }
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
-                    log("send ping to " + contact.getName())
+                    log("send ping to ${contact.name}")
                     val encrypted = encryptMessage(
                         "{\"action\":\"ping\"}",
                         publicKey,

@@ -123,7 +123,7 @@ class ContactListFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    private fun showDeleteDialog(publicKey: ByteArray?, name: String) {
+    private fun showDeleteDialog(publicKey: ByteArray, name: String) {
         val builder = AlertDialog.Builder(
             mainActivity!!
         )
@@ -198,7 +198,7 @@ class ContactListFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    private fun setBlocked(publicKey: ByteArray?, blocked: Boolean) {
+    private fun setBlocked(publicKey: ByteArray, blocked: Boolean) {
         val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey)
         if (contact != null) {
             contact.blocked = blocked

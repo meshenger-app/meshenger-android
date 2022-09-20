@@ -62,9 +62,7 @@
                 android:layout_marginLeft="@dimen/padding_25"
                 android:layout_marginTop="@dimen/padding_25"
                 android:layout_marginRight="@dimen/padding_25"
-
                 android:orientation="vertical">
-
 
                 <LinearLayout
                     android:id="@+id/nameLayout"
@@ -94,8 +92,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -125,19 +123,21 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
                     android:id="@+id/nightModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_nightmode"
                         android:textColor="?android:textColorPrimary"
@@ -147,12 +147,10 @@
                         android:id="@+id/switchButtonNightMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="5dp"
+                        android:layout_margin="5dp"
                         android:textColor="?android:textColorSecondary"
                         app:thumbTint="@color/selectedColor" />
 
@@ -161,19 +159,21 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
                     android:id="@+id/blockUnknownLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_block_unknown"
                         android:textColor="?android:textColorPrimary"
@@ -185,10 +185,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="5dp"
+                        android:layout_margin="5dp"
                         app:thumbTint="@color/selectedColor" />
 
                 </RelativeLayout>
@@ -196,7 +193,7 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
                     android:visibility="visible"
                     app:dividerColor="@color/light_grey" />
 
@@ -273,8 +270,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -317,8 +314,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="visible"
                     app:dividerColor="@color/light_grey" />
 
@@ -350,7 +347,7 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -381,8 +378,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -429,8 +426,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -461,8 +458,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -494,43 +491,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="gone"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:id="@+id/recordAudioLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@id/checkBoxSendAudio"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_enable_microphone"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxSendAudio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:textColor="?android:textColorSecondary" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -564,43 +526,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="gone"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:id="@+id/recordVideoLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@id/checkBoxRecordVideo"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_enable_camera"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxRecordVideo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:textColor="?android:textColorSecondary" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -634,78 +561,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="gone"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:id="@+id/autoAcceptCallLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@id/checkBoxAutoAcceptCall"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_auto_accept_call"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxAutoAcceptCall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:textColor="?android:textColorSecondary" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
-                    android:visibility="gone"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:id="@+id/autoConnectCallLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@id/checkBoxAutoConnectCall"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_auto_connect_call"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxAutoConnectCall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:textColor="?android:textColorSecondary" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
@@ -748,4 +605,5 @@
         android:layout_marginTop="@dimen/padding_10"
         android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

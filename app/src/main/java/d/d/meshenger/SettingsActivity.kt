@@ -16,18 +16,17 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
-import d.d.meshenger.MainService
 import d.d.meshenger.MainService.MainBinder
-import java.net.NetworkInterface
-import java.net.SocketException
 import java.util.*
-import kotlin.experimental.and
 
 class SettingsActivity : MeshengerActivity(), ServiceConnection {
     private var binder: MainBinder? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        setTitle(R.string.menu_settings)
+
         val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
         toolbar.apply {
             setNavigationOnClickListener {
@@ -40,7 +39,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
-        title = resources.getString(R.string.menu_settings)
+
         bindService()
         initViews()
     }
@@ -72,6 +71,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             return
         }
 
+        val settings = binder!!.getSettings()
 
         findViewById<View>(R.id.nameLayout).setOnClickListener { view: View? -> showChangeNameDialog() }
         findViewById<View>(R.id.addressLayout).setOnClickListener { view: View? ->
@@ -80,33 +80,28 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         }
         findViewById<View>(R.id.passwordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
         findViewById<View>(R.id.iceServersLayout).setOnClickListener { view: View? -> showChangeIceServersDialog() }
-        val username = binder!!.settings.username
+        val username = settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text =
             if (username.length == 0) resources.getString(R.string.none) else username
-        val addresses = binder!!.settings.addresses
-        Utils.getDefaultWlan80Address(Utils.collectAddresses())?.let {
-            if (!addresses.contains(it.address)) {
-                addresses.add(0, it.address)
-            }
-        }
+        val addresses = settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
             if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
         val password = binder!!.getService().databasePassword
         (findViewById<View>(R.id.passwordTv) as TextView).text =
             if (password.isEmpty()) resources.getString(R.string.none) else "********"
-        val iceServers = binder!!.settings.iceServers
+        val iceServers = settings.iceServers
         (findViewById<View>(R.id.iceServersTv) as TextView).text =
             if (iceServers.isEmpty()) resources.getString(R.string.none) else Utils.join(iceServers)
-        val blockUnknown = binder!!.settings.blockUnknown
+        val blockUnknown = settings.blockUnknown
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
         blockUnknownCB.apply {
             isChecked = blockUnknown
             setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-                binder!!.settings.blockUnknown = isChecked
+                settings.blockUnknown = isChecked
                 binder!!.saveDatabase()
             }
         }
-        val nightMode = binder!!.settings.nightMode
+        val nightMode = settings.nightMode
         val nightModeCB = findViewById<SwitchMaterial>(R.id.switchButtonNightMode)
         nightModeCB.apply {
             isChecked = nightMode!!
@@ -119,7 +114,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     }
                     // save value
-                    binder!!.settings.nightMode = isChecked
+                    settings.nightMode = isChecked
                     binder!!.saveDatabase()
                     // apply theme
                     recreate()
@@ -128,11 +123,13 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 }
             }
         }
+
         val selectedColor = ContextCompat.getColor(this, R.color.selectedColor)
         val unselectedColor = ContextCompat.getColor(this, R.color.platform_grey)
         val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
         val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
         val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)
+
         applySettingsMode("basic");
         basicRadioButton.isChecked = true
         basicRadioButton.setOnCheckedChangeListener { compoundButton, b ->
@@ -164,90 +161,61 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 (compoundButton as RadioButton).setTextColor(unselectedColor)
             }
         }
-        setupSpinner(binder!!.settings.videoCodec,
+
+        setupSpinner(settings.videoCodec,
             R.id.spinnerVideoCodecs,
             R.array.videoCodecs,
             R.array.videoCodecs,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
                     newValue?.let {
-                        binder!!.settings.videoCodec = it
+                        settings.videoCodec = it
                         binder!!.saveDatabase()
                     }
                 }
             })
-        setupSpinner(binder!!.settings.audioCodec,
+        setupSpinner(settings.audioCodec,
             R.id.spinnerAudioCodecs,
             R.array.audioCodecs,
             R.array.audioCodecs,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
                     newValue?.let {
-                        binder!!.settings.audioCodec = it
+                        settings.audioCodec = it
                         binder!!.saveDatabase()
                     }
                 }
             })
-        setupSpinner(binder!!.settings.videoResolution,
+        setupSpinner(settings.videoResolution,
             R.id.spinnerVideoResolutions,
             R.array.videoResolutions,
             R.array.videoResolutionsValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
                     newValue?.let {
-                        binder!!.settings.videoResolution = it
+                        settings.videoResolution = it
                         binder!!.saveDatabase()
                     }
                 }
             })
-        val recordAudio = binder!!.settings.recordAudio
-        val recordAudioCB = findViewById<CheckBox>(R.id.checkBoxSendAudio)
-        recordAudioCB.isChecked = recordAudio
-        recordAudioCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-            // save value
-            binder!!.settings.recordVideo = isChecked
-            binder!!.saveDatabase()
-        }
-        val playAudio = binder!!.settings.playAudio
+        val playAudio = settings.playAudio
         val playAudioCB = findViewById<CheckBox>(R.id.checkBoxPlayAudio)
         playAudioCB.isChecked = playAudio
         playAudioCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // save value
-            binder!!.settings.playAudio = isChecked
+            settings.playAudio = isChecked
             binder!!.saveDatabase()
         }
-        val recordVideo = binder!!.settings.recordVideo
-        val recordVideoCB = findViewById<CheckBox>(R.id.checkBoxRecordVideo)
-        recordVideoCB.isChecked = recordVideo
-        recordVideoCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-            // save value
-            binder!!.settings.recordVideo = isChecked
-            binder!!.saveDatabase()
-        }
-        val playVideo = binder!!.settings.playVideo
+
+        val playVideo = settings.playVideo
         val playVideoCB = findViewById<CheckBox>(R.id.checkBoxPlayVideo)
         playVideoCB.isChecked = playVideo
         playVideoCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // save value
-            binder!!.settings.playVideo = isChecked
+            settings.playVideo = isChecked
             binder!!.saveDatabase()
         }
-        val autoAcceptCall = binder!!.settings.autoAcceptCall
-        val autoAcceptCallCB = findViewById<CheckBox>(R.id.checkBoxAutoAcceptCall)
-        autoAcceptCallCB.isChecked = autoAcceptCall
-        autoAcceptCallCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-            // save value
-            binder!!.settings.autoAcceptCall = isChecked
-            binder!!.saveDatabase()
-        }
-        val autoConnectCall = binder!!.settings.autoConnectCall
-        val autoConnectCallCB = findViewById<CheckBox>(R.id.checkBoxAutoConnectCall)
-        autoConnectCallCB.isChecked = autoConnectCall
-        autoConnectCallCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
-            // save value
-            binder!!.settings.autoConnectCall = isChecked
-            binder!!.saveDatabase()
-        }
+
         val ignoreBatteryOptimizations = getIgnoreBatteryOptimizations()
         val ignoreBatteryOptimizationsCB =
             findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations)
@@ -264,7 +232,8 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun showChangeNameDialog() {
-        val username = binder!!.settings.username
+        val settings = binder!!.getSettings()
+        val username = settings.username
         val et = EditText(this)
         et.setText(username)
         et.setSelection(username.length)
@@ -274,7 +243,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
                 val new_username = et.text.toString().trim { it <= ' ' }
                 if (Utils.isValidName(new_username)) {
-                    binder!!.settings.username = new_username
+                    settings.username = new_username
                     binder!!.saveDatabase()
                     initViews()
                 } else {
@@ -309,7 +278,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun showChangeIceServersDialog() {
-        val settings = binder!!.settings
+        val settings = binder!!.getSettings()
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_set_ice_server)
         val iceServersTextView = dialog.findViewById<TextView>(R.id.iceServersEditText)
@@ -344,7 +313,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun log(s: String) {
-        Log.d(SettingsActivity::class.java.simpleName, s)
+        Log.d(this, s)
     }
 
     private fun applySettingsMode(settingsMode: String) {
@@ -402,9 +371,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_settings)
         spinner.adapter = spinnerAdapter
         spinner.setSelection(
-            (spinner.adapter as ArrayAdapter<CharSequence?>).getPosition(
-                settingsMode
-            )
+            (spinner.adapter as ArrayAdapter<CharSequence?>).getPosition(settingsMode)
         )
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             var check = 0

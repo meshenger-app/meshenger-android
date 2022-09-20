@@ -1,15 +1,9 @@
 package d.d.meshenger
 
-import d.d.meshenger.Utils.readExternalFile
-import d.d.meshenger.Crypto.decryptDatabase
-import d.d.meshenger.Crypto.encryptDatabase
-import d.d.meshenger.Utils.writeExternalFile
-import d.d.meshenger.Contact.Companion.exportJSON
-import d.d.meshenger.Contact.Companion.importJSON
+import d.d.meshenger.Utils
+import d.d.meshenger.Crypto
 import d.d.meshenger.Contact
 import kotlin.Throws
-import d.d.meshenger.Database
-import d.d.meshenger.Crypto
 import org.json.JSONObject
 import org.json.JSONArray
 import org.json.JSONException
@@ -18,10 +12,9 @@ import java.nio.charset.Charset
 import java.util.*
 
 class Database {
-    @JvmField
-    var settings: Settings
-    @JvmField
-    var contacts: ArrayList<Contact> = ArrayList()
+    var settings = Settings()
+    var contacts = mutableListOf<Contact>()
+
     fun addContact(contact: Contact) {
         val idx = findContact(contact.publicKey)
         if (idx >= 0) {
@@ -52,16 +45,11 @@ class Database {
 
     fun onDestroy() {
         // zero keys from memory
-        if (settings.secretKey != null) {
-            Arrays.fill(settings.secretKey, 0.toByte())
-        }
-        if (settings.publicKey != null) {
-            Arrays.fill(settings.publicKey, 0.toByte())
-        }
+        settings.publicKey.fill(0)
+        settings.publicKey.fill(0)
+
         for (contact in contacts) {
-            if (contact.publicKey != null) {
-                Arrays.fill(contact.publicKey, 0.toByte())
-            }
+            contact.publicKey.fill(0)
         }
     }
 
@@ -71,11 +59,11 @@ class Database {
         @Throws(IOException::class, JSONException::class)
         fun load(path: String?, password: String?): Database {
             // read database file
-            var data: ByteArray? = readExternalFile(path!!)
+            var data: ByteArray? = Utils.readExternalFile(path!!)
 
             // encrypt database
             if (password != null && password.length > 0) {
-                data = decryptDatabase(data, password.toByteArray())
+                data = Crypto.decryptDatabase(data, password.toByteArray())
                 if (data == null) {
                     throw IOException("wrong database password.")
                 }
@@ -93,21 +81,19 @@ class Database {
         }
 
         @JvmStatic
-        @Throws(IOException::class, JSONException::class)
-        fun store(path: String?, db: Database, password: String?) {
+        fun store(path: String, db: Database, password: String?) {
             val obj = toJSON(db)
             var data: ByteArray? = obj.toString().toByteArray()
 
             // encrypt database
-            if (password != null && password.length > 0) {
-                data = encryptDatabase(data, password.toByteArray())
+            if (password != null && password.isNotEmpty()) {
+                data = Crypto.encryptDatabase(data, password.toByteArray())
             }
 
             // write database file
-            writeExternalFile(path!!, data)
+            Utils.writeExternalFile(path, data)
         }
 
-        @Throws(JSONException::class)
         private fun upgradeDatabase(from: String, to: String, obj: JSONObject): Boolean {
             var from = from
             if (from == to) {
@@ -163,9 +149,10 @@ class Database {
             val obj = JSONObject()
             obj.put("version", version)
             obj.put("settings", Settings.exportJSON(db.settings))
+
             val contacts = JSONArray()
             for (contact in db.contacts) {
-                contacts.put(exportJSON(contact, true))
+                contacts.put(Contact.exportJSON(contact, true))
             }
             obj.put("contacts", contacts)
             return obj
@@ -180,12 +167,10 @@ class Database {
 
             // import contacts
             val array = obj.getJSONArray("contacts")
-            var i = 0
-            while (i < array.length()) {
+            for (i in 0 until array.length()) {
                 db.contacts.add(
-                    importJSON(array.getJSONObject(i), true)
+                    Contact.importJSON(array.getJSONObject(i), true)
                 )
-                i += 1
             }
 
             // import settings
@@ -197,9 +182,5 @@ class Database {
         private fun log(s: String) {
             Log.d("Database", s)
         }
-    }
-
-    init {
-        settings = Settings()
     }
 }

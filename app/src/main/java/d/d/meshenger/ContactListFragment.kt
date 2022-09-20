@@ -166,7 +166,7 @@ class ContactListFragment : Fragment(), OnItemClickListener {
                     menu.menu.add(delete)
                     menu.menu.add(rename)
                     menu.menu.add(share)
-                    if (contact.getBlocked()) {
+                    if (contact.blocked) {
                         menu.menu.add(unblock)
                     } else {
                         menu.menu.add(block)
@@ -176,9 +176,9 @@ class ContactListFragment : Fragment(), OnItemClickListener {
                         val title = menuItem.title.toString()
                         val publicKey = contact.publicKey
                         if (title == delete) {
-                            showDeleteDialog(publicKey, contact.getName())
+                            showDeleteDialog(publicKey, contact.name)
                         } else if (title == rename) {
-                            showContactEditDialog(publicKey, contact.getName())
+                            showContactEditDialog(publicKey, contact.name)
                         } else if (title == share) {
                             shareContact(contact)
                         } else if (title == block) {
@@ -201,7 +201,7 @@ class ContactListFragment : Fragment(), OnItemClickListener {
     private fun setBlocked(publicKey: ByteArray?, blocked: Boolean) {
         val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey)
         if (contact != null) {
-            contact.setBlocked(blocked)
+            contact.blocked = blocked
             mainActivity!!.binder!!.addContact(contact)
         }
     }
@@ -233,7 +233,7 @@ class ContactListFragment : Fragment(), OnItemClickListener {
                 if (newName.length > 0) {
                     val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey)
                     if (contact != null) {
-                        contact.setName(newName)
+                        contact.name = newName
                         mainActivity!!.binder!!.addContact(contact)
                     }
                 }

@@ -466,6 +466,7 @@ internal object Utils {
         while (fis.read(data, 0, data.size).also { nRead = it } != -1) {
             buffer.write(data, 0, nRead)
         }
+        fis.close()
         return buffer.toByteArray()
     }
 

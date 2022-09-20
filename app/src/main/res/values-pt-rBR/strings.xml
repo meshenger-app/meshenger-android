@@ -33,7 +33,6 @@
     <string name="settings_nightmode">Modo Noturno</string>
     <string name="settings_block_unknown">Bloquear as chamadas desconhecidas</string>
     <string name="settings_ignore_battery_optimizations">Ignorar otimizações da bateria</string>
-    <string name="settings_development_mode">Modo de desenvolvedor</string>
     <string name="about_source">Código fonte:</string>
     <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
     <string name="about_license">Licença:</string>

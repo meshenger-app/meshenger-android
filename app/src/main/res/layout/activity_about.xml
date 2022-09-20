@@ -102,11 +102,11 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/meshenger_app_link"
+                    android:id="@+id/app_link"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/lato_bold"
-                    android:text="@string/meshenger_app"
+                    android:text="@string/app_name"
                     android:textColor="@color/info_text_color" />
 
                 <TextView
@@ -115,14 +115,13 @@
                     android:fontFamily="@font/lato_bold"
                     android:textColor="@color/info_text_color"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/meshenger_app_link"
-                    android:text="@string/app_info_snippet"
-                    />
+                    android:layout_toEndOf="@id/app_link"
+                    android:text="@string/app_description" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/meshenger_app_link"
+                    android:layout_below="@+id/app_link"
                     android:fontFamily="@font/lato_bold"
                     android:text="@string/app_info"
                     android:textColor="#7B7B7B"
@@ -143,14 +142,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lato_bold"
-                android:text="@string/about_license_version"
+                android:text="@string/app_license_version"
                 android:textColor="#3F51B5"
                 android:textSize="13sp" />
 
         </LinearLayout>
 
     </ScrollView>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

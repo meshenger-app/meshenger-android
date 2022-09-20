@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Meshenger</string>
+    <string name="app_link" translatable="false">https://github.com/meshenger-app</string>
+    <string name="app_license_version" translatable="false">GPL-3.0-or-later</string>
+    <string name="app_description">An App that allows audio and video communication over local networks.</string>
     <string name="action_settings">Settings</string>
     <string name="name_prompt">What should be your name?</string>
     <string name="scan_invitation">Scan This QR-Code</string>
@@ -23,9 +26,8 @@
     <string name="menu_backup">Backup</string>
     <string name="menu_about">About</string>
     <string name="menu_exit">Exit</string>
-    <string name="call_connecting">Calling...</string>
     <string name="unknown_caller">Unknown Caller</string>
-
+    <string name="settings">Settings</string>
     <string name="settings_change_name">Change Name</string>
     <string name="settings_change_language">Change Language</string>
     <string name="settings_change_address">Change Address</string>
@@ -34,21 +36,19 @@
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>
-    <string name="settings_settings_mode" translatable="false">Settings Mode</string>
-    <string name="settings_speakerphone" translatable="false">Speakerphone</string>
-    <string name="settings_video_resolutions" translatable="false">Video Resolutions</string>
-    <string name="settings_video_codecs" translatable="false">Video Codecs</string>
-    <string name="settings_audio_codecs" translatable="false">Audio Codecs</string>
-    <string name="settings_enable_microphone" translatable="false">Enable Microphone</string>
-    <string name="settings_enable_speaker" translatable="false">Enable Speaker</string>
-    <string name="settings_enable_camera" translatable="false">Enable Camera</string>
-    <string name="settings_enable_video" translatable="false">Enable Video</string>
-    <string name="settings_auto_accept_call" translatable="false">Accept Call Immediately</string>
-    <string name="settings_auto_connect_call" translatable="false">Start Calls Immediately</string>
+    <string name="settings_settings_mode">Settings Mode</string>
+    <string name="settings_speakerphone">Speakerphone</string>
+    <string name="settings_video_resolutions">Video Resolutions</string>
+    <string name="settings_video_codecs">Video Codecs</string>
+    <string name="settings_audio_codecs">Audio Codecs</string>
+    <string name="settings_enable_microphone">Enable Microphone</string>
+    <string name="settings_enable_speaker">Enable Speaker</string>
+    <string name="settings_enable_camera">Enable Camera</string>
+    <string name="settings_enable_video">Enable Video</string>
+    <string name="settings_auto_accept_call">Accept Call Immediately</string>
+    <string name="settings_auto_connect_call">Start Calls Immediately</string>
     <string name="about_source">Source Code:</string>
-    <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
     <string name="about_license">License:</string>
-    <string name="about_license_version">GPL-3.0-or-later</string>
     <string name="none">None</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>
@@ -57,7 +57,7 @@
     <string name="block">Block</string>
     <string name="unblock">Unblock</string>
     <string name="replace">Replace</string>
-    <string name="pick">Take</string>
+    <string name="pick">Pick</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
     <string name="contact_edit">Edit Contact</string>
@@ -66,6 +66,7 @@
     <string name="hello">Hello!</string>
     <string name="empty_list_item">Empty</string>
     <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
+    <string name="call_connecting">Calling...</string>
     <string name="call_connected">Connected.</string>
     <string name="call_denied">Declined</string>
     <string name="call_ringing">Ringing...</string>
@@ -75,6 +76,7 @@
     <string name="button_import">Import</string>
     <string name="button_export">Export</string>
     <string name="button_abort">Abort</string>
+    <string name="button_reset">Reset</string>
     <string name="button_rename">Rename</string>
     <string name="button_replace">Replace</string>
     <string name="button_save">Save</string>
@@ -89,7 +91,7 @@
     <string name="qr_code_address_list">QR-Code Address List</string>
     <string name="currently_active">Currently Active</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that it is bound to the hardware of your device. If no MAC address is visible, then enable your WiFi.</string>
-    <string name="listen_for_incoming_calls">Listening for calls in background.</string>
+    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="file_does_not_exist">File does not exist</string>
     <string name="no_path_selected">No path selected</string>
     <string name="file_already_exists">File already exists</string>
@@ -98,10 +100,10 @@
     <string name="contact_already_exists">Contact already exists</string>
     <string name="enter_contact_name">Enter contact name.</string>
     <string name="wrong_password">Wrong password</string>
-    <string name="contact_name_conflict">A contact with the same name exists.</string>
-    <string name="contact_key_conflict">A contact with the same key exists.</string>
+    <string name="contact_name_conflict">A contact with the same name exists:</string>
+    <string name="contact_key_conflict">A contact with the same key exists:</string>
     <string name="contact_name_empty">Contact name is empty.</string>
-    <string name="contact_name_exists">A contact with that name exists already.</string>
+    <string name="contact_name_exists">A contact with that name exists already:</string>
     <string name="contact_remove">Remove contact?</string>
     <string name="error">Error</string>
     <string name="ok">Ok</string>
@@ -110,13 +112,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <string name="app_info_snippet">allows voice and video communication</string>
-    <string name="meshenger_app">Meshenger app</string>
-    <string name="app_name_caps" translatable="false">MESHENGER</string>
     <string name="basic">Basic</string>
     <string name="advanced">Advanced</string>
     <string name="expert">Expert</string>
-    <string name="settings">Settings</string>
-    <string name="available_addresses">Available Address</string>
-    <string name="callername">CallerName</string>
 </resources>

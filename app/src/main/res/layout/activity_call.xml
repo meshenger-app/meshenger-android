@@ -35,7 +35,7 @@
                 android:id="@+id/callName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/callername"
+                android:text="@string/unknown_caller"
                 android:textColor="?attr/primaryTextColor"
                 android:textSize="30sp" />
 

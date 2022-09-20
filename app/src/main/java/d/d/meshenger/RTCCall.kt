@@ -107,15 +107,15 @@ class RTCCall : DataChannel.Observer {
         this.commSocket = commSocket
         listener = null
         this.binder = binder
-        ownPublicKey = binder.settings.publicKey
-        ownSecretKey = binder.settings.secretKey
+        ownPublicKey = binder.getSettings().publicKey
+        ownSecretKey = binder.getSettings().secretKey
         ownPublicKey = ownPublicKey
         ownSecretKey = ownSecretKey
         this.offer = offer
 
         // usually empty
         iceServers = ArrayList()
-        for (server in binder.settings.iceServers) {
+        for (server in binder.getSettings().iceServers) {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
         initRTC(context)
@@ -133,13 +133,13 @@ class RTCCall : DataChannel.Observer {
         commSocket = null
         this.listener = listener
         this.binder = binder
-        ownPublicKey = binder.settings.publicKey
-        ownSecretKey = binder.settings.secretKey
+        ownPublicKey = binder.getSettings().publicKey
+        ownSecretKey = binder.getSettings().secretKey
         log("RTCCall created")
 
         // usually empty
         iceServers = ArrayList()
-        for (server in binder.settings.iceServers) {
+        for (server in binder.getSettings().iceServers) {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
         initRTC(context)

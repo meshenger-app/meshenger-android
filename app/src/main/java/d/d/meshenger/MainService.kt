@@ -391,8 +391,9 @@ class MainService : Service(), Runnable {
             this@MainService.saveDatabase()
         }
 
-        val settings: Settings
-            get() = database?.settings!!
+        fun getSettings(): Settings {
+            return database?.settings!!
+        }
 
         // return a cloned list
         val contactsCopy: List<Contact>

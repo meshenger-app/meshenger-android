@@ -64,7 +64,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             }
             3 -> {
                 log("init 3: check username")
-                if (binder!!.settings.username.isEmpty()) {
+                if (binder!!.getSettings().username.isEmpty()) {
                     // set username
                     showMissingUsernameDialog()
                 } else {
@@ -73,7 +73,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             }
             4 -> {
                 log("init 4: check key pair")
-                if (binder!!.settings.publicKey == null) {
+                if (binder!!.getSettings().publicKey == null) {
                     // generate key pair
                     initKeyPair()
                 }
@@ -90,7 +90,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             6 -> {
                 log("init 6: start contact list")
                 // set night mode
-                val nightMode = binder!!.settings.nightMode
+                val nightMode = binder!!.getSettings().nightMode
                 AppCompatDelegate.setDefaultNightMode(
                     if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
@@ -134,7 +134,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         val publicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val secretKey = ByteArray(Sodium.crypto_sign_secretkeybytes())
         Sodium.crypto_sign_keypair(publicKey, secretKey)
-        val settings = binder!!.settings
+        val settings = binder!!.getSettings()
         settings.publicKey = publicKey
         settings.secretKey = secretKey
         try {
@@ -253,7 +253,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
             val username = et.text.toString()
             if (Utils.isValidName(username)) {
-                binder!!.settings.username = username
+                binder!!.getSettings().username = username
                 try {
                     binder!!.saveDatabase()
                 } catch (e: Exception) {
@@ -271,7 +271,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
             val username = generateRandomUserName()
             if (Utils.isValidName(username)) {
-                binder!!.settings.username = username
+                binder!!.getSettings().username = username
                 try {
                     binder!!.saveDatabase()
                 } catch (e: Exception) {

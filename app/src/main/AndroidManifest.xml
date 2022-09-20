@@ -75,7 +75,7 @@
         <activity
             android:name=".AddressActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".SettingsActivity" />
         <activity
             android:name=".LicenseActivity"
             android:exported="true"

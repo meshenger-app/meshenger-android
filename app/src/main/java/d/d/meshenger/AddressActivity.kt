@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
@@ -13,289 +12,95 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.edit
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import d.d.meshenger.MainService
 import d.d.meshenger.MainService.MainBinder
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AddressActivity : MeshengerActivity(), ServiceConnection {
     private var binder: MainBinder? = null
-    private lateinit var storedAddressSpinner: Spinner
-    private lateinit var systemAddressSpinner: Spinner
-    private lateinit var pickStoredAddressButton: Button
-    private lateinit var pickSystemAddressButton: Button
-    private lateinit var addressEditText: EditText
-    private lateinit var addButton: Button
-    private lateinit var removeBtn: Button
-    private lateinit var removeButton: ImageButton
-    private lateinit var ipField: EditText
-    private lateinit var saveButton: Button
-    private lateinit var abortButton: Button
-    private val systemAddressList: ArrayList<AddressEntry> = arrayListOf()
-    private var storedAddressList = ArrayList<AddressEntry>()
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var storedAddressListAdapter: AddressListAdapter
-    private lateinit var systemAddressListAdapter: AddressListAdapter
-    private fun initToolbar() {
-//        val toolbar = findViewById<Toolbar>(R.id.address_toolbar)
-//        toolbar.apply {
-//            setNavigationOnClickListener {
-//                finish()
-//            }
-//        }
-//        setSupportActionBar(toolbar)
-//        supportActionBar?.apply {
-//            setDisplayHomeAsUpEnabled(true)
-//            setDisplayShowTitleEnabled(false)
-//        }
-        findViewById<ImageView>(R.id.btnBack).setOnClickListener {
-            finish()
-        }
-    }
+    private lateinit var addressListView: ListView
+    private lateinit var customAddressTextEdit: EditText
+    private var systemAddresses = mutableListOf<AddressEntry>()
+    //private var storedAddresses = mutableListOf<AddressEntry>()
+    private val addressListViewAdapter = AddressListAdapter(this)
 
-    fun saveCustomIpList(pref: SharedPreferences, items: List<String>) {
-        pref.edit()
-            .putStringSet("custom_ip_list", items.toSet())
-            .commit()
-    }
-
-    val customIpAddress = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_address)
         setTitle(R.string.address_management)
-        initToolbar()
-        sharedPreferences = this.getSharedPreferences(
-            "MESHENGER_PREF",
-            MODE_PRIVATE
-        )
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-        storedAddressSpinner = findViewById(R.id.StoredAddressSpinner)
-        systemAddressSpinner = findViewById(R.id.SystemAddressSpinner)
-        pickStoredAddressButton = findViewById(R.id.PickStoredAddressButton)
-        pickSystemAddressButton = findViewById(R.id.PickSystemAddressButton)
-        removeBtn = findViewById(R.id.removeBtn1)
-        addressEditText = findViewById(R.id.AddressEditText)
-        addButton = findViewById(R.id.AddButton)
-        removeButton = findViewById(R.id.RemoveButton)
-        saveButton = findViewById(R.id.SaveButton)
-        abortButton = findViewById(R.id.AbortButton)
-        systemAddressList.addAll(Utils.collectAddresses())
-        val cache = sharedPreferences.getStringSet("custom_ip_list", setOf())
-        if (cache != null) {
-            customIpAddress.addAll(cache.toList())
-            systemAddressList.addAll(cache.map {
-                AddressEntry(it.toString(), "Custom", false, true)
-            })
-        }
-        storedAddressList = ArrayList()
-        storedAddressListAdapter =
-            AddressListAdapter(this, Color.parseColor("#39b300")) //dark green
-        systemAddressListAdapter =
-            AddressListAdapter(this, Color.parseColor("#39b300")) //light green
-        storedAddressSpinner.setAdapter(storedAddressListAdapter)
-        systemAddressSpinner.setAdapter(systemAddressListAdapter)
-        addressEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                updateAddressEditTextButtons()
-            }
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // nothing to do
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                updateAddressEditTextButtons()
-            }
-        })
-
-        removeBtn.setOnClickListener {
-            val pos = systemAddressSpinner.selectedItemPosition
-            if (pos > -1 && !systemAddressListAdapter.isEmpty) {
-//                addressEditText.setText(systemAddressList.get(pos).address)
-                val address = systemAddressList.get(pos).address
-                val entry = parseAddress(address)
-                if (storedAddressList.contains(entry)) {
-                    storedAddressList.remove(entry)
-                    binder!!.settings.addresses.remove(entry.address)
-                    binder!!.saveDatabase()
-                    updateSpinners()
-                    Toast.makeText(this, "$entry is removed!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "This Entry is not saved!", Toast.LENGTH_SHORT).show()
-                }
+        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        toolbar.apply {
+            setNavigationOnClickListener {
+                finish()
             }
         }
 
-        addButton.setOnClickListener { v: View? ->
-            val address = addressEditText.getText().toString()
-            if (address.isEmpty()) {
-                return@setOnClickListener
-            }
-            val entry = parseAddress(address)
-            if (entry.multicast) {
-                Toast.makeText(this, "Multicast addresses are not supported.", Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
-            }
-            if ((Utils.isMAC(address) || Utils.isIP(address)) && !systemAddressList.contains(entry)) {
-                Toast.makeText(
-                    this,
-                    "You can only choose a MAC/IP address that is used by the system.",
-                    Toast.LENGTH_LONG
-                ).show()
-                return@setOnClickListener
-            }
-            if (!storedAddressList.contains(entry)) {
-                storedAddressList.add(entry)
-            }
-            updateSpinners()
-            // select the added element
-            val idx = AddressEntry.listIndexOf(storedAddressList, entry)
-            storedAddressSpinner.setSelection(idx)
-        }
-        removeButton.setOnClickListener {
-            val address = addressEditText.getText().toString()
-            if (address.isEmpty()) {
-                return@setOnClickListener
-            }
-            val idx = AddressEntry.listIndexOf(storedAddressList, AddressEntry(address, "", false))
-            if (idx > -1) {
-                storedAddressList.removeAt(idx)
-                updateSpinners()
-            }
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
         }
 
-        pickSystemAddressButton.setOnClickListener(View.OnClickListener { v: View? ->
-            val pos = systemAddressSpinner.selectedItemPosition
-            if (pos > -1 && !systemAddressListAdapter.isEmpty) {
-//                addressEditText.setText(systemAddressList.get(pos).address)
-                val address = systemAddressList.get(pos).address
-                val entry = parseAddress(address)
-                if (entry.multicast) {
-                    Toast.makeText(
-                        this,
-                        "Multicast addresses are not supported.",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    return@OnClickListener
-                }
-                if ((Utils.isMAC(address) || Utils.isIP(address)) && !systemAddressList.contains(
-                        entry
-                    )
-                ) {
-                    Toast.makeText(
-                        this,
-                        "You can only choose a MAC/IP address that is used by the system.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@OnClickListener
-                }
-                if (!storedAddressList.contains(entry)) {
-                    storedAddressList.add(entry)
-                }
-//                updateSpinners()
-                // select the added element
-                val idx = AddressEntry.listIndexOf(storedAddressList, entry)
-//                systemAddressSpinner.setSelection(idx)
-                editor.putString("selected_ip_address", entry.address)
-                editor.apply()
-                systemAddressListAdapter.notifyDataSetChanged()
-            }
-        })
+        addressListView = findViewById(R.id.AddressListView)
 
-        pickStoredAddressButton.setOnClickListener(View.OnClickListener { v: View? ->
-            val pos = storedAddressSpinner.getSelectedItemPosition()
-            if (pos > -1 && !storedAddressListAdapter!!.isEmpty) {
-                addressEditText.setText(storedAddressList.get(pos).address)
-            }
-        })
+        addressListView.adapter = addressListViewAdapter
+        addressListView.setOnItemClickListener { adapterView, view, i, l ->
+            addressListViewAdapter.toggle(i)
+        }
+
+		customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
+		systemAddresses = Utils.collectAddresses().toMutableList()
+
+        bindService()
+    }
+
+    fun initViews() {
+        if (binder == null) {
+            return
+        }
+
+        val saveButton = findViewById<Button>(R.id.save_button)
+        val resetButton = findViewById<Button>(R.id.reset_button)
+        val addButton = findViewById<View>(R.id.AddCustomAddressButton)
 
         saveButton.setOnClickListener(View.OnClickListener { v: View? ->
-            /*val addresses = ArrayList<String>()
-            for (ae in storedAddressList) {
-                addresses.add(ae.address)
-            }*/
-            val pos = systemAddressSpinner.selectedItemPosition
-            if (pos > -1 && !systemAddressListAdapter.isEmpty) {
-//                addressEditText.setText(systemAddressList.get(pos).address)
-                val address = systemAddressList.get(pos).address
-                val entry = parseAddress(address)
-                if (entry.multicast) {
-                    Toast.makeText(
-                        this,
-                        "Multicast addresses are not supported.",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    return@OnClickListener
-                }
-                if ((Utils.isMAC(address) || Utils.isIP(address)) && !systemAddressList.contains(
-                        entry
-                    )
-                ) {
-                    Toast.makeText(
-                        this,
-                        "You can only choose a MAC/IP address that is used by the system.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@OnClickListener
-                }
-
-                if (!storedAddressList.contains(entry)) {
-                    storedAddressList.add(entry)
-                } else {
-                    Toast.makeText(applicationContext,
-                        "THIS ADDRESS ALREADY EXISTS",
-                        Toast.LENGTH_LONG).show()
-                }
-//                updateSpinners()
-                // select the added element
-                val idx = AddressEntry.listIndexOf(storedAddressList, entry)
-//                systemAddressSpinner.setSelection(idx)
-                editor.putString("selected_ip_address", entry.address)
-                editor.apply()
-            }
-
-            if (storedAddressList.size > 0) {
-                val lastIndx = storedAddressList.size - 1
-
-                if (!binder!!.settings.addresses.contains(storedAddressList[lastIndx].address)) {
-                    binder!!.settings.addresses.add(storedAddressList[lastIndx].address)
-                    Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
-                    binder!!.saveDatabase()
-                    updateSpinners()
-                }
-            }
+            binder!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
+            binder!!.saveDatabase()
         })
-        ipField = findViewById(R.id.ipAdressField)
-        findViewById<View>(R.id.addIpBtn).setOnClickListener {
-            val text = ipField.text?.toString() ?: return@setOnClickListener
-            if (text.isEmpty() || text.split(".").size < 2) {
-                Toast.makeText(this, "Please enter a valid domain name", Toast.LENGTH_SHORT).show()
+
+        addButton.setOnClickListener {
+            var address = customAddressTextEdit.text?.toString() ?: return@setOnClickListener
+            if (Utils.isIPAddress(address) || Utils.isDomain(address)) {
+                address = address.lowercase(Locale.ROOT)
+            } else if (Utils.isMACAddress(address)) {
+                address = address.uppercase(Locale.ROOT)
+            } else {
+                Toast.makeText(this, "Please enter a valid MAC/IP address or domain name", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val entry = AddressEntry(text, "Custom", false, true)
 
-            if (!systemAddressList.contains(entry)) {
-                systemAddressList.add(entry)
-                customIpAddress.add(text)
-                updateSpinners(true)
-                saveCustomIpList(sharedPreferences, customIpAddress)
-                ipField.setText("")
-            } else {
+            val ae = AddressEntry(address, "", false)
+
+            if (ae in addressListViewAdapter.allAddresses) {
                 Toast.makeText(applicationContext, "THIS ADDRESS ALREADY EXISTS", Toast.LENGTH_LONG)
                     .show()
+                return@setOnClickListener
             }
+
+            addressListViewAdapter.allAddresses.add(ae)
+            addressListViewAdapter.storedAddresses.add(ae)
+
+            addressListViewAdapter.notifyDataSetChanged()
+            addressListView.adapter = addressListViewAdapter
+
+            customAddressTextEdit.setText("")
         }
-        abortButton.setOnClickListener(View.OnClickListener { v: View? -> finish() })
-        bindService()
-//
-//        storedAddressList.removeAt(0)
-//        updateSpinners()
+
+        resetButton.setOnClickListener(View.OnClickListener { _: View? -> initAddressList() })
     }
 
     override fun onDestroy() {
@@ -309,64 +114,86 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         bindService(serviceIntent, this, BIND_AUTO_CREATE)
     }
 
-    override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainBinder
-        // get from settings
-        for (address in binder!!.settings.addresses) {
-            if (!storedAddressList.contains(parseAddress(address))) {
-                storedAddressList!!.add(parseAddress(address))
+    /*
+    private fun loadStoredAddresses() {
+        // add extra information to stored addresses from system addresses
+        val addresses = mutableListOf<AddressEntry>()
+        for (address in binder!!.getSettings().addresses) {
+            val ae = systemAddresses.firstOrNull { it.address == address }
+            if (ae != null) {
+                addresses.add(AddressEntry(address, ae.device, ae.multicast))
+            } else {
+                addresses.add(AddressEntry(address, "", false))
             }
         }
-        updateSpinners(true)
+        this.storedAddresses = addresses
+    }*/
+
+    override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+        binder = iBinder as MainBinder
+
+        // add extra information to stored addresses from system addresses
+        val addresses = mutableListOf<AddressEntry>()
+        for (address in binder!!.getSettings().addresses) {
+            val ae = systemAddresses.firstOrNull { it.address == address }
+            if (ae != null) {
+                addresses.add(AddressEntry(address, ae.device, ae.multicast))
+            } else {
+                addresses.add(AddressEntry(address, "", false))
+            }
+        }
+
+        initAddressList()
+        initViews()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
         binder = null
     }
 
-    inner class AddressListAdapter(private val context: Activity, private val markColor: Int) :
-        BaseAdapter() {
-        private var addressEntries: ArrayList<AddressEntry> = ArrayList()
-        private var addressEntriesMarked: List<AddressEntry> = ArrayList()
+    inner class AddressListAdapter(private val context: Activity) : BaseAdapter() {
+        private val markColor = Color.parseColor("#39b300")
+        var allAddresses = mutableListOf<AddressEntry>()
+        private var systemAddresses = mutableListOf<AddressEntry>()
+        var storedAddresses = mutableListOf<AddressEntry>()
+
         override fun isEmpty(): Boolean {
-            return addressEntries.isEmpty()
+            return allAddresses.isEmpty()
         }
 
-        fun update(
-            addressEntries: ArrayList<AddressEntry>,
-            addressEntriesMarked: List<AddressEntry>,
-        ) {
-            this.addressEntries.clear()
+        fun init(systemAddresses: List<AddressEntry>, storedAddresses: List<AddressEntry>) {
+            this.allAddresses = (storedAddresses + systemAddresses).distinct().toMutableList()
+            this.systemAddresses = ArrayList(systemAddresses)
+            this.storedAddresses = ArrayList(storedAddresses)
+/*
+            // compare by device first, address second
+            val compareAddressEntries = Comparator { o1: AddressEntry, o2: AddressEntry ->
+                val dd = o1.device.compareTo(o2.device)
+                if (dd == 0) {
+                    return@Comparator o1.address.compareTo(o2.address)
+                } else {
+                    return@Comparator dd
+                }
+            }
 
-
-            this.addressEntries.addAll(addressEntries)
-            this.addressEntriesMarked = addressEntriesMarked
+            Collections.sort(this.allAddresses, compareAddressEntries)
+*/
         }
 
         override fun getCount(): Int {
             return if (isEmpty) {
                 1
-            } else addressEntries.size
+            } else allAddresses.size
         }
 
         override fun getItem(position: Int): AddressEntry? {
             return if (isEmpty) {
                 null
-            } else addressEntries[position]
+            } else allAddresses[position]
         }
 
         override fun getItemId(position: Int): Long {
             return position.toLong()
-        }
-
-        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val itemView = super.getDropDownView(position, convertView, parent)
-            val selectedIp = sharedPreferences.getString("selected_ip_address", null)
-            if (selectedIp == getItem(position)?.address) {
-//                itemView.setBackgroundColor(Color.parseColor("#d3d3d3"))
-            }
-
-            return itemView
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -383,29 +210,43 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                     label.setTextColor(Color.BLACK)
                     icon.isVisible = false
                 } else {
-                    val ae = addressEntries[position]
-                    icon.isVisible = ae.isCustom
-                    if (ae.isCustom) {
+                    val ae = allAddresses[position]
+
+                    val isCustom = !(ae in this.systemAddresses)
+                    icon.isVisible = isCustom
+                    if (isCustom) {
                         icon.setOnClickListener {
-                            onDeleteCustomAdress(ae)
+                            storedAddresses.remove(ae)
+                            if (ae !in systemAddresses) {
+                                allAddresses.remove(ae)
+                            }
+                            notifyDataSetChanged()
                         }
                     } else {
                         icon.setOnClickListener(null)
                     }
+
                     val info = ArrayList<String>()
-                    if (ae.device.isNotEmpty()) {
+
+                    // add device name in brackets
+                    if (ae.device.isNotEmpty() && !ae.address.endsWith("%${ae.device}")) {
                         info.add(ae.device)
                     }
-                    if (ae.multicast) {
-                        info.add("multicast")
-                    }
-                    label.text =
-                        ae.address + if (info.isEmpty()) "" else " (" + Utils.join(info) + ")"
 
-                    if (AddressEntry.listIndexOf(addressEntriesMarked, ae) < 0) {
-                        label.setTextColor(Color.BLACK)
+                    if (ae.multicast) {
+                        info.add("<multicast>")
+                    }
+
+                    if (info.isNotEmpty()) {
+                        label.text = "${ae.address} (${Utils.join(info)})"
                     } else {
+                        label.text = "${ae.address}"
+                    }
+
+                    if (ae in storedAddresses) {
                         label.setTextColor(markColor)
+                    } else {
+                        label.setTextColor(Color.BLACK)
                     }
                 }
             }
@@ -413,132 +254,40 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             return x
         }
 
-        fun addEntry(entry: AddressEntry) {
-            addressEntries.add(entry)
-            notifyDataSetChanged()
-        }
+        fun toggle(pos: Int) {
+            if (pos > -1 && pos < allAddresses.count()) {
+                val entry = allAddresses[pos]
 
-        fun removeEntry(entry: AddressEntry) {
-            addressEntries.remove(entry)
-            notifyDataSetChanged()
-        }
-
-        init {
-            addressEntries = ArrayList()
-            addressEntriesMarked = ArrayList()
-        }
-    }
-
-    private fun onDeleteCustomAdress(ae: AddressEntry) {
-        for (i in 0 until systemAddressList.size) {
-            if (systemAddressList[i].address == ae.address) {
-                systemAddressList.removeAt(i)
-                break
-            }
-        }
-        customIpAddress.remove(ae.address)
-        saveCustomIpList(sharedPreferences, customIpAddress)
-        updateSpinners(true)
-    }
-
-    private fun updateAddressEditTextButtons() {
-        val address = addressEditText.text.toString()
-        val exists = AddressEntry.findAddressEntry(storedAddressList, address) != null
-        if (exists) {
-            addButton.isEnabled = false
-            removeButton.isEnabled = true
-        } else {
-            removeButton.isEnabled = false
-            val valid = Utils.isMAC(address) || Utils.isDomain(address) || Utils.isIP(address)
-            addButton.isEnabled = valid
-        }
-    }
-
-    private fun updateSpinners(selectWlan0: Boolean = false) {
-        // compare by device first, address second
-        val compareAddressEntries = Comparator { o1: AddressEntry, o2: AddressEntry ->
-            val dd = o1.device.compareTo(o2.device)
-            if (dd == 0) {
-                return@Comparator o1.address.compareTo(o2.address)
-            } else {
-                return@Comparator dd
-            }
-        }
-        Collections.sort(storedAddressList, compareAddressEntries)
-        Collections.sort(systemAddressList, compareAddressEntries)
-        storedAddressListAdapter.update(storedAddressList, systemAddressList)
-        storedAddressListAdapter.notifyDataSetChanged()
-        systemAddressListAdapter.update(systemAddressList, storedAddressList)
-        systemAddressListAdapter.notifyDataSetChanged()
-        storedAddressSpinner.adapter = storedAddressListAdapter
-        systemAddressSpinner.adapter = systemAddressListAdapter
-        pickStoredAddressButton.isEnabled = !storedAddressListAdapter.isEmpty
-        pickSystemAddressButton.isEnabled = !systemAddressListAdapter.isEmpty
-
-        if (selectWlan0) {
-            var fe890Wlan = systemAddressList.indexOfFirst {
-                it.address.startsWith("fe80::") && it.device.startsWith("wlan")
-            }
-            if (fe890Wlan < 0) {
-                fe890Wlan =
-                    systemAddressList.indexOfFirst { it.device.startsWith("wlan") }.coerceAtLeast(0)
-            }
-            sharedPreferences.edit {
-                putString("selected_ip_address", systemAddressList[fe890Wlan].address)
-            }
-            systemAddressSpinner.setSelection(fe890Wlan)
-//            systemAddressSpinner.onItemSelectedListener = object :
-//                AdapterView.OnItemSelectedListener {
-//                override fun onItemSelected(
-//                    parent: AdapterView<*>,
-//                    view: View,
-//                    position: Int,
-//                    id: Long,
-//                ) {
-////                    val selectedItem = parent.getItemAtPosition(position).toString()
-//                    (view as TextView).setTextColor(Color.BLACK)
-//                } // to close the onItemSelected
-//
-//                override fun onNothingSelected(parent: AdapterView<*>) {
-//                }
-//            }
-            updateAddressEditTextButtons()
-        }
-    }
-
-    /*
-     * Create AddressEntry from address string.
-     * Do not perform any domain lookup
-    */
-    fun parseAddress(address: String): AddressEntry {
-        // instead of parsing, lookup in known addresses first
-        val ae = AddressEntry.findAddressEntry(systemAddressList, address)
-        return if (ae != null) {
-            // known address
-            AddressEntry(address, ae.device, ae.multicast)
-        } else if (Utils.isMAC(address)) {
-            // MAC address
-            val mc = Utils.isMulticastMAC(Utils.macAddressToBytes(address))
-            AddressEntry(address, "", mc)
-        } else if (Utils.isIP(address)) {
-            // IP address
-            var mc = false
-            try {
-                Utils.parseInetSocketAddress(address, 0)?.let {
-                    mc = it.address.isMulticastAddress
+                if (entry in storedAddresses) {
+                    storedAddresses.remove(entry)
+                } else {
+                    storedAddresses.add(entry)
                 }
-            } catch (e: Exception) {
-                // ignore
+
+                if (!(entry in systemAddresses)) {
+                    allAddresses.remove(entry)
+                }
+
+                notifyDataSetChanged()
             }
-            AddressEntry(address, "", mc)
-        } else {
-            // domain
-            AddressEntry(address, "", false)
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun initAddressList() {
+        // add extra information to stored addresses
+        val storedAddresses = mutableListOf<AddressEntry>()
+        for (address in binder!!.getSettings().addresses) {
+            val ae = systemAddresses.firstOrNull { it.address == address }
+            if (ae != null) {
+                storedAddresses.add(AddressEntry(address, ae.device, ae.multicast))
+            } else {
+                storedAddresses.add(AddressEntry(address, "", false))
+            }
+        }
+
+        addressListViewAdapter.init(systemAddresses, storedAddresses)
+        addressListViewAdapter.notifyDataSetChanged()
+        addressListView.adapter = addressListViewAdapter
     }
 
     private fun log(s: String) {

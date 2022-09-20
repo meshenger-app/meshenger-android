@@ -1,29 +1,19 @@
 package d.d.meshenger
 
 import android.content.*
-import d.d.meshenger.Contact.Companion.exportJSON
-import d.d.meshenger.Log.d
-import d.d.meshenger.MeshengerActivity
-import d.d.meshenger.Contact
-import d.d.meshenger.MainService.MainBinder
 import android.os.Bundle
-import d.d.meshenger.R
-import android.widget.RelativeLayout
-import android.view.ViewGroup
-import d.d.meshenger.QRScanActivity
-import d.d.meshenger.MainService
-import kotlin.Throws
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
-import android.graphics.Bitmap
-import android.widget.Toast
 import android.os.IBinder
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
-import d.d.meshenger.QRShowActivity
-import java.lang.Exception
+import android.widget.RelativeLayout
+import android.widget.Toast
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import d.d.meshenger.Contact.Companion.exportJSON
+import d.d.meshenger.Log
+import d.d.meshenger.MainService.MainBinder
 
 class QRShowActivity : MeshengerActivity(), ServiceConnection {
     private var contact: Contact? = null
@@ -80,7 +70,7 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
     private fun generateQR() {
         if (contact == null) {
             // export own contact
-            contact = binder!!.settings.ownContact
+            contact = binder!!.getSettings().getOwnContact()
         }
         val data = exportJSON(contact!!, false).toString()
         val multiFormatWriter = MultiFormatWriter()
@@ -88,7 +78,7 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
         val barcodeEncoder = BarcodeEncoder()
         val bitmap = barcodeEncoder.createBitmap(bitMatrix)
         (findViewById<View>(R.id.QRView) as ImageView).setImageBitmap(bitmap)
-        if (contact!!.getAddresses().isEmpty()) {
+        if (contact!!.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
         }
     }
@@ -111,12 +101,6 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             finish()
-        }
-    }
-
-    companion object {
-        private fun log(s: String) {
-            d(QRShowActivity::class.java.simpleName, s)
         }
     }
 }

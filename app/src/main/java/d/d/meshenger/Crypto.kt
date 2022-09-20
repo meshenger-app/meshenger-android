@@ -7,14 +7,22 @@ import java.nio.charset.Charset
 import java.util.*
 
 internal object Crypto {
+    // for development / testing only
+    private val disable_crypto = false
+
     // decrypt database using a password
     @JvmStatic
     fun decryptDatabase(encrypted_message: ByteArray?, password: ByteArray?): ByteArray? {
         if (encrypted_message == null || password == null) {
             return null
         }
+
         if (encrypted_message.size <= 4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES) {
             return null
+        }
+
+        if (disable_crypto) {
+            return encrypted_message
         }
 
         // separate salt, nonce and encrypted data
@@ -79,6 +87,10 @@ internal object Crypto {
             return null
         }
 
+        if (disable_crypto) {
+            return data
+        }
+
         // hash password into key
         val salt = ByteArray(Sodium.crypto_pwhash_saltbytes())
         Sodium.randombytes_buf(salt, salt.size)
@@ -140,6 +152,10 @@ internal object Crypto {
         ownPublicKey: ByteArray,
         ownSecretKey: ByteArray?
     ): ByteArray? {
+        if (disable_crypto) {
+            return message.toByteArray()
+        }
+
         val message_bytes = message.toByteArray()
         val signed = sign(message_bytes, ownSecretKey) ?: return null
         val data = ByteArray(ownPublicKey.size + signed.size)
@@ -157,6 +173,10 @@ internal object Crypto {
     ): String? {
         if (otherPublicKeySignOut == null || otherPublicKeySignOut.size != Sodium.crypto_sign_publickeybytes()) {
             return null
+        }
+
+        if (disable_crypto) {
+            return String((message)!!, Charset.forName("UTF-8"))
         }
 
         // make sure this is zeroed

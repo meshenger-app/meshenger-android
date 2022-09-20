@@ -1,34 +1,31 @@
 package d.d.meshenger
 
-import android.app.AlertDialog
-import android.app.Dialog
-import d.d.meshenger.Utils.hasCameraPermission
-import d.d.meshenger.Utils.requestCameraPermission
-import d.d.meshenger.Contact.Companion.importJSON
-import d.d.meshenger.Log.d
+import d.d.meshenger.Utils
+import d.d.meshenger.Contact
+import d.d.meshenger.Log
 import d.d.meshenger.MeshengerActivity
-import com.journeyapps.barcodescanner.BarcodeCallback
-import android.content.ServiceConnection
-import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import d.d.meshenger.MainService.MainBinder
-import android.os.Bundle
-import d.d.meshenger.R
-import android.content.Intent
 import d.d.meshenger.MainService
 import d.d.meshenger.QRShowActivity
+import d.d.meshenger.R
+import android.content.ServiceConnection
+import android.os.Bundle
 import kotlin.Throws
 import org.json.JSONObject
-import d.d.meshenger.Contact
 import android.widget.Toast
 import android.widget.TextView
 import android.widget.EditText
+import android.content.Intent
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.google.zxing.ResultPoint
 import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import android.content.ComponentName
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.IBinder
 import android.view.View
 import android.widget.Button
@@ -36,14 +33,15 @@ import org.json.JSONException
 
 class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
     private var barcodeView: DecoratedBarcodeView? = null
-    private var binder: MainBinder? = null
+    private var binder: MainService.MainBinder? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrscan)
         title = getString(R.string.scan_invited)
         bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
-        if (!hasCameraPermission(this)) {
-            requestCameraPermission(this, 1)
+        if (!Utils.hasCameraPermission(this)) {
+            Utils.requestCameraPermission(this, 1)
         }
 
         // qr show button
@@ -58,15 +56,15 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
 
     @Throws(JSONException::class)
     private fun addContact(data: String) {
-        val `object` = JSONObject(data)
-        val new_contact = importJSON(`object`, false)
-        if (new_contact.getAddresses().isEmpty()) {
+        val obj = JSONObject(data)
+        val new_contact = Contact.importJSON(obj, false)
+        if (new_contact.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show()
         }
 
         // lookup existing contacts by key and name
         val existing_pubkey_contact = binder!!.getContactByPublicKey(new_contact.publicKey)
-        val existing_name_contact = binder!!.getContactByName(new_contact.getName())
+        val existing_name_contact = binder!!.getContactByName(new_contact.name)
         if (existing_pubkey_contact != null) {
             // contact with that public key exists
             showPubkeyConflictDialog(new_contact, existing_pubkey_contact)
@@ -87,7 +85,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.findViewById<TextView>(R.id.public_key_conflicting_contact_textview)
         val abortButton = dialog.findViewById<Button>(R.id.public_key_conflict_abort_button)
         val replaceButton = dialog.findViewById<Button>(R.id.public_key_conflict_replace_button)
-        nameTextView.text = other_contact.getName()
+        nameTextView.text = other_contact.name
         replaceButton.setOnClickListener { v: View? ->
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
@@ -111,7 +109,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.conflict_contact_abort_button)
         val replaceButton = dialog.findViewById<Button>(R.id.conflict_contact_replace_button)
         val renameButton = dialog.findViewById<Button>(R.id.conflict_contact_rename_button)
-        nameEditText.setText(other_contact.getName())
+        nameEditText.setText(other_contact.name)
         replaceButton.setOnClickListener { v: View? ->
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
@@ -133,7 +131,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             }
 
             // rename
-            new_contact.setName(name)
+            new_contact.name = name
             binder!!.addContact(new_contact)
 
             // done
@@ -228,8 +226,8 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainBinder
-        if (hasCameraPermission(this)) {
+        binder = iBinder as MainService.MainBinder
+        if (Utils.hasCameraPermission(this)) {
             initCamera()
         }
     }
@@ -239,6 +237,6 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
     }
 
     private fun log(s: String) {
-        d(this, s)
+        Log.d(this, s)
     }
 }

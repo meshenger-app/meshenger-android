@@ -109,8 +109,6 @@ class RTCCall : DataChannel.Observer {
         this.binder = binder
         ownPublicKey = binder.getSettings().publicKey
         ownSecretKey = binder.getSettings().secretKey
-        ownPublicKey = ownPublicKey
-        ownSecretKey = ownSecretKey
         this.offer = offer
 
         // usually empty

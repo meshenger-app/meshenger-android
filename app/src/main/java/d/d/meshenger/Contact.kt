@@ -34,24 +34,24 @@ class Contact(
 
     // also resolves domains
     fun getAllSocketAddresses(): List<InetSocketAddress> {
-        val addrs = mutableListOf<InetSocketAddress>()
+        val socketAddresses = mutableListOf<InetSocketAddress>()
         for (address in this.addresses) {
             try {
                 if (Utils.isMACAddress(address)) {
-                    addrs.addAll(Utils.getAddressPermutations(address, MainService.serverPort))
+                    socketAddresses.addAll(Utils.getAddressPermutations(address, MainService.serverPort))
                 } else {
                     // also resolves domains
-                    val addr = Utils.parseInetSocketAddress(address, MainService.serverPort)
-                    if (addr != null) {
-                        addrs.add(addr)
+                    val socketAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)
+                    if (socketAddress != null) {
+                        socketAddresses.add(socketAddress)
                     }
                 }
             } catch (e: Exception) {
-                log("invalid address: $address")
+                Log.d(this, "invalid address: $address")
                 e.printStackTrace()
             }
         }
-        return addrs
+        return socketAddresses
     }
 
     /*
@@ -63,25 +63,22 @@ class Contact(
         val connectionTimeout = 500
 
         // try last successful address first
-        if (lastWorkingAddress != null) {
-            log("try latest address: " + lastWorkingAddress!!)
-            socket = establishConnection(lastWorkingAddress!!, connectionTimeout)
+        val lastAddress = lastWorkingAddress
+        if (lastAddress != null) {
+            Log.d(this, "try latest address: $lastWorkingAddress")
+            socket = establishConnection(lastAddress, connectionTimeout)
             if (socket != null) {
                 return socket
             }
         }
         for (address in getAllSocketAddresses()) {
-            log("try address: '" + address!!.hostName + "', port: " + address.port)
+            Log.d(this, "try address: '${address.hostName}', port: ${address.port}")
             socket = establishConnection(address, connectionTimeout)
             if (socket != null) {
                 return socket
             }
         }
         return null
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
     }
 
     companion object {

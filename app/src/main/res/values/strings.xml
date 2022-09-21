@@ -28,11 +28,13 @@
     <string name="menu_exit">Exit</string>
     <string name="unknown_caller">Unknown Caller</string>
     <string name="settings">Settings</string>
+    <string name="settings_name">Name</string>
     <string name="settings_change_name">Change Name</string>
     <string name="settings_change_language">Change Language</string>
-    <string name="settings_change_address">Change Address</string>
+    <string name="settings_addresses">Addresses</string>
+    <string name="settings_password">Password</string>
     <string name="settings_change_password">Change Password</string>
-    <string name="settings_change_ice_servers">Change ICE Servers</string>
+    <string name="settings_ice_servers">ICE Servers</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>

@@ -135,7 +135,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             }
             val address = getGeneralizedAddress(event.address)
             mainActivity!!.binder!!.addContact(
-                Contact(name, event.pubKey, Arrays.asList(address))
+                Contact(name, event.pubKey, if (address != null) listOf(address) else listOf())
             )
             Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
@@ -151,8 +151,8 @@ class EventListFragment : Fragment(), OnItemClickListener {
         log("onItemClick")
         val event = eventListAdapter!!.getItem(i)
         val address = getGeneralizedAddress(event.address)
-        val contact = Contact("", event.pubKey, Arrays.asList(address))
-        contact.setLastWorkingAddress(parseInetSocketAddress(address, MainService.serverPort)!!)
+        val contact = Contact("", event.pubKey, if (address != null) listOf(address) else listOf())
+        contact.lastWorkingAddress = parseInetSocketAddress(address, MainService.serverPort)!!
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

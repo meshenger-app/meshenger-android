@@ -60,7 +60,7 @@ class Contact(
     */
     fun createSocket(): Socket? {
         var socket: Socket? = null
-        val connectionTimeout = 300
+        val connectionTimeout = 500
 
         // try last successful address first
         if (lastWorkingAddress != null) {

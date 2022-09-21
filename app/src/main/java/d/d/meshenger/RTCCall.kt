@@ -70,7 +70,7 @@ class RTCCall : DataChannel.Observer {
                     StateChangeMessage,
                     if (enabled) CameraEnabledMessage else CameraDisabledMessage
                 )
-                log("setVideoEnabled: $obj")
+                Log.d(this, "setVideoEnabled: $obj")
                 dataChannel!!.send(
                     DataChannel.Buffer(
                         ByteBuffer.wrap(
@@ -133,7 +133,7 @@ class RTCCall : DataChannel.Observer {
         this.binder = binder
         ownPublicKey = binder.getSettings().publicKey
         ownSecretKey = binder.getSettings().secretKey
-        log("RTCCall created")
+        Log.d(this, "RTCCall created")
 
         // usually empty
         iceServers = ArrayList()
@@ -152,24 +152,24 @@ class RTCCall : DataChannel.Observer {
                     super.onIceGatheringChange(iceGatheringState)
                     val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
-                        log("transferring offer...")
+                        Log.d(this, "transferring offer...")
                         try {
                             val socket = contact.createSocket()
                             commSocket = socket
                             if (socket == null) {
-                                log("cannot establish connection")
+                                Log.d(this, "cannot establish connection")
                                 reportStateChange(CallState.ERROR)
                                 //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return
                             }
                             val remote_address =
                                 socket.remoteSocketAddress as InetSocketAddress
-                            log("outgoing call from remote address: $remote_address")
+                            Log.d(this, "outgoing call from remote address: $remote_address")
 
                             // remember latest working address
                             contact.lastWorkingAddress =
                                 InetSocketAddress(remote_address.address, MainService.serverPort)
-                            log("connect..")
+                            Log.d(this, "connect..")
                             val pr = PacketReader(socket)
                             reportStateChange(CallState.CONNECTING)
                             run {
@@ -216,7 +216,7 @@ class RTCCall : DataChannel.Observer {
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return
                                 }
-                                log("ringing...")
+                                Log.d(this, "ringing...")
                                 reportStateChange(CallState.RINGING)
                             }
                             run {
@@ -249,7 +249,7 @@ class RTCCall : DataChannel.Observer {
                                     // contact declined receiving call
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
                                 } else {
-                                    log("unknown action reply: $action")
+                                    Log.d(this, "unknown action reply: $action")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
                                     //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
@@ -265,7 +265,7 @@ class RTCCall : DataChannel.Observer {
                 }
 
                 override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {
-                    log("onIceConnectionChange " + iceConnectionState.name)
+                    Log.d(this, "onIceConnectionChange " + iceConnectionState.name)
                     super.onIceConnectionChange(iceConnectionState)
                     if (iceConnectionState == IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED)
@@ -296,7 +296,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun closeCommSocket() {
-        log("closeCommSocket")
+        Log.d(this, "closeCommSocket")
         if (commSocket != null) {
             try {
                 commSocket!!.close()
@@ -308,7 +308,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun closePeerConnection() {
-        log("closePeerConnection")
+        Log.d(this, "closePeerConnection")
         if (connection != null) {
             try {
                 connection!!.close()
@@ -343,7 +343,7 @@ class RTCCall : DataChannel.Observer {
         val s = String(data)
         val obj: JSONObject?
         try {
-            log("onMessage: $s")
+            Log.d(this, "onMessage: $s")
             obj = JSONObject(s)
             if (obj.has(StateChangeMessage)) {
                 when (val state = obj.getString(StateChangeMessage)) {
@@ -373,7 +373,7 @@ class RTCCall : DataChannel.Observer {
 
     /*private void initLocalRenderer() {
         if (this.localRenderer != null) {
-            log("really initng " + (this.sharedContext == null));
+            Log.d(this, "really initng " + (this.sharedContext == null));
             this.localRenderer.init(this.sharedContext, null);
             this.localCameraTrack.addSink(localRenderer);
             this.capturer.startCapture(500, 500, 30);
@@ -411,7 +411,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun handleMediaStream(stream: MediaStream) {
-        log("handleMediaStream")
+        Log.d(this, "handleMediaStream")
         if (remoteRenderer == null || stream.videoTracks.size == 0) {
             return
         }
@@ -456,12 +456,12 @@ class RTCCall : DataChannel.Observer {
         connection!!.setRemoteDescription(object : DefaultSdpObserver() {
             override fun onSetSuccess() {
                 super.onSetSuccess()
-                log("onSetSuccess")
+                Log.d(this, "onSetSuccess")
             }
 
             override fun onSetFailure(s: String) {
                 super.onSetFailure(s)
-                log("onSetFailure: $s")
+                Log.d(this, "onSetFailure: $s")
             }
         }, SessionDescription(SessionDescription.Type.ANSWER, remoteDesc))
     }
@@ -480,7 +480,7 @@ class RTCCall : DataChannel.Observer {
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
-                        log("onIceGatheringChange")
+                        Log.d(this, "onIceGatheringChange")
                         try {
                             val pw = PacketWriter(commSocket!!)
                             val obj = JSONObject()
@@ -507,7 +507,7 @@ class RTCCall : DataChannel.Observer {
                 }
 
                 override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {
-                    log("onIceConnectionChange")
+                    Log.d(this, "onIceConnectionChange")
                     super.onIceConnectionChange(iceConnectionState)
                     if (iceConnectionState == IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED)
@@ -515,7 +515,7 @@ class RTCCall : DataChannel.Observer {
                 }
 
                 override fun onAddStream(mediaStream: MediaStream) {
-                    log("onAddStream")
+                    Log.d(this, "onAddStream")
                     super.onAddStream(mediaStream)
                     handleMediaStream(mediaStream)
                 }
@@ -528,14 +528,14 @@ class RTCCall : DataChannel.Observer {
             })
             connection!!.addStream(createStream())
             //this.dataChannel = connection.createDataChannel("data", new DataChannel.Init());
-            log("setting remote description")
+            Log.d(this, "setting remote description")
             connection!!.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {
                     super.onSetSuccess()
-                    log("creating answer...")
+                    Log.d(this, "creating answer...")
                     connection!!.createAnswer(object : DefaultSdpObserver() {
                         override fun onCreateSuccess(sessionDescription: SessionDescription) {
-                            log("onCreateSuccess")
+                            Log.d(this, "onCreateSuccess")
                             super.onCreateSuccess(sessionDescription)
                             connection!!.setLocalDescription(
                                 DefaultSdpObserver(),
@@ -545,7 +545,7 @@ class RTCCall : DataChannel.Observer {
 
                         override fun onCreateFailure(s: String) {
                             super.onCreateFailure(s)
-                            log("onCreateFailure: $s")
+                            Log.d(this, "onCreateFailure: $s")
                         }
                     }, constraints)
                 }
@@ -556,7 +556,7 @@ class RTCCall : DataChannel.Observer {
     fun decline() {
         Thread {
             try {
-                log("declining...")
+                Log.d(this, "declining...")
                 if (commSocket != null) {
                     val pw = PacketWriter(commSocket!!)
                     val encrypted = encryptMessage(
@@ -615,10 +615,6 @@ class RTCCall : DataChannel.Observer {
 
     interface OnStateChangeListener {
         fun OnStateChange(state: CallState?)
-    }
-
-    private fun log(s: String) {
-        d(this, s)
     }
 
     companion object {

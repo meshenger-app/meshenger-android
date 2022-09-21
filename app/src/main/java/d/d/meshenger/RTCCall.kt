@@ -168,9 +168,8 @@ class RTCCall : DataChannel.Observer {
                             log("outgoing call from remote address: $remote_address")
 
                             // remember latest working address
-                            contact.setLastWorkingAddress(
+                            contact.lastWorkingAddress =
                                 InetSocketAddress(remote_address.address, MainService.serverPort)
-                            )
                             log("connect..")
                             val pr = PacketReader(commSocket!!)
                             reportStateChange(CallState.CONNECTING)

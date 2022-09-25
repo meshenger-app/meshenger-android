@@ -23,7 +23,6 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
     private lateinit var addressListView: ListView
     private lateinit var customAddressTextEdit: EditText
     private var systemAddresses = mutableListOf<AddressEntry>()
-    //private var storedAddresses = mutableListOf<AddressEntry>()
     private val addressListViewAdapter = AddressListAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,21 +113,6 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         bindService(serviceIntent, this, BIND_AUTO_CREATE)
     }
 
-    /*
-    private fun loadStoredAddresses() {
-        // add extra information to stored addresses from system addresses
-        val addresses = mutableListOf<AddressEntry>()
-        for (address in binder!!.getSettings().addresses) {
-            val ae = systemAddresses.firstOrNull { it.address == address }
-            if (ae != null) {
-                addresses.add(AddressEntry(address, ae.device, ae.multicast))
-            } else {
-                addresses.add(AddressEntry(address, "", false))
-            }
-        }
-        this.storedAddresses = addresses
-    }*/
-
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
 
@@ -165,19 +149,6 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             this.allAddresses = (storedAddresses + systemAddresses).distinct().toMutableList()
             this.systemAddresses = ArrayList(systemAddresses)
             this.storedAddresses = ArrayList(storedAddresses)
-/*
-            // compare by device first, address second
-            val compareAddressEntries = Comparator { o1: AddressEntry, o2: AddressEntry ->
-                val dd = o1.device.compareTo(o2.device)
-                if (dd == 0) {
-                    return@Comparator o1.address.compareTo(o2.address)
-                } else {
-                    return@Comparator dd
-                }
-            }
-
-            Collections.sort(this.allAddresses, compareAddressEntries)
-*/
         }
 
         override fun getCount(): Int {
@@ -288,9 +259,5 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         addressListViewAdapter.init(systemAddresses, storedAddresses)
         addressListViewAdapter.notifyDataSetChanged()
         addressListView.adapter = addressListViewAdapter
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
     }
 }

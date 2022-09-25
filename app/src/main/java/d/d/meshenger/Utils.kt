@@ -14,43 +14,43 @@ import java.util.regex.Pattern
 import kotlin.experimental.xor
 
 internal object Utils {
-    fun hasReadPermission(activity: Activity?): Boolean {
+    fun hasReadPermission(activity: Activity): Boolean {
         return ContextCompat.checkSelfPermission(
-            activity!!, Manifest.permission.READ_EXTERNAL_STORAGE
+            activity, Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun hasWritePermission(activity: Activity?): Boolean {
+    fun hasWritePermission(activity: Activity): Boolean {
         return ContextCompat.checkSelfPermission(
-            activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            activity, Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun hasCameraPermission(activity: Activity?): Boolean {
+    fun hasCameraPermission(activity: Activity): Boolean {
         return ContextCompat.checkSelfPermission(
-            activity!!, Manifest.permission.CAMERA
+            activity, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestCameraPermission(activity: Activity?, request_code: Int) {
+    fun requestCameraPermission(activity: Activity, request_code: Int) {
         ActivityCompat.requestPermissions(
-            activity!!, arrayOf(
+            activity, arrayOf(
                 Manifest.permission.CAMERA
             ), request_code
         )
     }
 
-    fun requestReadPermission(activity: Activity?, request_code: Int) {
+    fun requestReadPermission(activity: Activity, request_code: Int) {
         ActivityCompat.requestPermissions(
-            activity!!, arrayOf(
+            activity, arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ), request_code
         )
     }
 
-    fun requestWritePermission(activity: Activity?, request_code: Int) {
+    fun requestWritePermission(activity: Activity, request_code: Int) {
         ActivityCompat.requestPermissions(
-            activity!!, arrayOf(
+            activity, arrayOf(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ), request_code
         )
@@ -205,7 +205,7 @@ internal object Utils {
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
 
     // check if a string is an IP address (heuristic)
-    fun isIPAddress(address: String?): Boolean {
+    fun isIPAddress(address: String): Boolean {
         return (IPV4_PATTERN.matcher(address).matches()
                 || IPV6_STD_PATTERN.matcher(address).matches()
                 || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches())

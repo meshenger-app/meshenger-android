@@ -106,14 +106,11 @@ class Contact(
         }
 
         @Throws(JSONException::class)
-        fun exportJSON(contact: Contact, all: Boolean): JSONObject {
+        fun toJSON(contact: Contact, all: Boolean): JSONObject {
             val obj = JSONObject()
             val array = JSONArray()
             obj.put("name", contact.name)
-            val pubKey = contact.publicKey
-            if (pubKey != null) {
-                obj.put("public_key", Utils.byteArrayToHexString(pubKey))
-            }
+            obj.put("public_key", Utils.byteArrayToHexString(contact.publicKey))
             for (address in contact.addresses) {
                 array.put(address)
             }
@@ -125,13 +122,14 @@ class Contact(
         }
 
         @Throws(JSONException::class)
-        fun importJSON(obj: JSONObject, all: Boolean): Contact {
+        fun fromJSON(obj: JSONObject, all: Boolean): Contact {
             val name = obj.getString("name")
             if (!Utils.isValidName(name)) {
-                throw JSONException("Invalid Name.")
+                throw JSONException("Invalid Name")
             }
+
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
-            if (publicKey == null || publicKey.size != Sodium.crypto_sign_publickeybytes()) {
+            if ((publicKey == null) || (publicKey.size != Sodium.crypto_sign_publickeybytes())) {
                 throw JSONException("Invalid Public Key.")
             }
 
@@ -144,7 +142,7 @@ class Contact(
                 } else if (Utils.isMACAddress(address)) {
                     address = address.uppercase(Locale.ROOT)
                 } else {
-                    Log.d(this, "invalid address ${address}")
+                    Log.d(this, "invalid address $address")
                     continue
                 }
                 if (address !in addresses) {
@@ -152,7 +150,9 @@ class Contact(
                 }
             }
 
-            val blocked = obj.getBoolean("blocked") ?: false
+            val blocked = if (all) {
+                obj.getBoolean("blocked")
+            } else false
 
             return Contact(name, publicKey, addresses.toList(), blocked)
         }

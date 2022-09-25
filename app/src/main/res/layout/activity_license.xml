@@ -40,8 +40,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbarThumbVertical="@color/call_red"
-        app:layout_constraintTop_toBottomOf="@id/license_appbar"
+        app:layout_constraintTop_toBottomOf="@id/license_appbar" 
         >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -58,11 +59,12 @@
                 android:id="@+id/licenceText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="2dp"
+                android:layout_gravity="left"
+                android:layout_margin="1dp"
                 android:padding="@dimen/padding_10"
                 android:textAlignment="viewStart"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="12sp" />
+                android:textSize="10sp" />
 
         </LinearLayout>
 

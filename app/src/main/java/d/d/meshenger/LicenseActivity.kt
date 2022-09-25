@@ -3,6 +3,7 @@ package d.d.meshenger
 import d.d.meshenger.MeshengerActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.ProgressBar
 import d.d.meshenger.R
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -14,7 +15,8 @@ class LicenseActivity : MeshengerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_license)
-        title = resources.getString(R.string.menu_license)
+        setTitle(resources.getString(R.string.menu_license))
+
         val toolbar = findViewById<Toolbar>(R.id.license_toolbar)
         toolbar.apply {
             setNavigationOnClickListener {
@@ -32,19 +34,22 @@ class LicenseActivity : MeshengerActivity() {
             try {
                 val buffer = StringBuffer()
                 val reader = BufferedReader(InputStreamReader(assets.open("license.txt")))
-                var line: String
-                while (reader.readLine().also { line = it } != null) {
-                    buffer.append(
-                        """
-    ${line.trim { it <= ' ' }}
-    
-    """.trimIndent()
-                    )
+                while (true) {
+                    val line = reader.readLine()
+                    if (line != null) {
+                        if (line.trim().isEmpty()){
+                            buffer.append("\n");
+                        } else {
+                            buffer.append(line + "\n")
+                        }
+                    } else {
+                        break
+                    }
                 }
                 reader.close()
                 runOnUiThread {
-                    findViewById<View>(R.id.licenseLoadingBar).visibility = View.GONE
-                    (findViewById<View>(R.id.licenceText) as TextView).text = buffer.toString()
+                    findViewById<ProgressBar>(R.id.licenseLoadingBar).visibility = View.GONE
+                    findViewById<TextView>(R.id.licenceText).text = buffer.toString()
                 }
             } catch (e: IOException) {
                 e.printStackTrace()

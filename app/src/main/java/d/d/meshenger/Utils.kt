@@ -201,7 +201,7 @@ internal object Utils {
     private val IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
     private val IPV6_HEX_COMPRESSED_PATTERN =
         Pattern.compile("^((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)::((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)$")
-    private val DOMAIN_PATTERN = Pattern.compile("^([\\w]{2,63}.){1,6}[\\w]{2,63}$")
+    private val DOMAIN_PATTERN = Pattern.compile("^([\\w]{2,63}[.]){1,6}[\\w]{2,63}$")
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
 
     // check if a string is an IP address (heuristic)

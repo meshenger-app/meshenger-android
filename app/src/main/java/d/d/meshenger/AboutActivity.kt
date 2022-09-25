@@ -1,13 +1,10 @@
 package d.d.meshenger
 
-import d.d.meshenger.MeshengerActivity
 import android.os.Bundle
-import d.d.meshenger.R
 import android.widget.TextView
 import android.content.Intent
 import android.view.View
 import androidx.appcompat.widget.Toolbar
-import d.d.meshenger.LicenseActivity
 
 class AboutActivity : MeshengerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,8 +22,9 @@ class AboutActivity : MeshengerActivity() {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
-        (findViewById<View>(R.id.versionTv) as TextView).text = Utils.getApplicationVersion(this)
-        findViewById<View>(R.id.licenseTV).setOnClickListener { v: View? ->
+
+        findViewById<TextView>(R.id.versionTv).text = Utils.getApplicationVersion(this)
+        findViewById<TextView>(R.id.licenseTV).setOnClickListener { v: View? ->
             val intent = Intent(this, LicenseActivity::class.java)
             startActivity(intent)
         }

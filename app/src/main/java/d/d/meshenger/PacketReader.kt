@@ -10,13 +10,20 @@ import kotlin.experimental.and
 
 /* Read the message size from the header and return the message of the correct size */
 internal class PacketReader(socket: Socket) {
-    val `is`: InputStream
-    val buffer: ByteArray
-    var pos: Int
-    @Throws(IOException::class)
+    val istream = socket.getInputStream()
+    val buffer  = ByteArray(16000)
+    var pos = 0
+
     fun readMessage(): ByteArray? {
         while (true) {
-            val read = `is`.read(buffer, pos, buffer.size - pos)
+            val read : Int
+
+            try {
+                read = istream.read(buffer, pos, buffer.size - pos)
+            } catch (_: Exception) {
+                break
+            }
+
             if (read < 0) {
                 break
             }
@@ -44,10 +51,6 @@ internal class PacketReader(socket: Socket) {
         return null
     }
 
-    private fun log(s: String) {
-        d(this, s)
-    }
-
     companion object {
         private fun readMessageHeader(packet: ByteArray): Int {
             return (packet[0].toInt() and 0xFF shl 24
@@ -55,11 +58,5 @@ internal class PacketReader(socket: Socket) {
                     or (packet[2].toInt() and 0xFF shl 8)
                     or (packet[3].toInt() and 0xFF shl 0))
         }
-    }
-
-    init {
-        `is` = socket.getInputStream()
-        buffer = ByteArray(16000)
-        pos = 0
     }
 }

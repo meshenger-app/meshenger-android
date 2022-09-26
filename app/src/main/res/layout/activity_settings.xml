@@ -7,7 +7,7 @@
     tools:context=".SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/settings_appbar"
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?android:windowBackground"
@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/settings_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_ios_new_24">
@@ -45,10 +45,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:paddingBottom="80dp"
         android:scrollbarThumbVertical="@color/call_red"
-        app:layout_constraintBottom_toTopOf="@+id/empty_view"
+        app:layout_constraintBottom_toBottomOf="@+id/parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_appbar">
+        app:layout_constraintTop_toBottomOf="@id/appbar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,7 +62,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/padding_25"
-                android:layout_marginTop="@dimen/padding_25"
                 android:layout_marginRight="@dimen/padding_25"
                 android:orientation="vertical">
 
@@ -599,13 +600,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <View
-        android:id="@+id/empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/padding_10"
-        android:paddingBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

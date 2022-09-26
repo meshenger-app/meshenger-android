@@ -27,7 +27,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         setContentView(R.layout.activity_settings)
         setTitle(R.string.menu_settings)
 
-        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.apply {
             setNavigationOnClickListener {
                 finish()
@@ -74,24 +74,29 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val settings = binder!!.getSettings()
 
         findViewById<View>(R.id.nameLayout).setOnClickListener { view: View? -> showChangeNameDialog() }
+        findViewById<View>(R.id.passwordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
+        findViewById<View>(R.id.iceServersLayout).setOnClickListener { view: View? -> showChangeIceServersDialog() }
         findViewById<View>(R.id.addressLayout).setOnClickListener { view: View? ->
             val intent = Intent(this, AddressActivity::class.java)
             startActivity(intent)
         }
-        findViewById<View>(R.id.passwordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
-        findViewById<View>(R.id.iceServersLayout).setOnClickListener { view: View? -> showChangeIceServersDialog() }
+
         val username = settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text =
-            if (username.length == 0) resources.getString(R.string.none) else username
+            if (username.isEmpty()) resources.getString(R.string.none) else username
+
         val addresses = settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
             if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
-        val password = binder!!.getService().databasePassword
+
+        val password = binder!!.getService().database_password
         (findViewById<View>(R.id.passwordTv) as TextView).text =
-            if (password.isEmpty()) resources.getString(R.string.none) else "********"
+            if (password.isEmpty()) resources.getString(R.string.none) else "*".repeat(password.length)
+
         val iceServers = settings.iceServers
         (findViewById<View>(R.id.iceServersTv) as TextView).text =
             if (iceServers.isEmpty()) resources.getString(R.string.none) else Utils.join(iceServers)
+
         val blockUnknown = settings.blockUnknown
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
         blockUnknownCB.apply {
@@ -104,7 +109,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val nightMode = settings.nightMode
         val nightModeCB = findViewById<SwitchMaterial>(R.id.switchButtonNightMode)
         nightModeCB.apply {
-            isChecked = nightMode!!
+            isChecked = nightMode
             setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
                 try {
                     // apply value
@@ -259,7 +264,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun showChangePasswordDialog() {
-        val password = binder!!.getService().databasePassword
+        val password = binder!!.getService().database_password
         val et = EditText(this)
         et.setText(password)
         et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -269,8 +274,9 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             .setView(et)
             .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
                 val new_password = et.text.toString()
-                binder!!.getService().databasePassword = new_password
+                binder!!.getService().database_password = new_password
                 binder!!.saveDatabase()
+                Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
                 initViews()
             }
             .setNegativeButton(resources.getText(R.string.cancel), null)
@@ -286,13 +292,11 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         iceServersTextView.text = Utils.join(settings.iceServers)
         saveButton.setOnClickListener { v: View? ->
-            var list = ArrayList<String>()
+            val iceServers = ArrayList<String>()
             Utils.split(iceServersTextView.text.toString()).let {
-                list.addAll(it)
+                iceServers.addAll(it)
             }
-            val iceServers = list
             settings.iceServers = iceServers
-            // done
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }
@@ -333,7 +337,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 findViewById<View>(R.id.advancedSettingsLayout).visibility = View.VISIBLE
                 findViewById<View>(R.id.expertSettingsLayout).visibility = View.VISIBLE
             }
-            else -> android.util.Log.e(
+            else -> Log.e(
                 ContentValues.TAG,
                 "Invalid settings mode: $settingsMode"
             )

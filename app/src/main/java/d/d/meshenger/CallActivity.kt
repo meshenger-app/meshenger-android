@@ -3,20 +3,12 @@ package d.d.meshenger
 import android.content.*
 import d.d.meshenger.Utils.hasCameraPermission
 import d.d.meshenger.Utils.requestCameraPermission
-import d.d.meshenger.Log.d
-import d.d.meshenger.MeshengerActivity
 import android.hardware.SensorEventListener
 import android.widget.TextView
 import d.d.meshenger.MainService.MainBinder
-import d.d.meshenger.RTCCall
 import android.os.PowerManager.WakeLock
-import d.d.meshenger.Contact
 import android.media.Ringtone
-import d.d.meshenger.R
 import android.view.WindowManager
-import d.d.meshenger.CallEvent
-import org.webrtc.SurfaceViewRenderer
-import d.d.meshenger.MainService
 import android.widget.ImageButton
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.media.AudioManager
@@ -28,9 +20,7 @@ import android.widget.Toast
 import d.d.meshenger.RTCCall.OnStateChangeListener
 import d.d.meshenger.RTCCall.CallState
 import android.hardware.SensorEvent
-import android.net.wifi.WifiManager
 import android.os.*
-import android.text.format.Formatter
 import android.view.View
 import android.view.animation.Animation
 import java.io.IOException
@@ -38,9 +28,9 @@ import java.lang.Exception
 import java.lang.NullPointerException
 
 class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener {
-    private var statusTextView: TextView? = null
-    private var nameTextView: TextView? = null
     private var binder: MainBinder? = null
+    private lateinit var statusTextView: TextView
+    private lateinit var nameTextView: TextView
     private var connection: ServiceConnection? = null
     private var currentCall: RTCCall? = null
     private var calledWhileScreenOff = false
@@ -51,9 +41,10 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
     private val CAMERA_PERMISSION_REQUEST_CODE = 2
     private var permissionRequested = false
     private var contact: Contact? = null
-    private var callEventType: CallEvent.Type? = null
+    private var eventType = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call)
@@ -64,9 +55,9 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
         nameTextView = findViewById(R.id.callName)
         val action = intent.action
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
-        log("onCreate: $action")
+        Log.d(this, "onCreate: $action")
         if ("ACTION_OUTGOING_CALL" == action) {
-            callEventType = CallEvent.Type.OUTGOING_UNKNOWN
+            eventType = Event.Type.OUTGOING_UNKNOWN
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainBinder
@@ -86,21 +77,21 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 }
             }
             if (contact!!.name.isEmpty()) {
-                nameTextView?.setText(resources.getString(R.string.unknown_caller))
+                nameTextView.setText(resources.getString(R.string.unknown_caller))
             } else {
-                nameTextView?.setText(contact!!.name)
+                nameTextView.setText(contact!!.name)
             }
             bindService(Intent(this, MainService::class.java), connection!!, 0)
-            val declineListener = View.OnClickListener { view: View? ->
+            val declineListener = View.OnClickListener { _: View? ->
                 // end call
                 currentCall!!.hangUp()
-                callEventType = CallEvent.Type.OUTGOING_DECLINED
+                eventType = Event.Type.OUTGOING_DECLINED
                 finish()
             }
             findViewById<View>(R.id.callDecline).setOnClickListener(declineListener)
             startSensor()
         } else if ("ACTION_INCOMING_CALL" == action) {
-            callEventType = CallEvent.Type.INCOMING_UNKNOWN
+            eventType = Event.Type.INCOMING_UNKNOWN
             calledWhileScreenOff = !(getSystemService(POWER_SERVICE) as PowerManager).isScreenOn
             passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
                 PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.FULL_WAKE_LOCK,
@@ -110,41 +101,40 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             connection = this
             bindService(Intent(this, MainService::class.java), this, 0)
             if (contact!!.name.isEmpty()) {
-                nameTextView?.setText(resources.getString(R.string.unknown_caller))
+                nameTextView.setText(resources.getString(R.string.unknown_caller))
             } else {
-                nameTextView?.setText(contact!!.name)
+                nameTextView.setText(contact!!.name)
             }
             findViewById<View>(R.id.callAccept).visibility = View.VISIBLE
             startRinging()
 
             // decline call
-            val declineListener = View.OnClickListener { view: View? ->
+            val declineListener = View.OnClickListener { _: View? ->
                 stopRinging()
-                log("declining call...")
+                Log.d(this, "declining call...")
                 currentCall!!.decline()
                 if (passiveWakeLock != null && passiveWakeLock!!.isHeld) {
                     passiveWakeLock!!.release()
                 }
-                callEventType = CallEvent.Type.INCOMING_DECLINED
+                eventType = Event.Type.INCOMING_DECLINED
                 startActivity(Intent(this, MainActivity::class.java))
                 finishAffinity()
-
             }
 
             // hangup call
-            val hangupListener = View.OnClickListener { view: View? ->
+            val hangupListener = View.OnClickListener { _: View? ->
                 stopRinging() // make sure ringing has stopped ;-)
-                log("hangup call...")
+                Log.d(this, "hangup call...")
                 currentCall!!.decline()
                 if (passiveWakeLock != null && passiveWakeLock!!.isHeld) {
                     passiveWakeLock!!.release()
                 }
-                callEventType = CallEvent.Type.INCOMING_ACCEPTED
+                eventType = Event.Type.INCOMING_ACCEPTED
                 finish()
             }
-            val acceptListener = View.OnClickListener { view: View? ->
+            val acceptListener = View.OnClickListener { _: View? ->
                 stopRinging()
-                log("accepted call...")
+                Log.d(this, "accepted call...")
                 try {
                     currentCall!!.setRemoteRenderer(findViewById(R.id.remoteRenderer))
                     //currentCall.setLocalRenderer(findViewById(R.id.localRenderer));
@@ -158,7 +148,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                     e.printStackTrace()
                     stopDelayed("Error accepting call")
                     findViewById<View>(R.id.callAccept).visibility = View.GONE
-                    callEventType = CallEvent.Type.INCOMING_ERROR
+                    eventType = Event.Type.INCOMING_ERROR
                 }
             }
             findViewById<View>(R.id.callAccept).setOnClickListener(acceptListener)
@@ -176,13 +166,13 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
 
     var declineBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            log("declineBroadcastCastReceiver onReceive")
+            Log.d(this, "declineBroadcastCastReceiver onReceive")
             finish()
         }
     }
 
     private fun startRinging() {
-        log("startRinging")
+        Log.d(this, "startRinging")
         val ringerMode = (getSystemService(AUDIO_SERVICE) as AudioManager).ringerMode
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return
@@ -207,7 +197,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
     }
 
     private fun stopRinging() {
-        log("stopRinging")
+        Log.d(this, "stopRinging")
         if (vibrator != null) {
             vibrator!!.cancel()
             vibrator = null
@@ -349,15 +339,22 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
 
     override fun onDestroy() {
         try {
-            log("onDestroy")
+            Log.d(this, "onDestroy")
             LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver)
             stopRinging()
+
             if (currentCall!!.state == CallState.CONNECTED) {
                 currentCall!!.decline()
             }
+
             currentCall!!.cleanup()
 
-            binder?.addCallEvent(contact!!, callEventType)
+            val contact = this.contact
+            if (contact != null) {
+                binder?.addEvent(contact, eventType)
+            } else {
+                Log.w(this, "call without contact")
+            }
 
             //if (binder != null) {
             unbindService(connection!!)
@@ -383,30 +380,30 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
         override fun OnStateChange(state: CallState?) {
             when (state) {
                 CallState.CONNECTING -> {
-                    log("activeCallback: CONNECTING")
+                    Log.d(this, "activeCallback: CONNECTING")
                     setStatusText(getString(R.string.call_connecting))
                 }
                 CallState.CONNECTED -> {
-                    log("activeCallback: CONNECTED")
+                    Log.d(this, "activeCallback: CONNECTED")
                     Handler(mainLooper).post {
                         findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
                     }
                     setStatusText(getString(R.string.call_connected))
                 }
                 CallState.DISMISSED -> {
-                    log("activeCallback: DISMISSED")
+                    Log.d(this, "activeCallback: DISMISSED")
                     stopDelayed(getString(R.string.call_denied))
                 }
                 CallState.RINGING -> {
-                    log("activeCallback: RINGING")
+                    Log.d(this, "activeCallback: RINGING")
                     setStatusText(getString(R.string.call_ringing))
                 }
                 CallState.ENDED -> {
-                    log("activeCallback: ENDED")
+                    Log.d(this, "activeCallback: ENDED")
                     stopDelayed(getString(R.string.call_ended))
                 }
                 CallState.ERROR -> {
-                    log("activeCallback: ERROR")
+                    Log.d(this, "activeCallback: ERROR")
                     stopDelayed(getString(R.string.call_error))
                 }
             }
@@ -416,7 +413,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
         override fun OnStateChange(state: CallState?) {
             when (state) {
                 CallState.CONNECTED -> {
-                    log("passiveCallback: CONNECTED")
+                    Log.d(this, "passiveCallback: CONNECTED")
                     setStatusText(getString(R.string.call_connected))
                     runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
                     Handler(mainLooper).post {
@@ -424,15 +421,15 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                     }
                 }
                 CallState.RINGING -> {
-                    log("passiveCallback: RINGING")
+                    Log.d(this, "passiveCallback: RINGING")
                     setStatusText(getString(R.string.call_ringing))
                 }
                 CallState.ENDED -> {
-                    log("passiveCallback: ENDED")
+                    Log.d(this, "passiveCallback: ENDED")
                     stopDelayed(getString(R.string.call_ended))
                 }
                 CallState.ERROR -> {
-                    log("passiveCallback: ERROR")
+                    Log.d(this, "passiveCallback: ERROR")
                     stopDelayed(getString(R.string.call_error))
                 }
             }
@@ -440,12 +437,12 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
     }
 
     private fun setStatusText(text: String) {
-        Handler(mainLooper).post { statusTextView!!.text = text }
+        Handler(mainLooper).post { statusTextView.text = text }
     }
 
     private fun stopDelayed(message: String) {
         Handler(mainLooper).post {
-            statusTextView!!.text = message
+            statusTextView.text = message
             Handler().postDelayed({ finish() }, 2000)
         }
     }
@@ -460,7 +457,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
     }
 
     override fun onSensorChanged(sensorEvent: SensorEvent) {
-        log("sensor changed: " + sensorEvent.values[0])
+        Log.d(this, "sensor changed: " + sensorEvent.values[0])
         if (sensorEvent.values[0] == 0.0f) {
             wakeLock = (getSystemService(POWER_SERVICE) as PowerManager)
                 .newWakeLock(
@@ -480,9 +477,5 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
 
     override fun onAccuracyChanged(sensor: Sensor, i: Int) {
         // nothing to do
-    }
-
-    private fun log(s: String) {
-        d(this, s)
     }
 }

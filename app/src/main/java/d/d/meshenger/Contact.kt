@@ -33,24 +33,24 @@ class Contact(
     var lastWorkingAddress: InetSocketAddress? = null
 
     // also resolves domains
-    fun getAllSocketAddresses(): List<InetSocketAddress> {
+    private fun getAllSocketAddresses(): List<InetSocketAddress> {
         val socketAddresses = mutableListOf<InetSocketAddress>()
-        for (address in this.addresses) {
+
+        for (address in addresses) {
             try {
                 if (Utils.isMACAddress(address)) {
-                    socketAddresses.addAll(Utils.getAddressPermutations(address, MainService.serverPort))
+                    socketAddresses.addAll(Utils.getOwnAddressesWithMAC(address, MainService.serverPort))
                 } else {
-                    // also resolves domains
                     val socketAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)
                     if (socketAddress != null) {
                         socketAddresses.add(socketAddress)
                     }
                 }
             } catch (e: Exception) {
-                Log.d(this, "invalid address: $address")
                 e.printStackTrace()
             }
         }
+
         return socketAddresses
     }
 
@@ -71,6 +71,7 @@ class Contact(
                 return socket
             }
         }
+
         for (address in getAllSocketAddresses()) {
             Log.d(this, "try address: '${address.hostName}', port: ${address.port}")
             socket = establishConnection(address, connectionTimeout)

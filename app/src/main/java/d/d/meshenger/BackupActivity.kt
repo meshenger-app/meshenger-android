@@ -1,37 +1,31 @@
 package d.d.meshenger
 
-import d.d.meshenger.MeshengerActivity
-import android.content.ServiceConnection
-import com.github.isabsent.filepicker.SimpleFilePickerDialog.InteractionListenerString
+import d.d.meshenger.Utils.writeExternalFile
+import d.d.meshenger.Utils.readExternalFile
 import android.widget.ImageButton
 import android.widget.TextView
-import d.d.meshenger.MainService.MainBinder
 import android.os.Bundle
-import d.d.meshenger.R
 import android.content.Intent
-import d.d.meshenger.MainService
+import d.d.meshenger.MainService.MainBinder
+import android.widget.Toast
 import android.content.ComponentName
-import android.os.Environment
+import android.content.ServiceConnection
+import android.net.Uri
 import android.os.IBinder
 import android.view.View
 import android.widget.Button
-import d.d.meshenger.BackupActivity
-import com.github.isabsent.filepicker.SimpleFilePickerDialog
-import d.d.meshenger.Database
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import java.io.File
 import java.lang.Exception
 
-class BackupActivity : MeshengerActivity(), ServiceConnection, InteractionListenerString {
+class BackupActivity : MeshengerActivity(), ServiceConnection {
     private var builder: AlertDialog.Builder? = null
-    private var exportButton: Button? = null
-    private var importButton: Button? = null
-    private var selectButton: ImageButton? = null
-    private var pathEditText: TextView? = null
-    private var passwordEditText: TextView? = null
     private var binder: MainBinder? = null
+    private lateinit var exportButton: Button
+    private lateinit var importButton: Button
+    private lateinit var selectButton: ImageButton
+    private lateinit var passwordEditText: TextView
+
     private fun showErrorMessage(title: String, message: String?) {
         builder!!.setTitle(title)
         builder!!.setMessage(message)
@@ -42,6 +36,7 @@ class BackupActivity : MeshengerActivity(), ServiceConnection, InteractionListen
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_backup)
+
         val toolbar = findViewById<Toolbar>(R.id.backup_toolbar)
         toolbar.apply {
             setNavigationOnClickListener {
@@ -83,163 +78,78 @@ class BackupActivity : MeshengerActivity(), ServiceConnection, InteractionListen
         if (binder == null) {
             return
         }
+
         builder = AlertDialog.Builder(this)
         importButton = findViewById(R.id.ImportButton)
         exportButton = findViewById(R.id.ExportButton)
         selectButton = findViewById(R.id.SelectButton)
-        pathEditText = findViewById(R.id.PathEditText)
         passwordEditText = findViewById(R.id.PasswordEditText)
-        importButton?.setOnClickListener(View.OnClickListener { v: View? ->
-            if (Utils.hasReadPermission(this@BackupActivity)) {
-                importDatabase()
-            } else {
-                Utils.requestReadPermission(this@BackupActivity, REQUEST_PERMISSION)
-            }
+        importButton.setOnClickListener(View.OnClickListener { v: View? ->
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "application/json"
+            startActivityForResult(intent, READ_REQUEST_CODE)
         })
-        exportButton?.setOnClickListener(View.OnClickListener { v: View? ->
-            if (Utils.hasReadPermission(this@BackupActivity) && Utils.hasWritePermission(this@BackupActivity)) {
-                exportDatabase()
-            } else {
-                Utils.requestWritePermission(this@BackupActivity, REQUEST_PERMISSION)
-                Utils.requestReadPermission(this@BackupActivity, REQUEST_PERMISSION)
-            }
-        })
-        selectButton?.setOnClickListener(View.OnClickListener { v: View? ->
-            if (Utils.hasReadPermission(this@BackupActivity)) {
-                val rootPath = Environment.getExternalStorageDirectory().absolutePath
-                showListItemDialog(
-                    resources.getString(R.string.button_select),
-                    rootPath,
-                    SimpleFilePickerDialog.CompositeMode.FILE_OR_FOLDER_SINGLE_CHOICE,
-                    SELECT_PATH_REQUEST
-                )
-            } else {
-                Utils.requestReadPermission(this@BackupActivity, REQUEST_PERMISSION)
-            }
+        exportButton.setOnClickListener(View.OnClickListener { v: View? ->
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.putExtra(Intent.EXTRA_TITLE, "meshenger-backup.json")
+            intent.type = "application/json"
+            startActivityForResult(intent, WRITE_REQUEST_CODE)
         })
     }
 
-    private fun exportDatabase() {
-        val password = passwordEditText!!.text.toString()
-        val path = pathEditText!!.text.toString()
-        if (path == null || path.isEmpty()) {
-            showErrorMessage(
-                resources.getString(R.string.error),
-                resources.getString(R.string.no_path_selected)
-            )
-            return
-        }
-        if (File(path).isDirectory || path.endsWith("/")) {
-            showErrorMessage(
-                resources.getString(R.string.error),
-                resources.getString(R.string.no_file_name)
-            )
-            return
-        }
-        if (File(path).exists()) {
-            showErrorMessage(
-                resources.getString(R.string.error),
-                resources.getString(R.string.file_already_exists)
-            )
-            return
-        }
+    private fun exportDatabase(uri: Uri) {
+        val password = passwordEditText.text.toString()
         try {
-            val db = binder!!.getService().database
-            db?.let { Database.store(path, it, password) }
-            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
+            val database = binder!!.getDatabase()
+            if (database != null) {
+                val data = Database.toData(database, password)
+                if (data != null) {
+                    writeExternalFile(this, uri, data!!)
+                    Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             showErrorMessage(resources.getString(R.string.error), e.message)
         }
     }
 
-    private fun importDatabase() {
-        val password = passwordEditText!!.text.toString()
-        val path = pathEditText!!.text.toString()
-        if (path == null || path.isEmpty()) {
-            showErrorMessage(
-                resources.getString(R.string.error),
-                resources.getString(R.string.no_path_selected)
-            )
-            return
-        }
-        if (File(path).isDirectory || path.endsWith("/")) {
-            showErrorMessage(
-                resources.getString(R.string.error),
-                resources.getString(R.string.no_file_name)
-            )
-            return
-        }
-        if (!File(path).exists()) {
-            showErrorMessage(
-                resources.getString(R.string.error),
-                resources.getString(R.string.file_does_not_exist)
-            )
-            return
-        }
+    private fun importDatabase(uri: Uri?) {
+        val password = passwordEditText.text.toString()
         try {
-            val db = Database.load(path, password)
-            binder!!.replaceDatabase(db)
+            val data = readExternalFile(this, uri!!)
+            val db = Database.fromData(data, password)
+            binder!!.getService().replaceDatabase(db)
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             showErrorMessage(resources.getString(R.string.error), e.toString())
         }
     }
 
-    // path picker
-    override fun showListItemDialog(
-        title: String,
-        folderPath: String,
-        mode: SimpleFilePickerDialog.CompositeMode,
-        dialogTag: String
-    ) {
-        SimpleFilePickerDialog.build(folderPath, mode)
-            .title(title)
-            .show(this, dialogTag)
-    }
-
-    override fun onResult(dialogTag: String, which: Int, extras: Bundle): Boolean {
-        when (dialogTag) {
-            SELECT_PATH_REQUEST -> if (extras.containsKey(SimpleFilePickerDialog.SELECTED_SINGLE_PATH)) {
-                var path = extras.getString(SimpleFilePickerDialog.SELECTED_SINGLE_PATH)
-                if (File(path).isDirectory) {
-                    // append slash
-                    if (!path!!.endsWith("/")) {
-                        path += "/"
-                    }
-                    path += "meshenger_backup.json"
-                }
-                pathEditText!!.text = path
-            }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (resultCode != RESULT_OK) {
+            return
         }
-        return false
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val data = intent.data
+        if (data == null) {
+            return
+        }
+
         when (requestCode) {
-            REQUEST_PERMISSION -> if (Utils.allGranted(grantResults)) {
-                // permissions granted
-                Toast.makeText(
-                    applicationContext,
-                    "Permissions granted - please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                showErrorMessage("Permissions Required", "Action cannot be performed.")
-            }
+            READ_REQUEST_CODE -> importDatabase(data)
+            WRITE_REQUEST_CODE -> exportDatabase(data)
         }
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
     }
 
     companion object {
-        private const val SELECT_PATH_REQUEST = "SELECT_PATH_REQUEST"
-        private const val REQUEST_PERMISSION = 0x01
+        private const val READ_REQUEST_CODE = 0x01
+        private const val WRITE_REQUEST_CODE = 0x02
     }
 }

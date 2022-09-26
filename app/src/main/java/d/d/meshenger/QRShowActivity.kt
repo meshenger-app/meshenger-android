@@ -7,20 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import d.d.meshenger.Contact.Companion.exportJSON
-import d.d.meshenger.Log
 import d.d.meshenger.MainService.MainBinder
 
 class QRShowActivity : MeshengerActivity(), ServiceConnection {
     private var contact: Contact? = null
     private var binder: MainBinder? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrshow)
+
         if (intent.hasExtra("EXTRA_CONTACT")) {
             contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
             findViewById<View>(R.id.fabPresenter).visibility = View.GONE
@@ -34,7 +36,8 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
             params.bottomMargin = params.rightMargin
             findViewById<View>(R.id.fabShare).layoutParams = params
         }
-        title = getString(R.string.scan_invitation)
+        setTitle(getString(R.string.scan_invitation))
+
         bindService()
         findViewById<View>(R.id.fabPresenter).setOnClickListener { view: View? ->
             startActivity(Intent(this, QRScanActivity::class.java))
@@ -42,7 +45,7 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
         }
         findViewById<View>(R.id.fabShare).setOnClickListener { view: View? ->
             if (contact != null) try {
-                val data = exportJSON(contact!!, false).toString()
+                val data = Contact.toJSON(contact!!, false).toString()
                 val i = Intent(Intent.ACTION_SEND)
                 i.putExtra(Intent.EXTRA_TEXT, data)
                 i.type = "text/plain"
@@ -66,19 +69,21 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
         bindService(serviceIntent, this, BIND_AUTO_CREATE)
     }
 
-    @Throws(Exception::class)
     private fun generateQR() {
-        if (contact == null) {
-            // export own contact
-            contact = binder!!.getSettings().getOwnContact()
-        }
-        val data = exportJSON(contact!!, false).toString()
+        val contact = this.contact ?: binder!!.getSettings().getOwnContact()
+
+        // show name when from contact list
+        findViewById<TextView>(R.id.contact_name_tv).text =
+            if (this.contact != null) contact.name else ""
+
+        val data = Contact.toJSON(contact, false).toString()
         val multiFormatWriter = MultiFormatWriter()
         val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080)
         val barcodeEncoder = BarcodeEncoder()
         val bitmap = barcodeEncoder.createBitmap(bitMatrix)
-        (findViewById<View>(R.id.QRView) as ImageView).setImageBitmap(bitmap)
-        if (contact!!.addresses.isEmpty()) {
+        findViewById<ImageView>(R.id.QRView).setImageBitmap(bitmap)
+
+        if (contact.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
         }
     }

@@ -4,10 +4,13 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.*
+import java.lang.Integer.min
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
@@ -147,13 +150,13 @@ internal object Utils {
             if (port < 0) {
                 port = defaultPort
             }
-            InetSocketAddress(addr, port)
+            InetSocketAddress.createUnresolved(addr, port)
         } catch (e: Exception) {
             null
         }
     }
 
-    fun bytesToMacAddress(mac: ByteArray): String {
+    private fun bytesToMacAddress(mac: ByteArray): String {
         val sb = StringBuilder()
         for (b in mac) {
             sb.append(String.format("%02X:", b))
@@ -164,7 +167,7 @@ internal object Utils {
         return sb.toString()
     }
 
-    fun macAddressToBytes(mac: String): ByteArray {
+    private fun macAddressToBytes(mac: String): ByteArray {
         val elements = mac.split(":").toTypedArray()
         val array = ByteArray(elements.size)
         var i = 0
@@ -193,7 +196,7 @@ internal object Utils {
     }
 
     private fun isHexChar(c: Char): Boolean {
-        return c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F'
+        return c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F'
     }
 
     private val IPV4_PATTERN =
@@ -217,10 +220,6 @@ internal object Utils {
 
     fun isDomain(address: String): Boolean {
         return DOMAIN_PATTERN.matcher(address).matches()
-    }
-
-    fun isAddress(address: String): Boolean {
-        return isMACAddress(address) || isIPAddress(address) || isDomain(address)
     }
 
     fun collectAddresses(): List<AddressEntry> {
@@ -277,7 +276,7 @@ internal object Utils {
             }
         } catch (ex: Exception) {
             // ignore
-            log("error: $ex")
+            Log.d(this, "error: $ex")
         }
         return addressList
     }
@@ -285,12 +284,12 @@ internal object Utils {
     // list all IP/MAC addresses of running network interfaces - for debugging only
     fun printOwnAddresses() {
         for (ae in collectAddresses()) {
-            log("Address: " + ae.address + " (" + ae.device + (if (ae.multicast) ", multicast" else "") + ")")
+            Log.d(this, "Address: ${ae.address} (${ae.device}" + (if (ae.multicast) ", multicast" else "") + ")")
         }
     }
 
     // Check if the given MAC address is in the IPv6 address
-    fun getEUI64MAC(addr6: Inet6Address): ByteArray? {
+    private fun getEUI64MAC(addr6: Inet6Address): ByteArray? {
         val bytes = addr6.address
         if (bytes[11] != 0xFF.toByte() || bytes[12] != 0xFE.toByte()) {
             return null
@@ -310,7 +309,7 @@ internal object Utils {
     * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
     */
     private fun createEUI64Address(addr6: Inet6Address, mac: ByteArray): Inet6Address? {
-        // addr6 is expected to be a EUI64 address
+        // addr6 is expected to be an EUI64 address
         return try {
             val bytes = addr6.address
             bytes[8] = (mac[0] xor 2)
@@ -329,38 +328,36 @@ internal object Utils {
     }
 
     /*
-    * Iterate all device addresses, check if they conform to the EUI64 scheme.
-    * If yes, replace the MAC address in it with the supplied one and return that address.
-    * Also set the given port for those generated addresses.
+    * Duplicate own addresses that contain a MAC address with the given MAC address.
+    * This also creates fe80::/10 addresses.
     */
-    fun getAddressPermutations(contact_mac: String, port: Int): List<InetSocketAddress> {
+    fun getOwnAddressesWithMAC(contact_mac: String, port: Int): List<InetSocketAddress> {
         val contact_mac_bytes = macAddressToBytes(contact_mac)
-        val addrs = ArrayList<InetSocketAddress>()
+        val addresses = ArrayList<InetSocketAddress>()
+
         try {
-            val all: List<NetworkInterface> =
-                Collections.list(NetworkInterface.getNetworkInterfaces())
-            for (nif in all) {
+            for (nif in Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 if (nif.isLoopback) {
                     continue
                 }
+
+                if (nif.name.startsWith("dummy")) {
+                    continue
+                }
+
                 for (ia in nif.interfaceAddresses) {
-                    val addr = ia.address
-                    if (addr.isLoopbackAddress) {
+                    val address = ia.address
+                    if (address.isLoopbackAddress) {
                         continue
                     }
-                    if (addr is Inet6Address) {
-                        val extracted_mac = getEUI64MAC(addr)
-                        if (extracted_mac != null && Arrays.equals(
-                                extracted_mac,
-                                nif.hardwareAddress
-                            )
-                        ) {
+                    if (address is Inet6Address) {
+                        val extracted_mac = getEUI64MAC(address)
+                        if (extracted_mac != null) {
                             // We found the interface MAC address in the IPv6 address (EUI-64).
                             // Now assume that the contact has an address with the same scheme.
-                            val new_addr: InetAddress? =
-                                createEUI64Address(addr, contact_mac_bytes)
+                            val new_addr = createEUI64Address(address, contact_mac_bytes)
                             if (new_addr != null) {
-                                addrs.add(InetSocketAddress(new_addr, port))
+                                addresses.add(InetSocketAddress(new_addr.hostAddress, port))
                             }
                         }
                     }
@@ -369,14 +366,16 @@ internal object Utils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return addrs
+
+        return addresses
     }
 
-    // EUI-64 based address to MAC address
-    fun getGeneralizedAddress(address: InetAddress): String? {
+    // EUI-64 based address to MAC address.
+    fun getGeneralizedAddress(address: InetAddress?): String? {
+        if (address == null) return null
         val mac = extractMacAddress(address)
         if (mac != null) return bytesToMacAddress(mac)
-        return address.hostAddress
+        return address.hostAddress ?: address.hostName
     }
 
     private fun extractMacAddress(address: InetAddress): ByteArray? {
@@ -419,7 +418,76 @@ internal object Utils {
         return buffer.toByteArray()
     }
 
-    private fun log(s: String) {
-        Log.d(Utils::class.java.simpleName, s)
+
+   fun getExternalFileSize(ctx: Context, uri: Uri?): Long {
+        val cursor = ctx.contentResolver.query(uri!!, null, null, null, null)
+        cursor!!.moveToFirst()
+        val size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE))
+        cursor.close()
+        return size
+    }
+
+    @Throws(IOException::class)
+    fun readExternalFile(ctx: Context, uri: Uri): ByteArray {
+        val size = getExternalFileSize(ctx, uri).toInt()
+        val isstream = ctx.contentResolver.openInputStream(uri)
+        val buffer = ByteArrayOutputStream()
+        var nRead = 0
+        val dataArray = ByteArray(size)
+        while (isstream != null && isstream.read(dataArray, 0, dataArray.size).also { nRead = it } != -1) {
+            buffer.write(dataArray, 0, nRead)
+        }
+        isstream?.close()
+        return dataArray
+    }
+
+    @Throws(IOException::class)
+    fun writeExternalFile(ctx: Context, uri: Uri, dataArray: ByteArray) {
+        val fos = ctx.contentResolver.openOutputStream(uri)
+        fos!!.write(dataArray)
+        fos.close()
+    }
+
+    // write file to external storage
+    @Throws(IOException::class)
+    fun writeInternalFile(filePath: String, dataArray: ByteArray) {
+        val file = File(filePath)
+        if (file.exists() && file.isFile) {
+            if (!file.delete()) {
+                throw IOException("Failed to delete existing file: $filePath")
+            }
+        }
+        file.createNewFile()
+        val fos = FileOutputStream(file)
+        fos.write(dataArray)
+        fos.close()
+    }
+
+    // read file from external storage
+    @Throws(IOException::class)
+    fun readInternalFile(filePath: String): ByteArray {
+        val file = File(filePath)
+        if (!file.exists() || !file.isFile) {
+            throw IOException("File does not exist: $filePath")
+        }
+        val fis = FileInputStream(file)
+        var nRead: Int
+        val dataArray = ByteArray(16384)
+        val buffer = ByteArrayOutputStream()
+        while (fis.read(dataArray, 0, dataArray.size).also { nRead = it } != -1) {
+            buffer.write(dataArray, 0, nRead)
+        }
+        fis.close()
+        return buffer.toByteArray()
+    }
+
+    fun getUnknownCallerName(context: Context, clientPublicKeyOut: ByteArray): String {
+        val sb = StringBuilder()
+        sb.append(context.resources.getString(R.string.unknown_caller))
+        sb.append(" #")
+        for (i in 0..min(4, clientPublicKeyOut.size)) {
+            sb.append(String.format("%02X", clientPublicKeyOut[i]))
+        }
+        return sb.toString()
     }
 }

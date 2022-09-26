@@ -15,10 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.Crypto.decryptMessage
 import d.d.meshenger.Crypto.encryptMessage
-import d.d.meshenger.Database.Companion.load
-import d.d.meshenger.Database.Companion.store
-import d.d.meshenger.Log.d
-import d.d.meshenger.MainService
+import d.d.meshenger.Utils.readInternalFile
+import d.d.meshenger.Utils.writeInternalFile
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import java.io.File
@@ -29,22 +27,20 @@ import java.net.Socket
 import java.util.*
 
 class MainService : Service(), Runnable {
-    var database: Database? = null
-    var isFirstStart = false
+    private var database: Database? = null
+    var first_start = false
     private var database_path = ""
-    var databasePassword = ""
+    var database_password = ""
 
     @Volatile
     private var run = true
     private var currentCall: RTCCall? = null
-    private var events = mutableListOf<CallEvent>()
 
     override fun onCreate() {
         super.onCreate()
         database_path = this.filesDir.toString() + "/database.bin"
         // handle incoming connections
         Thread(this).start()
-        events = ArrayList()
     }
 
     private val NOTIFICATION = 42
@@ -82,26 +78,44 @@ class MainService : Service(), Runnable {
         startForeground(NOTIFICATION, notification)
     }
 
-    private fun loadDatabase() {
+    fun loadDatabase() {
         try {
             if (File(database_path).exists()) {
                 // open existing database
-                database = load(database_path, databasePassword)
-                isFirstStart = false
+                val data = readInternalFile(database_path)
+                database = Database.fromData(data, database_password)
+                first_start = false
             } else {
                 // create new database
                 database = Database()
-                isFirstStart = true
+                first_start = true
             }
-        } catch (e: Exception) {
-            // ignore
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
     }
 
-    private fun saveDatabase() {
+    fun replaceDatabase(database: Database?) {
+        if (database != null) {
+            if (this.database == null) {
+                this.database = database
+            } else {
+                this.database = database
+                saveDatabase()
+            }
+        }
+    }
+
+    fun saveDatabase() {
         try {
-            store(database_path, database!!, databasePassword)
-        } catch (e: Exception) {
+            val db = database
+            if (db != null) {
+                val data = Database.toData(db, database_password)
+                if (data != null) {
+                    writeInternalFile(database_path, data)
+                }
+            }
+        } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
     }
@@ -109,27 +123,20 @@ class MainService : Service(), Runnable {
     override fun onDestroy() {
         super.onDestroy()
         run = false
-        // The database might be null here if no correct
-        // database password was supplied to open it.
-        if (database != null) {
-            try {
-                store(database_path, database!!, databasePassword)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        // shutdown listening socket and say goodbye
+
+        // say goodbye
+        val database = this.database
         if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
             try {
-                val ownPublicKey = database!!.settings.publicKey
-                val ownSecretKey = database!!.settings.secretKey
+                val ownPublicKey = database.settings.publicKey
+                val ownSecretKey = database.settings.secretKey
                 val message = "{\"action\": \"status_change\", \"status\", \"offline\"}"
-                for (contact in database!!.contacts) {
+                for (contact in database.contacts.contactList) {
                     if (contact.state === Contact.State.OFFLINE) {
                         continue
                     }
                     val encrypted =
-                        encryptMessage(message, contact.publicKey, ownPublicKey!!, ownSecretKey)
+                        encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey)
                             ?: continue
                     var socket: Socket? = null
                     try {
@@ -150,25 +157,44 @@ class MainService : Service(), Runnable {
                         }
                     }
                 }
-                server!!.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+
+        // The database might be null here if no correct
+        // database password was supplied to open it.
         if (database != null) {
-            // zero keys from memory
-            database!!.onDestroy()
+            try {
+                val data = Database.toData(database, database_password)
+                if (data != null) {
+                    writeInternalFile(database_path, data)
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
         }
+
+        // shutdown listening socket
+        if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
+            try {
+                server!!.close()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        database?.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent.action == null) {
             // ignore
         } else if (intent.action == START_FOREGROUND_ACTION) {
-            log("Received Start Foreground Intent")
+            Log.d(this, "Received Start Foreground Intent")
             showNotification()
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
-            log("Received Stop Foreground Intent")
+            Log.d(this, "Received Stop Foreground Intent")
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION)
             stopForeground(true)
             stopSelf()
@@ -185,23 +211,23 @@ class MainService : Service(), Runnable {
             val pr = PacketReader(client)
             var contact: Contact? = null
             val remote_address = client.remoteSocketAddress as InetSocketAddress
-            log("incoming connection from $remote_address")
+            Log.d(this, "incoming connection from $remote_address")
             while (true) {
                 val request = pr.readMessage() ?: break
                 val decrypted = decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
                 if (decrypted == null) {
-                    log("decryption failed")
+                    Log.d(this, "decryption failed")
                     break
                 }
                 if (contact == null) {
-                    for (c in database!!.contacts) {
+                    for (c in database!!.contacts.contactList) {
                         if (Arrays.equals(c.publicKey, clientPublicKey)) {
                             contact = c
                         }
                     }
                     if (contact == null && database!!.settings.blockUnknown) {
                         if (currentCall != null) {
-                            log("block unknown contact => decline")
+                            Log.d(this, "block unknown contact => decline")
                             currentCall!!.decline()
                         }
                         break
@@ -209,7 +235,7 @@ class MainService : Service(), Runnable {
 
                     if (contact != null && contact.blocked) {
                         if (currentCall != null) {
-                            log("blocked contact => decline")
+                            Log.d(this, "blocked contact => decline")
                             currentCall!!.decline()
                         }
                         break
@@ -221,7 +247,7 @@ class MainService : Service(), Runnable {
                 }
                 // suspicious change of identity in during connection...
                 if (!Arrays.equals(contact.publicKey, clientPublicKey)) {
-                    log("suspicious change of key")
+                    Log.d(this, "suspicious change of key")
                     continue
                 }
                 // remember last good address (the outgoing port is random and not the server port)
@@ -232,14 +258,14 @@ class MainService : Service(), Runnable {
                 when (action) {
                     "call" -> {
                         // someone calls us
-                        log("call...")
+                        Log.d(this, "call...")
                         val offer = obj.getString("offer")
                         currentCall = RTCCall(this, MainBinder(), contact, client, offer)
                         // respond that we accept the call
                         val encrypted = encryptMessage(
                             "{\"action\":\"ringing\"}",
                             contact.publicKey,
-                            ownPublicKey!!,
+                            ownPublicKey,
                             ownSecretKey
                         )
                         pw.writeMessage(encrypted!!)
@@ -251,31 +277,31 @@ class MainService : Service(), Runnable {
                         return
                     }
                     "ping" -> {
-                        log("ping...")
+                        Log.d(this, "ping...")
                         // someone wants to know if we are online
-                        setClientState(contact, Contact.State.ONLINE)
+                        setClientState(contact)
                         val encrypted = encryptMessage(
                             "{\"action\":\"pong\"}",
                             contact.publicKey,
-                            ownPublicKey!!,
+                            ownPublicKey,
                             ownSecretKey
                         )
                         pw.writeMessage(encrypted!!)
                     }
                     "status_change" -> {
                         if (obj.optString("status", "") == "offline") {
-                            setClientState(contact, Contact.State.OFFLINE)
+                            setClientState(contact)
                         } else {
-                            log("Received unknown status_change: " + obj.getString("status"))
+                            Log.d(this, "Received unknown status_change: " + obj.getString("status"))
                         }
                     }
                 }
             }
-            log("client disconnected")
+            Log.d(this, "client disconnected")
             LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("call_declined"))
         } catch (e: Exception) {
             e.printStackTrace()
-            log("client disconnected (exception)")
+            Log.d(this, "client disconnected (exception)")
             if (currentCall != null) {
                 currentCall!!.decline()
             }
@@ -284,7 +310,7 @@ class MainService : Service(), Runnable {
         Arrays.fill(clientPublicKey, 0.toByte())
     }
 
-    private fun setClientState(contact: Contact, state: Contact.State) {
+    private fun setClientState(contact: Contact) {
         contact.state = Contact.State.ONLINE
     }
 
@@ -319,13 +345,32 @@ class MainService : Service(), Runnable {
     * Allows communication between MainService and other objects
     */
     inner class MainBinder : Binder() {
-        fun getService(): MainService = this@MainService
+        fun getService(): MainService {
+            return this@MainService
+        }
+
+        fun getDatabase(): Database? {
+            return this@MainService.database
+        }
+
+        fun getSettings(): Settings {
+            return this@MainService.database!!.settings
+        }
+
+        fun getContacts(): Contacts {
+            return this@MainService.database!!.contacts
+        }
+
+        fun getEvents(): Events {
+            return this@MainService.database!!.events
+        }
+
         fun getCurrentCall(): RTCCall? {
             return currentCall
         }
 
         fun getContactByPublicKey(pubKey: ByteArray?): Contact? {
-            for (contact in database!!.contacts) {
+            for (contact in database!!.contacts.contactList) {
                 if (Arrays.equals(contact.publicKey, pubKey)) {
                     return contact
                 }
@@ -334,7 +379,7 @@ class MainService : Service(), Runnable {
         }
 
         fun getContactByName(name: String): Contact? {
-            for (contact in database!!.contacts) {
+            for (contact in database!!.contacts.contactList) {
                 if (contact.name == name) {
                     return contact
                 }
@@ -343,14 +388,14 @@ class MainService : Service(), Runnable {
         }
 
         fun addContact(contact: Contact) {
-            database!!.addContact(contact)
+            database!!.contacts.addContact(contact)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
         }
 
         fun deleteContact(pubKey: ByteArray) {
-            database!!.deleteContact(pubKey)
+            database!!.contacts.deleteContact(pubKey)
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
@@ -360,27 +405,13 @@ class MainService : Service(), Runnable {
             this@MainService.stopSelf()
         }
 
-        fun loadDatabase() {
-            this@MainService.loadDatabase()
-        }
-
-        fun replaceDatabase(db: Database?) {
-            if (db != null) {
-                if (database == null) {
-                    database = db
-                } else {
-                    database = db
-                    saveDatabase()
-                }
-            }
-        }
-
         fun pingContacts() {
-            val settings = database?.settings!!
+            val settings = getSettings()
+            val contactList = getContacts().contactList
             Thread(
                 PingRunnable(
                     this@MainService,
-                    contactsCopy,
+                    contactList,
                     settings.publicKey,
                     settings.secretKey
                 )
@@ -391,33 +422,14 @@ class MainService : Service(), Runnable {
             this@MainService.saveDatabase()
         }
 
-        fun getSettings(): Settings {
-            return database?.settings!!
-        }
-
-        // return a cloned list
-        val contactsCopy: List<Contact>
-            get() = ArrayList(database!!.contacts)
-
-        internal fun addCallEvent(contact: Contact?, type: CallEvent.Type?) {
-            val last_working = contact?.lastWorkingAddress
-            events.add(
-                CallEvent(
-                    contact?.publicKey!!,
-                    last_working?.address!!,
-                    type!!
-                )
-            )
+        internal fun addEvent(contact: Contact, type: Event.Type) {
+            getEvents().addEvent(contact, type)
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_event_list"))
         }
 
-        // return a cloned list
-        internal val eventsCopy: List<CallEvent>
-            get() = ArrayList(events)
-
         fun clearEvents() {
-            events!!.clear()
+            getEvents().clearEvents()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_event_list"))
         }
@@ -429,7 +441,7 @@ class MainService : Service(), Runnable {
         var ownPublicKey: ByteArray?,
         var ownSecretKey: ByteArray?,
     ) : Runnable {
-        var binder: MainBinder
+        val binder = MainBinder()
         private fun setState(publicKey: ByteArray?, state: Contact.State) {
             val contact = binder.getContactByPublicKey(publicKey)
             if (contact != null) {
@@ -449,7 +461,7 @@ class MainService : Service(), Runnable {
                     }
                     val pw = PacketWriter(socket)
                     val pr = PacketReader(socket)
-                    log("send ping to ${contact.name}")
+                    Log.d(this, "send ping to ${contact.name}")
                     val encrypted = encryptMessage(
                         "{\"action\":\"ping\"}",
                         publicKey,
@@ -468,14 +480,14 @@ class MainService : Service(), Runnable {
                     }
                     val decrypted = decryptMessage(request, publicKey, ownPublicKey, ownSecretKey)
                     if (decrypted == null) {
-                        log("decryption failed")
+                        Log.d(this, "decryption failed")
                         socket.close()
                         continue
                     }
                     val obj = JSONObject(decrypted)
                     val action = obj.optString("action", "")
                     if (action == "pong") {
-                        log("got pong")
+                        Log.d(this, "got pong")
                         setState(publicKey, Contact.State.ONLINE)
                     }
                     socket.close()
@@ -491,21 +503,14 @@ class MainService : Service(), Runnable {
                     e.printStackTrace()
                 }
             }
-            log("send refresh_contact_list")
+            Log.d(this, "send refresh_contact_list")
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_contact_list"))
         }
 
-        init {
-            binder = MainBinder()
-        }
     }
 
     override fun onBind(intent: Intent): IBinder? {
         return MainBinder()
-    }
-
-    private fun log(data: String) {
-        d(this, data)
     }
 
     companion object {

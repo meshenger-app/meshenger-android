@@ -1,0 +1,80 @@
+package d.d.meshenger
+
+import kotlin.Throws
+import org.json.JSONException
+import org.json.JSONObject
+import org.json.JSONArray
+import java.util.*
+
+class Contacts {
+    val contactList = mutableListOf<Contact>()
+
+    fun addContact(contact: Contact) {
+        val idx = findContact(contact.publicKey)
+        if (idx >= 0) {
+            // contact exists - replace
+            contactList[idx] = contact
+        } else {
+            contactList.add(contact)
+        }
+    }
+
+    fun deleteContact(publicKey: ByteArray) {
+        val idx = findContact(publicKey)
+        if (idx >= 0) {
+            contactList.removeAt(idx)
+        }
+    }
+
+    private fun findContact(publicKey: ByteArray): Int {
+        for (i in 0 until contactList.size) {
+            if (Arrays.equals(contactList[i].publicKey, publicKey)) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    fun getContactByPublicKey(publicKey: ByteArray?): Contact? {
+        for (contact in contactList) {
+            if (Arrays.equals(contact.publicKey, publicKey)) {
+                return contact
+            }
+        }
+        return null
+    }
+
+    fun getContactByName(name: String): Contact? {
+        for (contact in contactList) {
+            if (contact.name == name) {
+                return contact
+            }
+        }
+        return null
+    }
+
+    companion object {
+        @Throws(JSONException::class)
+        fun toJSON(contacts: Contacts): JSONObject {
+            val obj = JSONObject()
+            val array = JSONArray()
+            for (contact in contacts.contactList) {
+                array.put(Contact.toJSON(contact, true))
+            }
+            obj.put("entries", array)
+            return obj
+        }
+
+        @Throws(JSONException::class)
+        fun fromJSON(obj: JSONObject): Contacts {
+            val contacts = Contacts()
+            val array = obj.getJSONArray("entries")
+            for (i in 0 until array.length()) {
+                contacts.contactList.add(
+                    Contact.fromJSON(array.getJSONObject(i),true)
+                )
+            }
+            return contacts
+        }
+    }
+}

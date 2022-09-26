@@ -43,7 +43,7 @@ class Settings {
     }
 
     companion object {
-        fun importJSON(obj: JSONObject): Settings {
+        fun fromJSON(obj: JSONObject): Settings {
             val s = Settings()
             s.username = obj.getString("username")
             s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))!!
@@ -86,7 +86,7 @@ class Settings {
         }
 
         @Throws(JSONException::class)
-        fun exportJSON(s: Settings): JSONObject {
+        fun toJSON(s: Settings): JSONObject {
             val obj = JSONObject()
             obj.put("username", s.username)
             obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey))

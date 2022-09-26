@@ -5,71 +5,60 @@
     android:layout_height="wrap_content"
     >
 
-    <RelativeLayout
-        android:id="@+id/event_item_root"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/call_close_event"
-        android:padding="@dimen/padding_20">
+        android:orientation="vertical"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentStart="true" >
 
-
-        <TextView
-            android:id="@+id/contact_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/padding_20"
-            android:layout_marginTop="5.5dp"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Malik"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="20sp" />
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/call_type"
-            android:layout_width="@dimen/padding_20"
-            android:layout_height="@dimen/padding_20"
-            android:layout_below="@id/contact_name"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/padding_20"
-            android:scaleType="fitEnd"
-            android:src="@drawable/ic_incoming_call_accepted" />
+            <TextView
+                android:id="@+id/call_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:layout_marginTop="5.5dp"
+                android:textColor="?attr/primaryTextColor" />
 
+            <ImageView
+                android:id="@+id/call_type"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_margin="8dp"
+                android:scaleType="fitEnd"
+                android:src="@drawable/ic_incoming_call_accepted" />
 
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/call_date"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/contact_name"
-            android:layout_marginStart="@dimen/padding_5"
-            android:layout_toEndOf="@id/call_type"
-            android:fontFamily="@font/poppins_regular"
-            android:text="Today"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="12sp" />
+            android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/call_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/contact_name"
-            android:layout_marginStart="@dimen/padding_5"
-            android:layout_toEndOf="@id/call_date"
-            android:fontFamily="@font/poppins_regular"
-            android:text="05:10:22"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/call_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="?attr/secondaryTextColor" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/call_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="12sp"
+                android:textColor="?attr/secondaryTextColor" />
 
+        </LinearLayout>
 
-    <ImageView
-        android:id="@+id/call_close_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_baseline_close_24" />
+    </LinearLayout>
 
 </RelativeLayout>

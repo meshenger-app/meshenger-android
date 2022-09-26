@@ -22,24 +22,34 @@
         android:id="@+id/QRView"
         android:layout_below="@id/scan_invite_tv"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/contact_name_tv"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/lato_bold"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_below="@id/QRView"
+        android:textColor="@color/black" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabShare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/QRView"
+        android:layout_below="@id/contact_name_tv"
         android:layout_alignParentStart="true"
         android:layout_marginTop="@dimen/padding_10"
-        app:srcCompat="@drawable/ic_baseline_share_24" />
+        app:srcCompat="@drawable/qr_code" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPresenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/QRView"
+        android:layout_below="@id/contact_name_tv"
         android:layout_marginStart="@dimen/padding_20"
         android:layout_marginTop="@dimen/padding_10"
         android:layout_toEndOf="@id/fabShare"

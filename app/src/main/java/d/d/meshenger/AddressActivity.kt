@@ -30,7 +30,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         setContentView(R.layout.activity_address)
         setTitle(R.string.address_management)
 
-        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.apply {
             setNavigationOnClickListener {
                 finish()

@@ -31,15 +31,18 @@ import java.util.regex.Pattern
  */
 class StartActivity : MeshengerActivity(), ServiceConnection {
     private var binder: MainBinder? = null
+    private var dialog : Dialog? = null
     private var startState = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         // load libsodium for JNI access
         sodium = NaCl.sodium()
+
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
         (findViewById<View>(R.id.splashText) as TextView).setTypeface(type)
-//MainService.start(this)
+
         // start MainService and call back via onServiceConnected()
         startService(Intent(this, MainService::class.java))
     }
@@ -48,14 +51,14 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         startState += 1
         when (startState) {
             1 -> {
-                log("init 1: load database")
+                Log.d(this, "init 1: load database")
                 // open without password
-                binder!!.loadDatabase()
+                binder!!.getService().loadDatabase()
                 continueInit()
             }
             2 -> {
-                log("init 2: check database")
-                if (binder!!.getService().database == null) {
+                Log.d(this, "init 2: check database")
+                if (binder!!.getDatabase() == null) {
                     // database is probably encrypted
                     showDatabasePasswordDialog()
                 } else {
@@ -63,7 +66,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 }
             }
             3 -> {
-                log("init 3: check username")
+                Log.d(this, "init 3: check username")
                 if (binder!!.getSettings().username.isEmpty()) {
                     // set username
                     showMissingUsernameDialog()
@@ -72,23 +75,23 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 }
             }
             4 -> {
-                log("init 4: check key pair")
-                if (binder!!.getSettings().publicKey == null) {
+                Log.d(this, "init 4: check key pair")
+                if (binder!!.getSettings().publicKey.isEmpty()) {
                     // generate key pair
                     initKeyPair()
                 }
                 continueInit()
             }
             5 -> {
-                log("init 5: check addresses")
-                if (binder!!.getService()!!.isFirstStart) {
+                Log.d(this, "init 5: check addresses")
+                if (binder!!.getService().first_start) {
                     showMissingAddressDialog()
                 } else {
                     continueInit()
                 }
             }
             6 -> {
-                log("init 6: start contact list")
+                Log.d(this, "init 6: start contact list")
                 // set night mode
                 val nightMode = binder!!.getSettings().nightMode
                 AppCompatDelegate.setDefaultNightMode(
@@ -103,9 +106,9 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
-        log("onServiceConnected")
+        Log.d(this, "onServiceConnected")
         if (startState == 0) {
-            if (binder!!.getService().isFirstStart) {
+            if (binder!!.getService().first_start) {
                 // show delayed splash page
                 Handler().postDelayed({ continueInit() }, 1000)
             } else {
@@ -236,8 +239,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 }
 
                 override fun afterTextChanged(editable: Editable) {
-                    okButton.isClickable = editable.length > 0
-                    okButton.alpha = if (editable.length > 0) 1.0f else 0.5f
+                    okButton.isClickable = editable.isNotEmpty()
+                    okButton.alpha = if (editable.isNotEmpty()) 1.0f else 0.5f
                 }
             })
             okButton.isClickable = false
@@ -296,9 +299,9 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         val okButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
         okButton.setOnClickListener { v: View? ->
             val password = passwordEditText.text.toString()
-            binder!!.getService().databasePassword = password
-            binder!!.loadDatabase()
-            if (binder!!.getService().database == null) {
+            binder!!.getService().database_password = password
+            binder!!.getService().loadDatabase()
+            if (binder!!.getDatabase() == null) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
             } else {
                 // close dialog
@@ -315,14 +318,10 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         dialog.show()
     }
 
-    private fun log(s: String) {
-        Log.d(this, s)
-    }
-
     companion object {
         private var sodium: Sodium? = null
     }
 
-    fun generateRandomUserName() = //foreach loop?
+    fun generateRandomUserName() = // foreach loop?
         "User${UUID.randomUUID().toString().substring(0..7).replace(Pattern.quote("-"), "")}"
 }

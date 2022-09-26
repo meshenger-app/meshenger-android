@@ -26,12 +26,12 @@ import d.d.meshenger.MainService.MainBinder
 
 // the main view with tabs
 class MainActivity : MeshengerActivity(), ServiceConnection {
-    @JvmField
     internal var binder: MainBinder? = null
-    private var mViewPager: ViewPager? = null
-    private var contactListFragment: ContactListFragment? = null
-    private var eventListFragment: EventListFragment? = null
-    val PERM_REQUEST_CODE_DRAW_OVERLAYS = 1234
+    private lateinit var mViewPager: ViewPager
+    private lateinit var contactListFragment: ContactListFragment
+    private lateinit var eventListFragment: EventListFragment
+    private val PERM_REQUEST_CODE_DRAW_OVERLAYS = 1234
+
     private fun initToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.apply {
@@ -47,7 +47,7 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        log("onCreate")
+        Log.d(this, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initToolbar()
@@ -95,22 +95,20 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onDestroy() {
-        log("onDestroy")
+        Log.d(this, "onDestroy")
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshEventListReceiver)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshContactListReceiver)
         super.onDestroy()
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        log("OnServiceConnected")
+        Log.d(this, "OnServiceConnected")
         binder = iBinder as MainBinder
         // in case the language has changed
         val adapter = SectionsPageAdapter(supportFragmentManager)
         adapter.addFragment(contactListFragment, this.resources.getString(R.string.title_contacts))
         adapter.addFragment(eventListFragment, this.resources.getString(R.string.title_history))
-        mViewPager!!.adapter = adapter
-        contactListFragment!!.onServiceConnected()
-        eventListFragment!!.onServiceConnected()
+        mViewPager.adapter = adapter
         // call it here because EventListFragment.onResume is triggered twice
         try {
             binder!!.pingContacts()
@@ -119,12 +117,12 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        log("OnServiceDisconnected")
+        Log.d(this, "OnServiceDisconnected")
         binder = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        log("onOptionsItemSelected")
+        Log.d(this, "onOptionsItemSelected")
         val id = item.itemId
         when (id) {
             R.id.action_settings -> {
@@ -152,23 +150,24 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
 
     private val refreshEventListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            eventListFragment!!.refreshEventList()
+            eventListFragment.refreshEventList()
         }
     }
+
     private val refreshContactListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            contactListFragment!!.refreshContactList()
+            contactListFragment.refreshContactList()
         }
     }
 
     override fun onResume() {
-        log("OnResume")
+        Log.d(this, "OnResume")
         super.onResume()
         bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
     }
 
     override fun onPause() {
-        log("onPause")
+        Log.d(this, "onPause")
         super.onPause()
         unbindService(this)
     }
@@ -186,7 +185,7 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        log("onCreateOptionsMenu")
+        Log.d(this, "onCreateOptionsMenu")
         menuInflater.inflate(R.menu.menu_main_activity, menu)
         return true
     }
@@ -194,8 +193,9 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     class SectionsPageAdapter(fm: FragmentManager?) : FragmentPagerAdapter(
         fm!!
     ) {
-        private val mFragmentList: MutableList<Fragment> = ArrayList()
-        private val mFragmentTitleList: MutableList<String> = ArrayList()
+        private val mFragmentList = mutableListOf<Fragment>()
+        private val mFragmentTitleList = mutableListOf<String>()
+
         fun addFragment(fragment: Fragment?, title: String) {
             mFragmentList.add(fragment!!)
             mFragmentTitleList.add(title)
@@ -212,9 +212,5 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         override fun getCount(): Int {
             return mFragmentList.size
         }
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
     }
 }

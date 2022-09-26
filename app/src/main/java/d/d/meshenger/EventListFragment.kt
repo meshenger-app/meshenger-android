@@ -1,70 +1,73 @@
 package d.d.meshenger
 
 import android.app.Dialog
-import d.d.meshenger.Utils.getGeneralizedAddress
-import d.d.meshenger.Utils.parseInetSocketAddress
-import android.widget.AdapterView.OnItemClickListener
-import d.d.meshenger.MainActivity
-import d.d.meshenger.EventListAdapter
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.os.Bundle
-import d.d.meshenger.R
-import d.d.meshenger.EventListFragment
-import d.d.meshenger.CallEvent
-import d.d.meshenger.Contact
-import android.os.Looper
-import android.widget.AdapterView.OnItemLongClickListener
-import d.d.meshenger.MainService
+import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.AdapterView.OnItemLongClickListener
 import androidx.fragment.app.Fragment
-import d.d.meshenger.CallActivity
-import java.util.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class EventListFragment : Fragment(), OnItemClickListener {
     private var mainActivity: MainActivity? = null
-    lateinit var eventListView: ListView
     private lateinit var eventListAdapter: EventListAdapter
-    lateinit var fabDelete: FloatingActionButton
+    private lateinit var eventListView: ListView
+    private lateinit var fabDelete: FloatingActionButton
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_event_list, container, false)
-        mainActivity = activity as MainActivity?
         eventListView = view.findViewById(R.id.eventList)
         fabDelete = view.findViewById(R.id.fabDelete)
         fabDelete.setOnClickListener(View.OnClickListener { v: View? ->
             mainActivity!!.binder!!.clearEvents()
+            Log.d(this, "fabDelete")
             refreshEventList()
         })
-        eventListAdapter =
-            EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
+        eventListAdapter = EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
         eventListView.setAdapter(eventListAdapter)
         eventListView.setOnItemClickListener(this)
+
         return view
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            mainActivity = context as MainActivity
+        } catch (e: ClassCastException) {
+            Log.e(this, "MainActivity expected")
+            throw RuntimeException()
+        }
+    }
+
     fun refreshEventList() {
-        log("refreshEventList")
-        if (mainActivity == null || mainActivity!!.binder == null) {
-            log("refreshEventList early return")
+        Log.d(this, "refreshEventList")
+        if (mainActivity == null) {
             return
         }
-        val events = mainActivity!!.binder!!.eventsCopy
-        val contacts = mainActivity!!.binder!!.contactsCopy
+
+        val binder = mainActivity!!.binder ?: return
+        val events = binder.getEvents().eventList
+        val contacts = binder.getContacts().contactList
+
         Handler(Looper.getMainLooper()).post {
-            log("refreshEventList update: " + events.size)
-            eventListAdapter!!.update(events, contacts)
-            eventListAdapter!!.notifyDataSetChanged()
-            eventListView!!.adapter = eventListAdapter
-            eventListView!!.onItemLongClickListener =
+            Log.d(this, "refreshEventList update: ${events.size}")
+            eventListAdapter.update(events, contacts)
+            eventListAdapter.notifyDataSetChanged()
+            eventListView.adapter = eventListAdapter
+            eventListView.onItemLongClickListener =
                 OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
                     val event = events[i]
                     val menu = PopupMenu(mainActivity, view)
@@ -73,7 +76,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                     val block = res.getString(R.string.block)
                     val unblock = res.getString(R.string.unblock)
                     val qr = "QR-ify"
-                    val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
+                    val contact = mainActivity!!.binder!!.getContactByPublicKey(event.publicKey)
 
                     // allow to add unknown caller
                     if (contact == null) {
@@ -81,7 +84,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                     }
 
                     // we can only block/unblock contacts
-                    // (or we need to need maintain a separate bocklist)
+                    // (or we need to need maintain a separate blocklist)
                     if (contact != null) {
                         if (contact.blocked) {
                             menu.menu.add(unblock)
@@ -106,8 +109,8 @@ class EventListFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    private fun setBlocked(event: CallEvent, blocked: Boolean) {
-        val contact = mainActivity!!.binder!!.getContactByPublicKey(event.pubKey)
+    private fun setBlocked(event: Event, blocked: Boolean) {
+        val contact = mainActivity!!.binder!!.getContactByPublicKey(event.publicKey)
         if (contact != null) {
             contact.blocked = blocked
             mainActivity!!.binder!!.saveDatabase()
@@ -116,8 +119,8 @@ class EventListFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    private fun showAddDialog(event: CallEvent) {
-        log("showAddDialog")
+    private fun showAddDialog(event: Event) {
+        Log.d(this, "showAddDialog")
         val dialog = Dialog(mainActivity!!)
         dialog.setContentView(R.layout.dialog_add_contact)
         val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
@@ -126,17 +129,23 @@ class EventListFragment : Fragment(), OnItemClickListener {
         okButton.setOnClickListener { v: View? ->
             val name = nameEditText.text.toString()
             if (name.isEmpty()) {
-                Toast.makeText(mainActivity, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
+                Toast.makeText(mainActivity!!, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if (mainActivity!!.binder!!.getContactByName(name) != null) {
                 Toast.makeText(mainActivity, R.string.contact_name_exists, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val address = getGeneralizedAddress(event.address)
+
+            val address = Utils.getGeneralizedAddress(event.address?.address)
             mainActivity!!.binder!!.addContact(
-                Contact(name, event.pubKey, if (address != null) listOf(address) else listOf())
+                Contact(
+                    name,
+                    event.publicKey!!,
+                    if (address != null) listOf(address) else listOf()
+                )
             )
+
             Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
 
@@ -148,24 +157,14 @@ class EventListFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-        log("onItemClick")
-        val event = eventListAdapter!!.getItem(i)
-        val address = getGeneralizedAddress(event.address)
-        val contact = Contact("", event.pubKey, if (address != null) listOf(address) else listOf())
-        contact.lastWorkingAddress = parseInetSocketAddress(address, MainService.serverPort)!!
+        Log.d(this, "onItemClick")
+        val event = eventListAdapter.getItem(i)
+        val address = Utils.getGeneralizedAddress(event.address?.address)
+        val contact = Contact("", event.publicKey!!, if (address != null) listOf(address) else listOf())
+        contact.lastWorkingAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)!!
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)
         startActivity(intent)
-    }
-
-    fun onServiceConnected() {
-        refreshEventList()
-    }
-
-    companion object {
-        private fun log(s: String) {
-            Log.d(EventListFragment::class.java.simpleName, s)
-        }
     }
 }

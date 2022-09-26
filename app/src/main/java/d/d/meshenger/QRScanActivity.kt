@@ -57,7 +57,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
     @Throws(JSONException::class)
     private fun addContact(data: String) {
         val obj = JSONObject(data)
-        val new_contact = Contact.importJSON(obj, false)
+        val new_contact = Contact.fromJSON(obj, false)
         if (new_contact.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show()
         }

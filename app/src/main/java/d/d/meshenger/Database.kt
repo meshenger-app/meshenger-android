@@ -1,110 +1,121 @@
 package d.d.meshenger
 
-import d.d.meshenger.Utils
-import d.d.meshenger.Crypto
+import d.d.meshenger.Crypto.decryptDatabase
+import d.d.meshenger.Event
+import d.d.meshenger.Contacts
+import d.d.meshenger.Crypto.encryptDatabase
 import d.d.meshenger.Contact
 import kotlin.Throws
+import org.json.JSONException
+import d.d.meshenger.Crypto
 import org.json.JSONObject
 import org.json.JSONArray
-import org.json.JSONException
 import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 
 class Database {
     var settings = Settings()
-    var contacts = mutableListOf<Contact>()
-
-    fun addContact(contact: Contact) {
-        val idx = findContact(contact.publicKey)
-        if (idx >= 0) {
-            // contact exists - replace
-            contacts[idx] = contact
-        } else {
-            contacts.add(contact)
-        }
-    }
-
-    fun deleteContact(publicKey: ByteArray?) {
-        val idx = findContact(publicKey)
-        if (idx >= 0) {
-            contacts.removeAt(idx)
-        }
-    }
-
-    fun findContact(publicKey: ByteArray?): Int {
-        var i = 0
-        while (i < contacts.size) {
-            if (Arrays.equals(contacts[i].publicKey, publicKey)) {
-                return i
-            }
-            i += 1
-        }
-        return -1
-    }
+    var contacts = Contacts()
+    var events = Events()
 
     fun onDestroy() {
         // zero keys from memory
         settings.publicKey.fill(0)
         settings.publicKey.fill(0)
 
-        for (contact in contacts) {
+        for (contact in contacts.contactList) {
             contact.publicKey.fill(0)
         }
     }
 
     companion object {
-        var version = "3.0.3" // current version
-        @JvmStatic
-        @Throws(IOException::class, JSONException::class)
-        fun load(path: String?, password: String?): Database {
-            // read database file
-            var data: ByteArray? = Utils.readExternalFile(path!!)
+        private const val TAG = "Database"
+        var version = "4.0.0" // current version
 
+        fun fromData(data: ByteArray, password: String?): Database {
             // encrypt database
-            if (password != null && password.length > 0) {
-                data = Crypto.decryptDatabase(data, password.toByteArray())
-                if (data == null) {
-                    throw IOException("wrong database password.")
+            val stringData = if (password != null && password.isNotEmpty()) {
+                Log.d(this, "Decrypt database")
+                val encrypted = decryptDatabase(data, password.toByteArray())
+                if (encrypted == null) {
+                    throw IOException("Wrong database password.") //resources.getString(R.string.cancel)
                 }
+                encrypted
+            } else {
+                data
             }
+
             val obj = JSONObject(
-                String(data!!, Charset.forName("UTF-8"))
+                String(stringData, Charset.forName("UTF-8"))
             )
-            val upgraded = upgradeDatabase(obj.getString("version"), version, obj)
+            upgradeDatabase(obj.getString("version"), version, obj)
             val db = fromJSON(obj)
-            if (upgraded) {
-                log("store updated database")
-                store(path, db, password)
-            }
+            Log.d(this, "Loaded ${db.contacts.contactList.size} contacts")
+            Log.d(this, "Loaded ${db.events.eventList.size} events.")
             return db
         }
 
-        @JvmStatic
-        fun store(path: String, db: Database, password: String?) {
+        fun toData(db: Database, password: String?): ByteArray? {
             val obj = toJSON(db)
             var data: ByteArray? = obj.toString().toByteArray()
 
             // encrypt database
             if (password != null && password.isNotEmpty()) {
-                data = Crypto.encryptDatabase(data, password.toByteArray())
+                Log.d(this, "Encrypt database")
+                data = encryptDatabase(data, password.toByteArray())
             }
-
-            // write database file
-            Utils.writeExternalFile(path, data)
+            Log.d(TAG, "Stored ${db.contacts.contactList.size} contacts")
+            Log.d(TAG, "Stored ${db.events.eventList.size} events.")
+            return data
         }
 
-        private fun upgradeDatabase(from: String, to: String, obj: JSONObject): Boolean {
+        @Throws(JSONException::class)
+        private fun alignSettings(settings: JSONObject) {
+            val defaults: JSONObject = Settings.toJSON(Settings())
+
+            // default keys
+            val defaults_iter = defaults.keys()
+            val defaults_keys: MutableList<String> = ArrayList()
+            while (defaults_iter.hasNext()) {
+                defaults_keys.add(defaults_iter.next())
+            }
+
+            // current keys
+            val settings_iter = settings.keys()
+            val settings_keys: MutableList<String> = ArrayList()
+            while (settings_iter.hasNext()) {
+                settings_keys.add(settings_iter.next())
+            }
+
+            // add missing keys
+            for (key in defaults_keys) {
+                if (!settings.has(key)) {
+                    settings.put(key, defaults[key])
+                }
+            }
+
+            // remove extra keys
+            for (key in settings_keys) {
+                if (!defaults.has(key)) {
+                    settings.remove(key)
+                }
+            }
+        }
+
+        @Throws(JSONException::class)
+        private fun upgradeDatabase(from: String, to: String, db: JSONObject): Boolean {
             var from = from
             if (from == to) {
                 return false
             }
-            log("upgrade database from $from to $to")
+            Log.d(this, "Upgrade database from $from to $to")
+            val settings = db.getJSONObject("settings")
 
             // 2.0.0 => 2.1.0
             if (from == "2.0.0") {
                 // add blocked field (added in 2.1.0)
-                val contacts = obj.getJSONArray("contacts")
+                val contacts = db.getJSONArray("contacts")
                 var i = 0
                 while (i < contacts.length()) {
                     contacts.getJSONObject(i).put("blocked", false)
@@ -116,8 +127,8 @@ class Database {
             // 2.1.0 => 3.0.0
             if (from == "2.1.0") {
                 // add new fields
-                obj.getJSONObject("settings").put("ice_servers", JSONArray())
-                obj.getJSONObject("settings").put("development_mode", false)
+                settings.put("ice_servers", JSONArray())
+                settings.put("development_mode", false)
                 from = "3.0.0"
             }
 
@@ -130,8 +141,7 @@ class Database {
             // 3.0.1 => 3.0.2
             if (from == "3.0.1") {
                 // fix typo in setting name
-                obj.getJSONObject("settings")
-                    .put("night_mode", obj.getJSONObject("settings").getBoolean("might_mode"))
+                settings.put("night_mode", settings.getBoolean("might_mode"))
                 from = "3.0.2"
             }
 
@@ -140,7 +150,22 @@ class Database {
                 // nothing to do
                 from = "3.0.3"
             }
-            obj.put("version", from)
+
+            // 3.0.3 => 4.0.0
+            if (from == "3.0.3") {
+                from = "4.0.0"
+                val events = JSONObject()
+                events.put("entries", JSONArray())
+                settings.put("events", events)
+                val contacts = JSONObject()
+                val entries = db.getJSONArray("contacts")
+                contacts.put("entries", entries)
+                settings.put("contacts", contacts)
+            }
+
+            // add missing keys with defaults and remove unexpected keys
+            alignSettings(settings)
+            db.put("version", from)
             return true
         }
 
@@ -148,13 +173,9 @@ class Database {
         fun toJSON(db: Database): JSONObject {
             val obj = JSONObject()
             obj.put("version", version)
-            obj.put("settings", Settings.exportJSON(db.settings))
-
-            val contacts = JSONArray()
-            for (contact in db.contacts) {
-                contacts.put(Contact.exportJSON(contact, true))
-            }
-            obj.put("contacts", contacts)
+            obj.put("settings", Settings.toJSON(db.settings))
+            obj.put("contacts", Contacts.toJSON(db.contacts))
+            obj.put("events", Events.toJSON(db.events))
             return obj
         }
 
@@ -166,21 +187,18 @@ class Database {
             version = obj.getString("version")
 
             // import contacts
-            val array = obj.getJSONArray("contacts")
-            for (i in 0 until array.length()) {
-                db.contacts.add(
-                    Contact.importJSON(array.getJSONObject(i), true)
-                )
-            }
+            val contacts = obj.getJSONObject("contacts")
+            db.contacts = Contacts.fromJSON(contacts)
 
             // import settings
             val settings = obj.getJSONObject("settings")
-            db.settings = Settings.importJSON(settings)
-            return db
-        }
+            db.settings = Settings.fromJSON(settings)
 
-        private fun log(s: String) {
-            Log.d("Database", s)
+            // import events
+            val events = obj.getJSONObject("events")
+            db.events = Events.fromJSON(events)
+
+            return db
         }
     }
 }

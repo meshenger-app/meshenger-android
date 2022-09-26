@@ -1,124 +1,120 @@
 package d.d.meshenger
 
-import d.d.meshenger.Contact.Companion.exportJSON
-import android.widget.AdapterView.OnItemClickListener
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import d.d.meshenger.MainActivity
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.os.Bundle
-import d.d.meshenger.ContactListFragment
-import d.d.meshenger.R
-import android.content.Intent
-import d.d.meshenger.QRScanActivity
-import d.d.meshenger.QRShowActivity
-import android.view.animation.AnimationSet
-import android.view.animation.TranslateAnimation
-import android.view.animation.AlphaAnimation
+import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import d.d.meshenger.Contact
-import d.d.meshenger.ContactListAdapter
-import android.widget.AdapterView.OnItemLongClickListener
-import android.widget.AdapterView
-import android.widget.EditText
-import android.widget.ListView
-import android.widget.PopupMenu
+import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.AnimationSet
+import android.view.animation.TranslateAnimation
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import d.d.meshenger.CallActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONException
 
-class ContactListFragment : Fragment(), OnItemClickListener {
-    private var contactListView: ListView? = null
-    private var fabExpanded = false
-    private var fabScan: FloatingActionButton? = null
-    private var fabGen: FloatingActionButton? = null
-    private var fab: FloatingActionButton? = null
+class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
     private var mainActivity: MainActivity? = null
+    private lateinit var contactListView: ListView
+    private var fabExpanded = false
+    private lateinit var fabScan: FloatingActionButton
+    private lateinit var fabGen: FloatingActionButton
+    private lateinit var fab: FloatingActionButton
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        log("onCreateView")
-        val view = inflater.inflate(R.layout.fragment_contact_list, container, false)
-        mainActivity = activity as MainActivity?
+        Log.d(this, "onCreateView")
+        val view: View = inflater.inflate(R.layout.fragment_contact_list, container, false)
+
         fab = view.findViewById(R.id.fab)
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
         contactListView = view.findViewById(R.id.contactList)
-        fabScan?.setOnClickListener(View.OnClickListener { v: View? ->
+        fabScan.setOnClickListener(View.OnClickListener { v: View? ->
             startActivity(
                 Intent(
-                    mainActivity, QRScanActivity::class.java
+                    mainActivity!!, QRScanActivity::class.java
                 )
             )
         })
-        fabGen?.setOnClickListener(View.OnClickListener { v: View? ->
+        fabGen.setOnClickListener(View.OnClickListener { v: View? ->
             startActivity(
                 Intent(
-                    mainActivity, QRShowActivity::class.java
+                    mainActivity!!, QRShowActivity::class.java
                 )
             )
         })
-        fab?.setOnClickListener(View.OnClickListener { fab: View -> runFabAnimation(fab) })
+        fab.setOnClickListener(View.OnClickListener { fab: View -> runFabAnimation(fab) })
+        //refreshContactList() // TODO
         return view
     }
 
-    fun onServiceConnected() {
-        refreshContactList()
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            mainActivity = context as MainActivity
+        } catch (e: ClassCastException) {
+            Log.e(this, "MainActivity expected")
+            throw RuntimeException()
+        }
     }
 
     private fun runFabAnimation(fab: View) {
-        log("runFabAnimation")
-        val scanSet = AnimationSet(mainActivity, null)
-        val generateSet = AnimationSet(mainActivity, null)
-        val distance = 200
-        val duration = 300
+        Log.d(this, "runFabAnimation")
+        val scanSet = AnimationSet(mainActivity!!, null)
+        val generateSet = AnimationSet(mainActivity!!, null)
+        val distance = 200f
+        val duration = 300f
         val scanAnimation: TranslateAnimation
         val generateAnimnation: TranslateAnimation
         val alphaAnimation: AlphaAnimation
         if (fabExpanded) {
-            scanAnimation = TranslateAnimation(0F, 0F, (-distance).toFloat(), 0F)
-            generateAnimnation = TranslateAnimation(0F, 0F, (-distance * 2).toFloat(), 0F)
+            scanAnimation = TranslateAnimation(0f, 0f, -distance, 0f)
+            generateAnimnation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
             alphaAnimation = AlphaAnimation(1.0f, 0.0f)
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
-            fabScan!!.y = fabScan!!.y + distance
-            fabGen!!.y = fabGen!!.y + distance * 2
+            fabScan.setY(fabScan.getY() + distance)
+            fabGen.setY(fabGen.getY() + distance * 2)
         } else {
-            scanAnimation = TranslateAnimation(0F, 0F, distance.toFloat(), 0F)
-            generateAnimnation = TranslateAnimation(0F, 0F, (distance * 2).toFloat(), 0F)
+            scanAnimation = TranslateAnimation(0f, 0f, distance, 0f)
+            generateAnimnation = TranslateAnimation(0f, 0f, distance * 2, 0f)
             alphaAnimation = AlphaAnimation(0.0f, 1.0f)
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-            fabScan!!.y = fabScan!!.y - distance
-            fabGen!!.y = fabGen!!.y - distance * 2
+            fabScan.setY(fabScan.getY() - distance)
+            fabGen.setY(fabGen.getY() - distance * 2)
         }
         scanSet.addAnimation(scanAnimation)
         scanSet.addAnimation(alphaAnimation)
-        scanSet.fillAfter = true
+        scanSet.setFillAfter(true)
         generateSet.addAnimation(generateAnimnation)
         generateSet.addAnimation(alphaAnimation)
-        generateSet.fillAfter = true
-        scanSet.duration = duration.toLong()
-        generateSet.duration = duration.toLong()
-        fabScan!!.visibility = View.VISIBLE
-        fabGen!!.visibility = View.VISIBLE
-        fabScan!!.startAnimation(scanSet)
-        fabGen!!.startAnimation(generateSet)
+        generateSet.setFillAfter(true)
+        scanSet.setDuration(duration.toLong())
+        generateSet.setDuration(duration.toLong())
+        fabScan.setVisibility(View.VISIBLE)
+        fabGen.setVisibility(View.VISIBLE)
+        fabScan.startAnimation(scanSet)
+        fabGen.startAnimation(generateSet)
         fabExpanded = !fabExpanded
     }
 
     private fun collapseFab() {
         if (fabExpanded) {
-            fab!!.setImageResource(R.drawable.qr_glass)
-            fabScan!!.clearAnimation()
-            fabGen!!.clearAnimation()
-            fabScan!!.y = fabScan!!.y + 200
-            fabGen!!.y = fabGen!!.y + 200 * 2
+            fab.setImageResource(R.drawable.qr_glass)
+            fabScan.clearAnimation()
+            fabGen.clearAnimation()
+            fabScan.setY(fabScan.getY() + 200)
+            fabGen.setY(fabGen.getY() + 200 * 2)
             fabExpanded = false
         }
     }
@@ -128,13 +124,18 @@ class ContactListFragment : Fragment(), OnItemClickListener {
             mainActivity!!
         )
         builder.setTitle(R.string.confirm)
-        builder.setMessage(resources.getString(R.string.contact_remove) + " " + name)
+        builder.setMessage(resources.getString(R.string.contact_remove) + " ${name}")
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
-        builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, id: Int ->
-            mainActivity!!.binder!!.deleteContact(publicKey)
-            dialog.cancel()
-        }
-        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, id: Int -> dialog.cancel() }
+        builder.setPositiveButton(
+            R.string.yes,
+            DialogInterface.OnClickListener { dialog: DialogInterface, id: Int ->
+                mainActivity!!.binder!!.getContacts().deleteContact(publicKey)
+                refreshContactListBroadcast()
+                dialog.cancel()
+            })
+        builder.setNegativeButton(
+            R.string.no,
+            DialogInterface.OnClickListener { dialog: DialogInterface, id: Int -> dialog.cancel() })
 
         // create dialog box
         val alert = builder.create()
@@ -142,30 +143,33 @@ class ContactListFragment : Fragment(), OnItemClickListener {
     }
 
     fun refreshContactList() {
-        log("refreshContactList")
-        if (mainActivity == null || mainActivity!!.binder == null) {
-            log("refreshContactList early return")
+        Log.d(this, "refreshContactList")
+        if (mainActivity == null) {
             return
         }
-        Handler(Looper.getMainLooper()).post {
-            val contacts = mainActivity!!.binder!!.contactsCopy
-            contactListView!!.adapter =
+
+        val binder = mainActivity!!.binder ?: return
+
+        Handler(Looper.getMainLooper()).post(Runnable {
+            val contacts = binder.getContacts().contactList
+            contactListView.adapter =
                 ContactListAdapter(mainActivity!!, R.layout.item_contact, contacts)
-            contactListView!!.onItemClickListener = this@ContactListFragment
-            contactListView!!.onItemLongClickListener =
-                OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
+            contactListView.setOnItemClickListener(this@ContactListFragment)
+            contactListView.onItemLongClickListener =
+                AdapterView.OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
                     val contact = contacts[i]
-                    val menu = PopupMenu(mainActivity, view)
-                    val res = resources
-                    val delete = res.getString(R.string.delete)
-                    val rename = res.getString(R.string.rename)
-                    val block = res.getString(R.string.block)
-                    val unblock = res.getString(R.string.unblock)
-                    val share = res.getString(R.string.share)
+                    val menu = PopupMenu(mainActivity!!, view)
+                    val delete = resources.getString(R.string.delete)
+                    val rename = resources.getString(R.string.rename)
+                    val block = resources.getString(R.string.block)
+                    val unblock = resources.getString(R.string.unblock)
+                    val share = resources.getString(R.string.share)
+                    val ping = "Ping" //res.getString(R.string.ping);
                     val qr = "QR-ify"
                     menu.menu.add(delete)
                     menu.menu.add(rename)
                     menu.menu.add(share)
+                    menu.menu.add(ping)
                     if (contact.blocked) {
                         menu.menu.add(unblock)
                     } else {
@@ -185,9 +189,12 @@ class ContactListFragment : Fragment(), OnItemClickListener {
                             setBlocked(publicKey, true)
                         } else if (title == unblock) {
                             setBlocked(publicKey, false)
+                        } else if (title == ping) {
+                            // TODO: ping contact
+                            Log.d(this, "Ping not implemented here")
                         } else if (title == qr) {
                             val intent = Intent(mainActivity, QRShowActivity::class.java)
-                            intent.putExtra("EXTRA_CONTACT", contact)
+                            intent.putExtra("EXTRA_CONTACT", contact.publicKey)
                             startActivity(intent)
                         }
                         false
@@ -195,49 +202,72 @@ class ContactListFragment : Fragment(), OnItemClickListener {
                     menu.show()
                     true
                 }
-        }
+        })
+    }
+
+    private fun refreshContactListBroadcast() {
+        LocalBroadcastManager.getInstance(requireActivity().applicationContext).sendBroadcast(Intent("contact_changed"))
     }
 
     private fun setBlocked(publicKey: ByteArray, blocked: Boolean) {
-        val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey)
+        val contacts: Contacts = mainActivity!!.binder!!.getContacts()
+        val contact = contacts.getContactByPublicKey(publicKey)
         if (contact != null) {
             contact.blocked = blocked
-            mainActivity!!.binder!!.addContact(contact)
+            contacts.addContact(contact)
+            refreshContactListBroadcast()
         }
     }
 
-    private fun shareContact(c: Contact) {
-        log("shareContact")
+    private fun shareContact(contact: Contact) {
+        Log.d(this, "shareContact")
         try {
             val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "text/plain"
-            intent.putExtra(Intent.EXTRA_TEXT, exportJSON(c, false).toString())
+            intent.setType("text/plain")
+            intent.putExtra(Intent.EXTRA_TEXT, Contact.toJSON(contact, false).toString())
             startActivity(intent)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
     }
 
-    private fun showContactEditDialog(publicKey: ByteArray?, name: String) {
-        log("showContactEditDialog")
-        val et = EditText(mainActivity)
+    private fun showContactEditDialog(publicKey: ByteArray, name: String) {
+        Log.d(this, "showContactEditDialog")
+        val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey) ?: return
+        val et = EditText(mainActivity!!)
         et.setText(name)
-        val dialog = AlertDialog.Builder(
+        val dialog: AlertDialog = AlertDialog.Builder(
             mainActivity!!
         )
             .setTitle(R.string.contact_edit)
             .setView(et)
             .setNegativeButton(resources.getString(R.string.cancel), null)
-            .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
-                val newName = et.text.toString()
-                if (newName.length > 0) {
-                    val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey)
-                    if (contact != null) {
-                        contact.name = newName
-                        mainActivity!!.binder!!.addContact(contact)
+            .setPositiveButton(
+                R.string.ok,
+                DialogInterface.OnClickListener setPositiveButton@{ dialogInterface: DialogInterface?, i: Int ->
+                    val newName: String = et.getText().toString().trim { it <= ' ' }
+                    if (newName == contact.name) {
+                        // nothing to do
+                        return@setPositiveButton
                     }
-                }
-            }.show()
+                    if (!Utils.isValidName(newName)) {
+                        Toast.makeText(context, "Invalid name.", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+                    if (null != mainActivity!!.binder!!.getContacts().getContactByName(newName)) {
+                        Toast.makeText(
+                            context,
+                            "A contact with that name already exists.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+
+                    // rename contact
+                    contact.name = newName
+                    mainActivity!!.binder!!.saveDatabase()
+                    refreshContactListBroadcast()
+                }).show()
     }
 
     override fun onPause() {
@@ -245,18 +275,12 @@ class ContactListFragment : Fragment(), OnItemClickListener {
         collapseFab()
     }
 
-    override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-        log("onItemClick")
-        val contact = mainActivity!!.binder!!.contactsCopy[i]
+    override fun onItemClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
+        Log.d(this, "onItemClick")
+        val contact = adapterView.getAdapter().getItem(i) as Contact
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)
         startActivity(intent)
-    }
-
-    companion object {
-        private fun log(s: String) {
-            Log.d(ContactListFragment::class.java.simpleName, s)
-        }
     }
 }

@@ -264,7 +264,7 @@
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/basic"
                             android:textColor="@color/platform_grey"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <RadioButton
                             android:id="@+id/advanced_radio_button"
@@ -275,7 +275,7 @@
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/advanced"
                             android:textColor="@color/platform_grey"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <RadioButton
                             android:id="@+id/expert_radio_button"
@@ -286,7 +286,7 @@
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/expert"
                             android:textColor="@color/platform_grey"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
                     </RadioGroup>
 
                 </LinearLayout>

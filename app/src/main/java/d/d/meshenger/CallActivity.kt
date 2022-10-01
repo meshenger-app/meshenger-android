@@ -406,6 +406,10 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                     Log.d(this, "activeCallback: ERROR")
                     stopDelayed(getString(R.string.call_error))
                 }
+                else -> {
+                    Log.d(this, "activeCallback: unknown")
+                    stopDelayed(getString(R.string.call_error))
+                }
             }
         }
     }
@@ -430,6 +434,18 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 }
                 CallState.ERROR -> {
                     Log.d(this, "passiveCallback: ERROR")
+                    stopDelayed(getString(R.string.call_error))
+                }
+                CallState.CONNECTING -> {
+                    Log.d(this, "passiveCallback: CONNECTING")
+                    setStatusText(getString(R.string.call_connecting))
+                }
+                CallState.DISMISSED -> {
+                    Log.d(this, "passiveCallback: DISMISSED")
+                    setStatusText(getString(R.string.call_dismissed))
+                }
+                else -> {
+                    Log.d(this, "passiveCallback: unknown")
                     stopDelayed(getString(R.string.call_error))
                 }
             }

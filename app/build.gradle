@@ -12,6 +12,7 @@ android {
         versionName "4.0.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
 //    ndkVersion '22.0.7026061'
     ndkVersion '21.0.6113669'
@@ -45,6 +46,7 @@ dependencies {
     implementation 'net.java.dev.jna:jna:4.5.2@aar'
     implementation 'com.github.isabsent:filepicker:1.1.01'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 }
 repositories {

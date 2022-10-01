@@ -23,7 +23,6 @@ import d.d.meshenger.MainService.MainBinder
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
 import java.util.*
-import java.util.regex.Pattern
 
 /*
  * Show splash screen, name setup dialog, database password dialog and
@@ -322,6 +321,9 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         private var sodium: Sodium? = null
     }
 
-    fun generateRandomUserName() = // foreach loop?
-        "User${UUID.randomUUID().toString().substring(0..7).replace(Pattern.quote("-"), "")}"
+    private fun generateRandomUserName(): String {
+        val user = getString(R.string.user)
+        val id = UUID.randomUUID().toString().substring(0..6)
+        return "$user-$id"
+    }
 }

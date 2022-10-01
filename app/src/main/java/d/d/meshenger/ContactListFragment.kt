@@ -251,13 +251,13 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
                         return@setPositiveButton
                     }
                     if (!Utils.isValidName(newName)) {
-                        Toast.makeText(context, "Invalid name.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.invalid_name, Toast.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
                     if (null != mainActivity!!.binder!!.getContacts().getContactByName(newName)) {
                         Toast.makeText(
                             context,
-                            "A contact with that name already exists.",
+                            R.string.contact_with_name_already_exists,
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setPositiveButton

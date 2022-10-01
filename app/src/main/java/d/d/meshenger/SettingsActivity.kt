@@ -73,10 +73,10 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
 
         val settings = binder!!.getSettings()
 
-        findViewById<View>(R.id.nameLayout).setOnClickListener { view: View? -> showChangeNameDialog() }
-        findViewById<View>(R.id.passwordLayout).setOnClickListener { view: View? -> showChangePasswordDialog() }
-        findViewById<View>(R.id.iceServersLayout).setOnClickListener { view: View? -> showChangeIceServersDialog() }
-        findViewById<View>(R.id.addressLayout).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.nameLayout).setOnClickListener { showChangeNameDialog() }
+        findViewById<View>(R.id.passwordLayout).setOnClickListener { showChangePasswordDialog() }
+        findViewById<View>(R.id.iceServersLayout).setOnClickListener { showChangeIceServersDialog() }
+        findViewById<View>(R.id.addressLayout).setOnClickListener {
             val intent = Intent(this, AddressActivity::class.java)
             startActivity(intent)
         }
@@ -101,7 +101,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
         blockUnknownCB.apply {
             isChecked = blockUnknown
-            setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 settings.blockUnknown = isChecked
                 binder!!.saveDatabase()
             }
@@ -110,7 +110,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val nightModeCB = findViewById<SwitchMaterial>(R.id.switchButtonNightMode)
         nightModeCB.apply {
             isChecked = nightMode
-            setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 try {
                     // apply value
                     if (isChecked) {
@@ -206,7 +206,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val playAudio = settings.playAudio
         val playAudioCB = findViewById<CheckBox>(R.id.checkBoxPlayAudio)
         playAudioCB.isChecked = playAudio
-        playAudioCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+        playAudioCB.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             // save value
             settings.playAudio = isChecked
             binder!!.saveDatabase()
@@ -215,7 +215,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val playVideo = settings.playVideo
         val playVideoCB = findViewById<CheckBox>(R.id.checkBoxPlayVideo)
         playVideoCB.isChecked = playVideo
-        playVideoCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+        playVideoCB.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             // save value
             settings.playVideo = isChecked
             binder!!.saveDatabase()
@@ -225,7 +225,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val ignoreBatteryOptimizationsCB =
             findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations)
         ignoreBatteryOptimizationsCB.isChecked = ignoreBatteryOptimizations
-        ignoreBatteryOptimizationsCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
+        ignoreBatteryOptimizationsCB.setOnCheckedChangeListener { _: CompoundButton?, _: Boolean ->
             // Only required for Android 6 or later
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val intent =
@@ -245,7 +245,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         AlertDialog.Builder(this)
             .setTitle(resources.getString(R.string.settings_change_name))
             .setView(et)
-            .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
+            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
                 val new_username = et.text.toString().trim { it <= ' ' }
                 if (Utils.isValidName(new_username)) {
                     settings.username = new_username
@@ -272,7 +272,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         AlertDialog.Builder(this)
             .setTitle(resources.getString(R.string.settings_change_password))
             .setView(et)
-            .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
+            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
                 val new_password = et.text.toString()
                 binder!!.getService().database_password = new_password
                 binder!!.saveDatabase()
@@ -291,7 +291,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         iceServersTextView.text = Utils.join(settings.iceServers)
-        saveButton.setOnClickListener { v: View? ->
+        saveButton.setOnClickListener { _: View? ->
             val iceServers = ArrayList<String>()
             Utils.split(iceServersTextView.text.toString()).let {
                 iceServers.addAll(it)
@@ -300,7 +300,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }
-        abortButton.setOnClickListener { v: View? -> dialog.cancel() }
+        abortButton.setOnClickListener { dialog.cancel() }
         dialog.show()
     }
 
@@ -314,10 +314,6 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val intent = Intent(this@SettingsActivity, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         startActivity(intent)
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
     }
 
     private fun applySettingsMode(settingsMode: String) {

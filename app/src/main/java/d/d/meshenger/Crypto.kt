@@ -297,8 +297,4 @@ internal object Crypto {
             null
         }
     }
-
-    private fun log(s: String) {
-        Log.d(Crypto::class.java.simpleName, s)
-    }
 }

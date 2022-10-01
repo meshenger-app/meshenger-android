@@ -10,7 +10,8 @@ class AboutActivity : MeshengerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-        title = resources.getString(R.string.menu_about)
+        setTitle(resources.getString(R.string.menu_about))
+
         val toolbar = findViewById<Toolbar>(R.id.about_toolbar)
         toolbar.apply {
             setNavigationOnClickListener {
@@ -24,7 +25,7 @@ class AboutActivity : MeshengerActivity() {
         }
 
         findViewById<TextView>(R.id.versionTv).text = Utils.getApplicationVersion(this)
-        findViewById<TextView>(R.id.licenseTV).setOnClickListener { v: View? ->
+        findViewById<TextView>(R.id.licenseTV).setOnClickListener {
             val intent = Intent(this, LicenseActivity::class.java)
             startActivity(intent)
         }

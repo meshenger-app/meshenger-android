@@ -20,7 +20,8 @@ internal class ContactListAdapter(
 ) : ArrayAdapter<Contact?>(
     context, resource, contacts
 ) {
-    private val inflater: LayoutInflater
+    private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         val contact = contacts[position]
@@ -56,14 +57,7 @@ internal class ContactListAdapter(
             anim.setDuration(1000);
             convertView.setAnimation(anim);
         }
-*/return convertView
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
-    }
-
-    init {
-        inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        */
+        return convertView
     }
 }

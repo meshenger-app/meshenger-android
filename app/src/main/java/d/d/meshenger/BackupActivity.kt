@@ -84,13 +84,13 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
         exportButton = findViewById(R.id.ExportButton)
         selectButton = findViewById(R.id.SelectButton)
         passwordEditText = findViewById(R.id.PasswordEditText)
-        importButton.setOnClickListener(View.OnClickListener { v: View? ->
+        importButton.setOnClickListener(View.OnClickListener { _: View? ->
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/json"
             startActivityForResult(intent, READ_REQUEST_CODE)
         })
-        exportButton.setOnClickListener(View.OnClickListener { v: View? ->
+        exportButton.setOnClickListener(View.OnClickListener { _: View? ->
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.putExtra(Intent.EXTRA_TITLE, "meshenger-backup.json")
@@ -106,7 +106,7 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
             if (database != null) {
                 val data = Database.toData(database, password)
                 if (data != null) {
-                    writeExternalFile(this, uri, data!!)
+                    writeExternalFile(this, uri, data)
                     Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
@@ -137,14 +137,11 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
             return
         }
 
-        val data = intent.data
-        if (data == null) {
-            return
-        }
+        val uri_data = intent.data ?: return
 
         when (requestCode) {
-            READ_REQUEST_CODE -> importDatabase(data)
-            WRITE_REQUEST_CODE -> exportDatabase(data)
+            READ_REQUEST_CODE -> importDatabase(uri_data)
+            WRITE_REQUEST_CODE -> exportDatabase(uri_data)
         }
     }
 

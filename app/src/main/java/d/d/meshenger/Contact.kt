@@ -59,7 +59,7 @@ class Contact(
     * Try/Remember the last successful address.
     */
     fun createSocket(): Socket? {
-        var socket: Socket? = null
+        var socket: Socket?
         val connectionTimeout = 500
 
         // try last successful address first

@@ -30,7 +30,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         val view = inflater.inflate(R.layout.fragment_event_list, container, false)
         eventListView = view.findViewById(R.id.eventList)
         fabDelete = view.findViewById(R.id.fabDelete)
-        fabDelete.setOnClickListener(View.OnClickListener { v: View? ->
+        fabDelete.setOnClickListener(View.OnClickListener { _: View? ->
             mainActivity!!.binder!!.clearEvents()
             Log.d(this, "fabDelete")
             refreshEventList()
@@ -68,7 +68,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             eventListAdapter.notifyDataSetChanged()
             eventListView.adapter = eventListAdapter
             eventListView.onItemLongClickListener =
-                OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
+                OnItemLongClickListener { _: AdapterView<*>?, view: View?, i: Int, _: Long ->
                     val event = events[i]
                     val menu = PopupMenu(mainActivity, view)
                     val res = resources
@@ -126,7 +126,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
         val exitButton = dialog.findViewById<Button>(R.id.CancelButton)
         val okButton = dialog.findViewById<Button>(R.id.OkButton)
-        okButton.setOnClickListener { v: View? ->
+        okButton.setOnClickListener {
             val name = nameEditText.text.toString()
             if (name.isEmpty()) {
                 Toast.makeText(mainActivity!!, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
@@ -141,7 +141,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             mainActivity!!.binder!!.addContact(
                 Contact(
                     name,
-                    event.publicKey!!,
+                    event.publicKey,
                     if (address != null) listOf(address) else listOf()
                 )
             )
@@ -152,7 +152,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             // close dialog
             dialog.dismiss()
         }
-        exitButton.setOnClickListener { v: View? -> dialog.dismiss() }
+        exitButton.setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
 

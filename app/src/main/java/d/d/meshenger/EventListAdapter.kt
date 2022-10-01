@@ -48,32 +48,28 @@ internal class EventListAdapter(
 
     override fun getView(position: Int, v: View?, parent: ViewGroup): View {
         // show list in reverse, latest element first
-        val view = if (v == null) inflater.inflate(R.layout.item_event, null) else v
+        val view = v ?: inflater.inflate(R.layout.item_event, null)
         val event = events[events.size - position - 1]
 
         // find name
-        var name = ""
-        for (contact in contacts) {
-            if (Arrays.equals(contact.publicKey, event.publicKey)) {
-                name = contact.name
-                break
-            }
-        }
-        val name_tv: TextView = view.findViewById<TextView>(R.id.call_name)
+        var name = contacts.find { Arrays.equals(it.publicKey, event.publicKey) }?.name ?: ""
+
+        val name_tv = view.findViewById<TextView>(R.id.call_name)
         if (name.isEmpty()) {
-            val unknown_caller = Utils.getUnknownCallerName(ctx, event.publicKey)
-            name_tv.setText(unknown_caller)
+            name_tv.text = Utils.getUnknownCallerName(ctx, event.publicKey)
         } else {
-            name_tv.setText(name)
+            name_tv.text = name
         }
-        val date_tv: TextView = view.findViewById<TextView>(R.id.call_date)
+
+        val date_tv = view.findViewById<TextView>(R.id.call_date)
         if (DateUtils.isToday(event.date.time)) {
             val ft = SimpleDateFormat("'Today at' hh:mm:ss", Locale.ROOT)
-            date_tv.setText(ft.format(event.date))
+            date_tv.text = ft.format(event.date)
         } else {
             val ft = SimpleDateFormat("yyyy.MM.dd 'at' hh:mm", Locale.ROOT)
-            date_tv.setText(ft.format(event.date))
+            date_tv.text = ft.format(event.date)
         }
+
         val type_iv = view.findViewById<ImageView>(R.id.call_type)
         when (event.type) {
             Event.Type.UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
@@ -88,13 +84,15 @@ internal class EventListAdapter(
             Event.Type.OUTGOING_MISSED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_missed)
             Event.Type.OUTGOING_ERROR -> type_iv.setImageResource(R.drawable.ic_outgoing_call_error)
         }
+
         val address_tv = view.findViewById<TextView>(R.id.call_address)
         if (event.address != null) {
             val text = formatAddress(event.address)
-            address_tv.setText("(${text})")
+            address_tv.text = "(${text})"
         } else {
-            address_tv.setText("")
+            address_tv.text = ""
         }
+
         return view
     }
 }

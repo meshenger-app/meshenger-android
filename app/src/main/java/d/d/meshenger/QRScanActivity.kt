@@ -32,26 +32,29 @@ import android.widget.Button
 import org.json.JSONException
 
 class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
-    private var barcodeView: DecoratedBarcodeView? = null
+    private lateinit var barcodeView: DecoratedBarcodeView
     private var binder: MainService.MainBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrscan)
-        title = getString(R.string.scan_invited)
+        setTitle(getString(R.string.scan_invited))
+
+        barcodeView = findViewById(R.id.barcodeScannerView)
+
         bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, 1)
         }
 
         // qr show button
-        findViewById<View>(R.id.fabScan).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.fabScan).setOnClickListener { _: View? ->
             startActivity(Intent(this, QRShowActivity::class.java))
             finish()
         }
 
         // manual input button
-        findViewById<View>(R.id.fabManualInput).setOnClickListener { view: View? -> startManualInput() }
+        findViewById<View>(R.id.fabManualInput).setOnClickListener { _: View? -> startManualInput() }
     }
 
     @Throws(JSONException::class)
@@ -86,7 +89,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.public_key_conflict_abort_button)
         val replaceButton = dialog.findViewById<Button>(R.id.public_key_conflict_replace_button)
         nameTextView.text = other_contact.name
-        replaceButton.setOnClickListener { v: View? ->
+        replaceButton.setOnClickListener { _: View? ->
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
 
@@ -95,9 +98,9 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.cancel()
             finish()
         }
-        abortButton.setOnClickListener { v: View? ->
+        abortButton.setOnClickListener { _: View? ->
             dialog.cancel()
-            barcodeView!!.resume()
+            barcodeView.resume()
         }
         dialog.show()
     }
@@ -110,7 +113,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         val replaceButton = dialog.findViewById<Button>(R.id.conflict_contact_replace_button)
         val renameButton = dialog.findViewById<Button>(R.id.conflict_contact_rename_button)
         nameEditText.setText(other_contact.name)
-        replaceButton.setOnClickListener { v: View? ->
+        replaceButton.setOnClickListener { _: View? ->
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
 
@@ -119,7 +122,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.cancel()
             finish()
         }
-        renameButton.setOnClickListener { v: View? ->
+        renameButton.setOnClickListener { _: View? ->
             val name = nameEditText.text.toString()
             if (name.isEmpty()) {
                 Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
@@ -139,19 +142,19 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.cancel()
             finish()
         }
-        abortButton.setOnClickListener { v: View? ->
+        abortButton.setOnClickListener { _: View? ->
             dialog.cancel()
-            barcodeView!!.resume()
+            barcodeView.resume()
         }
         dialog.show()
     }
 
     private fun startManualInput() {
-        barcodeView!!.pause()
+        barcodeView.pause()
         val b = AlertDialog.Builder(this)
         val et = EditText(this)
         b.setTitle(R.string.paste_invitation)
-            .setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
+            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
                 try {
                     val data = et.text.toString()
                     addContact(data)
@@ -160,9 +163,9 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
                     Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, i: Int ->
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                 dialog.cancel()
-                barcodeView!!.resume()
+                barcodeView.resume()
             }
             .setView(et)
         b.show()
@@ -184,10 +187,9 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
 
     override fun barcodeResult(result: BarcodeResult) {
         // no more scan until result is processed
-        barcodeView!!.pause()
+        barcodeView.pause()
         try {
-            val data = result.text
-            addContact(data)
+            addContact(result.text)
         } catch (e: JSONException) {
             e.printStackTrace()
             Toast.makeText(this, R.string.invalid_qr, Toast.LENGTH_LONG).show()
@@ -200,15 +202,15 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
 
     override fun onResume() {
         super.onResume()
-        if (barcodeView != null && binder != null) {
-            barcodeView!!.resume()
+        if (binder != null) {
+            barcodeView.resume()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (barcodeView != null && binder != null) {
-            barcodeView!!.pause()
+        if (binder != null) {
+            barcodeView.pause()
         }
     }
 
@@ -218,11 +220,10 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
     }
 
     private fun initCamera() {
-        barcodeView = findViewById(R.id.barcodeScannerView)
-        val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
-        barcodeView?.getBarcodeView()?.decoderFactory = DefaultDecoderFactory(formats)
-        barcodeView?.decodeContinuous(this)
-        barcodeView?.resume()
+        val formats = listOf(BarcodeFormat.QR_CODE)
+        barcodeView.getBarcodeView()?.decoderFactory = DefaultDecoderFactory(formats)
+        barcodeView.decodeContinuous(this)
+        barcodeView.resume()
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
@@ -234,9 +235,5 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
 
     override fun onServiceDisconnected(componentName: ComponentName) {
         binder = null
-    }
-
-    private fun log(s: String) {
-        Log.d(this, s)
     }
 }

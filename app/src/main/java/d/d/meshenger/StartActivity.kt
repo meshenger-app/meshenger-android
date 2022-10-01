@@ -41,7 +41,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         sodium = NaCl.sodium()
 
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
-        (findViewById<View>(R.id.splashText) as TextView).setTypeface(type)
+        findViewById<TextView>(R.id.splashText).setTypeface(type)
 
         // start MainService and call back via onServiceConnected()
         startService(Intent(this, MainService::class.java))
@@ -170,11 +170,11 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Setup Address")
             builder.setMessage("No address of your WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.")
-            builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, id: Int ->
+            builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int ->
                 showMissingAddressDialog()
                 dialog.cancel()
             }
-            builder.setNegativeButton(R.string.skip) { dialog: DialogInterface, id: Int ->
+            builder.setNegativeButton(R.string.skip) { dialog: DialogInterface, _: Int ->
                 dialog.cancel()
                 // continue with out address configuration
                 continueInit()
@@ -213,12 +213,12 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.hello)
         builder.setView(layout)
-        builder.setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface?, i: Int ->
+        builder.setNegativeButton(R.string.skip) { _: DialogInterface?, _: Int ->
             binder!!.shutdown()
             finish()
         }
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        builder.setPositiveButton(R.string.next) { dialogInterface: DialogInterface?, i: Int -> }
+        builder.setPositiveButton(R.string.next) { _: DialogInterface?, _: Int -> }
         val dialog = builder.create()
         dialog.setOnShowListener { newDialog: DialogInterface ->
             val okButton = (newDialog as AlertDialog).getButton(
@@ -252,7 +252,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         }
         dialog.show()
         // override handler (to be able to dismiss the dialog manually)
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v: View? ->
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
             val username = et.text.toString()
             if (Utils.isValidName(username)) {
@@ -270,7 +270,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
             }
         }
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener { v: View? ->
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
             imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
             val username = generateRandomUserName()
             if (Utils.isValidName(username)) {
@@ -297,7 +297,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         val passwordEditText = dialog.findViewById<EditText>(R.id.change_password_edit_textview)
         val exitButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
         val okButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
-        okButton.setOnClickListener { v: View? ->
+        okButton.setOnClickListener {
             val password = passwordEditText.text.toString()
             binder!!.getService().database_password = password
             binder!!.getService().loadDatabase()
@@ -309,7 +309,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 continueInit()
             }
         }
-        exitButton.setOnClickListener { v: View? ->
+        exitButton.setOnClickListener {
             // shutdown app
             dialog.dismiss()
             binder!!.shutdown()

@@ -40,14 +40,14 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
         contactListView = view.findViewById(R.id.contactList)
-        fabScan.setOnClickListener(View.OnClickListener { v: View? ->
+        fabScan.setOnClickListener(View.OnClickListener { _: View? ->
             startActivity(
                 Intent(
                     mainActivity!!, QRScanActivity::class.java
                 )
             )
         })
-        fabGen.setOnClickListener(View.OnClickListener { v: View? ->
+        fabGen.setOnClickListener(View.OnClickListener { _: View? ->
             startActivity(
                 Intent(
                     mainActivity!!, QRShowActivity::class.java
@@ -128,14 +128,14 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(
             R.string.yes,
-            DialogInterface.OnClickListener { dialog: DialogInterface, id: Int ->
+            DialogInterface.OnClickListener { dialog: DialogInterface, _: Int ->
                 mainActivity!!.binder!!.getContacts().deleteContact(publicKey)
                 refreshContactListBroadcast()
                 dialog.cancel()
             })
         builder.setNegativeButton(
             R.string.no,
-            DialogInterface.OnClickListener { dialog: DialogInterface, id: Int -> dialog.cancel() })
+            DialogInterface.OnClickListener { dialog: DialogInterface, _: Int -> dialog.cancel() })
 
         // create dialog box
         val alert = builder.create()
@@ -156,15 +156,15 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
                 ContactListAdapter(mainActivity!!, R.layout.item_contact, contacts)
             contactListView.setOnItemClickListener(this@ContactListFragment)
             contactListView.onItemLongClickListener =
-                AdapterView.OnItemLongClickListener { adapterView: AdapterView<*>?, view: View?, i: Int, l: Long ->
+                AdapterView.OnItemLongClickListener { _: AdapterView<*>?, view: View?, i: Int, _: Long ->
                     val contact = contacts[i]
                     val menu = PopupMenu(mainActivity!!, view)
-                    val delete = resources.getString(R.string.delete)
-                    val rename = resources.getString(R.string.rename)
-                    val block = resources.getString(R.string.block)
-                    val unblock = resources.getString(R.string.unblock)
-                    val share = resources.getString(R.string.share)
-                    val ping = "Ping" //res.getString(R.string.ping);
+                    val delete = getString(R.string.delete)
+                    val rename = getString(R.string.rename)
+                    val block = getString(R.string.block)
+                    val unblock = getString(R.string.unblock)
+                    val share = getString(R.string.share)
+                    val ping = getString(R.string.ping)
                     val qr = "QR-ify"
                     menu.menu.add(delete)
                     menu.menu.add(rename)
@@ -236,7 +236,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
         val contact = mainActivity!!.binder!!.getContactByPublicKey(publicKey) ?: return
         val et = EditText(mainActivity!!)
         et.setText(name)
-        val dialog: AlertDialog = AlertDialog.Builder(
+        val dialog = AlertDialog.Builder(
             mainActivity!!
         )
             .setTitle(R.string.contact_edit)
@@ -244,8 +244,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
             .setNegativeButton(resources.getString(R.string.cancel), null)
             .setPositiveButton(
                 R.string.ok,
-                DialogInterface.OnClickListener setPositiveButton@{ dialogInterface: DialogInterface?, i: Int ->
-                    val newName: String = et.getText().toString().trim { it <= ' ' }
+                DialogInterface.OnClickListener setPositiveButton@{ _: DialogInterface?, _: Int ->
+                    val newName: String = et.text.toString().trim { it <= ' ' }
                     if (newName == contact.name) {
                         // nothing to do
                         return@setPositiveButton
@@ -266,6 +266,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
                     // rename contact
                     contact.name = newName
                     mainActivity!!.binder!!.saveDatabase()
+
                     refreshContactListBroadcast()
                 }).show()
     }

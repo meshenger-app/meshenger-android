@@ -46,7 +46,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         addressListView = findViewById(R.id.AddressListView)
 
         addressListView.adapter = addressListViewAdapter
-        addressListView.setOnItemClickListener { adapterView, view, i, l ->
+        addressListView.setOnItemClickListener { _, _, i, _ ->
             addressListViewAdapter.toggle(i)
         }
 
@@ -65,7 +65,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         val resetButton = findViewById<Button>(R.id.reset_button)
         val addButton = findViewById<View>(R.id.AddCustomAddressButton)
 
-        saveButton.setOnClickListener(View.OnClickListener { v: View? ->
+        saveButton.setOnClickListener(View.OnClickListener { _: View? ->
             binder!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             binder!!.saveDatabase()

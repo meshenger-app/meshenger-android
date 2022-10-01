@@ -39,11 +39,11 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
         setTitle(getString(R.string.scan_invitation))
 
         bindService()
-        findViewById<View>(R.id.fabPresenter).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.fabPresenter).setOnClickListener { _: View? ->
             startActivity(Intent(this, QRScanActivity::class.java))
             finish()
         }
-        findViewById<View>(R.id.fabShare).setOnClickListener { view: View? ->
+        findViewById<View>(R.id.fabShare).setOnClickListener { _: View? ->
             if (contact != null) try {
                 val data = Contact.toJSON(contact!!, false).toString()
                 val i = Intent(Intent.ACTION_SEND)

@@ -167,8 +167,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         val defaultAddress = getDefaultAddress()
         if (defaultAddress == null) {
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("Setup Address")
-            builder.setMessage("No address of your WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.")
+            builder.setTitle(getString(R.string.setup_address))
+            builder.setMessage(getString(R.string.setup_no_address_found))
             builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int ->
                 showMissingAddressDialog()
                 dialog.cancel()

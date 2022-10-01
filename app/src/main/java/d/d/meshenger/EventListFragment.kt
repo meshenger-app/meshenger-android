@@ -160,7 +160,11 @@ class EventListFragment : Fragment(), OnItemClickListener {
         Log.d(this, "onItemClick")
         val event = eventListAdapter.getItem(i)
         val address = Utils.getGeneralizedAddress(event.address?.address)
-        val contact = Contact("", event.publicKey!!, if (address != null) listOf(address) else listOf())
+        if (address == null) {
+            Toast.makeText(mainActivity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val contact = Contact("", event.publicKey, listOf(address))
         contact.lastWorkingAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)!!
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"

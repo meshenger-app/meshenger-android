@@ -194,7 +194,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
                             Log.d(this, "Ping not implemented here")
                         } else if (title == qr) {
                             val intent = Intent(mainActivity, QRShowActivity::class.java)
-                            intent.putExtra("EXTRA_CONTACT", contact.publicKey)
+                            intent.putExtra("EXTRA_CONTACT", contact)
                             startActivity(intent)
                         }
                         false

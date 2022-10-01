@@ -206,7 +206,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     private fun refreshContactListBroadcast() {
-        LocalBroadcastManager.getInstance(requireActivity().applicationContext).sendBroadcast(Intent("contact_changed"))
+        LocalBroadcastManager.getInstance(requireActivity().applicationContext).sendBroadcast(Intent("refresh_contact_list"))
     }
 
     private fun setBlocked(publicKey: ByteArray, blocked: Boolean) {

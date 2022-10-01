@@ -70,11 +70,17 @@ class QRShowActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun generateQR() {
-        val contact = this.contact ?: binder!!.getSettings().getOwnContact()
+        val name_tv = findViewById<TextView>(R.id.contact_name_tv)
+        val contact_own = binder!!.getSettings().getOwnContact()
+        val contact_other = this.contact
 
-        // show name when from contact list
-        findViewById<TextView>(R.id.contact_name_tv).text =
-            if (this.contact != null) contact.name else ""
+        val contact = if (contact_other != null) {
+            name_tv.text = contact_other.name
+            contact_other
+        } else {
+            name_tv.text = contact_own.name
+            contact_own
+        }
 
         val data = Contact.toJSON(contact, false).toString()
         val multiFormatWriter = MultiFormatWriter()

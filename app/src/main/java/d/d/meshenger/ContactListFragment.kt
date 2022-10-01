@@ -278,7 +278,11 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
 
     override fun onItemClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
         Log.d(this, "onItemClick")
-        val contact = adapterView.getAdapter().getItem(i) as Contact
+        val contact = adapterView.adapter.getItem(i) as Contact
+        if (contact.addresses.isEmpty()) {
+            Toast.makeText(mainActivity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
+            return
+        }
         val intent = Intent(mainActivity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

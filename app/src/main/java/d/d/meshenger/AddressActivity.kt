@@ -177,7 +177,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             val icon = x.findViewById<ImageView>(R.id.icon)
             label.let {
                 if (isEmpty) {
-                    label.text = context.resources.getString(R.string.empty_list_item)
+                    label.text = getString(R.string.empty_list_item)
                     label.setTextColor(Color.BLACK)
                     icon.isVisible = false
                 } else {

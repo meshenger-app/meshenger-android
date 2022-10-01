@@ -83,19 +83,19 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
 
         val username = settings.username
         (findViewById<View>(R.id.nameTv) as TextView).text =
-            if (username.isEmpty()) resources.getString(R.string.none) else username
+            if (username.isEmpty()) getString(R.string.none) else username
 
         val addresses = settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
-            if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
+            if (addresses.size == 0) getString(R.string.none) else Utils.join(addresses)
 
         val password = binder!!.getService().database_password
         (findViewById<View>(R.id.passwordTv) as TextView).text =
-            if (password.isEmpty()) resources.getString(R.string.none) else "*".repeat(password.length)
+            if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
 
         val iceServers = settings.iceServers
         (findViewById<View>(R.id.iceServersTv) as TextView).text =
-            if (iceServers.isEmpty()) resources.getString(R.string.none) else Utils.join(iceServers)
+            if (iceServers.isEmpty()) getString(R.string.none) else Utils.join(iceServers)
 
         val blockUnknown = settings.blockUnknown
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
@@ -243,7 +243,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         et.setText(username)
         et.setSelection(username.length)
         AlertDialog.Builder(this)
-            .setTitle(resources.getString(R.string.settings_change_name))
+            .setTitle(getString(R.string.settings_change_name))
             .setView(et)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
                 val new_username = et.text.toString().trim { it <= ' ' }
@@ -254,7 +254,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
                 } else {
                     Toast.makeText(
                         this,
-                        resources.getString(R.string.invalid_name),
+                        getString(R.string.invalid_name),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -270,7 +270,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et.setSelection(password.length)
         AlertDialog.Builder(this)
-            .setTitle(resources.getString(R.string.settings_change_password))
+            .setTitle(getString(R.string.settings_change_password))
             .setView(et)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
                 val new_password = et.text.toString()

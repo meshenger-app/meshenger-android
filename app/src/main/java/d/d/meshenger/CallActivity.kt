@@ -77,7 +77,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 }
             }
             if (contact!!.name.isEmpty()) {
-                nameTextView.setText(resources.getString(R.string.unknown_caller))
+                nameTextView.setText(getString(R.string.unknown_caller))
             } else {
                 nameTextView.setText(contact!!.name)
             }
@@ -101,7 +101,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             connection = this
             bindService(Intent(this, MainService::class.java), this, 0)
             if (contact!!.name.isEmpty()) {
-                nameTextView.setText(resources.getString(R.string.unknown_caller))
+                nameTextView.setText(getString(R.string.unknown_caller))
             } else {
                 nameTextView.setText(contact!!.name)
             }

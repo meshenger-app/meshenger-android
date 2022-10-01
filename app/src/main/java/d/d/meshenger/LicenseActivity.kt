@@ -15,7 +15,7 @@ class LicenseActivity : MeshengerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_license)
-        setTitle(resources.getString(R.string.menu_license))
+        setTitle(getString(R.string.menu_license))
 
         val toolbar = findViewById<Toolbar>(R.id.license_toolbar)
         toolbar.apply {

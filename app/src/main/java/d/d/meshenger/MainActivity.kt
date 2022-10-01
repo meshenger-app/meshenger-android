@@ -106,8 +106,8 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         binder = iBinder as MainBinder
         // in case the language has changed
         val adapter = SectionsPageAdapter(supportFragmentManager)
-        adapter.addFragment(contactListFragment, this.resources.getString(R.string.title_contacts))
-        adapter.addFragment(eventListFragment, this.resources.getString(R.string.title_history))
+        adapter.addFragment(contactListFragment, getString(R.string.title_contacts))
+        adapter.addFragment(eventListFragment, getString(R.string.title_history))
         mViewPager.adapter = adapter
         // call it here because EventListFragment.onResume is triggered twice
         try {

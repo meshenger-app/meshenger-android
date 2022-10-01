@@ -115,7 +115,7 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
                 Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            showErrorMessage(resources.getString(R.string.error), e.message)
+            showErrorMessage(getString(R.string.error), e.message)
         }
     }
 
@@ -127,7 +127,7 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
             binder!!.getService().replaceDatabase(db)
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            showErrorMessage(resources.getString(R.string.error), e.toString())
+            showErrorMessage(getString(R.string.error), e.toString())
         }
     }
 

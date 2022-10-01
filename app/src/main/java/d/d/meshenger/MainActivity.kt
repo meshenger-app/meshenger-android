@@ -4,12 +4,10 @@ import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
-import android.text.format.Formatter
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -17,19 +15,19 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.FragmentActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import d.d.meshenger.MainService.MainBinder
 
 // the main view with tabs
 class MainActivity : MeshengerActivity(), ServiceConnection {
     internal var binder: MainBinder? = null
-    private lateinit var mViewPager: ViewPager
-    private lateinit var contactListFragment: ContactListFragment
-    private lateinit var eventListFragment: EventListFragment
+    private lateinit var viewPager: ViewPager2
+
     private val PERM_REQUEST_CODE_DRAW_OVERLAYS = 1234
 
     private fun initToolbar() {
@@ -50,15 +48,23 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         Log.d(this, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         initToolbar()
         permissionToDrawOverlays();
         MainService.start(this)
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container)
-        contactListFragment = ContactListFragment()
-        eventListFragment = EventListFragment()
+
+        viewPager = findViewById(R.id.container)
+        viewPager.adapter = ViewPagerFragmentAdapter(this)
+
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
-        tabLayout.setupWithViewPager(mViewPager)
+
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> getString(R.string.title_contacts)
+                else -> getString(R.string.title_events)
+            }
+        }.attach()
+
         // ask for audio recording permissions
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -67,10 +73,6 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         ) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 2)
         }
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
     }
 
     private fun permissionToDrawOverlays() {
@@ -94,21 +96,10 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         }
     }
 
-    override fun onDestroy() {
-        Log.d(this, "onDestroy")
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshEventListReceiver)
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(refreshContactListReceiver)
-        super.onDestroy()
-    }
-
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "OnServiceConnected")
         binder = iBinder as MainBinder
-        // in case the language has changed
-        val adapter = SectionsPageAdapter(supportFragmentManager)
-        adapter.addFragment(contactListFragment, getString(R.string.title_contacts))
-        adapter.addFragment(eventListFragment, getString(R.string.title_history))
-        mViewPager.adapter = adapter
+
         // call it here because EventListFragment.onResume is triggered twice
         try {
             binder!!.pingContacts()
@@ -123,8 +114,7 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.d(this, "onOptionsItemSelected")
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -146,18 +136,6 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private val refreshEventListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            eventListFragment.refreshEventList()
-        }
-    }
-
-    private val refreshContactListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            contactListFragment.refreshContactList()
-        }
     }
 
     override fun onResume() {
@@ -190,27 +168,18 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         return true
     }
 
-    class SectionsPageAdapter(fm: FragmentManager?) : FragmentPagerAdapter(
-        fm!!
-    ) {
-        private val mFragmentList = mutableListOf<Fragment>()
-        private val mFragmentTitleList = mutableListOf<String>()
-
-        fun addFragment(fragment: Fragment?, title: String) {
-            mFragmentList.add(fragment!!)
-            mFragmentTitleList.add(title)
+    class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm)
+    {
+        override fun getItemCount(): Int {
+            return 2
         }
 
-        override fun getPageTitle(position: Int): CharSequence? {
-            return mFragmentTitleList[position]
-        }
-
-        override fun getItem(position: Int): Fragment {
-            return mFragmentList[position]
-        }
-
-        override fun getCount(): Int {
-            return mFragmentList.size
+        override fun createFragment(position: Int): Fragment {
+            if (position == 0) {
+                return ContactListFragment()
+            } else {
+                return EventListFragment()
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
 package d.d.meshenger
 
 import android.app.Dialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,10 +16,10 @@ import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView.OnItemLongClickListener
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class EventListFragment : Fragment(), OnItemClickListener {
-    private var mainActivity: MainActivity? = null
     private lateinit var eventListAdapter: EventListAdapter
     private lateinit var eventListView: ListView
     private lateinit var fabDelete: FloatingActionButton
@@ -26,65 +28,77 @@ class EventListFragment : Fragment(), OnItemClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_event_list, container, false)
         eventListView = view.findViewById(R.id.eventList)
         fabDelete = view.findViewById(R.id.fabDelete)
-        fabDelete.setOnClickListener(View.OnClickListener { _: View? ->
-            mainActivity!!.binder!!.clearEvents()
+
+        val activity = requireActivity()
+
+        fabDelete.setOnClickListener { _: View? ->
             Log.d(this, "fabDelete")
+            val binder = (activity as MainActivity).binder!!
+
+            binder.getEvents().clearEvents()
+            binder.saveDatabase()
+
             refreshEventList()
-        })
-        eventListAdapter = EventListAdapter(mainActivity!!, R.layout.item_event, emptyList(), emptyList())
+        }
+
+        eventListAdapter = EventListAdapter(activity, R.layout.item_event, emptyList(), emptyList())
         eventListView.setAdapter(eventListAdapter)
         eventListView.setOnItemClickListener(this)
+
+        LocalBroadcastManager.getInstance(requireContext())
+            .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))
 
         return view
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            mainActivity = context as MainActivity
-        } catch (e: ClassCastException) {
-            Log.e(this, "MainActivity expected")
-            throw RuntimeException()
+    private val refreshEventListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.d(this, "trigger refreshEventList() from broadcast")
+            refreshEventList()
         }
+    }
+
+    override fun onDestroy() {
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(refreshEventListReceiver)
+        super.onDestroy()
     }
 
     fun refreshEventList() {
         Log.d(this, "refreshEventList")
-        if (mainActivity == null) {
-            return
-        }
 
-        val binder = mainActivity!!.binder ?: return
+        val activity = requireActivity()
+        val binder = (activity as MainActivity).binder ?: return
+
         val events = binder.getEvents().eventList
         val contacts = binder.getContacts().contactList
 
+        Log.d(this, "refreshEventList update: ${events.size}")
+
         Handler(Looper.getMainLooper()).post {
-            Log.d(this, "refreshEventList update: ${events.size}")
+            Log.d(this, "refreshEventList looper: ${events.size}")
             eventListAdapter.update(events, contacts)
             eventListAdapter.notifyDataSetChanged()
             eventListView.adapter = eventListAdapter
             eventListView.onItemLongClickListener =
                 OnItemLongClickListener { _: AdapterView<*>?, view: View?, i: Int, _: Long ->
                     val event = events[i]
-                    val menu = PopupMenu(mainActivity, view)
+                    val menu = PopupMenu(activity, view)
                     val res = resources
                     val add = res.getString(R.string.add)
                     val block = res.getString(R.string.block)
                     val unblock = res.getString(R.string.unblock)
                     val qr = "QR-ify"
-                    val contact = mainActivity!!.binder!!.getContactByPublicKey(event.publicKey)
+                    val contact = activity!!.binder!!.getContactByPublicKey(event.publicKey)
 
                     // allow to add unknown caller
                     if (contact == null) {
                         menu.menu.add(add)
                     }
 
-                    // we can only block/unblock contacts
-                    // (or we need to need maintain a separate blocklist)
                     if (contact != null) {
                         if (contact.blocked) {
                             menu.menu.add(unblock)
@@ -92,6 +106,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                             menu.menu.add(block)
                         }
                     }
+
                     menu.setOnMenuItemClickListener { menuItem: MenuItem ->
                         val title = menuItem.title.toString()
                         if (title == add) {
@@ -110,10 +125,13 @@ class EventListFragment : Fragment(), OnItemClickListener {
     }
 
     private fun setBlocked(event: Event, blocked: Boolean) {
-        val contact = mainActivity!!.binder!!.getContactByPublicKey(event.publicKey)
+        val activity = requireActivity() as MainActivity
+        val binder = activity.binder ?: return
+
+        val contact = binder.getContactByPublicKey(event.publicKey)
         if (contact != null) {
             contact.blocked = blocked
-            mainActivity!!.binder!!.saveDatabase()
+            binder.saveDatabase()
         } else {
             // unknown contact
         }
@@ -121,7 +139,10 @@ class EventListFragment : Fragment(), OnItemClickListener {
 
     private fun showAddDialog(event: Event) {
         Log.d(this, "showAddDialog")
-        val dialog = Dialog(mainActivity!!)
+        val activity = requireActivity() as MainActivity
+        val binder = activity.binder ?: return
+
+        val dialog = Dialog(activity)
         dialog.setContentView(R.layout.dialog_add_contact)
         val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
         val exitButton = dialog.findViewById<Button>(R.id.CancelButton)
@@ -129,16 +150,16 @@ class EventListFragment : Fragment(), OnItemClickListener {
         okButton.setOnClickListener {
             val name = nameEditText.text.toString()
             if (name.isEmpty()) {
-                Toast.makeText(mainActivity!!, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (mainActivity!!.binder!!.getContactByName(name) != null) {
-                Toast.makeText(mainActivity, R.string.contact_name_exists, Toast.LENGTH_LONG).show()
+            if (binder.getContacts().getContactByName(name) != null) {
+                Toast.makeText(activity, R.string.contact_name_exists, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
             val address = Utils.getGeneralizedAddress(event.address?.address)
-            mainActivity!!.binder!!.addContact(
+            binder.getContacts().addContact(
                 Contact(
                     name,
                     event.publicKey,
@@ -146,7 +167,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                 )
             )
 
-            Toast.makeText(mainActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
 
             // close dialog
@@ -158,15 +179,16 @@ class EventListFragment : Fragment(), OnItemClickListener {
 
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
         Log.d(this, "onItemClick")
+        val activity = requireActivity()
         val event = eventListAdapter.getItem(i)
         val address = Utils.getGeneralizedAddress(event.address?.address)
         if (address == null) {
-            Toast.makeText(mainActivity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
             return
         }
         val contact = Contact("", event.publicKey, listOf(address))
         contact.lastWorkingAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)!!
-        val intent = Intent(mainActivity, CallActivity::class.java)
+        val intent = Intent(activity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)
         startActivity(intent)

@@ -9,7 +9,6 @@
     <string name="scan_invited">QR-Code Scanning</string>
     <string name="paste_invitation">Paste Data Here</string>
     <string name="invalid_data">Invalid data</string>
-    <string name="invalid_name">Invalid name</string>
     <string name="cancel">cancel</string>
     <string name="next">next</string>
     <string name="setup_address_title">Setup Network Address</string>
@@ -63,6 +62,7 @@
     <string name="block">Block</string>
     <string name="unblock">Unblock</string>
     <string name="replace">Replace</string>
+    <string name="ping">Ping</string>
     <string name="pick">Pick</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
@@ -71,9 +71,11 @@
     <string name="permission_mic">Microphone permission needed to make calls</string>
     <string name="hello">Hello!</string>
     <string name="empty_list_item">Empty</string>
+    <string name="failed_to_export_database">Failed to export database</string>
     <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
     <string name="call_connecting">Calling...</string>
     <string name="call_connected">Connected.</string>
+    <string name="call_dismissed">Dismissed.</string>
     <string name="call_denied">Declined</string>
     <string name="call_ringing">Ringing...</string>
     <string name="call_ended">Call Ended</string>
@@ -89,6 +91,7 @@
     <string name="button_add">Add</string>
     <string name="button_remove">Remove</string>
     <string name="title_contacts">Contacts</string>
+    <string name="title_events">Events</string>
     <string name="title_history">History</string>
     <string name="about_version">Version:</string>
     <string name="about_description">Description:</string>
@@ -102,6 +105,7 @@
     <string name="no_path_selected">No path selected</string>
     <string name="file_already_exists">File already exists</string>
     <string name="invalid_address">Invalid Address</string>
+    <string name="invalid_name">Invalid Name</string>
     <string name="no_file_name">No file name</string>
     <string name="contact_already_exists">Contact already exists</string>
     <string name="enter_contact_name">Enter contact name.</string>

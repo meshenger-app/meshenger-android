@@ -43,7 +43,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="@dimen/padding_10"
         android:layout_marginBottom="@dimen/padding_10"
-        app:srcCompat="@drawable/qr_code" />
+        app:srcCompat="@android:drawable/ic_menu_share" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPresenter"

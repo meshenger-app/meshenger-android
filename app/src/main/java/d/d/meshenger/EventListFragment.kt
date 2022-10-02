@@ -39,7 +39,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
             Log.d(this, "fabDelete")
             val binder = (activity as MainActivity).binder!!
 
-            binder.getEvents().clearEvents()
+            binder.clearEvents()
             binder.saveDatabase()
 
             refreshEventList()

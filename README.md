@@ -20,6 +20,11 @@ Features:
 
 ## Documentation
 
-Meshenger exchanges the contact name, public key and MAC address via QR-Code. The MAC address is used to create an IP address to connect to clients. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can trasmit audio and video.
+Meshenger established a connection by connecting to an IP address. Contacts are shared via QR-Code. They contain a name, a public key and a list of MAC/IP/DNS addresses. By default, only a MAC address is transferred and used to create an IPv6 link local address (among others) to establish a connection. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can transmit audio and video.
 
 Details can be found in the [Documentation](docs/Documentation.md) or in the [FAQ](docs/faq.md).
+
+## Similar Projects
+
+* [Jami](https://jami.net/) - many feature, but might not work in mesh networks
+* [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE.

@@ -28,10 +28,11 @@ internal class ContactListAdapter(
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_contact, null)
         }
-        (convertView!!.findViewById<View>(R.id.contact_name) as TextView).text = contact.name
-        if (contact.state !== Contact.State.PENDING) {
-            convertView.findViewById<View>(R.id.contact_waiting).visibility =
-                View.GONE
+
+        convertView!!.findViewById<TextView>(R.id.contact_name).text = contact.name
+
+	    if (contact.state != Contact.State.PENDING) {
+            convertView.findViewById<View>(R.id.contact_waiting).visibility = View.GONE
             val state = convertView.findViewById<ImageView>(R.id.contact_state)
             state.visibility = View.VISIBLE
             val bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)

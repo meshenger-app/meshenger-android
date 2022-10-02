@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">Meshenger</string>
     <string name="action_settings">Ajustes</string>
     <string name="name_prompt">¿Cual debería de ser tu nombre?</string>
     <string name="scan_invitation">Escanea este código QR</string>
@@ -25,18 +24,17 @@
     <string name="menu_exit">Salir</string>
     <string name="call_connecting">Conectando...</string>
     <string name="unknown_caller">Llamada desconocida</string>
-    <string name="settings_change_name">Cambiar Nombre</string>
-    <string name="settings_change_language">Cambiar idioma</string>
-    <string name="settings_change_address">Cambiar dirección</string>
-    <string name="settings_change_password">Cambiar contraseña</string>
-    <string name="settings_change_ice_servers">Cambiar servidores ICE</string>
+    <string name="settings_name">Nombre</string>
+    <string name="settings_addresses">Dirección</string>
+    <string name="settings_password">Contraseña</string>
+    <string name="settings_ice_servers">Servidores ICE</string>
     <string name="settings_nightmode">Modo Nocturno</string>
     <string name="settings_block_unknown">Bloquear llamadas desconocidas</string>
     <string name="settings_ignore_battery_optimizations">Ignorar las optimizaciones de batería</string>
-    <string name="about_source">Código fuente:</string>
-    <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
-    <string name="about_license">Licencia:</string>
-    <string name="about_license_version">GPL-3.0-or-later</string>
+    <string name="about_app_website">Código fuente:</string>
+    <string name="about_app_license">Licencia:</string>
+    <string name="about_app_version">Versión de la app:</string>
+    <string name="about_app_description">Información de la App:</string>
     <string name="none">Nada</string>
     <string name="add">Añadir</string>
     <string name="delete">Eliminar</string>
@@ -70,11 +68,8 @@
     <string name="button_remove">Eliminar</string>
     <string name="title_contacts">Contactos</string>
     <string name="title_history">Historial</string>
-    <string name="about_version">Versión de la app:</string>
-    <string name="about_info">Información de la App:</string>
-    <string name="app_info">La aplicación Meshenger permite la comunicación de voz y video sin ningún servidor o acceso a Internet. Simplemente escanee el código QR de cada uno y llámenos. Esto funciona en la mayoría de las redes, p. en casa, en redes comunitarias o en el trabajo.</string>
+    <string name="app_description">La aplicación Meshenger permite la comunicación de voz y video sin ningún servidor o acceso a Internet. Simplemente escanee el código QR de cada uno y llámenos. Esto funciona en la mayoría de las redes, p. en casa, en redes comunitarias o en el trabajo.</string>
     <string name="address_management">Gestión de dirección</string>
-    <string name="qr_code_address_list">Lista de direcciones de códigos QR</string>
     <string name="currently_active">Actualmente activo</string>
     <string name="address_management_help_text">Seleccione una o más direcciones que se incluirán en su código QR. Una buena idea es usar la dirección MAC del adaptador WiFi (wlan0). Pero tenga en cuenta que está vinculado al hardware de su dispositivo. Si no hay una dirección MAC visible, habilite su WiFi.</string>
     <string name="listen_for_incoming_calls">Escuchar las llamadas entrantes.</string>

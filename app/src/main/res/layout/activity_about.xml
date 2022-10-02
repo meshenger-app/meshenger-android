@@ -75,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/about_version"
+                android:text="@string/about_app_version"
                 android:fontFamily="@font/lato_bold"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="15sp" />
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/lato_bold"
-                android:text="@string/about_description"
+                android:text="@string/about_app_description"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="15sp" />
 
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="@string/app_info"
+                android:text="@string/app_description"
                 android:textColor="#7B7B7B"
                 android:textSize="13sp" />
 
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/lato_bold"
-                android:text="@string/about_source"
+                android:text="@string/about_app_website"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="15sp" />
 
@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:autoLink="web"
-                android:text="@string/app_link"
+                android:text="@string/app_website"
                 android:textSize="13sp" />
 
             <TextView
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/lato_bold"
-                android:text="@string/about_license"
+                android:text="@string/about_app_license"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="15sp" />
 
@@ -137,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="@string/app_license_version"
+                android:text="@string/app_license"
                 android:textColor="#3F51B5"
                 android:textSize="13sp" />
 

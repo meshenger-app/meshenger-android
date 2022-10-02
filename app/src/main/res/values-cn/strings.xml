@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">Meshenger</string>
     <string name="action_settings">设置</string>
     <string name="name_prompt">该怎么称呼你？</string>
     <string name="scan_invitation">扫描此二维码</string>
@@ -25,19 +24,17 @@
     <string name="menu_exit">退出</string>
     <string name="call_connecting">正在呼叫...</string>
     <string name="unknown_caller">未知呼叫者</string>
-    <string name="settings_change_name">更改名称</string>
-    <string name="settings_change_language">更改语言</string>
-    <string name="settings_change_address">更改地址</string>
-    <string name="settings_change_password">更改密码</string>
-    <string name="settings_change_ice_servers">更改ICE服务器</string>
+    <string name="settings_name">更改名称</string>
+    <string name="settings_addresses">更改地址</string>
+    <string name="settings_password">更改密码</string>
+    <string name="settings_ice_servers">更改ICE服务器</string>
     <string name="settings_nightmode">夜间模式</string>
     <string name="settings_block_unknown">屏蔽未知呼叫者</string>
     <string name="settings_ignore_battery_optimizations">无视电池优化设定</string>
-    <string name="settings_development_mode">开发模式</string>
-    <string name="about_source">源代码：</string>
-    <string name="source_link" translatable="false">https://github.com/meshenger-app</string>
-    <string name="about_license">许可证：</string>
-    <string name="about_license_version">GPL-3.0或更新版</string>
+    <string name="about_app_website">源代码：</string>
+    <string name="about_app_license">许可证：</string>
+    <string name="about_app_version">APP版本：</string>
+    <string name="about_app_description">APP说明：</string>
     <string name="none">无</string>
     <string name="add">添加</string>
     <string name="delete">删除</string>
@@ -71,11 +68,8 @@
     <string name="button_remove">消除</string>
     <string name="title_contacts">联系人</string>
     <string name="title_history">历史</string>
-    <string name="about_version">APP版本：</string>
-    <string name="about_info">APP说明：</string>
-    <string name="app_info">Meshenger 可以实现音频视频通讯，却完全无需服务器与互联网的访问。相互扫描联系二维码即可彼此呼叫。这在大多数网络环境下都能使用。例如，家庭网络，社群网络，公司网络。</string>
+    <string name="app_description">Meshenger 可以实现音频视频通讯，却完全无需服务器与互联网的访问。相互扫描联系二维码即可彼此呼叫。这在大多数网络环境下都能使用。例如，家庭网络，社群网络，公司网络。</string>
     <string name="address_management">地址管理</string>
-    <string name="qr_code_address_list">二维码地址列表</string>
     <string name="currently_active">当前有效地址</string>
     <string name="address_management_help_text">选择一个或多个地址，这将包含在生成二维码之中。建议使用WiFi适配器的MAC地址（wlan0）。不过需要注意的是，这个地址是与你的设备的硬件绑定的。如果没有出现MAC地址，开启WiFi。</string>
     <string name="listen_for_incoming_calls">等待呼入</string>

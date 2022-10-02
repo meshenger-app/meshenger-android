@@ -1,5 +1,6 @@
 package d.d.meshenger
 
+import android.app.Activity
 import d.d.meshenger.Utils.writeExternalFile
 import d.d.meshenger.Utils.readExternalFile
 import android.widget.ImageButton
@@ -14,6 +15,7 @@ import android.net.Uri
 import android.os.IBinder
 import android.view.View
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import java.lang.Exception
@@ -26,7 +28,7 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
     private lateinit var selectButton: ImageButton
     private lateinit var passwordEditText: TextView
 
-    private fun showErrorMessage(title: String, message: String?) {
+    private fun showMessage(title: String, message: String) {
         builder!!.setTitle(title)
         builder!!.setMessage(message)
         builder!!.setPositiveButton(android.R.string.ok, null)
@@ -88,65 +90,63 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/json"
-            startActivityForResult(intent, READ_REQUEST_CODE)
+            importFileLauncher.launch(intent)
         })
         exportButton.setOnClickListener(View.OnClickListener { _: View? ->
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.putExtra(Intent.EXTRA_TITLE, "meshenger-backup.json")
             intent.type = "application/json"
-            startActivityForResult(intent, WRITE_REQUEST_CODE)
+            exportFileLauncher.launch(intent)
         })
+    }
+
+    private var importFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data ?: return@registerForActivityResult
+            val uri = intent.data ?: return@registerForActivityResult
+            importDatabase(uri)
+        }
+    }
+
+    private var exportFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data ?: return@registerForActivityResult
+            val uri: Uri = intent.data ?: return@registerForActivityResult
+            exportDatabase(uri)
+        }
     }
 
     private fun exportDatabase(uri: Uri) {
         val password = passwordEditText.text.toString()
         try {
-            val database = binder!!.getDatabase()
-            if (database != null) {
-                val data = Database.toData(database, password)
-                if (data != null) {
-                    writeExternalFile(this, uri, data)
-                    Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
-                }
+            val database = binder!!.getDatabase()!!
+            val data = Database.toData(database, password)
+
+            if (data != null) {
+                writeExternalFile(this, uri, data)
+                Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.failed_to_export_database), Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            showErrorMessage(getString(R.string.error), e.message)
+            showMessage(getString(R.string.error), e.message ?: "unknown")
         }
     }
 
-    private fun importDatabase(uri: Uri?) {
+    private fun importDatabase(uri: Uri) {
         val password = passwordEditText.text.toString()
         try {
-            val data = readExternalFile(this, uri!!)
+            val data = readExternalFile(this, uri)
             val db = Database.fromData(data, password)
+
             binder!!.getService().replaceDatabase(db)
-            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
+            val contactCount = db.contacts.contactList.size
+            val eventCount = db.events.eventList.size
+
+            showMessage(getString(R.string.done), "Imported $contactCount contacts and $eventCount events")
         } catch (e: Exception) {
-            showErrorMessage(getString(R.string.error), e.toString())
+            showMessage(getString(R.string.error), e.toString())
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-        if (resultCode != RESULT_OK) {
-            return
-        }
-
-        val uri_data = intent.data ?: return
-
-        when (requestCode) {
-            READ_REQUEST_CODE -> importDatabase(uri_data)
-            WRITE_REQUEST_CODE -> exportDatabase(uri_data)
-        }
-    }
-
-    companion object {
-        private const val READ_REQUEST_CODE = 0x01
-        private const val WRITE_REQUEST_CODE = 0x02
     }
 }

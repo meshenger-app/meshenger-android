@@ -159,7 +159,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 button as ImageButton
             )
         }
-        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall!!.switchFrontFacing() }
+        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { currentCall!!.switchFrontFacing() }
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
     }
@@ -356,9 +356,8 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 Log.w(this, "call without contact")
             }
 
-            //if (binder != null) {
             unbindService(connection!!)
-            //}
+
             if (wakeLock != null) {
                 wakeLock!!.release()
             }

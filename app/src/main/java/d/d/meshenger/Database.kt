@@ -19,14 +19,11 @@ class Database {
     var contacts = Contacts()
     var events = Events()
 
-    fun onDestroy() {
-        // zero keys from memory
-        settings.publicKey.fill(0)
-        settings.publicKey.fill(0)
-
-        for (contact in contacts.contactList) {
-            contact.publicKey.fill(0)
-        }
+    // clear keys before the app exits
+    fun destroy() {
+        settings.destroy()
+        contacts.destroy()
+        events.destroy()
     }
 
     companion object {

@@ -42,6 +42,11 @@ class Settings {
         return Contact(username, publicKey, addresses)
     }
 
+    fun destroy() {
+        publicKey.fill(0)
+        secretKey.fill(0)
+    }
+
     companion object {
         fun fromJSON(obj: JSONObject): Settings {
             val s = Settings()

@@ -9,6 +9,10 @@ class Events {
     var eventsViewed = Date()
     val eventList = mutableListOf<Event>()
 
+    fun destroy() {
+        // no sensitive data
+    }
+
     fun clearEvents() {
         eventList.clear()
     }

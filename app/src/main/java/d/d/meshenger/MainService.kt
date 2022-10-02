@@ -184,7 +184,7 @@ class MainService : Service(), Runnable {
             }
         }
 
-        database?.onDestroy()
+        database?.destroy()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {

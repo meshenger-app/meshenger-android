@@ -1,8 +1,6 @@
 package d.d.meshenger
 
 import android.util.Log
-import d.d.meshenger.Utils
-import d.d.meshenger.Contact
 import kotlin.Throws
 import org.json.JSONObject
 import org.json.JSONArray

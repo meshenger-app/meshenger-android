@@ -151,13 +151,17 @@ class Database {
             // 3.0.3 => 4.0.0
             if (from == "3.0.3") {
                 from = "4.0.0"
-                val events = JSONObject()
-                events.put("entries", JSONArray())
-                settings.put("events", events)
-                val contacts = JSONObject()
-                val entries = db.getJSONArray("contacts")
-                contacts.put("entries", entries)
-                settings.put("contacts", contacts)
+                val contacts = Contacts()
+                val contactArray = db.getJSONArray("contacts")
+                for (i in 0 until contactArray.length()) {
+                    val contactObj = contactArray.getJSONObject(i)
+                    contacts.addContact(Contact.fromJSON(contactObj, true))
+                }
+
+                db.put("contacts", Contacts.toJSON(contacts))
+
+                var events = Events()
+                db.put("events", Events.toJSON(events))
             }
 
             // add missing keys with defaults and remove unexpected keys

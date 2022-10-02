@@ -85,7 +85,7 @@ internal object Utils {
         return Arrays.asList(*parts)
     }
 
-    private val NAME_PATTERN = Pattern.compile("[\\w _-]+")
+    private val NAME_PATTERN = Pattern.compile("[\\w _-]{1,24}")
 
     // check for a name that has no funny unicode characters to not let them look to much like other names
     fun isValidName(name: String?): Boolean {

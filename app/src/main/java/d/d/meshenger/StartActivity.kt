@@ -181,6 +181,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 continueInit()
             }
             val adialog = builder.create()
+            adialog.setCancelable(false)
+            adialog.setCanceledOnTouchOutside(false)
 
             this.dialog?.dismiss()
             this.dialog = adialog
@@ -241,6 +243,8 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         }
 
         val adialog = builder.create()
+        adialog.setCancelable(false)
+        adialog.setCanceledOnTouchOutside(false)
 
         adialog.setOnShowListener { dialog: DialogInterface ->
             val okButton = (dialog as AlertDialog).getButton(
@@ -280,6 +284,9 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
     private fun showDatabasePasswordDialog() {
         val ddialog = Dialog(this)
         ddialog.setContentView(R.layout.dialog_database_password)
+        ddialog.setCancelable(false)
+        ddialog.setCanceledOnTouchOutside(false)
+
         val passwordEditText = ddialog.findViewById<EditText>(R.id.change_password_edit_textview)
         val exitButton = ddialog.findViewById<Button>(R.id.change_password_cancel_button)
         val okButton = ddialog.findViewById<Button>(R.id.change_password_ok_button)

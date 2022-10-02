@@ -1,5 +1,6 @@
 package d.d.meshenger
 
+import android.content.res.Resources
 import d.d.meshenger.Crypto.decryptDatabase
 import d.d.meshenger.Event
 import d.d.meshenger.Contacts
@@ -30,17 +31,17 @@ class Database {
         private const val TAG = "Database"
         var version = "4.0.0" // current version
 
-        fun fromData(data: ByteArray, password: String?): Database {
+        fun fromData(db_data: ByteArray, password: String?): Database {
             // encrypt database
             val stringData = if (password != null && password.isNotEmpty()) {
                 Log.d(this, "Decrypt database")
-                val encrypted = decryptDatabase(data, password.toByteArray())
+                val encrypted = decryptDatabase(db_data, password.toByteArray())
                 if (encrypted == null) {
-                    throw IOException("Wrong database password.") //resources.getString(R.string.cancel)
+                    throw IOException(Resources.getSystem().getString(R.string.database_wrong_password))
                 }
                 encrypted
             } else {
-                data
+                db_data
             }
 
             val obj = JSONObject(

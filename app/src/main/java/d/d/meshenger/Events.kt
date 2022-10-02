@@ -17,17 +17,23 @@ class Events {
         eventList.clear()
     }
 
-    fun addEvent(
-        contact: Contact,
-        type: Event.Type
-    ) {
-        val lastWorking = contact.lastWorkingAddress
-        val event = Event(contact.publicKey, lastWorking, type, Date())
-        if (eventList.size > 100) {
-            // remove first item
-            eventList.removeAt(0)
+    fun addEvent(event: Event) {
+        if (event !in eventList) {
+            eventList.add(event)
+
+            // sort by date / oldest first
+            eventList.sortWith(Comparator { lhs: Event, rhs: Event -> lhs.date.compareTo(rhs.date) })
+
+            if (eventList.size > 100) {
+                // remove first item
+                eventList.removeAt(0)
+            }
         }
-        eventList.add(event)
+    }
+
+    fun addEvent(contact: Contact, type: Event.Type) {
+        val lastWorking = contact.lastWorkingAddress
+        addEvent(Event(contact.publicKey, lastWorking, type, Date()))
     }
 
     fun setEventsViewedDate() {

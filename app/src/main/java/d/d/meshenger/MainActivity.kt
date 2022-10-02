@@ -1,6 +1,7 @@
 package d.d.meshenger
 
 import android.Manifest
+import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,8 +29,6 @@ import d.d.meshenger.MainService.MainBinder
 class MainActivity : MeshengerActivity(), ServiceConnection {
     internal var binder: MainBinder? = null
     private lateinit var viewPager: ViewPager2
-
-    private val PERM_REQUEST_CODE_DRAW_OVERLAYS = 1234
 
     private fun initToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -76,19 +76,17 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun permissionToDrawOverlays() {
-        if (Build.VERSION.SDK_INT >= 23) {   //Android M Or Over
+        if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse(
-                    "package:$packageName"))
-                startActivityForResult(intent, PERM_REQUEST_CODE_DRAW_OVERLAYS)
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                requestDrawOverlaysPermissionLauncher.launch(intent)
             }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PERM_REQUEST_CODE_DRAW_OVERLAYS) {
-            if (Build.VERSION.SDK_INT >= 23) {   //Android M Or Over
+    var requestDrawOverlaysPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            if (Build.VERSION.SDK_INT >= 23) {
                 if (!Settings.canDrawOverlays(this)) {
                     // ADD UI FOR USER TO KNOW THAT UI for SYSTEM_ALERT_WINDOW permission was not granted earlier...
                 }

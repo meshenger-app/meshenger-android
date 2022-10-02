@@ -91,8 +91,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                     val add = res.getString(R.string.add)
                     val block = res.getString(R.string.block)
                     val unblock = res.getString(R.string.unblock)
-                    val qr = "QR-ify"
-                    val contact = activity!!.binder!!.getContactByPublicKey(event.publicKey)
+                    val contact = binder.getContactByPublicKey(event.publicKey)
 
                     // allow to add unknown caller
                     if (contact == null) {

@@ -10,10 +10,10 @@ import android.content.Intent
 import d.d.meshenger.MainService.MainBinder
 import android.widget.Toast
 import android.content.ComponentName
+import android.content.DialogInterface
 import android.content.ServiceConnection
 import android.net.Uri
 import android.os.IBinder
-import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -21,7 +21,7 @@ import androidx.appcompat.widget.Toolbar
 import java.lang.Exception
 
 class BackupActivity : MeshengerActivity(), ServiceConnection {
-    private var builder: AlertDialog.Builder? = null
+    private var dialog: AlertDialog? = null
     private var binder: MainBinder? = null
     private lateinit var exportButton: Button
     private lateinit var importButton: Button
@@ -29,10 +29,11 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
     private lateinit var passwordEditText: TextView
 
     private fun showMessage(title: String, message: String) {
-        builder!!.setTitle(title)
-        builder!!.setMessage(message)
-        builder!!.setPositiveButton(android.R.string.ok, null)
-        builder!!.show()
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton(android.R.string.ok, null)
+        dialog = builder.show()
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +56,10 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
     }
 
     override fun onDestroy() {
+        dialog?.dismiss()
+
         super.onDestroy()
+
         if (binder != null) {
             unbindService(this)
         }
@@ -81,7 +85,6 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
             return
         }
 
-        builder = AlertDialog.Builder(this)
         importButton = findViewById(R.id.ImportButton)
         exportButton = findViewById(R.id.ExportButton)
         selectButton = findViewById(R.id.SelectButton)
@@ -135,18 +138,36 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun importDatabase(uri: Uri) {
-        val password = passwordEditText.text.toString()
+        val binder = this.binder ?: return
+        val new_database : Database
+
         try {
+            val password = passwordEditText.text.toString()
             val data = readExternalFile(this, uri)
-            val db = Database.fromData(data, password)
-
-            binder!!.getService().replaceDatabase(db)
-            val contactCount = db.contacts.contactList.size
-            val eventCount = db.events.eventList.size
-
-            showMessage(getString(R.string.done), "Imported $contactCount contacts and $eventCount events")
+            new_database = Database.fromData(data, password)
         } catch (e: Exception) {
             showMessage(getString(R.string.error), e.toString())
+            return
         }
+
+        val contactCount = new_database.contacts.contactList.size
+        val eventCount = new_database.events.eventList.size
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.confirm)
+        builder.setMessage(String.format(getString(R.string.import_dialog), contactCount, eventCount))
+        builder.setCancelable(false) // prevent key shortcut to cancel dialog
+        builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
+            binder.getService().mergeDatabase(new_database)
+            Toast.makeText(this, getString(R.string.done), Toast.LENGTH_SHORT).show()
+            dialog.cancel()
+        }
+
+        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, _: Int ->
+            dialog.cancel()
+        }
+
+        // create dialog box
+        val alert = builder.create()
+        alert.show()
     }
 }

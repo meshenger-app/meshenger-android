@@ -15,6 +15,7 @@
     <string name="setup_address_message">No WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.</string>
     <string name="enter_password">Enter password</string>
     <string name="path_title">Import/Export Path</string>
+    <string name="import_dialog">Import new settings and add %1$d contacts and %2$d events?</string>
     <string name="password_title">Password</string>
     <string name="camera_permission_request">Camera permission needed to scan codes</string>
     <string name="invalid_qr">Invalid QR-Code</string>

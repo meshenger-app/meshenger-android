@@ -95,14 +95,17 @@ class MainService : Service(), Runnable {
         }
     }
 
-    fun replaceDatabase(database: Database?) {
-        if (database != null) {
-            if (this.database == null) {
-                this.database = database
-            } else {
-                this.database = database
-                saveDatabase()
-            }
+    fun mergeDatabase(new_db: Database) {
+        val old_database = database!!
+
+        old_database.settings = new_db.settings
+
+        for (contact in new_db.contacts.contactList) {
+            old_database.contacts.addContact(contact)
+        }
+
+        for (event in new_db.events.eventList) {
+            old_database.events.addEvent(event)
         }
     }
 

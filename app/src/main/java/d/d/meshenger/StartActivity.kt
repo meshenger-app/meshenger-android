@@ -131,6 +131,11 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         unbindService(this)
     }
 
+    override fun onDestroy() {
+        dialog?.dismiss()
+        super.onDestroy()
+    }
+
     private fun initKeyPair() {
         // create secret/public key pair
         val publicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
@@ -175,7 +180,12 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 // continue with out address configuration
                 continueInit()
             }
-            builder.show()
+            val adialog = builder.create()
+
+            this.dialog?.dismiss()
+            this.dialog = adialog
+
+            adialog.show()
         } else {
             binder!!.getSettings().addresses = mutableListOf(defaultAddress.address)
             binder!!.saveDatabase()
@@ -201,19 +211,39 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         et.isSingleLine = true
         layout.addView(et)
         layout.setPadding(40, 80, 40, 40)
-        //layout.setGravity(Gravity.CENTER_HORIZONTAL);
+
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.hello)
         builder.setView(layout)
-        builder.setNegativeButton(R.string.skip) { _: DialogInterface?, _: Int ->
-            binder!!.shutdown()
-            finish()
+        builder.setNegativeButton(R.string.skip) { dialog: DialogInterface?, _: Int ->
+            val username = generateRandomUserName()
+            if (Utils.isValidName(username)) {
+                binder!!.getSettings().username = username
+                binder!!.saveDatabase()
+                // close dialog
+                dialog?.dismiss()
+                continueInit()
+            } else {
+                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
+            }
         }
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        builder.setPositiveButton(R.string.next) { _: DialogInterface?, _: Int -> }
-        val dialog = builder.create()
-        dialog.setOnShowListener { newDialog: DialogInterface ->
-            val okButton = (newDialog as AlertDialog).getButton(
+        builder.setPositiveButton(R.string.next) { dialog: DialogInterface?, _: Int ->
+            val username = et.text.toString()
+            if (Utils.isValidName(username)) {
+                binder!!.getSettings().username = username
+                binder!!.saveDatabase()
+                // close dialog
+                dialog?.dismiss()
+                continueInit()
+            } else {
+                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val adialog = builder.create()
+
+        adialog.setOnShowListener { dialog: DialogInterface ->
+            val okButton = (dialog as AlertDialog).getButton(
                 AlertDialog.BUTTON_POSITIVE
             )
             et.addTextChangedListener(object : TextWatcher {
@@ -231,56 +261,28 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 }
 
                 override fun afterTextChanged(editable: Editable) {
-                    okButton.isClickable = editable.isNotEmpty()
-                    okButton.alpha = if (editable.isNotEmpty()) 1.0f else 0.5f
+                    val ok = Utils.isValidName(editable.toString())
+                    okButton.isClickable = ok
+                    okButton.alpha = if (ok) 1.0f else 0.5f
                 }
             })
             okButton.isClickable = false
             okButton.alpha = 0.5f
-            if (et.requestFocus()) {
-                imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT)
-                //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-            }
         }
-        dialog.show()
-        // override handler (to be able to dismiss the dialog manually)
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
-            val username = et.text.toString()
-            if (Utils.isValidName(username)) {
-                binder!!.getSettings().username = username
-                binder!!.saveDatabase()
-                // close dialog
-                dialog.dismiss()
-                //dialog.cancel(); // needed?
-                continueInit()
-            } else {
-                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
-            }
-        }
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
-            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY)
-            val username = generateRandomUserName()
-            if (Utils.isValidName(username)) {
-                binder!!.getSettings().username = username
-                binder!!.saveDatabase()
-                // close dialog
-                dialog.dismiss()
-                //dialog.cancel(); // needed?
-                continueInit()
-            } else {
-                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
-            }
-        }
+
+        this.dialog?.dismiss()
+        this.dialog = adialog
+
+        adialog.show()
     }
 
     // ask for database password
     private fun showDatabasePasswordDialog() {
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_database_password)
-        val passwordEditText = dialog.findViewById<EditText>(R.id.change_password_edit_textview)
-        val exitButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
-        val okButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+        val ddialog = Dialog(this)
+        ddialog.setContentView(R.layout.dialog_database_password)
+        val passwordEditText = ddialog.findViewById<EditText>(R.id.change_password_edit_textview)
+        val exitButton = ddialog.findViewById<Button>(R.id.change_password_cancel_button)
+        val okButton = ddialog.findViewById<Button>(R.id.change_password_ok_button)
         okButton.setOnClickListener {
             val password = passwordEditText.text.toString()
             binder!!.getService().database_password = password
@@ -289,17 +291,21 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
             } else {
                 // close dialog
-                dialog.dismiss()
+                ddialog.dismiss()
                 continueInit()
             }
         }
         exitButton.setOnClickListener {
             // shutdown app
-            dialog.dismiss()
+            ddialog.dismiss()
             binder!!.shutdown()
             finish()
         }
-        dialog.show()
+
+        this.dialog?.dismiss()
+        this.dialog = ddialog
+
+        ddialog.show()
     }
 
     companion object {

@@ -139,11 +139,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
         val settings = binder!!.getSettings()
         settings.publicKey = publicKey
         settings.secretKey = secretKey
-        try {
-            binder!!.saveDatabase()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        binder!!.saveDatabase()
     }
 
     private fun getDefaultAddress(): AddressEntry? {
@@ -182,11 +178,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             builder.show()
         } else {
             binder!!.getSettings().addresses = mutableListOf(defaultAddress.address)
-            try {
-                binder!!.saveDatabase()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            binder!!.saveDatabase()
             continueInit()
         }
     }
@@ -257,11 +249,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             val username = et.text.toString()
             if (Utils.isValidName(username)) {
                 binder!!.getSettings().username = username
-                try {
-                    binder!!.saveDatabase()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                binder!!.saveDatabase()
                 // close dialog
                 dialog.dismiss()
                 //dialog.cancel(); // needed?
@@ -275,11 +263,7 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
             val username = generateRandomUserName()
             if (Utils.isValidName(username)) {
                 binder!!.getSettings().username = username
-                try {
-                    binder!!.saveDatabase()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                binder!!.saveDatabase()
                 // close dialog
                 dialog.dismiss()
                 //dialog.cancel(); // needed?

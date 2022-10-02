@@ -38,10 +38,10 @@ class Contact(
 
         for (address in addresses) {
             try {
-                if (Utils.isMACAddress(address)) {
-                    socketAddresses.addAll(Utils.getOwnAddressesWithMAC(address, MainService.serverPort))
+                if (AddressUtils.isMACAddress(address)) {
+                    socketAddresses.addAll(AddressUtils.getOwnAddressesWithMAC(address, MainService.serverPort))
                 } else {
-                    val socketAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)
+                    val socketAddress = AddressUtils.parseInetSocketAddress(address, MainService.serverPort)
                     if (socketAddress != null) {
                         socketAddresses.add(socketAddress)
                     }
@@ -138,9 +138,9 @@ class Contact(
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
                 var address = array[i].toString()
-                if (Utils.isIPAddress(address) || Utils.isDomain(address)) {
+                if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
-                } else if (Utils.isMACAddress(address)) {
+                } else if (AddressUtils.isMACAddress(address)) {
                     address = address.uppercase(Locale.ROOT)
                 } else {
                     Log.d(this, "invalid address $address")

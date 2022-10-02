@@ -51,7 +51,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         }
 
 		customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
-		systemAddresses = Utils.collectAddresses().toMutableList()
+		systemAddresses = AddressUtils.collectAddresses().toMutableList()
 
         bindService()
     }
@@ -73,9 +73,9 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
 
         addButton.setOnClickListener {
             var address = customAddressTextEdit.text?.toString() ?: return@setOnClickListener
-            if (Utils.isIPAddress(address) || Utils.isDomain(address)) {
+            if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                 address = address.lowercase(Locale.ROOT)
-            } else if (Utils.isMACAddress(address)) {
+            } else if (AddressUtils.isMACAddress(address)) {
                 address = address.uppercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, "Please enter a valid MAC/IP address or domain name", Toast.LENGTH_SHORT).show()

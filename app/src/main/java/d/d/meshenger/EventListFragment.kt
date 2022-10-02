@@ -157,7 +157,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
                 return@setOnClickListener
             }
 
-            val address = Utils.getGeneralizedAddress(event.address?.address)
+            val address = AddressUtils.getGeneralizedAddress(event.address?.address)
             binder.getContacts().addContact(
                 Contact(
                     name,
@@ -180,13 +180,13 @@ class EventListFragment : Fragment(), OnItemClickListener {
         Log.d(this, "onItemClick")
         val activity = requireActivity()
         val event = eventListAdapter.getItem(i)
-        val address = Utils.getGeneralizedAddress(event.address?.address)
+        val address = AddressUtils.getGeneralizedAddress(event.address?.address)
         if (address == null) {
             Toast.makeText(activity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
             return
         }
         val contact = Contact("", event.publicKey, listOf(address))
-        contact.lastWorkingAddress = Utils.parseInetSocketAddress(address, MainService.serverPort)!!
+        contact.lastWorkingAddress = AddressUtils.parseInetSocketAddress(address, MainService.serverPort)!!
         val intent = Intent(activity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

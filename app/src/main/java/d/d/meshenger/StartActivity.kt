@@ -147,10 +147,10 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
     }
 
     private fun getDefaultAddress(): AddressEntry? {
-        val addresses = Utils.collectAddresses()
+        val addresses = AddressUtils.collectAddresses()
 
         // preferable, since we can derive a fe80:: and other addresses from a MAC address
-        val macAddress = addresses.firstOrNull { it.device.startsWith("wlan") && Utils.isMACAddress(it.address) }
+        val macAddress = addresses.firstOrNull { it.device.startsWith("wlan") && AddressUtils.isMACAddress(it.address) }
         if (macAddress != null) {
             return macAddress
         }

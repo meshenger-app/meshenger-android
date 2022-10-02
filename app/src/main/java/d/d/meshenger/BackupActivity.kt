@@ -3,7 +3,6 @@ package d.d.meshenger
 import android.app.Activity
 import d.d.meshenger.Utils.writeExternalFile
 import d.d.meshenger.Utils.readExternalFile
-import android.widget.ImageButton
 import android.widget.TextView
 import android.os.Bundle
 import android.content.Intent
@@ -25,7 +24,6 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
     private var binder: MainBinder? = null
     private lateinit var exportButton: Button
     private lateinit var importButton: Button
-    private lateinit var selectButton: ImageButton
     private lateinit var passwordEditText: TextView
 
     private fun showMessage(title: String, message: String) {
@@ -87,21 +85,21 @@ class BackupActivity : MeshengerActivity(), ServiceConnection {
 
         importButton = findViewById(R.id.ImportButton)
         exportButton = findViewById(R.id.ExportButton)
-        selectButton = findViewById(R.id.SelectButton)
         passwordEditText = findViewById(R.id.PasswordEditText)
-        importButton.setOnClickListener(View.OnClickListener { _: View? ->
+        importButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "application/json"
             importFileLauncher.launch(intent)
-        })
-        exportButton.setOnClickListener(View.OnClickListener { _: View? ->
+        }
+
+        exportButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.putExtra(Intent.EXTRA_TITLE, "meshenger-backup.json")
             intent.type = "application/json"
             exportFileLauncher.launch(intent)
-        })
+        }
     }
 
     private var importFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

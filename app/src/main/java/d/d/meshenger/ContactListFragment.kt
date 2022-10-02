@@ -211,7 +211,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
     }
 
     private fun setBlocked(publicKey: ByteArray, blocked: Boolean) {
-        val binder = (requireActivity() as MainActivity).binder :? return
+        val binder = (requireActivity() as MainActivity).binder ?: return
         val contacts = binder.getContacts()
         val contact = contacts.getContactByPublicKey(publicKey)
         if (contact != null) {

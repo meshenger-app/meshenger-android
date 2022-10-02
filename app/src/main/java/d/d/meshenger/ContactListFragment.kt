@@ -165,18 +165,16 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
                     val block = getString(R.string.block)
                     val unblock = getString(R.string.unblock)
                     val share = getString(R.string.share)
-                    val ping = getString(R.string.ping)
-                    val qr = "QR-ify"
+                    val qrcode = getString(R.string.qrcode)
                     menu.menu.add(delete)
                     menu.menu.add(rename)
                     menu.menu.add(share)
-                    menu.menu.add(ping)
                     if (contact.blocked) {
                         menu.menu.add(unblock)
                     } else {
                         menu.menu.add(block)
                     }
-                    menu.menu.add(qr)
+                    menu.menu.add(qrcode)
                     menu.setOnMenuItemClickListener { menuItem: MenuItem ->
                         val title = menuItem.title.toString()
                         val publicKey = contact.publicKey
@@ -190,10 +188,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
                             setBlocked(publicKey, true)
                         } else if (title == unblock) {
                             setBlocked(publicKey, false)
-                        } else if (title == ping) {
-                            // TODO: ping contact
-                            Log.d(this, "Ping not implemented here")
-                        } else if (title == qr) {
+                        } else if (title == qrcode) {
                             val intent = Intent(activity, QRShowActivity::class.java)
                             intent.putExtra("EXTRA_CONTACT", contact)
                             startActivity(intent)

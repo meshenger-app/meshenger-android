@@ -61,6 +61,7 @@
     <string name="replace">Replace</string>
     <string name="ping">Ping</string>
     <string name="pick">Pick</string>
+    <string name="qrcode">QR-Code</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
     <string name="contact_edit">Edit Contact</string>

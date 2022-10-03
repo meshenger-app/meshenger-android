@@ -29,11 +29,6 @@ internal class EventListAdapter(
         this.contacts = contacts
     }
 
-    private fun formatAddress(address: InetSocketAddress): String {
-        val parts = address.hostName.split("/")
-        return parts.lastOrNull() ?: "???"
-    }
-
     override fun getCount(): Int {
         return events.size
     }
@@ -87,7 +82,7 @@ internal class EventListAdapter(
 
         val address_tv = view.findViewById<TextView>(R.id.call_address)
         if (event.address != null) {
-            val text = formatAddress(event.address)
+            val text = event.address.address.toString()
             address_tv.text = "(${text})"
         } else {
             address_tv.text = ""

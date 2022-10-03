@@ -9,12 +9,11 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
@@ -105,11 +104,14 @@ class StartActivity : MeshengerActivity(), ServiceConnection {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
+
         Log.d(this, "onServiceConnected")
         if (startState == 0) {
             if (binder!!.getService().first_start) {
                 // show delayed splash page
-                Handler().postDelayed({ continueInit() }, 1000)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    continueInit()
+                }, 1000)
             } else {
                 // show contact list as fast as possible
                 continueInit()

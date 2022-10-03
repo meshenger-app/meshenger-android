@@ -236,7 +236,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
 
         val et = EditText(activity)
         et.setText(name)
-        val dialog = AlertDialog.Builder(activity)
+        AlertDialog.Builder(activity)
             .setTitle(R.string.contact_edit)
             .setView(et)
             .setNegativeButton(getString(R.string.cancel), null)

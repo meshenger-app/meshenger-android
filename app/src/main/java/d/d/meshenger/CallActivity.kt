@@ -347,7 +347,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 currentCall!!.decline()
             }
 
-            currentCall!!.cleanup()
+            currentCall?.cleanup()
 
             val contact = this.contact
             if (contact != null) {
@@ -358,9 +358,8 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
 
             unbindService(connection!!)
 
-            if (wakeLock != null) {
-                wakeLock!!.release()
-            }
+            wakeLock?.release()
+
             if (currentCall != null && currentCall!!.commSocket != null && currentCall!!.commSocket!!.isConnected && !currentCall!!.commSocket!!.isClosed) {
                 try {
                     currentCall!!.commSocket?.close()

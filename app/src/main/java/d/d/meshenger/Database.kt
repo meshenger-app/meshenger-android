@@ -103,15 +103,16 @@ class Database {
 
         @Throws(JSONException::class)
         private fun upgradeDatabase(from: String, to: String, db: JSONObject): Boolean {
-            var from = from
             if (from == to) {
                 return false
             }
+
             Log.d(this, "Upgrade database from $from to $to")
             val settings = db.getJSONObject("settings")
+            var new_from = from
 
             // 2.0.0 => 2.1.0
-            if (from == "2.0.0") {
+            if (new_from == "2.0.0") {
                 // add blocked field (added in 2.1.0)
                 val contacts = db.getJSONArray("contacts")
                 var i = 0
@@ -119,39 +120,39 @@ class Database {
                     contacts.getJSONObject(i).put("blocked", false)
                     i += 1
                 }
-                from = "2.1.0"
+                new_from = "2.1.0"
             }
 
             // 2.1.0 => 3.0.0
-            if (from == "2.1.0") {
+            if (new_from == "2.1.0") {
                 // add new fields
                 settings.put("ice_servers", JSONArray())
                 settings.put("development_mode", false)
-                from = "3.0.0"
+                new_from = "3.0.0"
             }
 
             // 3.0.0 => 3.0.1
-            if (from == "3.0.0") {
+            if (new_from == "3.0.0") {
                 // nothing to do
-                from = "3.0.1"
+                new_from = "3.0.1"
             }
 
             // 3.0.1 => 3.0.2
-            if (from == "3.0.1") {
+            if (new_from == "3.0.1") {
                 // fix typo in setting name
                 settings.put("night_mode", settings.getBoolean("might_mode"))
-                from = "3.0.2"
+                new_from = "3.0.2"
             }
 
             // 3.0.2 => 3.0.3
-            if (from == "3.0.2") {
+            if (new_from == "3.0.2") {
                 // nothing to do
-                from = "3.0.3"
+                new_from = "3.0.3"
             }
 
             // 3.0.3 => 4.0.0
-            if (from == "3.0.3") {
-                from = "4.0.0"
+            if (new_from == "3.0.3") {
+                new_from = "4.0.0"
                 val contacts = Contacts()
                 val contactArray = db.getJSONArray("contacts")
                 for (i in 0 until contactArray.length()) {
@@ -167,7 +168,8 @@ class Database {
 
             // add missing keys with defaults and remove unexpected keys
             alignSettings(settings)
-            db.put("version", from)
+
+            db.put("version", new_from)
             return true
         }
 

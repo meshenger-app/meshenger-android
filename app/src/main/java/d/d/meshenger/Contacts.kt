@@ -41,7 +41,7 @@ class Contacts {
         return -1
     }
 
-    fun getContactByPublicKey(publicKey: ByteArray?): Contact? {
+    fun getContactByPublicKey(publicKey: ByteArray): Contact? {
         for (contact in contactList) {
             if (Arrays.equals(contact.publicKey, publicKey)) {
                 return contact

@@ -19,7 +19,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONException
 
-class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
+class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private lateinit var contactListView: ListView
     private var fabExpanded = false
     private lateinit var fabScan: FloatingActionButton
@@ -38,6 +38,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
         contactListView = view.findViewById(R.id.contactList)
+        contactListView.setOnItemClickListener(this)
+        contactListView.setOnItemLongClickListener(this)
 
         val activity = requireActivity()
         fabScan.setOnClickListener {
@@ -151,54 +153,10 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
 
-        Handler(Looper.getMainLooper()).post(Runnable {
+        Handler(Looper.getMainLooper()).post {
             val contacts = binder.getContacts().contactList
-            contactListView.adapter =
-                ContactListAdapter(activity, R.layout.item_contact, contacts)
-            contactListView.setOnItemClickListener(this@ContactListFragment)
-            contactListView.onItemLongClickListener =
-                AdapterView.OnItemLongClickListener { _: AdapterView<*>?, view: View?, i: Int, _: Long ->
-                    val contact = contacts[i]
-                    val menu = PopupMenu(activity, view)
-                    val delete = getString(R.string.delete)
-                    val rename = getString(R.string.rename)
-                    val block = getString(R.string.block)
-                    val unblock = getString(R.string.unblock)
-                    val share = getString(R.string.share)
-                    val qrcode = getString(R.string.qrcode)
-                    menu.menu.add(delete)
-                    menu.menu.add(rename)
-                    menu.menu.add(share)
-                    if (contact.blocked) {
-                        menu.menu.add(unblock)
-                    } else {
-                        menu.menu.add(block)
-                    }
-                    menu.menu.add(qrcode)
-                    menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-                        val title = menuItem.title.toString()
-                        val publicKey = contact.publicKey
-                        if (title == delete) {
-                            showDeleteDialog(publicKey, contact.name)
-                        } else if (title == rename) {
-                            showContactEditDialog(publicKey, contact.name)
-                        } else if (title == share) {
-                            shareContact(contact)
-                        } else if (title == block) {
-                            setBlocked(publicKey, true)
-                        } else if (title == unblock) {
-                            setBlocked(publicKey, false)
-                        } else if (title == qrcode) {
-                            val intent = Intent(activity, QRShowActivity::class.java)
-                            intent.putExtra("EXTRA_CONTACT", contact)
-                            startActivity(intent)
-                        }
-                        false
-                    }
-                    menu.show()
-                    true
-                }
-        })
+            contactListView.adapter = ContactListAdapter(activity, R.layout.item_contact, contacts)
+        }
     }
 
     private fun refreshContactListBroadcast() {
@@ -286,5 +244,47 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener {
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)
         startActivity(intent)
+    }
+
+    override fun onItemLongClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long): Boolean {
+        val contact = adapterView.adapter.getItem(i) as Contact
+        val menu = PopupMenu(activity, view)
+        val delete = getString(R.string.delete)
+        val rename = getString(R.string.rename)
+        val block = getString(R.string.block)
+        val unblock = getString(R.string.unblock)
+        val share = getString(R.string.share)
+        val qrcode = getString(R.string.qrcode)
+        menu.menu.add(delete)
+        menu.menu.add(rename)
+        menu.menu.add(share)
+        if (contact.blocked) {
+            menu.menu.add(unblock)
+        } else {
+            menu.menu.add(block)
+        }
+        menu.menu.add(qrcode)
+        menu.setOnMenuItemClickListener { menuItem: MenuItem ->
+            val title = menuItem.title.toString()
+            val publicKey = contact.publicKey
+            if (title == delete) {
+                showDeleteDialog(publicKey, contact.name)
+            } else if (title == rename) {
+                showContactEditDialog(publicKey, contact.name)
+            } else if (title == share) {
+                shareContact(contact)
+            } else if (title == block) {
+                setBlocked(publicKey, true)
+            } else if (title == unblock) {
+                setBlocked(publicKey, false)
+            } else if (title == qrcode) {
+                val intent = Intent(activity, QRShowActivity::class.java)
+                intent.putExtra("EXTRA_CONTACT", contact)
+                startActivity(intent)
+            }
+            false
+        }
+        menu.show()
+        return true
     }
 }

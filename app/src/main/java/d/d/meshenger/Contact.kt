@@ -73,12 +73,13 @@ class Contact(
         }
 
         for (address in getAllSocketAddresses()) {
-            Log.d(this, "try address: '${address.hostName}', port: ${address.port}")
+            Log.d(this, "try address: ${address.toString()}")
             socket = establishConnection(address, connectionTimeout)
             if (socket != null) {
                 return socket
             }
         }
+
         return null
     }
 

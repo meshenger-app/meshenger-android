@@ -179,14 +179,23 @@ class EventListFragment : Fragment(), OnItemClickListener {
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
         Log.d(this, "onItemClick")
         val activity = requireActivity()
+        val binder = (activity as MainActivity).binder ?: return
         val event = eventListAdapter.getItem(i)
-        val address = AddressUtils.getGeneralizedAddress(event.address?.address)
-        if (address == null) {
+
+        val known_contact = binder.getContactByPublicKey(event.publicKey)
+        val contact = if (known_contact != null) {
+            known_contact
+        } else {
+            // unknown contact
+            val address = AddressUtils.getGeneralizedAddress(event.address?.address)
+            Contact("", event.publicKey, if (address == null) listOf() else listOf(address))
+        }
+
+        if (contact.addresses.isEmpty()) {
             Toast.makeText(activity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
             return
         }
-        val contact = Contact("", event.publicKey, listOf(address))
-        contact.lastWorkingAddress = AddressUtils.parseInetSocketAddress(address, MainService.serverPort)!!
+
         val intent = Intent(activity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

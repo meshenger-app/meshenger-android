@@ -253,7 +253,7 @@ internal object Crypto {
         }
         val pk_box = ByteArray(Sodium.crypto_box_publickeybytes())
         val rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(pk_box, pk_sign)
-        if (rc1 != 0 || pk_box == null || pk_box.size != Sodium.crypto_box_publickeybytes()) {
+        if (rc1 != 0 || pk_box.size != Sodium.crypto_box_publickeybytes()) {
             return null
         }
         val ciphertext = ByteArray(SodiumConstants.SEAL_BYTES + data.size)

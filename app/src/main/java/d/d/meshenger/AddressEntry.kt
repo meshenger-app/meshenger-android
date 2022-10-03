@@ -8,8 +8,8 @@ class AddressEntry internal constructor(
     var device: String,
     var multicast: Boolean,
 ) : Comparable<AddressEntry> {
-    override fun compareTo(e: AddressEntry): Int {
-        return address.compareTo(e.address)
+    override fun compareTo(other: AddressEntry): Int {
+        return address.compareTo(other.address)
     }
 
     override fun toString(): String {

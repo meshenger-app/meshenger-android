@@ -274,7 +274,7 @@ internal object AddressUtils
             val rd = BufferedReader(
                 InputStreamReader(pc.inputStream, "UTF-8")
             )
-            var line = ""
+            var line : String
             while (rd.readLine().also { line = it } != null) {
                 val tokens = line.split("\\s+").toTypedArray()
                 // IPv4

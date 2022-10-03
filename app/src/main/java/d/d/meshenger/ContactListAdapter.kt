@@ -22,14 +22,11 @@ internal class ContactListAdapter(
 ) {
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
+    override fun getView(position: Int, convertView_: View?, parent: ViewGroup): View {
+        val convertView = convertView_ ?: inflater.inflate(R.layout.item_contact, null)
         val contact = contacts[position]
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.item_contact, null)
-        }
 
-        convertView!!.findViewById<TextView>(R.id.contact_name).text = contact.name
+        convertView.findViewById<TextView>(R.id.contact_name).text = contact.name
 
 	    if (contact.state != Contact.State.PENDING) {
             convertView.findViewById<View>(R.id.contact_waiting).visibility = View.GONE

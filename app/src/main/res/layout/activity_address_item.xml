@@ -16,7 +16,7 @@
         android:layout_toLeftOf="@id/icon"
         android:background="@color/white"
         android:fontFamily="@font/lato_regular"
-        android:padding="10dp"
+        android:padding="5dp"
         android:textColor="?android:textColorPrimary"
         android:textSize="20sp" />
     <ImageView

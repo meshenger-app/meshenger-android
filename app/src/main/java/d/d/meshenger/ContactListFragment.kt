@@ -84,18 +84,18 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         val distance = 200f
         val duration = 300f
         val scanAnimation: TranslateAnimation
-        val generateAnimnation: TranslateAnimation
+        val generateAnimation: TranslateAnimation
         val alphaAnimation: AlphaAnimation
         if (fabExpanded) {
             scanAnimation = TranslateAnimation(0f, 0f, -distance, 0f)
-            generateAnimnation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
+            generateAnimation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
             alphaAnimation = AlphaAnimation(1.0f, 0.0f)
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
             fabScan.y = fabScan.y + distance
             fabGen.y = fabGen.y + distance * 2
         } else {
             scanAnimation = TranslateAnimation(0f, 0f, distance, 0f)
-            generateAnimnation = TranslateAnimation(0f, 0f, distance * 2, 0f)
+            generateAnimation = TranslateAnimation(0f, 0f, distance * 2, 0f)
             alphaAnimation = AlphaAnimation(0.0f, 1.0f)
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
             fabScan.y = fabScan.y - distance
@@ -104,7 +104,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         scanSet.addAnimation(scanAnimation)
         scanSet.addAnimation(alphaAnimation)
         scanSet.fillAfter = true
-        generateSet.addAnimation(generateAnimnation)
+        generateSet.addAnimation(generateAnimation)
         generateSet.addAnimation(alphaAnimation)
         generateSet.fillAfter = true
         scanSet.duration = duration.toLong()

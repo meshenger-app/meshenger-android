@@ -77,9 +77,9 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 }
             }
             if (contact!!.name.isEmpty()) {
-                nameTextView.setText(getString(R.string.unknown_caller))
+                nameTextView.text = getString(R.string.unknown_caller)
             } else {
-                nameTextView.setText(contact!!.name)
+                nameTextView.text = contact!!.name
             }
             bindService(Intent(this, MainService::class.java), connection!!, 0)
             val declineListener = View.OnClickListener { _: View? ->
@@ -101,9 +101,9 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             connection = this
             bindService(Intent(this, MainService::class.java), this, 0)
             if (contact!!.name.isEmpty()) {
-                nameTextView.setText(getString(R.string.unknown_caller))
+                nameTextView.text = getString(R.string.unknown_caller)
             } else {
-                nameTextView.setText(contact!!.name)
+                nameTextView.text = contact!!.name
             }
             findViewById<View>(R.id.callAccept).visibility = View.VISIBLE
             startRinging()

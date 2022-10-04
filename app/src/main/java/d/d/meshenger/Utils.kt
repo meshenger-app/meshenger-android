@@ -224,14 +224,4 @@ internal object Utils {
         fis.close()
         return buffer.toByteArray()
     }
-
-    fun getUnknownCallerName(context: Context, clientPublicKeyOut: ByteArray): String {
-        val sb = StringBuilder()
-        sb.append(context.resources.getString(R.string.unknown_caller))
-        sb.append(" #")
-        for (i in 0..min(4, clientPublicKeyOut.size)) {
-            sb.append(String.format("%02X", clientPublicKeyOut[i]))
-        }
-        return sb.toString()
-    }
 }

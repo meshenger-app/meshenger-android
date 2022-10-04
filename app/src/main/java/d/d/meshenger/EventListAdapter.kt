@@ -51,7 +51,7 @@ internal class EventListAdapter(
 
         val name_tv = view.findViewById<TextView>(R.id.call_name)
         if (name.isEmpty()) {
-            name_tv.text = Utils.getUnknownCallerName(ctx, event.publicKey)
+            name_tv.text = view.context.getString(R.string.unknown_caller)
         } else {
             name_tv.text = name
         }

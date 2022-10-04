@@ -13,13 +13,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import android.widget.AdapterView.OnItemClickListener
-import android.widget.AdapterView.OnItemLongClickListener
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class EventListFragment : Fragment(), OnItemClickListener {
+class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private lateinit var eventListAdapter: EventListAdapter
     private lateinit var eventListView: ListView
     private lateinit var fabDelete: FloatingActionButton
@@ -48,6 +46,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         eventListAdapter = EventListAdapter(activity, R.layout.item_event, emptyList(), emptyList())
         eventListView.setAdapter(eventListAdapter)
         eventListView.setOnItemClickListener(this)
+        eventListView.setOnItemLongClickListener(this)
 
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))
@@ -83,43 +82,6 @@ class EventListFragment : Fragment(), OnItemClickListener {
             eventListAdapter.update(events, contacts)
             eventListAdapter.notifyDataSetChanged()
             eventListView.adapter = eventListAdapter
-            eventListView.onItemLongClickListener =
-                OnItemLongClickListener { _: AdapterView<*>?, view: View?, i: Int, _: Long ->
-                    val event = events[i]
-                    val menu = PopupMenu(activity, view)
-                    val res = resources
-                    val add = res.getString(R.string.add)
-                    val block = res.getString(R.string.block)
-                    val unblock = res.getString(R.string.unblock)
-                    val contact = binder.getContactByPublicKey(event.publicKey)
-
-                    // allow to add unknown caller
-                    if (contact == null) {
-                        menu.menu.add(add)
-                    }
-
-                    if (contact != null) {
-                        if (contact.blocked) {
-                            menu.menu.add(unblock)
-                        } else {
-                            menu.menu.add(block)
-                        }
-                    }
-
-                    menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-                        val title = menuItem.title.toString()
-                        if (title == add) {
-                            showAddDialog(event)
-                        } else if (title == block) {
-                            setBlocked(event, true)
-                        } else if (title == unblock) {
-                            setBlocked(event, false)
-                        }
-                        false
-                    }
-                    menu.show()
-                    true
-                }
         }
     }
 
@@ -169,6 +131,47 @@ class EventListFragment : Fragment(), OnItemClickListener {
         }
         exitButton.setOnClickListener { dialog.dismiss() }
         dialog.show()
+    }
+
+    override fun onItemLongClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long): Boolean {
+        Log.d(this, "onItemLongClick")
+        val activity = requireActivity()
+        val binder = (activity as MainActivity).binder ?: return false
+
+        val event = adapterView.adapter.getItem(i) as Event
+        val menu = PopupMenu(activity, view)
+        val res = resources
+        val add = res.getString(R.string.add)
+        val block = res.getString(R.string.block)
+        val unblock = res.getString(R.string.unblock)
+        val contact = binder.getContactByPublicKey(event.publicKey)
+
+        // allow to add unknown caller
+        if (contact == null) {
+            menu.menu.add(add)
+        }
+
+        if (contact != null) {
+            if (contact.blocked) {
+                menu.menu.add(unblock)
+            } else {
+                menu.menu.add(block)
+            }
+        }
+
+        menu.setOnMenuItemClickListener { menuItem: MenuItem ->
+            val title = menuItem.title.toString()
+            if (title == add) {
+                showAddDialog(event)
+            } else if (title == block) {
+                setBlocked(event, true)
+            } else if (title == unblock) {
+                setBlocked(event, false)
+            }
+            false
+        }
+        menu.show()
+        return true
     }
 
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {

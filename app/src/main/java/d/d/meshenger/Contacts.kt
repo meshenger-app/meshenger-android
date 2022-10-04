@@ -34,7 +34,7 @@ class Contacts {
 
     private fun findContact(publicKey: ByteArray): Int {
         for (i in 0 until contactList.size) {
-            if (Arrays.equals(contactList[i].publicKey, publicKey)) {
+            if (contactList[i].publicKey.contentEquals(publicKey)) {
                 return i
             }
         }
@@ -43,7 +43,7 @@ class Contacts {
 
     fun getContactByPublicKey(publicKey: ByteArray): Contact? {
         for (contact in contactList) {
-            if (Arrays.equals(contact.publicKey, publicKey)) {
+            if (contact.publicKey.contentEquals(publicKey)) {
                 return contact
             }
         }

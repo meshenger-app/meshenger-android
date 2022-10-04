@@ -249,7 +249,7 @@ class MainService : Service(), Runnable {
                     }
                 }
                 // suspicious change of identity in during connection...
-                if (!Arrays.equals(contact.publicKey, clientPublicKey)) {
+                if (!contact.publicKey.contentEquals(clientPublicKey)) {
                     Log.d(this, "suspicious change of key")
                     continue
                 }
@@ -372,9 +372,9 @@ class MainService : Service(), Runnable {
             return currentCall
         }
 
-        fun getContactByPublicKey(pubKey: ByteArray?): Contact? {
+        fun getContactByPublicKey(publicKey: ByteArray?): Contact? {
             for (contact in database!!.contacts.contactList) {
-                if (Arrays.equals(contact.publicKey, pubKey)) {
+                if (contact.publicKey.contentEquals(publicKey)) {
                     return contact
                 }
             }

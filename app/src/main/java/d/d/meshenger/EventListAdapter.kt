@@ -47,7 +47,7 @@ internal class EventListAdapter(
         val event = events[events.size - position - 1]
 
         // find name
-        var name = contacts.find { Arrays.equals(it.publicKey, event.publicKey) }?.name ?: ""
+        val name = contacts.find { it.publicKey.contentEquals(event.publicKey) }?.name ?: ""
 
         val name_tv = view.findViewById<TextView>(R.id.call_name)
         if (name.isEmpty()) {

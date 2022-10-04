@@ -186,10 +186,7 @@ class RTCCall : DataChannel.Observer {
                                     ownPublicKey,
                                     ownSecretKey
                                 )
-                                if (decrypted == null || !Arrays.equals(
-                                        contact.publicKey,
-                                        otherPublicKey
-                                    )
+                                if (decrypted == null || !contact.publicKey.contentEquals(otherPublicKey)
                                 ) {
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
@@ -214,11 +211,7 @@ class RTCCall : DataChannel.Observer {
                                     ownPublicKey,
                                     ownSecretKey
                                 )
-                                if (decrypted == null || !Arrays.equals(
-                                        contact.publicKey,
-                                        otherPublicKey
-                                    )
-                                ) {
+                                if (decrypted == null || !contact.publicKey.contentEquals(otherPublicKey)) {
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
                                     return

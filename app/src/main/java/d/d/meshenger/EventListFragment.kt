@@ -152,19 +152,14 @@ class EventListFragment : Fragment(), OnItemClickListener {
                 Toast.makeText(activity, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
             if (binder.getContacts().getContactByName(name) != null) {
                 Toast.makeText(activity, R.string.contact_name_exists, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
-            val address = AddressUtils.getGeneralizedAddress(event.address?.address)
-            binder.getContacts().addContact(
-                Contact(
-                    name,
-                    event.publicKey,
-                    if (address != null) listOf(address) else listOf()
-                )
-            )
+            val contact = event.createUnknownContact(name)
+            binder.getContacts().addContact(contact)
 
             Toast.makeText(activity, R.string.done, Toast.LENGTH_SHORT).show()
             refreshEventList()
@@ -186,9 +181,7 @@ class EventListFragment : Fragment(), OnItemClickListener {
         val contact = if (known_contact != null) {
             known_contact
         } else {
-            // unknown contact
-            val address = AddressUtils.getGeneralizedAddress(event.address?.address)
-            Contact("", event.publicKey, if (address == null) listOf() else listOf(address))
+            event.createUnknownContact("")
         }
 
         if (contact.addresses.isEmpty()) {

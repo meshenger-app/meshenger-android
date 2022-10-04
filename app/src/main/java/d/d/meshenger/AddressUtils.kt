@@ -247,16 +247,8 @@ internal object AddressUtils
         return addresses
     }
 
-    // EUI-64 based address to MAC address.
-    fun getGeneralizedAddress(address: InetAddress?): String? {
-        if (address == null) return null
-        val mac = extractMacAddress(address)
-        if (mac != null) return bytesToMacAddress(mac)
-        return address.hostAddress ?: address.hostName
-    }
-
-    private fun extractMacAddress(address: InetAddress): ByteArray? {
-        if (address is Inet6Address) {
+    fun extractMacAddress(address: InetAddress?): ByteArray? {
+        if (address != null && address is Inet6Address) {
             return getEUI64MAC(address)
         }
         return null

@@ -15,6 +15,22 @@ class Event(
         INCOMING_UNKNOWN, INCOMING_ACCEPTED, INCOMING_DECLINED, INCOMING_MISSED, INCOMING_ERROR
     }
 
+    fun createUnknownContact(name: String): Contact {
+        val addresses = mutableListOf<String>()
+        if (address != null && !address.isUnresolved) {
+            // extract MAC address if possible
+            val mac = AddressUtils.extractMacAddress(address.address)
+            if (mac != null && mac.size == 6) {
+                addresses.add(
+                    "%02X:%02X:%02X:%02X:%02X:".format(mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
+                )
+            } else {
+                addresses.add(address.toString())
+            }
+        }
+        return Contact(name, publicKey, addresses)
+    }
+
     fun isMissedCall(): Boolean {
         return when (type) {
                 Type.UNKNOWN -> false

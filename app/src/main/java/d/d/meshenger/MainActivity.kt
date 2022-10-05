@@ -98,6 +98,9 @@ class MainActivity : MeshengerActivity(), ServiceConnection {
         Log.d(this, "OnServiceConnected")
         binder = iBinder as MainBinder
 
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
+
         // call it here because EventListFragment.onResume is triggered twice
         try {
             binder!!.pingContacts()

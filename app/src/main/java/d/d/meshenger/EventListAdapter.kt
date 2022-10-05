@@ -47,10 +47,10 @@ internal class EventListAdapter(
         val event = events[events.size - position - 1]
 
         // find name
-        val name = contacts.find { it.publicKey.contentEquals(event.publicKey) }?.name ?: ""
+        val name = contacts.find { it.publicKey.contentEquals(event.publicKey) }?.name
 
         val name_tv = view.findViewById<TextView>(R.id.call_name)
-        if (name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             name_tv.text = view.context.getString(R.string.unknown_caller)
         } else {
             name_tv.text = name

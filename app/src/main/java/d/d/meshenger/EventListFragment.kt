@@ -121,10 +121,9 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
             }
 
             val contact = event.createUnknownContact(name)
-            binder.getContacts().addContact(contact)
+            binder.addContact(contact)
 
             Toast.makeText(activity, R.string.done, Toast.LENGTH_SHORT).show()
-            refreshEventList()
 
             // close dialog
             dialog.dismiss()

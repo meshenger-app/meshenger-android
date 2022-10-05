@@ -136,8 +136,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         builder.setMessage(getString(R.string.contact_remove) + " ${name}")
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
-                binder.getContacts().deleteContact(publicKey)
-                refreshContactListBroadcast()
+                binder.deleteContact(publicKey)
                 dialog.cancel()
             }
 

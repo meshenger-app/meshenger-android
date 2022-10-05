@@ -38,8 +38,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
         contactListView = view.findViewById(R.id.contactList)
-        contactListView.setOnItemClickListener(this)
-        contactListView.setOnItemLongClickListener(this)
+        contactListView.onItemClickListener = this
+        contactListView.onItemLongClickListener = this
 
         val activity = requireActivity()
         fabScan.setOnClickListener {

@@ -44,9 +44,9 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         }
 
         eventListAdapter = EventListAdapter(activity, R.layout.item_event, emptyList(), emptyList())
-        eventListView.setAdapter(eventListAdapter)
-        eventListView.setOnItemClickListener(this)
-        eventListView.setOnItemLongClickListener(this)
+        eventListView.adapter = eventListAdapter
+        eventListView.onItemClickListener = this
+        eventListView.onItemLongClickListener = this
 
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))

@@ -47,25 +47,27 @@ class Database {
             val obj = JSONObject(
                 String(stringData, Charset.forName("UTF-8"))
             )
+
             upgradeDatabase(obj.getString("version"), version, obj)
             val db = fromJSON(obj)
             Log.d(this, "Loaded ${db.contacts.contactList.size} contacts")
-            Log.d(this, "Loaded ${db.events.eventList.size} events.")
+            Log.d(this, "Loaded ${db.events.eventList.size} events")
             return db
         }
 
         fun toData(db: Database, password: String?): ByteArray? {
             val obj = toJSON(db)
-            var data: ByteArray? = obj.toString().toByteArray()
+            var dbdata : ByteArray? = obj.toString().toByteArray()
 
             // encrypt database
             if (password != null && password.isNotEmpty()) {
                 Log.d(this, "Encrypt database")
-                data = encryptDatabase(data, password.toByteArray())
+                dbdata = encryptDatabase(dbdata, password.toByteArray())
             }
             Log.d(TAG, "Stored ${db.contacts.contactList.size} contacts")
-            Log.d(TAG, "Stored ${db.events.eventList.size} events.")
-            return data
+            Log.d(TAG, "Stored ${db.events.eventList.size} events")
+
+            return dbdata
         }
 
         @Throws(JSONException::class)

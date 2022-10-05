@@ -263,7 +263,7 @@
                             android:buttonTint="@color/selectedColor"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/basic"
-                            android:textColor="@color/platform_grey"
+                            android:textColor="@color/black"
                             android:textSize="14sp" />
 
                         <RadioButton
@@ -274,7 +274,7 @@
                             android:buttonTint="@color/selectedColor"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/advanced"
-                            android:textColor="@color/platform_grey"
+                            android:textColor="@color/black"
                             android:textSize="14sp" />
 
                         <RadioButton
@@ -285,7 +285,7 @@
                             android:buttonTint="@color/selectedColor"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/expert"
-                            android:textColor="@color/platform_grey"
+                            android:textColor="@color/black"
                             android:textSize="14sp" />
                     </RadioGroup>
 

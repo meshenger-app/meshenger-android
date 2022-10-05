@@ -190,7 +190,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         Log.d(this, "showContactEditDialog")
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
-        val contact = binder.getContactByPublicKey(publicKey) ?: return
+        val contact = binder.getContacts().getContactByPublicKey(publicKey) ?: return
 
         val et = EditText(activity)
         et.setText(name)

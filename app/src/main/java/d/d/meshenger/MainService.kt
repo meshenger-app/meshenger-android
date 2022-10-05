@@ -445,8 +445,8 @@ class MainService : Service(), Runnable {
         var ownSecretKey: ByteArray?,
     ) : Runnable {
         val binder = MainBinder()
-        private fun setState(publicKey: ByteArray?, state: Contact.State) {
-            val contact = binder.getContactByPublicKey(publicKey)
+        private fun setState(publicKey: ByteArray, state: Contact.State) {
+            val contact = binder.getContacts().getContactByPublicKey(publicKey)
             if (contact != null) {
                 contact.state = state
             }

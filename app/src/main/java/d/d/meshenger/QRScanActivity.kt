@@ -66,8 +66,9 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         }
 
         // lookup existing contacts by key and name
-        val existing_pubkey_contact = binder!!.getContactByPublicKey(new_contact.publicKey)
-        val existing_name_contact = binder!!.getContactByName(new_contact.name)
+        val contacts = binder!!.getContacts()
+        val existing_pubkey_contact = contacts.getContactByPublicKey(new_contact.publicKey)
+        val existing_name_contact = contacts.getContactByName(new_contact.name)
         if (existing_pubkey_contact != null) {
             // contact with that public key exists
             showPubkeyConflictDialog(new_contact, existing_pubkey_contact)
@@ -128,7 +129,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
                 Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (binder!!.getContactByName(name) != null) {
+            if (binder!!.getContacts().getContactByName(name) != null) {
                 Toast.makeText(this, R.string.contact_name_exists, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

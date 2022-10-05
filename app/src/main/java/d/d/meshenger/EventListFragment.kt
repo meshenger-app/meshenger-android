@@ -89,7 +89,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         val activity = requireActivity() as MainActivity
         val binder = activity.binder ?: return
 
-        val contact = binder.getContactByPublicKey(event.publicKey)
+        val contact = binder.getContacts().getContactByPublicKey(event.publicKey)
         if (contact != null) {
             contact.blocked = blocked
             binder.saveDatabase()
@@ -143,7 +143,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         val add = res.getString(R.string.add)
         val block = res.getString(R.string.block)
         val unblock = res.getString(R.string.unblock)
-        val contact = binder.getContactByPublicKey(event.publicKey)
+        val contact = binder.getContacts().getContactByPublicKey(event.publicKey)
 
         // allow to add unknown caller
         if (contact == null) {
@@ -179,7 +179,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         val binder = (activity as MainActivity).binder ?: return
         val event = eventListAdapter.getItem(i)
 
-        val known_contact = binder.getContactByPublicKey(event.publicKey)
+        val known_contact = binder.getContacts().getContactByPublicKey(event.publicKey)
         val contact = if (known_contact != null) {
             known_contact
         } else {

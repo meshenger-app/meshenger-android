@@ -457,7 +457,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
     private fun stopDelayed(message: String) {
         Handler(mainLooper).post {
             statusTextView.text = message
-            Handler().postDelayed({ finish() }, 2000)
+            Handler(mainLooper).postDelayed({ finish() }, 2000)
         }
     }
 

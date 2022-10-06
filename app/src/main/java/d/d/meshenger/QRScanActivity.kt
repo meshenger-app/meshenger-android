@@ -48,13 +48,13 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         }
 
         // qr show button
-        findViewById<View>(R.id.fabScan).setOnClickListener { _: View? ->
+        findViewById<View>(R.id.fabScan).setOnClickListener {
             startActivity(Intent(this, QRShowActivity::class.java))
             finish()
         }
 
         // manual input button
-        findViewById<View>(R.id.fabManualInput).setOnClickListener { _: View? -> startManualInput() }
+        findViewById<View>(R.id.fabManualInput).setOnClickListener { startManualInput() }
     }
 
     @Throws(JSONException::class)
@@ -90,7 +90,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.public_key_conflict_abort_button)
         val replaceButton = dialog.findViewById<Button>(R.id.public_key_conflict_replace_button)
         nameTextView.text = other_contact.name
-        replaceButton.setOnClickListener { _: View? ->
+        replaceButton.setOnClickListener {
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
 
@@ -99,7 +99,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.cancel()
             finish()
         }
-        abortButton.setOnClickListener { _: View? ->
+        abortButton.setOnClickListener {
             dialog.cancel()
             barcodeView.resume()
         }
@@ -114,7 +114,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
         val replaceButton = dialog.findViewById<Button>(R.id.conflict_contact_replace_button)
         val renameButton = dialog.findViewById<Button>(R.id.conflict_contact_rename_button)
         nameEditText.setText(other_contact.name)
-        replaceButton.setOnClickListener { _: View? ->
+        replaceButton.setOnClickListener {
             binder!!.deleteContact(other_contact.publicKey)
             binder!!.addContact(new_contact)
 
@@ -123,7 +123,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.cancel()
             finish()
         }
-        renameButton.setOnClickListener { _: View? ->
+        renameButton.setOnClickListener {
             val name = nameEditText.text.toString()
             if (name.isEmpty()) {
                 Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
@@ -143,7 +143,7 @@ class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
             dialog.cancel()
             finish()
         }
-        abortButton.setOnClickListener { _: View? ->
+        abortButton.setOnClickListener {
             dialog.cancel()
             barcodeView.resume()
         }

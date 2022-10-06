@@ -65,7 +65,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
         val resetButton = findViewById<Button>(R.id.reset_button)
         val addButton = findViewById<View>(R.id.AddCustomAddressButton)
 
-        saveButton.setOnClickListener(View.OnClickListener { _: View? ->
+        saveButton.setOnClickListener(View.OnClickListener {
             binder!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             binder!!.saveDatabase()
@@ -99,7 +99,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
             customAddressTextEdit.setText("")
         }
 
-        resetButton.setOnClickListener(View.OnClickListener { _: View? -> initAddressList() })
+        resetButton.setOnClickListener(View.OnClickListener { initAddressList() })
     }
 
     override fun onDestroy() {

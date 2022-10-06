@@ -82,7 +82,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 nameTextView.text = contact!!.name
             }
             bindService(Intent(this, MainService::class.java), connection!!, 0)
-            val declineListener = View.OnClickListener { _: View? ->
+            val declineListener = View.OnClickListener {
                 // end call
                 currentCall!!.hangUp()
                 eventType = Event.Type.OUTGOING_DECLINED
@@ -109,7 +109,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             startRinging()
 
             // decline call
-            val declineListener = View.OnClickListener { _: View? ->
+            val declineListener = View.OnClickListener {
                 stopRinging()
                 Log.d(this, "declining call...")
                 currentCall!!.decline()
@@ -122,7 +122,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
             }
 
             // hangup call
-            val hangupListener = View.OnClickListener { _: View? ->
+            val hangupListener = View.OnClickListener {
                 stopRinging() // make sure ringing has stopped ;-)
                 Log.d(this, "hangup call...")
                 currentCall!!.decline()
@@ -132,7 +132,7 @@ class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener
                 eventType = Event.Type.INCOMING_ACCEPTED
                 finish()
             }
-            val acceptListener = View.OnClickListener { _: View? ->
+            val acceptListener = View.OnClickListener {
                 stopRinging()
                 Log.d(this, "accepted call...")
                 try {

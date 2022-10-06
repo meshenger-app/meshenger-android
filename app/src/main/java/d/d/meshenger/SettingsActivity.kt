@@ -291,7 +291,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         iceServersTextView.text = Utils.join(settings.iceServers)
-        saveButton.setOnClickListener { _: View? ->
+        saveButton.setOnClickListener {
             val iceServers = ArrayList<String>()
             Utils.split(iceServersTextView.text.toString()).let {
                 iceServers.addAll(it)

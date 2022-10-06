@@ -33,7 +33,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
 
         val activity = requireActivity()
 
-        fabDelete.setOnClickListener { _: View? ->
+        fabDelete.setOnClickListener {
             Log.d(this, "fabDelete")
             val binder = (activity as MainActivity).binder!!
 

@@ -222,12 +222,9 @@ class MainService : Service(), Runnable {
                     Log.d(this, "decryption failed")
                     break
                 }
+
                 if (contact == null) {
-                    for (c in database!!.contacts.contactList) {
-                        if (Arrays.equals(c.publicKey, clientPublicKey)) {
-                            contact = c
-                        }
-                    }
+                    contact = database!!.contacts.getContactByPublicKey(clientPublicKey)
                     if (contact == null && database!!.settings.blockUnknown) {
                         if (currentCall != null) {
                             Log.d(this, "block unknown contact => decline")

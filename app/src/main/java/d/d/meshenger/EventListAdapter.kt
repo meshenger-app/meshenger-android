@@ -86,9 +86,9 @@ internal class EventListAdapter(
         }
 
         val address_tv = view.findViewById<TextView>(R.id.call_address)
-        if (event.address != null) {
-            val text = event.address.address.toString()
-            address_tv.text = "(${text})"
+        val address = AddressUtils.inetSocketAddressToString(event.address)
+        if (address != null) {
+            address_tv.text = "(${address})"
         } else {
             address_tv.text = ""
         }

@@ -11,6 +11,7 @@ import android.widget.TextView
 import d.d.meshenger.Event
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,12 +58,16 @@ internal class EventListAdapter(
         }
 
         val date_tv = view.findViewById<TextView>(R.id.call_date)
-        if (DateUtils.isToday(event.date.time)) {
-            val ft = SimpleDateFormat("'Today at' hh:mm:ss", Locale.ROOT)
-            date_tv.text = ft.format(event.date)
+
+        val now = System.currentTimeMillis()
+        if ((now - event.date.time) < DateUtils.HOUR_IN_MILLIS) {
+            date_tv.text = DateUtils.getRelativeTimeSpanString(event.date.time, now, DateUtils.MINUTE_IN_MILLIS)
+        } else if (DateUtils.isToday(event.date.time)) {
+            val tf = DateFormat.getTimeInstance(DateFormat.SHORT)
+            date_tv.text = tf.format(event.date)
         } else {
-            val ft = SimpleDateFormat("yyyy.MM.dd 'at' hh:mm", Locale.ROOT)
-            date_tv.text = ft.format(event.date)
+            val df = DateFormat.getDateInstance(DateFormat.SHORT)
+            date_tv.text = df.format(event.date)
         }
 
         val type_iv = view.findViewById<ImageView>(R.id.call_type)

@@ -84,11 +84,13 @@ internal object AddressUtils
     private val DOMAIN_PATTERN = Pattern.compile("^([\\w]{2,63}[.]){1,6}[\\w]{2,63}$")
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
 
-    // check if a string is an IP address (heuristic)
-    fun isIPAddress(address: String): Boolean {
-        return (IPV4_PATTERN.matcher(address).matches()
-                || IPV6_STD_PATTERN.matcher(address).matches()
-                || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches())
+    fun isIPv4Address(address: String): Boolean {
+        return IPV4_PATTERN.matcher(address).matches()
+    }
+
+    fun isIPv6Address(address: String): Boolean {
+        return IPV6_STD_PATTERN.matcher(address).matches()
+                || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches()
     }
 
     fun isMACAddress(address: String): Boolean {
@@ -97,6 +99,13 @@ internal object AddressUtils
 
     fun isDomain(address: String): Boolean {
         return DOMAIN_PATTERN.matcher(address).matches()
+    }
+
+    fun isAddress(address: String): Boolean {
+        return isIPv6Address(address)
+            || isIPv4Address(address)
+            || isMACAddress(address)
+            || isDomain(address)
     }
 
     fun collectAddresses(): List<AddressEntry> {
@@ -278,7 +287,7 @@ internal object AddressUtils
                     if (lookup_mac.equals(
                             mac,
                             ignoreCase = true
-                        ) && isIPAddress(address) && !state.equals("failed", ignoreCase = true)
+                        ) && isIPv4Address(address) && !state.equals("failed", ignoreCase = true)
                     ) {
                         if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
                             addresses.add(InetSocketAddress("$address%$device", port))
@@ -297,7 +306,7 @@ internal object AddressUtils
                     if (mac.equals(
                             lookup_mac,
                             ignoreCase = true
-                        ) && isIPAddress(address) && !state.equals("failed", ignoreCase = true)
+                        ) && isIPv6Address(address) && !state.equals("failed", ignoreCase = true)
                     ) {
                         if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
                             addresses.add(InetSocketAddress("$address%$device", port))

@@ -61,6 +61,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(refreshContactListReceiver, IntentFilter("refresh_contact_list"))
 
+        refreshContactListBroadcast()
+
         return view
     }
 

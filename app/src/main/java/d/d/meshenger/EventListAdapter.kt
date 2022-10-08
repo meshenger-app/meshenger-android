@@ -8,13 +8,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import d.d.meshenger.Event
 import java.lang.Math
-import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 internal class EventListAdapter(
     private val ctx: Context,

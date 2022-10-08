@@ -85,16 +85,14 @@ internal object Utils {
         return Arrays.asList(*parts)
     }
 
-    private val NAME_PATTERN = Pattern.compile("[\\w _-]{1,24}")
+    private val NAME_PATTERN = Pattern.compile("[\\w][\\w _-]{1,22}[\\w]")
 
     // check for a name that has no funny unicode characters to not let them look to much like other names
     fun isValidName(name: String?): Boolean {
         if (name == null || name.length == 0) {
             return false
         }
-        return if (name != name.trim { it <= ' ' }) {
-            false
-        } else NAME_PATTERN.matcher(name).matches()
+        return NAME_PATTERN.matcher(name).matches()
     }
 
     private val hexArray = "0123456789ABCDEF".toCharArray()

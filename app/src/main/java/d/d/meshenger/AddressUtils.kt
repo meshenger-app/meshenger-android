@@ -16,7 +16,7 @@ internal object AddressUtils
         for (b in mac) {
             sb.append(String.format("%02X:", b))
         }
-        if (sb.length > 0) {
+        if (sb.isNotEmpty()) {
             sb.deleteCharAt(sb.length - 1)
         }
         return sb.toString()
@@ -47,7 +47,11 @@ internal object AddressUtils
         // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
         return (mac != null
                 && mac.size == 6
-                && mac[1].toInt() != 0x0 && mac[2].toInt() != 0x0 && mac[3].toInt() != 0x0 && mac[4].toInt() != 0x0 && mac[5].toInt() != 0x0)
+                && mac[1].toInt() != 0x0
+                && mac[2].toInt() != 0x0
+                && mac[3].toInt() != 0x0
+                && mac[4].toInt() != 0x0
+                && mac[5].toInt() != 0x0)
     }
 
     private fun isHexChar(c: Char): Boolean {

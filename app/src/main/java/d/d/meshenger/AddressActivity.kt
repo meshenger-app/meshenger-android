@@ -209,7 +209,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
                     }
 
                     if (info.isNotEmpty()) {
-                        label.text = "${ae.address} (${Utils.join(info)})"
+                        label.text = "${ae.address} (${info.joinToString()})"
                     } else {
                         label.text = "${ae.address}"
                     }

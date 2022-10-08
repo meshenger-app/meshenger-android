@@ -87,7 +87,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
 
         val addresses = settings.addresses
         (findViewById<View>(R.id.addressTv) as TextView).text =
-            if (addresses.size == 0) getString(R.string.none) else Utils.join(addresses)
+            if (addresses.size == 0) getString(R.string.none) else addresses.joinToString()
 
         val password = binder!!.getService().database_password
         (findViewById<View>(R.id.passwordTv) as TextView).text =
@@ -95,7 +95,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
 
         val iceServers = settings.iceServers
         (findViewById<View>(R.id.iceServersTv) as TextView).text =
-            if (iceServers.isEmpty()) getString(R.string.none) else Utils.join(iceServers)
+            if (iceServers.isEmpty()) getString(R.string.none) else iceServers.joinToString()
 
         val blockUnknown = settings.blockUnknown
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
@@ -290,7 +290,7 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
         val iceServersTextView = dialog.findViewById<TextView>(R.id.iceServersEditText)
         val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
-        iceServersTextView.text = Utils.join(settings.iceServers)
+        iceServersTextView.text = settings.iceServers.joinToString()
         saveButton.setOnClickListener {
             val iceServers = ArrayList<String>()
             Utils.split(iceServersTextView.text.toString()).let {

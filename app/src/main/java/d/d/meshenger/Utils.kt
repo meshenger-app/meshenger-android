@@ -76,13 +76,8 @@ internal object Utils {
         return ""
     }
 
-    fun join(list: List<String?>?): String {
-        return TextUtils.join(", ", list!!)
-    }
-
     fun split(str: String): List<String> {
-        val parts = str.split("\\s*,\\s*").toTypedArray()
-        return Arrays.asList(*parts)
+        return str.split("\\s*,\\s*")
     }
 
     private val NAME_PATTERN = Pattern.compile("[\\w][\\w _-]{1,22}[\\w]")

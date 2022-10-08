@@ -17,15 +17,15 @@ class Event(
 
     fun createUnknownContact(name: String): Contact {
         val addresses = mutableListOf<String>()
-        if (address != null && !address.isUnresolved) {
+        if (address != null && address.address != null) {
             // extract MAC address if possible
             val mac = AddressUtils.extractMacAddress(address.address)
             if (mac != null && mac.size == 6) {
                 addresses.add(
-                    "%02X:%02X:%02X:%02X:%02X:".format(mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
+                    "%02X:%02X:%02X:%02X:%02X:%02X".format(mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
                 )
             } else {
-                addresses.add(address.toString())
+                addresses.add(address.address.toString())
             }
         }
         return Contact(name, publicKey, addresses)
@@ -88,7 +88,7 @@ class Event(
         fun toJSON(event: Event): JSONObject {
             val obj = JSONObject()
             obj.put("public_key", Utils.byteArrayToHexString(event.publicKey))
-            obj.put("address", event.address.toString())
+            obj.put("address", AddressUtils.inetSocketAddressToString(event.address))
             obj.put("type", eventTypeToString(event.type))
             obj.put("date", event.date.time.toString())
             return obj
@@ -97,7 +97,7 @@ class Event(
         @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject): Event {
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
-            val address = InetSocketAddress.createUnresolved(obj.getString("address"), MainService.serverPort)
+            val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"), MainService.serverPort.toUShort())
             val type = eventTypeFromString(obj.getString("type"))
             val date = Date(obj.getString("date").toLong(10))
             return Event(publicKey, address, type, date)

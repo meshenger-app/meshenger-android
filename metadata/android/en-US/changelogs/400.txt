@@ -1,0 +1,4 @@
+* translate code to Kotlin
+* receive calls in background
+* improved address handling
+* use Android targetSdkVersion 32

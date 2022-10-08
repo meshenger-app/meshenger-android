@@ -8,31 +8,6 @@ import kotlin.experimental.xor
 
 internal object AddressUtils
 {
-    fun parseInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {
-        if (address == null || address.isEmpty()) {
-            return null
-        }
-        var addr = address
-        val firstColon = addr.indexOf(':')
-        val lastColon = addr.lastIndexOf(':')
-        var port = -1
-        return try {
-            // parse port suffix
-            if (firstColon > 0 && lastColon > 0) {
-                if (addr[lastColon - 1] == ']' || firstColon == lastColon) {
-                    port = addr.substring(lastColon + 1).toInt()
-                    addr = addr.substring(0, lastColon)
-                }
-            }
-            if (port < 0) {
-                port = defaultPort
-            }
-            InetSocketAddress.createUnresolved(addr, port)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     private fun bytesToMacAddress(mac: ByteArray): String {
         val sb = StringBuilder()
         for (b in mac) {
@@ -106,6 +81,64 @@ internal object AddressUtils
             || isIPv4Address(address)
             || isMACAddress(address)
             || isDomain(address)
+    }
+
+    fun stringToInetSocketAddress(addr: String?, default_port: UShort): InetSocketAddress? {
+        if (addr == null || addr.isEmpty()) {
+            return null
+        } else if (addr.startsWith("[")) {
+            val end = addr.lastIndexOf("]:")
+            if (end > 0) {
+                // [<address>]:<port>
+                val addr_part = addr.substring(1, end)
+                val port_part = addr.substring(end + 2)
+                val port = port_part.toUShortOrNull()
+                if (port != null && isAddress(addr_part)) {
+                    return InetSocketAddress.createUnresolved(addr_part, port.toInt())
+                }
+            }
+        } else {
+            if (addr.count { it == ':' } == 1) {
+                //<hostname>:<port>
+                //<ipv4-address>:<port>
+                val end = addr.indexOf(":")
+                val addr_part = addr.substring(0, end)
+                val port_part = addr.substring(end + 1)
+                val port = port_part.toUShortOrNull()
+                if (port != null && isAddress(addr_part)) {
+                    return InetSocketAddress.createUnresolved(addr_part, port.toInt())
+                }
+            } else if (isAddress(addr)) {
+                //<hostname>
+                //<ipv4-address>
+                return InetSocketAddress.createUnresolved(addr, default_port.toInt())
+            }
+        }
+        return null
+    }
+
+    fun inetSocketAddressToString(saddr: InetSocketAddress?): String? {
+        if (saddr == null) {
+            return null
+        }
+        val addr = saddr.address
+        val port = saddr.port
+        if (port !in 0..65535) {
+            return null
+        } else if (addr == null) {
+            val host = saddr.hostString.trimStart('/')
+            if (AddressUtils.isAddress(host)) {
+                return "$host:$port"
+            } else {
+                return null
+            }
+        } else if (addr is Inet6Address) {
+            val str = addr.toString().trimStart('/')
+            return "[$str]:$port"
+        } else {
+            val str = addr.toString().trimStart('/')
+            return "$str:$port"
+        }
     }
 
     fun collectAddresses(): List<AddressEntry> {

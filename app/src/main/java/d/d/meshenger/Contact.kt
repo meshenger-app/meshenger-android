@@ -41,7 +41,7 @@ class Contact(
                 if (AddressUtils.isMACAddress(address)) {
                     socketAddresses.addAll(AddressUtils.getOwnAddressesWithMAC(address, MainService.serverPort))
                 } else {
-                    val socketAddress = AddressUtils.parseInetSocketAddress(address, MainService.serverPort)
+                    val socketAddress = AddressUtils.stringToInetSocketAddress(address, MainService.serverPort.toUShort())
                     if (socketAddress != null) {
                         socketAddresses.add(socketAddress)
                     }

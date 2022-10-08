@@ -117,7 +117,7 @@ class Contact(
                 array.put(address)
             }
             obj.put("addresses", array)
-            if (all) {
+            if (all && contact.blocked) {
                 obj.put("blocked", contact.blocked)
             }
             return obj
@@ -153,7 +153,7 @@ class Contact(
             }
 
             val blocked = if (all) {
-                obj.getBoolean("blocked")
+                obj.optBoolean("blocked", false)
             } else false
 
             return Contact(name, publicKey, addresses.toList(), blocked)

@@ -58,7 +58,7 @@ internal object AddressUtils
         return c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F'
     }
 
-    private val DOMAIN_PATTERN = Pattern.compile("^([\\w]{2,63}[.]){1,6}[\\w]{2,63}$")
+    private val DOMAIN_PATTERN = Pattern.compile("^([a-z0-9\\-_]{1,63}[.]){1,40}[a-z]{2,}$")
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
     private val DEVICE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{1,8}$")
 

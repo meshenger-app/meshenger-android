@@ -377,6 +377,8 @@ class MainService : Service(), Runnable {
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(this@MainService)
+                .sendBroadcast(Intent("refresh_event_list"))
         }
 
         fun deleteContact(pubKey: ByteArray) {
@@ -384,6 +386,8 @@ class MainService : Service(), Runnable {
             saveDatabase()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(this@MainService)
+                .sendBroadcast(Intent("refresh_event_list"))
         }
 
         fun shutdown() {
@@ -488,8 +492,9 @@ class MainService : Service(), Runnable {
                     e.printStackTrace()
                 }
             }
-            Log.d(this, "send refresh_contact_list")
+
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_event_list"))
         }
 
     }

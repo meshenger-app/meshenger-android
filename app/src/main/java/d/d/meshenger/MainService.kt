@@ -372,24 +372,6 @@ class MainService : Service(), Runnable {
             return currentCall
         }
 
-        fun getContactByPublicKey(publicKey: ByteArray?): Contact? {
-            for (contact in database!!.contacts.contactList) {
-                if (contact.publicKey.contentEquals(publicKey)) {
-                    return contact
-                }
-            }
-            return null
-        }
-
-        fun getContactByName(name: String): Contact? {
-            for (contact in database!!.contacts.contactList) {
-                if (contact.name == name) {
-                    return contact
-                }
-            }
-            return null
-        }
-
         fun addContact(contact: Contact) {
             database!!.contacts.addContact(contact)
             saveDatabase()

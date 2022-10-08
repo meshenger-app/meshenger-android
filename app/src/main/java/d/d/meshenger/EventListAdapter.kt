@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import d.d.meshenger.Event
+import java.lang.Math
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.text.DateFormat
@@ -60,7 +61,7 @@ internal class EventListAdapter(
         val date_tv = view.findViewById<TextView>(R.id.call_date)
 
         val now = System.currentTimeMillis()
-        if ((now - event.date.time) < DateUtils.HOUR_IN_MILLIS) {
+        if (Math.abs(now - event.date.time) < DateUtils.HOUR_IN_MILLIS) {
             date_tv.text = DateUtils.getRelativeTimeSpanString(event.date.time, now, DateUtils.MINUTE_IN_MILLIS)
         } else if (DateUtils.isToday(event.date.time)) {
             val tf = DateFormat.getTimeInstance(DateFormat.SHORT)

@@ -378,8 +378,8 @@ class SettingsActivity : MeshengerActivity(), ServiceConnection {
             override fun onItemSelected(parent: AdapterView<*>?, view: View, pos: Int, id: Long) {
                 if (check++ > 0) {
                     val selectedValues = resources.obtainTypedArray(entryValuesId)
-                    val settingsMode = selectedValues.getString(pos)
-                    callback.call(settingsMode)
+                    val settingsModeValue = selectedValues.getString(pos)
+                    callback.call(settingsModeValue)
                 }
             }
 

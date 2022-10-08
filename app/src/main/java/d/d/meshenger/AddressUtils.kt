@@ -1,5 +1,8 @@
 package d.d.meshenger
 
+import android.net.InetAddresses
+import android.os.Build
+import android.util.Patterns
 import java.io.*
 import java.net.*
 import java.util.*
@@ -51,21 +54,33 @@ internal object AddressUtils
         return c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F'
     }
 
-    private val IPV4_PATTERN =
-        Pattern.compile("^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$")
-    private val IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
-    private val IPV6_HEX_COMPRESSED_PATTERN =
-        Pattern.compile("^((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)::((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)$")
     private val DOMAIN_PATTERN = Pattern.compile("^([\\w]{2,63}[.]){1,6}[\\w]{2,63}$")
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
+    private val DEVICE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{1,8}$")
 
-    fun isIPv4Address(address: String): Boolean {
-        return IPV4_PATTERN.matcher(address).matches()
-    }
+    fun isIPAddress(address: String): Boolean {
+        val pc = address.indexOf('%')
+        val addressPart = if (pc != -1) {
+            address.substring(0, pc)
+        } else {
+            address
+        }
+        val devicePart = if (pc != -1) {
+            address.substring(pc + 1)
+        } else {
+            null
+        }
 
-    fun isIPv6Address(address: String): Boolean {
-        return IPV6_STD_PATTERN.matcher(address).matches()
-                || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches()
+        if (devicePart != null && !DEVICE_PATTERN.matcher(devicePart).matches()) {
+            return false
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return InetAddresses.isNumericAddress(addressPart)
+        } else {
+            @Suppress("DEPRECATION")
+            return Patterns.IP_ADDRESS.matcher(addressPart).matches()
+        }
     }
 
     fun isMACAddress(address: String): Boolean {
@@ -77,8 +92,7 @@ internal object AddressUtils
     }
 
     fun isAddress(address: String): Boolean {
-        return isIPv6Address(address)
-            || isIPv4Address(address)
+        return isIPAddress(address)
             || isMACAddress(address)
             || isDomain(address)
     }
@@ -320,7 +334,7 @@ internal object AddressUtils
                     if (lookup_mac.equals(
                             mac,
                             ignoreCase = true
-                        ) && isIPv4Address(address) && !state.equals("failed", ignoreCase = true)
+                        ) && isIPAddress(address) && !state.equals("failed", ignoreCase = true)
                     ) {
                         if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
                             addresses.add(InetSocketAddress("$address%$device", port))
@@ -339,7 +353,7 @@ internal object AddressUtils
                     if (mac.equals(
                             lookup_mac,
                             ignoreCase = true
-                        ) && isIPv6Address(address) && !state.equals("failed", ignoreCase = true)
+                        ) && isIPAddress(address) && !state.equals("failed", ignoreCase = true)
                     ) {
                         if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
                             addresses.add(InetSocketAddress("$address%$device", port))

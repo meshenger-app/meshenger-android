@@ -73,7 +73,7 @@ class AddressActivity : MeshengerActivity(), ServiceConnection {
 
         addButton.setOnClickListener {
             var address = customAddressTextEdit.text?.toString() ?: return@setOnClickListener
-            if (AddressUtils.isIPv4Address(address) || AddressUtils.isIPv6Address(address) || AddressUtils.isDomain(address)) {
+            if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                 address = address.lowercase(Locale.ROOT)
             } else if (AddressUtils.isMACAddress(address)) {
                 address = address.uppercase(Locale.ROOT)

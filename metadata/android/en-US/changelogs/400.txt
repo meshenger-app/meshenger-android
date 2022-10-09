@@ -2,3 +2,8 @@
 * receive calls in background
 * improved address handling
 * use Android targetSdkVersion 32
+* translations (now partial)
+  * Brazilian Portuguese by mezysinc
+  * Russian by ferhadnecef
+  * Spanish by wuniversales
+  * Chinese by unknown

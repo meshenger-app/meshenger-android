@@ -17,15 +17,18 @@ class Event(
 
     fun createUnknownContact(name: String): Contact {
         val addresses = mutableListOf<String>()
-        if (address != null && address.address != null) {
+        val address = address?.address
+        if (address != null) {
             // extract MAC address if possible
-            val mac = AddressUtils.extractMacAddress(address.address)
+            val mac = AddressUtils.extractMacAddress(address)
             if (mac != null && mac.size == 6) {
                 addresses.add(
-                    "%02X:%02X:%02X:%02X:%02X:%02X".format(mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
+                    "%02X:%02X:%02X:%02X:%02X:%02X".format(
+                        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]
+                    )
                 )
             } else {
-                addresses.add(address.address.toString())
+                addresses.add(address.toString())
             }
         }
         return Contact(name, publicKey, addresses)

@@ -5,7 +5,6 @@ android {
     }
     compileSdkVersion 32
     defaultConfig {
-        applicationId "d.d.meshenger"
         minSdkVersion 19
         targetSdkVersion 32
         versionCode 400
@@ -25,6 +24,17 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "store"
+
+    productFlavors {
+        google {
+            applicationId 'app.meshenger'
+        }
+        fdroid {
+            applicationId 'd.d.meshenger'
+        }
     }
 }
 

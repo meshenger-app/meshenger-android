@@ -12,6 +12,7 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
+        resConfigs "en", "es", "fr", "pt-rBR", "ru", "zh"
     }
 //    ndkVersion '22.0.7026061'
     ndkVersion '21.0.6113669'

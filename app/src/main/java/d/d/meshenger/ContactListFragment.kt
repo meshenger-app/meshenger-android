@@ -187,8 +187,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         }
     }
 
-    private fun showContactEditDialog(publicKey: ByteArray, name: String) {
-        Log.d(this, "showContactEditDialog")
+    private fun showRenameDialog(publicKey: ByteArray, name: String) {
+        Log.d(this, "showRenameDialog")
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
         val contact = binder.getContacts().getContactByPublicKey(publicKey) ?: return
@@ -271,7 +271,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
             if (title == delete) {
                 showDeleteDialog(publicKey, contact.name)
             } else if (title == rename) {
-                showContactEditDialog(publicKey, contact.name)
+                showRenameDialog(publicKey, contact.name)
             } else if (title == share) {
                 shareContact(contact)
             } else if (title == block) {

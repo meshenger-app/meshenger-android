@@ -3,6 +3,7 @@
 * improved address handling
 * use Android targetSdkVersion 32
 * translations (now partial)
+  * French by ButterflyOfFire
   * Brazilian Portuguese by mezysinc
   * Russian by ferhadnecef
   * Spanish by wuniversales

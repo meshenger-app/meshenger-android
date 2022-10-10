@@ -6,12 +6,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.*
-import java.lang.Integer.min
-import java.util.*
 import java.util.regex.Pattern
 
 internal object Utils {

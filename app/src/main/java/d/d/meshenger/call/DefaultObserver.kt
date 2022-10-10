@@ -1,15 +1,12 @@
 package d.d.meshenger
 
-import org.webrtc.PeerConnection
-import org.webrtc.PeerConnection.SignalingState
-import org.webrtc.PeerConnection.IceConnectionState
-import org.webrtc.PeerConnection.IceGatheringState
+import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
-import org.webrtc.DataChannel
+import org.webrtc.PeerConnection.*
 import org.webrtc.RtpReceiver
 
-internal open class DefaultObserver : PeerConnection.Observer {
+internal open class DefaultObserver : Observer {
     override fun onSignalingChange(signalingState: SignalingState) {}
     override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {}
     override fun onIceConnectionReceivingChange(b: Boolean) {}

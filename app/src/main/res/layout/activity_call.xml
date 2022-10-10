@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,18 +10,35 @@
         android:layout_height="match_parent">
 
         <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/localRenderer"
+            android:layout_width="150dp"
+            android:layout_height="195dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="80dp"
+            android:layout_marginRight="5dp"
+            android:visibility="gone" />
+
+        <org.webrtc.SurfaceViewRenderer
             android:id="@+id/remoteRenderer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/backgroundCardColor" />
 
-        <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/localRenderer"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
+        <TextView
+            android:id="@+id/callStats"
+            android:layout_width="220dp"
+            android:layout_height="195dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:visibility="gone" />
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="80dp"
+            android:alpha="0.6"
+            android:background="@color/colorBackgroundDark"
+            android:lines="10"
+            android:text=""
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +51,7 @@
                 android:id="@+id/callName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/unknown_caller"
+                android:text="CallerName"
                 android:textColor="?attr/primaryTextColor"
                 android:textSize="30sp" />
 
@@ -50,25 +66,23 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/callOptions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="30dp">
+            android:paddingBottom="10dp">
 
             <ImageButton
                 android:id="@+id/callAccept"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginEnd="80dp"
+                android:layout_marginEnd="30dp"
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:contentDescription="Call Accept"
-
                 android:src="@drawable/baseline_phone_black_48"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:contentDescription="accept call"/>
 
             <ImageButton
                 android:id="@+id/callDecline"
@@ -77,15 +91,14 @@
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:contentDescription="Call Decline"
-                android:src="@drawable/baseline_phone_missed_black_48" />
+                android:src="@drawable/baseline_phone_missed_black_48"
+                android:contentDescription="decline call" />
 
             <RelativeLayout
+                android:id="@+id/videoStreamSwitchLayout"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_toRightOf="@id/callDecline"
-                android:layout_marginLeft="40dp"
-                android:id="@+id/videoStreamSwitchLayout"
+                android:layout_marginStart="30dp"
                 android:visibility="gone">
 
                 <ImageButton
@@ -95,26 +108,35 @@
                     android:background="@drawable/accept_button_round"
                     android:padding="@dimen/call_button_image_padding"
                     android:scaleType="fitXY"
-                    android:src="@drawable/baseline_camera_alt_black_48" />
+                    android:src="@drawable/baseline_camera_alt_black_48"
+                    android:contentDescription="switch camera on"/>
 
             </RelativeLayout>
-
 
             <ImageButton
                 android:id="@+id/frontFacingSwitch"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginLeft="40dp"
-                android:layout_toRightOf="@id/videoStreamSwitch"
+                android:layout_marginStart="30dp"
                 android:background="@drawable/accept_button_round"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/baseline_switch_camera_black_48"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:contentDescription="change camera"/>
 
-
+            <ImageButton
+                android:id="@+id/speakerMode"
+                android:layout_width="@dimen/call_button_size"
+                android:layout_height="@dimen/call_button_size"
+                android:layout_marginStart="30dp"
+                android:alpha="0.6"
+                android:background="@drawable/accept_button_round"
+                android:padding="@dimen/call_button_image_padding"
+                android:scaleType="fitXY"
+                android:src="@android:drawable/ic_lock_silent_mode_off"
+                android:visibility="gone"
+                android:contentDescription="speaker on" />
         </LinearLayout>
-
     </RelativeLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

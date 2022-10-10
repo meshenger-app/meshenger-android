@@ -519,7 +519,7 @@ class RTCCall : DataChannel.Observer {
         )
     }
 
-    fun accept(listener: OnStateChangeListener?) {
+    fun setOnStateChangeListener(listener: OnStateChangeListener?) {
         this.listener = listener
         Thread {
             val rtcConfig = RTCConfiguration(emptyList())

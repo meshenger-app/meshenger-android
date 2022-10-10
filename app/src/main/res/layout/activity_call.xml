@@ -10,9 +10,9 @@
         android:layout_height="match_parent">
 
         <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/localRenderer"
+            android:id="@+id/pip_video_view"
             android:layout_width="150dp"
-            android:layout_height="195dp"
+            android:layout_height="144dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_gravity="center"
@@ -21,7 +21,7 @@
             android:visibility="gone" />
 
         <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/remoteRenderer"
+            android:id="@+id/fullscreen_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/backgroundCardColor" />

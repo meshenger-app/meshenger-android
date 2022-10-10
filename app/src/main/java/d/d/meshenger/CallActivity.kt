@@ -156,8 +156,8 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                         contact!!,
                         activeCallback
                     )
-                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
-                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
+                    currentCall.setRemoteRenderer(findViewById(R.id.fullscreen_video_view))
+                    currentCall.setLocalRenderer(findViewById(R.id.pip_video_view))
                     currentCall.setVideoStreamSwitchLayout(findViewById(R.id.videoStreamSwitchLayout))
                 }
 
@@ -224,10 +224,10 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                 stopRinging()
                 Log.d(this, "accepted call...")
                 try {
-                    currentCall.setRemoteRenderer(findViewById(R.id.remoteRenderer))
-                    currentCall.setLocalRenderer(findViewById(R.id.localRenderer))
+                    currentCall.setRemoteRenderer(findViewById(R.id.fullscreen_video_view))
+                    currentCall.setLocalRenderer(findViewById(R.id.pip_video_view))
                     currentCall.setVideoStreamSwitchLayout(findViewById(R.id.videoStreamSwitchLayout))
-                    currentCall.accept(passiveCallback)
+                    currentCall.setOnStateChangeListener(passiveCallback)
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()
                     }

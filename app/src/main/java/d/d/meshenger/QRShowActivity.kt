@@ -12,7 +12,7 @@ import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import d.d.meshenger.MainService.MainBinder
 
-class QRShowActivity : MeshengerActivity(), ServiceConnection {
+class QRShowActivity : BaseActivity(), ServiceConnection {
     private var extra_contact: Contact? = null
     private var binder: MainBinder? = null
 

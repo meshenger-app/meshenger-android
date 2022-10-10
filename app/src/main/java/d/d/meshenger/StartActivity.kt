@@ -27,7 +27,7 @@ import java.util.*
  * Show splash screen, name setup dialog, database password dialog and
  * start background service before starting the MainActivity.
  */
-class StartActivity : MeshengerActivity(), ServiceConnection {
+class StartActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null
     private var dialog : Dialog? = null
     private var startState = 0

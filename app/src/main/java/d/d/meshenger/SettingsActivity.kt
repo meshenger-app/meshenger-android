@@ -19,7 +19,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import d.d.meshenger.MainService.MainBinder
 import java.util.*
 
-class SettingsActivity : MeshengerActivity(), ServiceConnection {
+class SettingsActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -3,7 +3,6 @@ package d.d.meshenger
 import d.d.meshenger.Utils
 import d.d.meshenger.Contact
 import d.d.meshenger.Log
-import d.d.meshenger.MeshengerActivity
 import d.d.meshenger.MainService
 import d.d.meshenger.QRShowActivity
 import d.d.meshenger.R
@@ -31,7 +30,7 @@ import android.view.View
 import android.widget.Button
 import org.json.JSONException
 
-class QRScanActivity : MeshengerActivity(), BarcodeCallback, ServiceConnection {
+class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     private lateinit var barcodeView: DecoratedBarcodeView
     private var binder: MainService.MainBinder? = null
 

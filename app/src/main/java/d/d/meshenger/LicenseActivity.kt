@@ -1,6 +1,5 @@
 package d.d.meshenger
 
-import d.d.meshenger.MeshengerActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -11,7 +10,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-class LicenseActivity : MeshengerActivity() {
+class LicenseActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_license)

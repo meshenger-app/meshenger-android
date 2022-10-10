@@ -6,7 +6,7 @@ import android.content.Intent
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 
-class AboutActivity : MeshengerActivity() {
+class AboutActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)

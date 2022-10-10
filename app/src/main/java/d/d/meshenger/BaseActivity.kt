@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 /*
  * Activity base class to apply night mode
 */
-open class MeshengerActivity : AppCompatActivity() {
+open class BaseActivity : AppCompatActivity() {
     var dark_active = false
 
     override fun onCreate(savedInstanceState: Bundle?) {

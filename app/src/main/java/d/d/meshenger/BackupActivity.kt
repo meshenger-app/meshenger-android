@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import java.lang.Exception
 
-class BackupActivity : MeshengerActivity(), ServiceConnection {
+class BackupActivity : BaseActivity(), ServiceConnection {
     private var dialog: AlertDialog? = null
     private var binder: MainBinder? = null
     private lateinit var exportButton: Button

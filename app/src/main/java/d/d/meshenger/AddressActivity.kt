@@ -18,7 +18,7 @@ import d.d.meshenger.MainService.MainBinder
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AddressActivity : MeshengerActivity(), ServiceConnection {
+class AddressActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null
     private lateinit var addressListView: ListView
     private lateinit var customAddressTextEdit: EditText

@@ -27,7 +27,7 @@ import org.webrtc.RTCStatsReport
 import java.io.IOException
 
 
-class CallActivity : MeshengerActivity(), ServiceConnection, SensorEventListener {
+class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
     private val CAMERA_PERMISSION_REQUEST_CODE = 2
     private var statusTextView: TextView? = null

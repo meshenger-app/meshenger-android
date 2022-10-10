@@ -26,7 +26,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import d.d.meshenger.MainService.MainBinder
 
 // the main view with tabs
-class MainActivity : MeshengerActivity(), ServiceConnection {
+class MainActivity : BaseActivity(), ServiceConnection {
     internal var binder: MainBinder? = null
     private lateinit var viewPager: ViewPager2
 

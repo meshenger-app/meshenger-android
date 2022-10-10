@@ -15,6 +15,11 @@ import java.util.*
 import java.util.regex.Pattern
 
 internal object Utils {
+    fun getThreadInfo(): String {
+        val thread =  Thread.currentThread()
+        return "@[name=${thread.name}, id=${thread.id}]"
+    }
+
     fun hasReadPermission(activity: Activity): Boolean {
         return ContextCompat.checkSelfPermission(
             activity, Manifest.permission.READ_EXTERNAL_STORAGE

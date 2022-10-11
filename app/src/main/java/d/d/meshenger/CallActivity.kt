@@ -84,7 +84,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                 Handler(mainLooper).post {
                     setCallStats(showCallStats)
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
-                    findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
+                    //findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
                 }
                 setStatusText(getString(R.string.call_connected))
             }
@@ -115,7 +115,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                 runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
                 Handler(mainLooper).post {
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
-                    findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
+                    //findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
                     setCallStats(showCallStats)
                 }
             }

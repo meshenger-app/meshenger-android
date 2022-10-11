@@ -91,6 +91,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         LocalBroadcastManager.getInstance(requireActivity().applicationContext).sendBroadcast(Intent("refresh_event_list"))
     }
 
+    // only available for known contacts
     private fun setBlocked(event: Event, blocked: Boolean) {
         val activity = requireActivity() as MainActivity
         val binder = activity.binder ?: return
@@ -100,10 +101,11 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
             contact.blocked = blocked
             binder.saveDatabase()
         } else {
-            // unknown contact
+            // ignore - not expected to happen
         }
     }
 
+    // only available for unknown contacts
     private fun showAddDialog(event: Event) {
         Log.d(this, "showAddDialog")
         val activity = requireActivity() as MainActivity
@@ -197,6 +199,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
             return
         }
 
+        // start call
         val intent = Intent(activity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

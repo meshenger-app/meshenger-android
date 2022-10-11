@@ -169,7 +169,7 @@ class RTCCall : DataChannel.Observer {
                             }
                             val remote_address =
                                 commSocket!!.remoteSocketAddress as InetSocketAddress
-                            //val ip = remote_address.address.hostAddress
+
                             Log.d(this, "outgoing call from remote address: $remote_address")
 
                             // remember latest working address
@@ -386,9 +386,11 @@ class RTCCall : DataChannel.Observer {
                 e.printStackTrace()
             }
         }
+
         if (remoteRenderer != null) {
             remoteRenderer!!.release()
         }
+
         if (localRenderer != null) {
             localRenderer!!.release()
         }
@@ -460,6 +462,7 @@ class RTCCall : DataChannel.Observer {
             }
             return null
         }
+
     private val audioTrack: AudioTrack
         get() = factory.createAudioTrack(
             "audio1",
@@ -472,6 +475,7 @@ class RTCCall : DataChannel.Observer {
                 .setEnableInternalTracer(true)
                 .createInitializationOptions()
         )
+
         val videoCodecHwAcceleration = true
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
@@ -540,9 +544,7 @@ class RTCCall : DataChannel.Observer {
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
 
             connection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
-
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
-
                     super.onIceGatheringChange(iceGatheringState)
 
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
@@ -594,7 +596,9 @@ class RTCCall : DataChannel.Observer {
                     Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
                 }
             })!!
+
             addTrack()
+
             Log.d(this, "setting remote description")
             connection.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {

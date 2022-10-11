@@ -106,6 +106,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             else -> {}
         }
     }
+
     private val passiveCallback = OnStateChangeListener { callState: CallState? ->
         when (callState) {
             CallState.CONNECTED -> {
@@ -192,7 +193,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             calledWhileScreenOff = !(getSystemService(POWER_SERVICE) as PowerManager).isScreenOn
             passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
                 PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
-                "cuplink:wakeup"
+                "meshenger:wakeup"
             )
             passiveWakeLock.acquire(10000)
             connection = this
@@ -259,7 +260,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View ->
             switchVideoEnabled(button as ImageButton)
         }
-        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { button: View? -> currentCall.switchFrontFacing() }
+        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { currentCall.switchFrontFacing() }
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
     }
@@ -311,6 +312,8 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private fun chooseVoiceMode(button: ImageButton) {
         val audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
         currentCall.isSpeakerEnabled = !currentCall.isSpeakerEnabled
+        Log.d(this, "chooseVoiceMode: ${currentCall.isSpeakerEnabled}")
+
         if (currentCall.isSpeakerEnabled) {
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             audioManager.isSpeakerphoneOn = true
@@ -366,6 +369,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                 // nothing to do
             }
         })
+
         val frontSwitch = findViewById<View>(R.id.frontFacingSwitch)
         if (currentCall.isVideoEnabled) {
             frontSwitch.visibility = View.VISIBLE
@@ -449,7 +453,6 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             permissionRequested = false
             return
         }
-        //finish();
     }
 
     override fun onDestroy() {
@@ -462,9 +465,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         }
         currentCall.cleanup()
         binder.getEvents().addEvent(contact!!, callEventType)
-        //if (binder != null) {
+
         unbindService(connection)
-        //}
+
         wakeLock?.release()
         if (currentCall.commSocket != null && currentCall.commSocket!!.isConnected && !currentCall.commSocket!!.isClosed) {
             try {

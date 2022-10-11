@@ -60,30 +60,38 @@ internal object AddressUtils
 
     private val DOMAIN_PATTERN = Pattern.compile("^([a-z0-9\\-_]{1,63}[.]){1,40}[a-z]{2,}$")
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
+
     private val DEVICE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{1,8}$")
+    private val IPV6_STD_PATTERN = Pattern.compile("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
+    private val IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)::((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)$")
 
     fun isIPAddress(address: String): Boolean {
-        val pc = address.indexOf('%')
-        val addressPart = if (pc != -1) {
-            address.substring(0, pc)
-        } else {
-            address
-        }
-        val devicePart = if (pc != -1) {
-            address.substring(pc + 1)
-        } else {
-            null
-        }
-
-        if (devicePart != null && !DEVICE_PATTERN.matcher(devicePart).matches()) {
-            return false
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return InetAddresses.isNumericAddress(addressPart)
+            return InetAddresses.isNumericAddress(address)
         } else {
+            // lots of work to support for older SDKs
+            val pc = address.indexOf('%')
+
+            val addressPart = if (pc != -1) {
+                address.substring(0, pc)
+            } else {
+                address
+            }
+
+            val devicePart = if (pc != -1) {
+                address.substring(pc + 1)
+            } else {
+                null
+            }
+
+            if (devicePart != null && !DEVICE_PATTERN.matcher(devicePart).matches()) {
+                return false
+            }
+
             @Suppress("DEPRECATION")
-            return Patterns.IP_ADDRESS.matcher(addressPart).matches()
+            return IPV6_STD_PATTERN.matcher(addressPart).matches()
+                 || IPV6_HEX_COMPRESSED_PATTERN.matcher(addressPart).matches()
+                 || Patterns.IP_ADDRESS.matcher(addressPart).matches()
         }
     }
 

@@ -9,9 +9,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.MaterialColors
 import d.d.meshenger.*
-import d.d.meshenger.Crypto
-import d.d.meshenger.PacketReader
-import d.d.meshenger.PacketWriter
+import d.d.meshenger.R
 import org.json.JSONException
 import org.json.JSONObject
 import org.libsodium.jni.Sodium

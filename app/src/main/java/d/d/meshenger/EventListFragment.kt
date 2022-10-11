@@ -51,6 +51,8 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))
 
+        refreshEventListBroadcast()
+
         return view
     }
 
@@ -83,6 +85,10 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
             eventListAdapter.notifyDataSetChanged()
             eventListView.adapter = eventListAdapter
         }
+    }
+
+    private fun refreshEventListBroadcast() {
+        LocalBroadcastManager.getInstance(requireActivity().applicationContext).sendBroadcast(Intent("refresh_event_list"))
     }
 
     private fun setBlocked(event: Event, blocked: Boolean) {

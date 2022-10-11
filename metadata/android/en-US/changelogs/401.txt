@@ -1,0 +1,1 @@
+* show own video in small window

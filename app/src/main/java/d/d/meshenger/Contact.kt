@@ -132,7 +132,7 @@ class Contact(
 
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
             if ((publicKey == null) || (publicKey.size != Sodium.crypto_sign_publickeybytes())) {
-                throw JSONException("Invalid Public Key.")
+                throw JSONException("Invalid Public Key")
             }
 
             val array = obj.getJSONArray("addresses")
@@ -144,8 +144,7 @@ class Contact(
                 } else if (AddressUtils.isMACAddress(address)) {
                     address = address.uppercase(Locale.ROOT)
                 } else {
-                    Log.d(this, "invalid address $address")
-                    continue
+                    throw JSONException("Invalid Address $address")
                 }
                 if (address !in addresses) {
                     addresses.add(address)

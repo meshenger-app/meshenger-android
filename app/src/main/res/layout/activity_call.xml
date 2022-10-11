@@ -26,6 +26,15 @@
             android:layout_height="match_parent"
             android:background="?attr/backgroundCardColor" />
 
+        <ImageButton
+            android:id="@+id/toggle_call_stats"
+            android:background="@android:drawable/ic_menu_info_details"
+            android:contentDescription="Toggle debug info"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+
         <TextView
             android:id="@+id/callStats"
             android:layout_width="220dp"

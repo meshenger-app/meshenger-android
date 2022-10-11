@@ -17,8 +17,8 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.ByteBuffer
+import java.util.*
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 
 class RTCCall : DataChannel.Observer {
@@ -37,6 +37,9 @@ class RTCCall : DataChannel.Observer {
     private var localRenderer: SurfaceViewRenderer? = null
     private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
+    val statsTimer = Timer()
+    val executor = Executors.newSingleThreadExecutor()
+
     //Migrated to Unified Plan
     //private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
@@ -509,14 +512,20 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    fun accept(statsCollector: RTCStatsCollectorCallback?) {
-        val scheduleTaskExecutor = Executors.newScheduledThreadPool(1)
-        scheduleTaskExecutor.scheduleAtFixedRate(
-            { connection.getStats(statsCollector) },
-            1,
-            5,
-            TimeUnit.SECONDS
-        )
+    fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {
+        if (statsCollector != null) {
+            try {
+                statsTimer.schedule(object : TimerTask() {
+                    override fun run() {
+                        executor.execute {connection.getStats(statsCollector) }
+                    }
+                }, 0L, 1000)
+            } catch (e: Exception) {
+                Log.e(this, "Can not schedule statistics timer $e");
+            }
+        } else {
+            statsTimer.cancel()
+        }
     }
 
     fun setOnStateChangeListener(listener: OnStateChangeListener?) {
@@ -641,6 +650,7 @@ class RTCCall : DataChannel.Observer {
             closePeerConnection()
             //factory.dispose();
         }
+        statsTimer.cancel()
     }
 
     fun hangUp() {
@@ -660,6 +670,7 @@ class RTCCall : DataChannel.Observer {
                 }
                 closeCommSocket()
                 closePeerConnection()
+                statsTimer.cancel()
                 reportStateChange(CallState.ENDED)
             } catch (e: IOException) {
                 e.printStackTrace()

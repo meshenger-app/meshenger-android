@@ -24,6 +24,7 @@ import d.d.meshenger.RTCCall.OnStateChangeListener
 //import org.rivchain.cuplink.util.StatsReportUtil
 import org.webrtc.RTCStatsCollectorCallback
 import org.webrtc.RTCStatsReport
+import org.webrtc.StatsReport
 import java.io.IOException
 
 
@@ -45,8 +46,11 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private var callEventType: Event.Type = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
+    private var showCallStats = false
+
     private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
+
         override fun onStatsDelivered(rtcStatsReport: RTCStatsReport) {
             val stats = statsReportUtil.getStatsReport(rtcStatsReport)
             // If you need update UI, simply do this:
@@ -56,6 +60,19 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             }
         }
     }
+
+    private fun setCallStats(enabled: Boolean) {
+        Handler(mainLooper).post {
+            Log.d(this, "show call stats: $enabled")
+            if (enabled) {
+                currentCall.setStatsCollector(statsCollector)
+                callStats!!.visibility = View.VISIBLE
+            } else {
+                callStats!!.visibility = View.GONE
+            }
+        }
+    }
+
     private val activeCallback = OnStateChangeListener { callState: CallState? ->
         when (callState) {
             CallState.CONNECTING -> {
@@ -64,14 +81,8 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             }
             CallState.CONNECTED -> {
                 Log.d(this, "activeCallback: CONNECTED")
-                val devMode = true //binder.getSettings().developmentMode
                 Handler(mainLooper).post {
-                    if (devMode) {
-                        currentCall.accept(statsCollector)
-                        callStats!!.visibility = View.VISIBLE
-                    } else {
-                        callStats!!.visibility = View.GONE
-                    }
+                    setCallStats(showCallStats)
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
                     findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
                 }
@@ -101,17 +112,11 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             CallState.CONNECTED -> {
                 Log.d(this, "passiveCallback: CONNECTED")
                 setStatusText(getString(R.string.call_connected))
-                val devMode = true //binder.getSettings.developmentMode
                 runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
                 Handler(mainLooper).post {
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
                     findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
-                    if (devMode) {
-                        currentCall.accept(statsCollector)
-                        callStats!!.visibility = View.VISIBLE
-                    } else {
-                        callStats!!.visibility = View.GONE
-                    }
+                    setCallStats(showCallStats)
                 }
             }
             CallState.RINGING -> {
@@ -139,14 +144,18 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         statusTextView = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
         nameTextView = findViewById(R.id.callName)
+
+        findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
+            showCallStats = !showCallStats
+            setCallStats(showCallStats)
+        }
+
         val action = intent.action
 
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
         Log.d(this, "onCreate: $action")
         if ("ACTION_OUTGOING_CALL" == action) {
-
             callEventType = Event.Type.OUTGOING_UNKNOWN
-
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainService.MainBinder

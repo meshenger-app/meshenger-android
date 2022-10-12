@@ -33,10 +33,10 @@ class Contact(
     var lastWorkingAddress: InetSocketAddress? = null
 
     /*
-    * Create a connection to the contact
+    * Create a connection to the contact.
+    * Must not be called on the GUI thread.
     */
     fun createSocket(): Socket? {
-        var socket: Socket?
         val connectionTimeout = 500
 
         val addresses = AddressUtils.getAllSocketAddresses(addresses, lastWorkingAddress, MainService.serverPort)
@@ -44,21 +44,12 @@ class Contact(
 
         for (address in addresses) {
             Log.d(this, "try address: $address")
-            socket = establishConnection(address, connectionTimeout)
-            if (socket != null) {
-                return socket
-            }
-        }
 
-        return null
-    }
-
-    companion object {
-        private fun establishConnection(address: InetSocketAddress, timeout: Int): Socket? {
             val socket = Socket()
+
             try {
                 // timeout to establish connection
-                socket.connect(address, timeout)
+                socket.connect(address, connectionTimeout)
                 return socket
             } catch (e: SocketTimeoutException) {
                 // ignore
@@ -73,10 +64,12 @@ class Contact(
             } catch (e: Exception) {
                 // ignore
             }
-
-            return null
         }
 
+        return null
+    }
+
+    companion object {
         @Throws(JSONException::class)
         fun toJSON(contact: Contact, all: Boolean): JSONObject {
             val obj = JSONObject()

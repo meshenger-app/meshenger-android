@@ -24,7 +24,7 @@ internal object AddressUtils
                 if (mac != null && mac.size == 6) {
                     val fe80 = formatFE80(mac)
                     addresses.add(InetSocketAddress.createUnresolved(fe80, port))
-                    addresses.addAll(mapPrefixesToMAC(mac, port))
+                    addresses.addAll(mapMACtoPrefixes(mac, port))
                 }
             } else {
                 val socketAddress = stringToInetSocketAddress(address, port)
@@ -304,9 +304,9 @@ internal object AddressUtils
 
     /*
     * Duplicate own addresses that contain a MAC address with the given MAC address.
-    * This also creates fe80::/10 addresses.
+    * This ignores Link Local addresses like fe80::/10.
     */
-    private fun mapPrefixesToMAC(macAddress: ByteArray, port: Int): List<InetSocketAddress> {
+    private fun mapMACtoPrefixes(macAddress: ByteArray, port: Int): List<InetSocketAddress> {
         val addresses = ArrayList<InetSocketAddress>()
 
         try {
@@ -319,7 +319,7 @@ internal object AddressUtils
                     continue
                 }
 
-                Log.d(this, "mapPrefixesToMAC: ${nif.name}")
+                Log.d(this, "mapMACtoPrefixes: ${nif.name}")
 
                 for (ia in nif.interfaceAddresses) {
                     val address = ia.address

@@ -5,9 +5,8 @@ import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.net.wifi.WifiManager
+import android.os.*
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
@@ -66,13 +65,40 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }.attach()
 
         // ask for audio recording permissions
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 2)
+        } else {
+            showInvalidAddressSettingsWarning()
         }
+    }
+
+    private fun showInvalidAddressSettingsWarning() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val localBinder = binder
+            if (localBinder == null) {
+                Log.w(this, "binder is null")
+                return@postDelayed
+            }
+
+            val storedAddresses = localBinder.getSettings().addresses
+            val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) || AddressUtils.isMACAddress(it) }
+            if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
+                // ignore, we only have domains configured
+            } else if (storedAddresses.isEmpty()) {
+                // no addresses configured at all
+                Toast.makeText(this, R.string.warning_no_addresses_configured, Toast.LENGTH_LONG).show()
+            } else {
+                val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+                if (wifi.isWifiEnabled) {
+                    val systemAddresses = AddressUtils.collectAddresses().map { it.address }
+                    if (storedIPAddresses.intersect(systemAddresses.toSet()).isEmpty()) {
+                        // none of the configured addresses are used in the system
+                        // addresses might have changed!
+                        Toast.makeText(this, R.string.warning_no_addresses_found, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }, 700)
     }
 
     private fun permissionToDrawOverlays() {
@@ -143,6 +169,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "OnResume")
         super.onResume()
         bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        showInvalidAddressSettingsWarning()
     }
 
     override fun onPause() {

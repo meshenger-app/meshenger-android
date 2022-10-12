@@ -24,6 +24,8 @@
     <string name="setup_address">Setup Address</string>
     <string name="setup_no_address_found">No address of your WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.</string>
     <string name="contact_with_name_already_exists">A contact with that name already exists.</string>
+    <string name="warning_no_addresses_configured">No address for QR code configured.</string>
+    <string name="warning_no_addresses_found">Configured addresses not found. Did the network change?</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_license">License</string>
     <string name="menu_backup">Backup</string>

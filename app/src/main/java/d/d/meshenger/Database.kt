@@ -29,7 +29,7 @@ class Database {
 
     companion object {
         private const val TAG = "Database"
-        var version = "4.0.0" // current version
+        var version = "4.0.1" // current version
 
         fun fromData(db_data: ByteArray, password: String?): Database {
             // encrypt database
@@ -166,6 +166,12 @@ class Database {
 
                 var events = Events()
                 db.put("events", Events.toJSON(events))
+            }
+
+            // 4.0.0 => 4.0.1
+            if (new_from == "4.0.0") {
+                // nothing to do
+                new_from = "4.0.1"
             }
 
             // add missing keys with defaults and remove unexpected keys

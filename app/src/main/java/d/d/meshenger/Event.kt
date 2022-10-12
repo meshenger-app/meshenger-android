@@ -20,7 +20,7 @@ class Event(
         val address = address?.address
         if (address != null) {
             // extract MAC address if possible
-            val mac = AddressUtils.extractMacAddress(address)
+            val mac = AddressUtils.extractMAC(address)
             if (mac != null && mac.size == 6) {
                 addresses.add(
                     "%02X:%02X:%02X:%02X:%02X:%02X".format(
@@ -100,7 +100,7 @@ class Event(
         @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject): Event {
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
-            val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"), MainService.serverPort.toUShort())
+            val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"), MainService.serverPort)
             val type = eventTypeFromString(obj.getString("type"))
             val date = Date(obj.getString("date").toLong(10))
             return Event(publicKey, address, type, date)

@@ -32,48 +32,18 @@ class Contact(
     // last working address (use this address next connection and for unknown contact initialization)
     var lastWorkingAddress: InetSocketAddress? = null
 
-    // also resolves domains
-    private fun getAllSocketAddresses(): List<InetSocketAddress> {
-        val socketAddresses = mutableListOf<InetSocketAddress>()
-
-        for (address in addresses) {
-            try {
-                if (AddressUtils.isMACAddress(address)) {
-                    socketAddresses.addAll(AddressUtils.getOwnAddressesWithMAC(address, MainService.serverPort))
-                } else {
-                    val socketAddress = AddressUtils.stringToInetSocketAddress(address, MainService.serverPort.toUShort())
-                    if (socketAddress != null) {
-                        socketAddresses.add(socketAddress)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        return socketAddresses
-    }
-
     /*
-    * Create a connection to the contact.
-    * Try/Remember the last successful address.
+    * Create a connection to the contact
     */
     fun createSocket(): Socket? {
         var socket: Socket?
         val connectionTimeout = 500
 
-        // try last successful address first
-        val lastAddress = lastWorkingAddress
-        if (lastAddress != null) {
-            Log.d(this, "try latest address: $lastWorkingAddress")
-            socket = establishConnection(lastAddress, connectionTimeout)
-            if (socket != null) {
-                return socket
-            }
-        }
+        val addresses = AddressUtils.getAllSocketAddresses(addresses, lastWorkingAddress, MainService.serverPort)
+        Log.d(this, "addresses to try: " + addresses.joinToString())
 
-        for (address in getAllSocketAddresses()) {
-            Log.d(this, "try address: ${address.toString()}")
+        for (address in addresses) {
+            Log.d(this, "try address: $address")
             socket = establishConnection(address, connectionTimeout)
             if (socket != null) {
                 return socket

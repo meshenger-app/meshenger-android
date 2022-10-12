@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.ImageView
 
 internal class ContactListAdapter(
- context: Context,
+    context: Context,
     resource: Int,
     private val contacts: List<Contact>
 ) : ArrayAdapter<Contact?>(

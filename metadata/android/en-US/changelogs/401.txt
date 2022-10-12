@@ -1,1 +1,4 @@
 * show own video in small window
+* always try fe80:: for contacts with MAC address
+* add debug output window
+* do not show rmnet (modem) interfaces in address management

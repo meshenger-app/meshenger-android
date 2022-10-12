@@ -17,6 +17,7 @@ import d.d.meshenger.Crypto.decryptMessage
 import d.d.meshenger.Crypto.encryptMessage
 import d.d.meshenger.Utils.readInternalFile
 import d.d.meshenger.Utils.writeInternalFile
+import d.d.meshenger.call.RTCCall
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import java.io.File

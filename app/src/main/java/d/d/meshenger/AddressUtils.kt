@@ -21,20 +21,27 @@ internal object AddressUtils
         for (address in initial_addresses) {
             if (isMACAddress(address)) {
                 val mac = macAddressToBytes(address)
-                if (mac != null && mac.size == 6) {
-                    val fe80 = formatFE80(mac)
-                    addresses.add(InetSocketAddress.createUnresolved(fe80, port))
-                    addresses.addAll(mapMACtoPrefixes(mac, port))
-                }
+                addresses.addAll(mapMACtoPrefixes(mac, port))
             } else {
                 val socketAddress = stringToInetSocketAddress(address, port)
                 if (socketAddress != null) {
                     addresses.add(socketAddress)
                 }
+
+                // get MAC address from provided IPv6 address
+                if (isIPAddress(address)) {
+                    val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        InetAddresses.parseNumericAddress(address)
+                    } else {
+                        InetAddress.getByName(address)
+                    }
+                    val mac = extractMAC(inetAddress)
+                    addresses.addAll(mapMACtoPrefixes(mac, port))
+                }
             }
         }
 
-        return addresses
+        return addresses.distinct()
     }
 
     private fun ignoreDeviceByName(device: String): Boolean {
@@ -303,10 +310,16 @@ internal object AddressUtils
 
     /*
     * Duplicate own addresses that contain a MAC address with the given MAC address.
-    * This ignores Link Local addresses like fe80::/10.
     */
-    private fun mapMACtoPrefixes(macAddress: ByteArray, port: Int): List<InetSocketAddress> {
+    private fun mapMACtoPrefixes(macAddress: ByteArray?, port: Int): List<InetSocketAddress> {
         val addresses = ArrayList<InetSocketAddress>()
+
+        if (macAddress == null || macAddress.size != 6) {
+            return addresses
+        }
+
+        val fe80 = formatFE80(macAddress)
+        addresses.add(InetSocketAddress.createUnresolved(fe80, port))
 
         try {
             for (nif in Collections.list(NetworkInterface.getNetworkInterfaces())) {
@@ -317,8 +330,6 @@ internal object AddressUtils
                 if (ignoreDeviceByName(nif.name)) {
                     continue
                 }
-
-                Log.d(this, "mapMACtoPrefixes: ${nif.name}")
 
                 for (ia in nif.interfaceAddresses) {
                     val address = ia.address

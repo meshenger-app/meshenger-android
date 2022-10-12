@@ -262,12 +262,6 @@ internal object AddressUtils
         }
     }
 
-    fun isEUI64Address(address: String): Boolean {
-        return address.startsWith("fe80::")
-            && address.length >= 25
-            && address.substring(13, 18) == "ff:fe"
-    }
-
     // Check if the given MAC address is in the IPv6 address
     private fun getEUI64MAC(addr6: Inet6Address): ByteArray? {
         val bytes = addr6.address

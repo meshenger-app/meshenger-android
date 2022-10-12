@@ -42,7 +42,12 @@ internal object AddressUtils
     }
 
     private fun formatFE80(mac: ByteArray): String {
-        return String.format("fe80::%02x:%02x:%02xff:fe%02x:%02x:%02x",
+        return String.format("fe80::%02x%02x:%02xff:fe%02x:%02x%02x",
+            (mac[0] xor 2), mac[1], mac[2], mac[3], mac[4], mac[5])
+    }
+
+    private fun formatMAC(mac: ByteArray): String {
+        return String.format("%02X:%02X:%02X:%02X:%02X:%02X",
             (mac[0] xor 2), mac[1], mac[2], mac[3], mac[4], mac[5])
     }
 
@@ -205,7 +210,7 @@ internal object AddressUtils
 
                 val hardwareMAC = nif.hardwareAddress
                 if (isValidMAC(hardwareMAC)) {
-                    val macAddress = formatFE80(hardwareMAC)
+                    val macAddress = formatMAC(hardwareMAC)
                     if (addressList.find { it.address == macAddress } == null) {
                         addressList.add(AddressEntry(
                             macAddress,
@@ -232,7 +237,7 @@ internal object AddressUtils
                     // extract MAC address from fe80:: address if possible
                     val softwareMAC = extractMAC(ia.address)
                     if (softwareMAC != null) {
-                        val macAddress = formatFE80(softwareMAC)
+                        val macAddress = formatMAC(softwareMAC)
                         if (addressList.find { it.address == macAddress } == null) {
                             addressList.add(AddressEntry(
                                 macAddress,

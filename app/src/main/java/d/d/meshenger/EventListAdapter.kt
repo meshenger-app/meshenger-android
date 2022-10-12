@@ -12,7 +12,7 @@ import java.lang.Math
 import java.text.DateFormat
 
 internal class EventListAdapter(
-    private val ctx: Context,
+    ctx: Context,
     resource: Int,
     private var events: List<Event>,
     private var contacts: List<Contact>

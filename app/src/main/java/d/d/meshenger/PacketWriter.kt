@@ -1,10 +1,6 @@
 package d.d.meshenger
 
-import d.d.meshenger.Log.d
-import kotlin.Throws
-import d.d.meshenger.PacketWriter
 import java.io.IOException
-import java.io.OutputStream
 import java.net.Socket
 
 /* Write the message header before the message is send */

@@ -2,7 +2,9 @@ package d.d.meshenger
 
 import android.Manifest
 import android.app.Activity
-import android.content.*
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.net.wifi.WifiManager

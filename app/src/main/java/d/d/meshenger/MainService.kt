@@ -29,9 +29,9 @@ import java.util.*
 
 class MainService : Service(), Runnable {
     private var database: Database? = null
-    var first_start = false
-    private var database_path = ""
-    var database_password = ""
+    var firstStart = false
+    private var databasePath = ""
+    var databasePassword = ""
 
     @Volatile
     private var run = true
@@ -39,7 +39,7 @@ class MainService : Service(), Runnable {
 
     override fun onCreate() {
         super.onCreate()
-        database_path = this.filesDir.toString() + "/database.bin"
+        databasePath = this.filesDir.toString() + "/database.bin"
         // handle incoming connections
         Thread(this).start()
     }
@@ -81,15 +81,15 @@ class MainService : Service(), Runnable {
 
     fun loadDatabase() {
         try {
-            if (File(database_path).exists()) {
+            if (File(databasePath).exists()) {
                 // open existing database
-                val data = readInternalFile(database_path)
-                database = Database.fromData(data, database_password)
-                first_start = false
+                val data = readInternalFile(databasePath)
+                database = Database.fromData(data, databasePassword)
+                firstStart = false
             } else {
                 // create new database
                 database = Database()
-                first_start = true
+                firstStart = true
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -97,16 +97,16 @@ class MainService : Service(), Runnable {
     }
 
     fun mergeDatabase(new_db: Database) {
-        val old_database = database!!
+        val oldDatabase = database!!
 
-        old_database.settings = new_db.settings
+        oldDatabase.settings = new_db.settings
 
         for (contact in new_db.contacts.contactList) {
-            old_database.contacts.addContact(contact)
+            oldDatabase.contacts.addContact(contact)
         }
 
         for (event in new_db.events.eventList) {
-            old_database.events.addEvent(event)
+            oldDatabase.events.addEvent(event)
         }
     }
 
@@ -114,9 +114,9 @@ class MainService : Service(), Runnable {
         try {
             val db = database
             if (db != null) {
-                val data = Database.toData(db, database_password)
+                val data = Database.toData(db, databasePassword)
                 if (data != null) {
-                    writeInternalFile(database_path, data)
+                    writeInternalFile(databasePath, data)
                 }
             }
         } catch (e: java.lang.Exception) {
@@ -170,9 +170,9 @@ class MainService : Service(), Runnable {
         // database password was supplied to open it.
         if (database != null) {
             try {
-                val data = Database.toData(database, database_password)
+                val data = Database.toData(database, databasePassword)
                 if (data != null) {
-                    writeInternalFile(database_path, data)
+                    writeInternalFile(databasePath, data)
                 }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -214,8 +214,8 @@ class MainService : Service(), Runnable {
             val pw = PacketWriter(client)
             val pr = PacketReader(client)
             var contact: Contact? = null
-            val remote_address = client.remoteSocketAddress as InetSocketAddress
-            Log.d(this, "incoming connection from $remote_address")
+            val remoteAddress = client.remoteSocketAddress as InetSocketAddress
+            Log.d(this, "incoming connection from $remoteAddress")
             while (true) {
                 val request = pr.readMessage() ?: break
                 val decrypted = decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
@@ -252,7 +252,7 @@ class MainService : Service(), Runnable {
                     continue
                 }
                 // remember last good address (the outgoing port is random and not the server port)
-                contact.lastWorkingAddress = InetSocketAddress(remote_address.address, serverPort)
+                contact.lastWorkingAddress = InetSocketAddress(remoteAddress.address, serverPort)
 
                 val obj = JSONObject(decrypted)
                 val action = obj.optString("action", "")

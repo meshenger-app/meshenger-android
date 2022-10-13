@@ -2,6 +2,7 @@ package d.d.meshenger.call
 
 import android.content.ContentValues
 import android.content.Context
+import d.d.meshenger.R
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
@@ -9,7 +10,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.MaterialColors
 import d.d.meshenger.*
-import d.d.meshenger.R
 import org.json.JSONException
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
@@ -165,14 +165,14 @@ class RTCCall : DataChannel.Observer {
                                 //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return
                             }
-                            val remote_address =
+                            val remoteAddress =
                                 commSocket!!.remoteSocketAddress as InetSocketAddress
 
-                            Log.d(this, "outgoing call from remote address: $remote_address")
+                            Log.d(this, "outgoing call from remote address: $remoteAddress")
 
                             // remember latest working address
                             contact.lastWorkingAddress =
-                                InetSocketAddress(remote_address.address, MainService.serverPort)
+                                InetSocketAddress(remoteAddress.address, MainService.serverPort)
 
                             Log.d(this, "connect..")
                             val pr = PacketReader(commSocket!!)

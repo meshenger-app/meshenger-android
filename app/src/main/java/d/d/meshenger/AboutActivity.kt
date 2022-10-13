@@ -3,7 +3,6 @@ package d.d.meshenger
 import android.os.Bundle
 import android.widget.TextView
 import android.content.Intent
-import android.view.View
 import androidx.appcompat.widget.Toolbar
 
 class AboutActivity : BaseActivity() {

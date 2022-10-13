@@ -29,7 +29,7 @@ import java.io.IOException
 
 class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
-    private val CAMERA_PERMISSION_REQUEST_CODE = 2
+    private val CameraPermissionRequestCode = 2
     private var statusTextView: TextView? = null
     private var callStats: TextView? = null
     private lateinit var nameTextView: TextView
@@ -328,7 +328,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
 
     private fun switchVideoEnabled(button: ImageButton) {
         if (!Utils.hasCameraPermission(this)) {
-            Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE)
+            Utils.requestCameraPermission(this, CameraPermissionRequestCode)
             permissionRequested = true
             return
         }
@@ -421,7 +421,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+        if (requestCode == CameraPermissionRequestCode) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(
                     this,

@@ -46,47 +46,47 @@ internal class EventListAdapter(
         // find name
         val name = contacts.find { it.publicKey.contentEquals(event.publicKey) }?.name
 
-        val name_tv = view.findViewById<TextView>(R.id.call_name)
+        val nameTv = view.findViewById<TextView>(R.id.call_name)
         if (name == null || name.isEmpty()) {
-            name_tv.text = view.context.getString(R.string.unknown_caller)
+            nameTv.text = view.context.getString(R.string.unknown_caller)
         } else {
-            name_tv.text = name
+            nameTv.text = name
         }
 
-        val date_tv = view.findViewById<TextView>(R.id.call_date)
+        val dateTv = view.findViewById<TextView>(R.id.call_date)
 
         val now = System.currentTimeMillis()
         if (Math.abs(now - event.date.time) < DateUtils.HOUR_IN_MILLIS) {
-            date_tv.text = DateUtils.getRelativeTimeSpanString(event.date.time, now, DateUtils.MINUTE_IN_MILLIS)
+            dateTv.text = DateUtils.getRelativeTimeSpanString(event.date.time, now, DateUtils.MINUTE_IN_MILLIS)
         } else if (DateUtils.isToday(event.date.time)) {
             val tf = DateFormat.getTimeInstance(DateFormat.SHORT)
-            date_tv.text = tf.format(event.date)
+            dateTv.text = tf.format(event.date)
         } else {
             val df = DateFormat.getDateInstance(DateFormat.SHORT)
-            date_tv.text = df.format(event.date)
+            dateTv.text = df.format(event.date)
         }
 
-        val type_iv = view.findViewById<ImageView>(R.id.call_type)
+        val typeIv = view.findViewById<ImageView>(R.id.call_type)
         when (event.type) {
-            Event.Type.UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
-            Event.Type.INCOMING_UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
-            Event.Type.INCOMING_ACCEPTED -> type_iv.setImageResource(R.drawable.ic_incoming_call_accepted)
-            Event.Type.INCOMING_DECLINED -> type_iv.setImageResource(R.drawable.ic_incoming_call_declined)
-            Event.Type.INCOMING_MISSED -> type_iv.setImageResource(R.drawable.ic_incoming_call_missed)
-            Event.Type.INCOMING_ERROR -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
-            Event.Type.OUTGOING_UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
-            Event.Type.OUTGOING_ACCEPTED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_accepted)
-            Event.Type.OUTGOING_DECLINED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_declined)
-            Event.Type.OUTGOING_MISSED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_missed)
-            Event.Type.OUTGOING_ERROR -> type_iv.setImageResource(R.drawable.ic_outgoing_call_error)
+            Event.Type.UNKNOWN -> typeIv.setImageResource(R.drawable.ic_incoming_call_error)
+            Event.Type.INCOMING_UNKNOWN -> typeIv.setImageResource(R.drawable.ic_incoming_call_error)
+            Event.Type.INCOMING_ACCEPTED -> typeIv.setImageResource(R.drawable.ic_incoming_call_accepted)
+            Event.Type.INCOMING_DECLINED -> typeIv.setImageResource(R.drawable.ic_incoming_call_declined)
+            Event.Type.INCOMING_MISSED -> typeIv.setImageResource(R.drawable.ic_incoming_call_missed)
+            Event.Type.INCOMING_ERROR -> typeIv.setImageResource(R.drawable.ic_incoming_call_error)
+            Event.Type.OUTGOING_UNKNOWN -> typeIv.setImageResource(R.drawable.ic_incoming_call_error)
+            Event.Type.OUTGOING_ACCEPTED -> typeIv.setImageResource(R.drawable.ic_outgoing_call_accepted)
+            Event.Type.OUTGOING_DECLINED -> typeIv.setImageResource(R.drawable.ic_outgoing_call_declined)
+            Event.Type.OUTGOING_MISSED -> typeIv.setImageResource(R.drawable.ic_outgoing_call_missed)
+            Event.Type.OUTGOING_ERROR -> typeIv.setImageResource(R.drawable.ic_outgoing_call_error)
         }
 
-        val address_tv = view.findViewById<TextView>(R.id.call_address)
+        val addressTv = view.findViewById<TextView>(R.id.call_address)
         val address = AddressUtils.inetSocketAddressToString(event.address)
         if (address != null) {
-            address_tv.text = "(${address})"
+            addressTv.text = "(${address})"
         } else {
-            address_tv.text = ""
+            addressTv.text = ""
         }
 
         return view

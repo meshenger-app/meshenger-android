@@ -152,11 +152,11 @@ internal object AddressUtils
             val end = addr.lastIndexOf("]:")
             if (end > 0) {
                 // [<address>]:<port>
-                val addr_part = addr.substring(1, end)
-                val port_part = addr.substring(end + 2)
-                val port = port_part.toUShortOrNull()
-                if (port != null && isAddress(addr_part)) {
-                    return InetSocketAddress.createUnresolved(addr_part, port.toInt())
+                val addrPart = addr.substring(1, end)
+                val portPart = addr.substring(end + 2)
+                val port = portPart.toUShortOrNull()
+                if (port != null && isAddress(addrPart)) {
+                    return InetSocketAddress.createUnresolved(addrPart, port.toInt())
                 }
             }
         } else {
@@ -164,11 +164,11 @@ internal object AddressUtils
                 //<hostname>:<port>
                 //<ipv4-address>:<port>
                 val end = addr.indexOf(":")
-                val addr_part = addr.substring(0, end)
-                val port_part = addr.substring(end + 1)
-                val port = port_part.toUShortOrNull()
-                if (port != null && isAddress(addr_part)) {
-                    return InetSocketAddress.createUnresolved(addr_part, port.toInt())
+                val addrPart = addr.substring(0, end)
+                val portPart = addr.substring(end + 1)
+                val port = portPart.toUShortOrNull()
+                if (port != null && isAddress(addrPart)) {
+                    return InetSocketAddress.createUnresolved(addrPart, port.toInt())
                 }
             } else if (isAddress(addr)) {
                 //<hostname>
@@ -337,13 +337,13 @@ internal object AddressUtils
                         continue
                     }
                     if (address is Inet6Address && !address.isLinkLocalAddress()) {
-                        val extracted_mac = getEUI64MAC(address)
-                        if (extracted_mac != null) {
+                        val extractedMac = getEUI64MAC(address)
+                        if (extractedMac != null) {
                             // We found the interface MAC address in the IPv6 address (EUI-64).
                             // Now assume that the contact has an address with the same scheme.
-                            val new_addr = createEUI64Address(address, macAddress)
-                            if (new_addr != null) {
-                                addresses.add(InetSocketAddress.createUnresolved(new_addr.hostAddress, port))
+                            val newAddr = createEUI64Address(address, macAddress)
+                            if (newAddr != null) {
+                                addresses.add(InetSocketAddress.createUnresolved(newAddr.hostAddress, port))
                             }
                         }
                     }

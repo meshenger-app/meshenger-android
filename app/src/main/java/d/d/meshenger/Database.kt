@@ -76,14 +76,14 @@ class Database {
 
             // default keys
             val defaults_iter = defaults.keys()
-            val defaults_keys: MutableList<String> = ArrayList()
+            val defaults_keys = mutableListOf<String>()
             while (defaults_iter.hasNext()) {
                 defaults_keys.add(defaults_iter.next())
             }
 
             // current keys
             val settings_iter = settings.keys()
-            val settings_keys: MutableList<String> = ArrayList()
+            val settings_keys = mutableListOf<String>()
             while (settings_iter.hasNext()) {
                 settings_keys.add(settings_iter.next())
             }

@@ -2,7 +2,6 @@ package d.d.meshenger
 
 import org.json.JSONException
 import org.json.JSONObject
-import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.*
 

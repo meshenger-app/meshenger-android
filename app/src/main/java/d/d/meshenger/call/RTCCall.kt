@@ -525,7 +525,7 @@ class RTCCall : DataChannel.Observer {
                     override fun run() {
                         executor.execute {connection.getStats(statsCollector) }
                     }
-                }, 0L, 1000)
+                }, 0L, StatsReportUtil.STATS_INTERVAL_MS)
             } catch (e: Exception) {
                 Log.e(this, "Can not schedule statistics timer $e");
             }

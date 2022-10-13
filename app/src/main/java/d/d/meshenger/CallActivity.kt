@@ -29,7 +29,7 @@ import java.io.IOException
 
 class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
-    private val CameraPermissionRequestCode = 2
+    private val CAMERA_PERMISSION_REQUEST_CODE = 2
     private var statusTextView: TextView? = null
     private var callStats: TextView? = null
     private lateinit var nameTextView: TextView

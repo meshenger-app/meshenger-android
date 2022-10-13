@@ -26,12 +26,11 @@ import org.webrtc.RTCStatsCollectorCallback
 import org.webrtc.RTCStatsReport
 import java.io.IOException
 
-
 class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
     private val CAMERA_PERMISSION_REQUEST_CODE = 2
     private var statusTextView: TextView? = null
-    private var callStats: TextView? = null
+    private lateinit var callStats: TextView
     private lateinit var nameTextView: TextView
     private lateinit var binder: MainService.MainBinder
     private lateinit var connection: ServiceConnection
@@ -55,7 +54,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             // If you need update UI, simply do this:
             runOnUiThread {
                 // update your UI component here.
-                callStats!!.text = stats
+                callStats.text = stats
             }
         }
     }
@@ -65,9 +64,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             Log.d(this, "show call stats: $enabled")
             if (enabled) {
                 currentCall.setStatsCollector(statsCollector)
-                callStats!!.visibility = View.VISIBLE
+                callStats.visibility = View.VISIBLE
             } else {
-                callStats!!.visibility = View.GONE
+                callStats.visibility = View.GONE
             }
         }
     }

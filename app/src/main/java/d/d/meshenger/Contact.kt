@@ -10,7 +10,10 @@ import org.json.JSONException
 import org.libsodium.jni.Sodium
 import java.io.Serializable
 import java.lang.Exception
-import java.net.*
+import java.net.ConnectException
+import java.net.InetSocketAddress
+import java.net.Socket
+import java.net.SocketTimeoutException
 import java.util.*
 
 class Contact(
@@ -52,8 +55,6 @@ class Contact(
                 // ignore
             } catch (e: ConnectException) {
                 // device is online, but does not listen on the given port
-            } catch (e: UnknownHostException) {
-                Log.d(this, "unknown host: $address")
             } catch (e: Exception) {
                 e.printStackTrace()
             }

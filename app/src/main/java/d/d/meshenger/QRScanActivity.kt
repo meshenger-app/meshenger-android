@@ -59,24 +59,24 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     @Throws(JSONException::class)
     private fun addContact(data: String) {
         val obj = JSONObject(data)
-        val new_contact = Contact.fromJSON(obj, false)
-        if (new_contact.addresses.isEmpty()) {
+        val newContact = Contact.fromJSON(obj, false)
+        if (newContact.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show()
         }
 
         // lookup existing contacts by key and name
         val contacts = binder!!.getContacts()
-        val existing_pubkey_contact = contacts.getContactByPublicKey(new_contact.publicKey)
-        val existing_name_contact = contacts.getContactByName(new_contact.name)
-        if (existing_pubkey_contact != null) {
+        val existingPubkeyContact = contacts.getContactByPublicKey(newContact.publicKey)
+        val existingNameContact = contacts.getContactByName(newContact.name)
+        if (existingPubkeyContact != null) {
             // contact with that public key exists
-            showPubkeyConflictDialog(new_contact, existing_pubkey_contact)
-        } else if (existing_name_contact != null) {
+            showPubkeyConflictDialog(newContact, existingPubkeyContact)
+        } else if (existingNameContact != null) {
             // contact with that name exists
-            showNameConflictDialog(new_contact, existing_name_contact)
+            showNameConflictDialog(newContact, existingNameContact)
         } else {
             // no conflict
-            binder!!.addContact(new_contact)
+            binder!!.addContact(newContact)
             finish()
         }
     }

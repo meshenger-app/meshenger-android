@@ -1,4 +1,6 @@
 * show own video in small window
-* always try fe80:: for contacts with MAC address
 * add debug output window
+* show warning when all own addresses became invalid
+* extract MAC address from contact addresses as well
+* always try fe80:: for contacts with MAC address
 * do not show rmnet (modem) interfaces in address management

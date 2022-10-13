@@ -8,12 +8,12 @@ import androidx.appcompat.app.AppCompatDelegate
  * Activity base class to apply night mode
 */
 open class BaseActivity : AppCompatActivity() {
-    var dark_active = false
+    var darkActive = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dark_active = darkModeEnabled()
-        if (dark_active) {
+        darkActive = darkModeEnabled()
+        if (darkActive) {
             setTheme(R.style.AppTheme_Dark_NoActionBar)
         } else {
             setTheme(R.style.AppTheme_Light_NoActionBar)
@@ -28,9 +28,9 @@ open class BaseActivity : AppCompatActivity() {
         super.onResume()
 
         // recreate activity to apply mode
-        val dark_active_now = darkModeEnabled()
-        if (dark_active != dark_active_now) {
-            dark_active = dark_active_now
+        val darkActiveNow = darkModeEnabled()
+        if (darkActive != darkActiveNow) {
+            darkActive = darkActiveNow
             recreate()
         }
     }

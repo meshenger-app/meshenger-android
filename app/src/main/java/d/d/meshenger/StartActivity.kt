@@ -82,7 +82,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             5 -> {
                 Log.d(this, "init 5: check addresses")
-                if (binder!!.getService().first_start) {
+                if (binder!!.getService().firstStart) {
                     showMissingAddressDialog()
                 } else {
                     continueInit()
@@ -107,7 +107,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
 
         Log.d(this, "onServiceConnected")
         if (startState == 0) {
-            if (binder!!.getService().first_start) {
+            if (binder!!.getService().firstStart) {
                 // show delayed splash page
                 Handler(Looper.getMainLooper()).postDelayed({
                     continueInit()
@@ -294,7 +294,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
         val okButton = ddialog.findViewById<Button>(R.id.change_password_ok_button)
         okButton.setOnClickListener {
             val password = passwordEditText.text.toString()
-            binder!!.getService().database_password = password
+            binder!!.getService().databasePassword = password
             binder!!.getService().loadDatabase()
             if (binder!!.getDatabase() == null) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()

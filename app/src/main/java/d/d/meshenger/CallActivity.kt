@@ -26,11 +26,12 @@ import org.webrtc.RTCStatsCollectorCallback
 import org.webrtc.RTCStatsReport
 import java.io.IOException
 
+
 class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
-    private val CAMERA_PERMISSION_REQUEST_CODE = 2
+    private val CameraPermissionRequestCode = 2
     private var statusTextView: TextView? = null
-    private lateinit var callStats: TextView
+    private var callStats: TextView? = null
     private lateinit var nameTextView: TextView
     private lateinit var binder: MainService.MainBinder
     private lateinit var connection: ServiceConnection
@@ -54,7 +55,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             // If you need update UI, simply do this:
             runOnUiThread {
                 // update your UI component here.
-                callStats.text = stats
+                callStats!!.text = stats
             }
         }
     }
@@ -64,9 +65,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             Log.d(this, "show call stats: $enabled")
             if (enabled) {
                 currentCall.setStatsCollector(statsCollector)
-                callStats.visibility = View.VISIBLE
+                callStats!!.visibility = View.VISIBLE
             } else {
-                callStats.visibility = View.GONE
+                callStats!!.visibility = View.GONE
             }
         }
     }
@@ -327,7 +328,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
 
     private fun switchVideoEnabled(button: ImageButton) {
         if (!Utils.hasCameraPermission(this)) {
-            Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE)
+            Utils.requestCameraPermission(this, CameraPermissionRequestCode)
             permissionRequested = true
             return
         }
@@ -420,7 +421,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+        if (requestCode == CameraPermissionRequestCode) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(
                     this,

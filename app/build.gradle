@@ -3,10 +3,10 @@ apply plugin: 'kotlin-android'
 android {
     signingConfigs {
     }
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 402
         versionName "4.0.2"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

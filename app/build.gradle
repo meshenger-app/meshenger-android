@@ -8,15 +8,13 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    signingConfigs {
-    }
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 373
-        versionName "0.4.6.3"
+        targetSdkVersion 33
+        versionCode 374
+        versionName "0.4.6.4"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)
@@ -46,6 +44,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    namespace 'org.rivchain.cuplink'
 }
 
 dependencies {

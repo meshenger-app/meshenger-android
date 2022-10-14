@@ -30,6 +30,7 @@ class Settings {
         get() = Contact(username, addresses)
 
     companion object {
+
         @Throws(JSONException::class)
         fun importJSON(obj: JSONObject): Settings {
             val s = Settings()

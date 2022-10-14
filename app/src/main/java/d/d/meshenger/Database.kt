@@ -29,7 +29,7 @@ class Database {
 
     companion object {
         private const val TAG = "Database"
-        var version = "4.0.1" // current version
+        var version = "4.0.2" // current version
 
         fun fromData(db_data: ByteArray, password: String?): Database {
             // encrypt database

@@ -4,7 +4,7 @@
 
 Features:
 
-- audio and video calls
+- voice and video calls
 - encrypted communication
 - database backup and encryption
 - add custom addresses to reach contacts
@@ -20,7 +20,7 @@ Features:
 
 ## Documentation
 
-Meshenger established a connection by connecting to an IP address. Contacts are shared via QR-Code. They contain a name, a public key and a list of MAC/IP/DNS addresses. By default, only a MAC address is transferred and used to create an IPv6 link local address (among others) to establish a connection. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can transmit audio and video.
+Meshenger connects to IP addresses in a true P2P fashion. Contacts are shared via QR-Code. They contain a name, a public key and a list of MAC/IP/DNS addresses. By default, only a single MAC address is transferred and used to create an IPv6 link local address (among others) to establish a connection. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can transmit voice and video.
 
 Details can be found in the [Documentation](docs/Documentation.md) or in the [FAQ](docs/faq.md).
 

@@ -1,5 +1,9 @@
 # Frequently Asked Questions
 
+* **How to find new contacts?**
+    You can find contacts in real life. Meshenger has no discovery mechanism by design.
+* **Is Meshenger stable**
+    Not really. There are crashes. It is beta software.
 * **How much bandwidth does an Audio/Video call consume?**  
     Audio calls take 12KB/s, Video adds ~40KB/s per direction.
 * **Why can't you call a thethered phone as client?**  

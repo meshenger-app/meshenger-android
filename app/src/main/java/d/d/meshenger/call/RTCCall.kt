@@ -165,14 +165,14 @@ class RTCCall : DataChannel.Observer {
                                 //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return
                             }
-                            val remote_address =
+                            val remoteAddress =
                                 commSocket!!.remoteSocketAddress as InetSocketAddress
 
-                            Log.d(this, "outgoing call from remote address: $remote_address")
+                            Log.d(this, "outgoing call from remote address: $remoteAddress")
 
                             // remember latest working address
                             contact.lastWorkingAddress =
-                                InetSocketAddress(remote_address.address, MainService.serverPort)
+                                InetSocketAddress(remoteAddress.address, MainService.serverPort)
 
                             Log.d(this, "connect..")
                             val pr = PacketReader(commSocket!!)

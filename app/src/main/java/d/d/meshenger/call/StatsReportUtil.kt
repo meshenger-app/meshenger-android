@@ -8,84 +8,130 @@ class StatsReportUtil {
     private var lastBytesSentVideo = BigInteger.valueOf(0)
     private var lastBytesReceivedAudio = BigInteger.valueOf(0)
     private var lastBytesSentAudio = BigInteger.valueOf(0)
-    private var lastFrameDecoded = java.lang.Long.valueOf(0)
+    private var lastFrameDecodedOut = 0L
+    private var lastFrameDecodedIn = 0L
 
     fun getStatsReport(report: RTCStatsReport?): String {
         if (report == null) {
             return ""
         }
 
-        var codecIdVideo: String? = null
-        var codecIdAudio: String? = null
-        var codecVideo: String? = ""
-        var codecAudio: String? = ""
-        var receivedBytesSRVideo = 0L
-        var sentBytesSRVideo = 0L
-        var receivedBytesSRAudio = 0L
-        var sentBytesSRAudio = 0L
-        var width = 0L
-        var height = 0L
-        var frameRate = 0L
+        var audioInCodec = "unknown"
+        var videoInCodec = "unknown"
+        var audioOutCodec = "unknown"
+        var videoOutCodec = "unknown"
+
+        var audioInBytesDelta = 0L
+        var audioOutBytesDelta = 0L
+        var videoInBytesDelta = 0L
+        var videoOutBytesDelta = 0L
+
+        var videoInWidth = 0L
+        var videoInHeight = 0L
+        var videoInFrameRate = 0L
+
+        var videoOutWidth = 0L
+        var videoOutHeight = 0L
+        var videoOutFrameRate = 0L
 
         for (stats in report.statsMap.values) {
             if (stats.type == "inbound-rtp") {
                 val members = stats.members
+                val mediaType = members["mediaType"]
 
-                if (members["mediaType"] == "video") {
-                    codecIdVideo = members["codecId"] as String?
+                if (mediaType == "video") {
+                    val codecId = members["codecId"] as String?
+                    val trackId = members["trackId"] as String?
+
+                    if (codecId != null) {
+                        val vmap = report.statsMap[codecId]!!
+                        videoInCodec = (vmap.members["mimeType"] as String?) ?: videoInCodec
+                    }
+
+                    if (trackId != null) {
+                        val vmap = report.statsMap[trackId]!!
+                        videoInWidth = (vmap.members["frameWidth"] as Long?) ?: 0L
+                        videoInHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
+                    }
+
                     val bytes = members["bytesReceived"] as BigInteger?
-                    receivedBytesSRVideo = bytes!!.toLong() - lastBytesReceivedVideo.toLong()
+                    videoInBytesDelta = (bytes!!.toLong() - lastBytesReceivedVideo.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesReceivedVideo = bytes
-                    val currentFrame = members["framesDecoded"] as Long?
-                    val lastFrame = lastFrameDecoded
-                    frameRate = ((currentFrame!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
-                    lastFrameDecoded = currentFrame
+
+                    val framesDecoded = members["framesDecoded"] as Long?
+                    val lastFrame = lastFrameDecodedIn
+                    videoInFrameRate = ((framesDecoded!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
+                    lastFrameDecodedIn = framesDecoded
                 }
 
-                if (members["mediaType"] == "audio") {
-                    codecIdAudio = members["codecId"] as String?
+                if (mediaType == "audio") {
+                    val codecId = members["codecId"] as String?
+                    if (codecId != null) {
+                        val vmap = report.statsMap[codecId]!!
+                        audioInCodec = (vmap.members["mimeType"] as String?) ?: audioInCodec
+                    }
+
                     val bytes = members["bytesReceived"] as BigInteger?
-                    receivedBytesSRAudio = bytes!!.toLong() - lastBytesReceivedAudio.toLong()
+                    audioInBytesDelta = (bytes!!.toLong() - lastBytesReceivedAudio.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesReceivedAudio = bytes
                 }
-            }
+            } else if (stats.type == "outbound-rtp") {
+                val map = stats.members
+                val mediaType = map["mediaType"]
 
-            if (stats.type == "outbound-rtp") {
-                val members = stats.members
-                if (members["mediaType"] == "video") {
-                    val bytes = members["bytesSent"] as BigInteger?
-                    sentBytesSRVideo = bytes!!.toLong() - lastBytesSentVideo.toLong()
+                if (mediaType == "video") {
+                    val trackId = map["trackId"] as String?
+                    val codecId = map["codecId"] as String?
+
+                    if (trackId != null) {
+                        val vmap = report.statsMap[trackId]!!
+                        videoOutWidth = (vmap.members["frameWidth"] as Long?) ?: 0L
+                        videoOutHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
+                    }
+
+                    if (codecId != null) {
+                        val vmap = report.statsMap[codecId]!!
+                        videoOutCodec = (vmap.members["mimeType"] as String?) ?: videoOutCodec
+                    }
+
+                    val bytes = map["bytesSent"] as BigInteger?
+                    videoOutBytesDelta = (bytes!!.toLong() - lastBytesSentVideo.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesSentVideo = bytes
+
+                    val framesEncoded = map["framesEncoded"] as Long?
+                    val lastFrame = lastFrameDecodedOut
+                    videoOutFrameRate = ((framesEncoded!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
+                    lastFrameDecodedOut = framesEncoded
                 }
-                if (members["mediaType"] == "audio") {
-                    val bytes = members["bytesSent"] as BigInteger?
-                    sentBytesSRAudio = bytes!!.toLong() - lastBytesSentAudio.toLong()
+
+                if (mediaType == "audio") {
+                    val codecId = map["codecId"] as String?
+                    if (codecId != null) {
+                        val vmap = report.statsMap[codecId]!!
+                        audioOutCodec = (vmap.members["mimeType"] as String?) ?: audioOutCodec
+                    }
+
+                    val bytes = map["bytesSent"] as BigInteger?
+                    audioOutBytesDelta = (bytes!!.toLong() - lastBytesSentAudio.toLong())  * 8 / STATS_INTERVAL_MS
                     lastBytesSentAudio = bytes
                 }
             }
-            if (stats.type == "track") {
-                val members = stats.members
-                if (members["kind"] == "video") {
-                    width = (members["frameWidth"] as Long?) ?: 0L
-                    height = (members["frameHeight"] as Long?) ?: 0L
-                }
-            }
         }
 
-        if (codecIdVideo != null) {
-            codecVideo = report.statsMap[codecIdVideo]!!.members["mimeType"] as String?
-        }
-        if (codecIdAudio != null) {
-            codecAudio = report.statsMap[codecIdAudio]!!.members["mimeType"] as String?
-        }
-
-        return " Codecs: $codecVideo $codecAudio\n" +
-               " Resolution: ${width}x$height\n" +
-               " Bitrate Audio ↓: ${receivedBytesSRVideo * 8 / STATS_INTERVAL_MS}kbps\n" +
-               " Bitrate Audio ↑: ${sentBytesSRVideo * 8 / STATS_INTERVAL_MS}kbps\n" +
-               " Bitrate Video ↓: ${receivedBytesSRAudio * 8 / STATS_INTERVAL_MS}kbps\n" +
-               " Bitrate Video ↑: ${sentBytesSRAudio * 8 / STATS_INTERVAL_MS}kbps\n" +
-               " Frames Rate: $frameRate\n"
+        return " Receiving\n" +
+               "  Video Codec: $videoInCodec\n" +
+               "   Resolution: ${videoInWidth}x$videoInHeight\n" +
+               "   FramesRate: $videoInFrameRate\n" +
+               "   Bitrate: ${videoInBytesDelta}kbps\n" +
+               "  Audio Codec: $audioInCodec\n" +
+               "   Bitrate: ${audioInBytesDelta}kbps\n" +
+               " Sending\n" +
+               "  Video Codec: $videoOutCodec\n" +
+               "   Resolution: ${videoOutWidth}x$videoOutHeight\n" +
+               "   FramesRate: $videoOutFrameRate\n" +
+               "   Bitrate: ${videoOutBytesDelta}kbps\n" +
+               "  Audio Codec: $audioOutCodec\n" +
+               "   Bitrate: ${audioOutBytesDelta}kbps\n"
     }
 
     companion object {

@@ -35,11 +35,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private lateinit var binder: MainService.MainBinder
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
-    private var calledWhileScreenOff = false
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
-    private var permissionRequested = false
     private var contact: Contact? = null
     private var callEventType: Event.Type = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
@@ -189,7 +187,6 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             startSensor()
         } else if ("ACTION_INCOMING_CALL" == action) {
             callEventType = Event.Type.INCOMING_UNKNOWN
-            calledWhileScreenOff = !(getSystemService(POWER_SERVICE) as PowerManager).isScreenOn
             passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
                 PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
                 "meshenger:wakeup"
@@ -328,9 +325,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private fun switchVideoEnabled(button: ImageButton) {
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE)
-            permissionRequested = true
             return
         }
+
         currentCall.isVideoEnabled = !currentCall.isVideoEnabled
         val animation = ScaleAnimation(
             1.0f,
@@ -440,18 +437,6 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             "meshenger:proximity"
         )
         wakeLock?.acquire()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (calledWhileScreenOff) {
-            calledWhileScreenOff = false
-            return
-        }
-        if (permissionRequested) {
-            permissionRequested = false
-            return
-        }
     }
 
     override fun onDestroy() {

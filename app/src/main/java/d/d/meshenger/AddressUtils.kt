@@ -147,11 +147,11 @@ internal object AddressUtils
             val end = addr.lastIndexOf("]:")
             if (end > 0) {
                 // [<address>]:<port>
-                val addr_part = addr.substring(1, end)
-                val port_part = addr.substring(end + 2)
-                val port = port_part.toUShortOrNull()?.toInt()
-                if (port != null && isIPAddress(addr_part)) {
-                    return InetSocketAddress(addr_part, port)
+                val addrPart = addr.substring(1, end)
+                val portPart = addr.substring(end + 2)
+                val port = portPart.toUShortOrNull()?.toInt()
+                if (port != null && isIPAddress(addrPart)) {
+                    return InetSocketAddress(addrPart, port)
                 }
             }
         } else {
@@ -159,14 +159,14 @@ internal object AddressUtils
                 //<hostname>:<port>
                 //<ipv4-address>:<port>
                 val end = addr.indexOf(":")
-                val addr_part = addr.substring(0, end)
-                val port_part = addr.substring(end + 1)
-                val port = port_part.toUShortOrNull()?.toInt()
+                val addrPart = addr.substring(0, end)
+                val portPart = addr.substring(end + 1)
+                val port = portPart.toUShortOrNull()?.toInt()
                 if (port != null) {
-                    if (isIPAddress(addr_part)) {
-                        return InetSocketAddress(addr_part, port)
+                    if (isIPAddress(addrPart)) {
+                        return InetSocketAddress(addrPart, port)
                     } else {
-                        return InetSocketAddress.createUnresolved(addr_part, port)
+                        return InetSocketAddress.createUnresolved(addrPart, port)
                     }
                 }
             } else if (isIPAddress(addr)) {

@@ -89,7 +89,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         (findViewById<View>(R.id.addressTv) as TextView).text =
             if (addresses.size == 0) getString(R.string.none) else addresses.joinToString()
 
-        val password = binder!!.getService().database_password
+        val password = binder!!.getService().databasePassword
         (findViewById<View>(R.id.passwordTv) as TextView).text =
             if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
 
@@ -246,9 +246,9 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .setTitle(getString(R.string.settings_change_name))
             .setView(et)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                val new_username = et.text.toString().trim { it <= ' ' }
-                if (Utils.isValidName(new_username)) {
-                    settings.username = new_username
+                val newUsername = et.text.toString().trim { it <= ' ' }
+                if (Utils.isValidName(newUsername)) {
+                    settings.username = newUsername
                     binder!!.saveDatabase()
                     initViews()
                 } else {
@@ -264,7 +264,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showChangePasswordDialog() {
-        val password = binder!!.getService().database_password
+        val password = binder!!.getService().databasePassword
         val et = EditText(this)
         et.setText(password)
         et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -273,8 +273,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .setTitle(getString(R.string.settings_change_password))
             .setView(et)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                val new_password = et.text.toString()
-                binder!!.getService().database_password = new_password
+                val newPassword = et.text.toString()
+                binder!!.getService().databasePassword = newPassword
                 binder!!.saveDatabase()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
                 initViews()

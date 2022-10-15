@@ -118,7 +118,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     // called for outgoing calls
-    private constructor(
+    constructor(
         context: Context,
         binder: MainService.MainBinder,
         contact: Contact,
@@ -409,8 +409,8 @@ class RTCCall : DataChannel.Observer {
         //Migrated to Unified Plan
         //upStream = factory.createLocalMediaStream("stream1")
         try {
-            connection.addTrack(audioTrack, listOf("stream1"))
-            connection.addTrack(videoTrack, listOf("stream1"))
+            connection.addTrack(getAudioTrack(), listOf("stream1"))
+            connection.addTrack(getVideoTrack(), listOf("stream1"))
         } catch (e: Exception){
             e.printStackTrace()
         }
@@ -434,38 +434,36 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    private val videoTrack: VideoTrack?
-        get() {
-            capturer = createCapturer()
-            if (capturer != null) {
-                val surfaceTextureHelper =
-                    SurfaceTextureHelper.create("CaptureThread", eglBaseContext)
-                val videoSource = factory.createVideoSource(capturer!!.isScreencast)
-                capturer!!.initialize(
-                    surfaceTextureHelper,
-                    this@RTCCall.context,
-                    videoSource.capturerObserver
+    private fun getVideoTrack(): VideoTrack? {
+        capturer = createCapturer()
+        if (capturer != null) {
+            val surfaceTextureHelper =
+                SurfaceTextureHelper.create("CaptureThread", eglBaseContext)
+            val videoSource = factory.createVideoSource(capturer!!.isScreencast)
+            capturer!!.initialize(
+                surfaceTextureHelper,
+                this@RTCCall.context,
+                videoSource.capturerObserver
+            )
+            localRender.setTarget(localRenderer)
+            Handler(Looper.getMainLooper()).post {
+                localRenderer!!.init(
+                    eglBaseContext,
+                    null
                 )
-                localRender.setTarget(localRenderer)
-                Handler(Looper.getMainLooper()).post {
-                    localRenderer!!.init(
-                        eglBaseContext,
-                        null
-                    )
-                }
-                val localVideoTrack = factory.createVideoTrack("video1", videoSource)
-                localVideoTrack.addSink(localRenderer)
-                localVideoTrack.setEnabled(true)
-                return localVideoTrack
             }
-            return null
+            val localVideoTrack = factory.createVideoTrack("video1", videoSource)
+            localVideoTrack.addSink(localRenderer)
+            localVideoTrack.setEnabled(true)
+            return localVideoTrack
         }
+        return null
+    }
 
-    private val audioTrack: AudioTrack
-        get() = factory.createAudioTrack(
-            "audio1",
-            factory.createAudioSource(MediaConstraints())
+    private fun getAudioTrack(): AudioTrack {
+        return factory.createAudioTrack("audio1", factory.createAudioSource(MediaConstraints())
         )
+    }
 
     private fun initVideo(c: Context) {
         PeerConnectionFactory.initialize(
@@ -690,7 +688,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun interface OnStateChangeListener {
-        fun onStateChange(state: CallState?)
+        fun onStateChange(state: CallState)
     }
 
     private class ProxyVideoSink : VideoSink {
@@ -708,17 +706,6 @@ class RTCCall : DataChannel.Observer {
         @Synchronized
         fun setTarget(target: VideoSink?) {
             this.target = target
-        }
-    }
-
-    companion object {
-        fun startCall(
-            context: Context,
-            binder: MainService.MainBinder,
-            contact: Contact,
-            listener: OnStateChangeListener
-        ): RTCCall {
-            return RTCCall(context, binder, contact, listener)
         }
     }
 }

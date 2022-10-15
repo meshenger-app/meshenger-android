@@ -28,17 +28,16 @@ import java.io.IOException
 
 class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     private val buttonAnimationDuration: Long = 400
-    private val CAMERA_PERMISSION_REQUEST_CODE = 2
-    private var statusTextView: TextView? = null
+    private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
     private lateinit var nameTextView: TextView
     private lateinit var binder: MainService.MainBinder
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
+    private lateinit var contact: Contact
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
-    private var contact: Contact? = null
     private var callEventType: Event.Type = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
@@ -69,14 +68,18 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         }
     }
 
-    private val activeCallback = OnStateChangeListener { callState: CallState? ->
+    private val stateChangeCallback = OnStateChangeListener { callState: CallState ->
         when (callState) {
             CallState.CONNECTING -> {
-                Log.d(this, "activeCallback: CONNECTING")
+                Log.d(this, "stateChangeCallback: CONNECTING")
                 setStatusText(getString(R.string.call_connecting))
             }
+            CallState.RINGING -> {
+                Log.d(this, "stateChangeCallback: RINGING")
+                setStatusText(getString(R.string.call_ringing))
+            }
             CallState.CONNECTED -> {
-                Log.d(this, "activeCallback: CONNECTED")
+                Log.d(this, "stateChangeCallback: CONNECTED")
                 Handler(mainLooper).post {
                     setCallStats(showCallStats)
                     findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
@@ -85,22 +88,17 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                 setStatusText(getString(R.string.call_connected))
             }
             CallState.DISMISSED -> {
-                Log.d(this, "activeCallback: DISMISSED")
+                Log.d(this, "stateChangeCallback: DISMISSED")
                 stopDelayed(getString(R.string.call_denied))
             }
-            CallState.RINGING -> {
-                Log.d(this, "activeCallback: RINGING")
-                setStatusText(getString(R.string.call_ringing))
-            }
             CallState.ENDED -> {
-                Log.d(this, "activeCallback: ENDED")
+                Log.d(this, "stateChangeCallback: ENDED")
                 stopDelayed(getString(R.string.call_ended))
             }
             CallState.ERROR -> {
-                Log.d(this, "activeCallback: ERROR")
+                Log.d(this, "stateChangeCallback: ERROR")
                 stopDelayed(getString(R.string.call_error))
             }
-            else -> {}
         }
     }
 
@@ -141,6 +139,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         statusTextView = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
         nameTextView = findViewById(R.id.callName)
+        contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
         findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
             showCallStats = !showCallStats
@@ -149,18 +148,23 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
 
         val action = intent.action
 
-        contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
+        if (contact.name.isEmpty()) {
+            nameTextView.text = resources.getString(R.string.unknown_caller)
+        } else {
+            nameTextView.text = contact.name
+        }
+
         Log.d(this, "onCreate: $action")
         if ("ACTION_OUTGOING_CALL" == action) {
             callEventType = Event.Type.OUTGOING_UNKNOWN
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainService.MainBinder
-                    currentCall = RTCCall.startCall(
+                    currentCall = RTCCall(
                         this@CallActivity,
                         binder,
-                        contact!!,
-                        activeCallback
+                        contact,
+                        stateChangeCallback
                     )
                     currentCall.setRemoteRenderer(findViewById(R.id.fullscreen_video_view))
                     currentCall.setLocalRenderer(findViewById(R.id.pip_video_view))
@@ -171,12 +175,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                     // nothing to do
                 }
             }
-            if (contact!!.name.isEmpty()) {
-                nameTextView.text = resources.getString(R.string.unknown_caller)
-            } else {
-                nameTextView.text = contact!!.name
-            }
+
             bindService(Intent(this, MainService::class.java), connection, 0)
+
             val declineListener = View.OnClickListener { view: View? ->
                 // end call
                 currentCall.hangUp()
@@ -194,11 +195,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             passiveWakeLock.acquire(10000)
             connection = this
             bindService(Intent(this, MainService::class.java), this, 0)
-            if (contact!!.name.isEmpty()) {
-                nameTextView.text = resources.getString(R.string.unknown_caller)
-            } else {
-                nameTextView.text = contact!!.name
-            }
+
             findViewById<View>(R.id.callAccept).visibility = View.VISIBLE
             startRinging()
 
@@ -247,16 +244,29 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             }
             findViewById<View>(R.id.callAccept).setOnClickListener(acceptListener)
             findViewById<View>(R.id.callDecline).setOnClickListener(declineListener)
+        } else {
+            Log.d(this, "missing action, should not happen")
+            finish()
+            return
         }
+
+        findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
+            showCallStats = !showCallStats
+            setCallStats(showCallStats)
+        }
+
         findViewById<View>(R.id.speakerMode).setOnClickListener { button: View ->
-            chooseVoiceMode(
-                button as ImageButton
-            )
+            chooseVoiceMode(button as ImageButton)
         }
+
         findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View ->
             switchVideoEnabled(button as ImageButton)
         }
-        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener { currentCall.switchFrontFacing() }
+
+        findViewById<View>(R.id.frontFacingSwitch).setOnClickListener {
+            currentCall.switchFrontFacing()
+        }
+
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
     }
@@ -267,14 +277,15 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return
         }
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibrator = vibratorManager.defaultVibrator
         } else {
             @Suppress("DEPRECATION")
-            getSystemService(VIBRATOR_SERVICE) as Vibrator
+            vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
+
         val pattern = longArrayOf(1500, 800, 800, 800)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val vibe = VibrationEffect.createWaveform(pattern, 1)
@@ -283,9 +294,11 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             @Suppress("DEPRECATION")
             vibrator!!.vibrate(pattern, 1)
         }
+
         if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
             return
         }
+
         ringtone = RingtoneManager.getRingtone(
             this,
             RingtoneManager.getActualDefaultRingtoneUri(
@@ -448,7 +461,7 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             currentCall.decline()
         }
         currentCall.cleanup()
-        binder.getEvents().addEvent(contact!!, callEventType)
+        binder.getEvents().addEvent(contact, callEventType)
 
         unbindService(connection)
 
@@ -464,12 +477,12 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
     }
 
     private fun setStatusText(text: String) {
-        Handler(mainLooper).post { statusTextView!!.text = text }
+        Handler(mainLooper).post { statusTextView.text = text }
     }
 
     private fun stopDelayed(message: String) {
         Handler(mainLooper).post {
-            statusTextView!!.text = message
+            statusTextView.text = message
             Handler(mainLooper).postDelayed({ finish() }, 2000)
         }
     }
@@ -515,5 +528,9 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
 
     override fun onBackPressed() {
         moveTaskToBack(true)
+    }
+
+    companion object {
+        const val CAMERA_PERMISSION_REQUEST_CODE = 2
     }
 }

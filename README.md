@@ -1,10 +1,11 @@
 # Meshenger
 
- Voice- and video calls without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
+ A Voice- and video phone App without the need for accounts or access to the Internet. Scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
 
 Features:
 
 - voice and video calls
+- no accounts or registration
 - encrypted communication
 - database backup and encryption
 - add custom addresses to reach contacts

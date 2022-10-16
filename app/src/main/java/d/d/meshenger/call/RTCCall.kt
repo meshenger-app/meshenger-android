@@ -22,11 +22,7 @@ import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.Executors
 
-
 class RTCCall : DataChannel.Observer {
-    private val StateChangeMessage = "StateChange"
-    private val CameraDisabledMessage = "CameraDisabled"
-    private val CameraEnabledMessage = "CameraEnabled"
     private val eglBaseContext = EglBase.create().eglBaseContext
     private val localRender = ProxyVideoSink()
     var state: CallState? = null
@@ -39,8 +35,15 @@ class RTCCall : DataChannel.Observer {
     private var localRenderer: SurfaceViewRenderer? = null
     private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
-    val statsTimer = Timer()
-    val executor = Executors.newSingleThreadExecutor()
+    private var context: Context
+    private var contact: Contact
+    private var ownPublicKey: ByteArray
+    private var ownSecretKey: ByteArray
+    private var iceServers = mutableListOf<IceServer>()
+    private var listener: OnStateChangeListener?
+    private var binder: MainService.MainBinder
+    private val statsTimer = Timer()
+    private val executor = Executors.newSingleThreadExecutor()
 
     //Migrated to Unified Plan
     //private var upStream: MediaStream? = null
@@ -62,8 +65,8 @@ class RTCCall : DataChannel.Observer {
                 }
                 val o = JSONObject()
                 o.put(
-                    StateChangeMessage,
-                    if (enabled) CameraEnabledMessage else CameraDisabledMessage
+                    STATE_CHANGE_MESSAGE,
+                    if (enabled) CAMERA_ENABLE_MESSAGE else CAMERA_DISABLE_MESSAGE
                 )
                 Log.d(this, "setVideoEnabled: $o")
                 Thread {
@@ -84,13 +87,6 @@ class RTCCall : DataChannel.Observer {
                 e.printStackTrace()
             }
         }
-    private var context: Context
-    private var contact: Contact
-    private var ownPublicKey: ByteArray
-    private var ownSecretKey: ByteArray
-    private var iceServers: MutableList<IceServer> = ArrayList()
-    private var listener: OnStateChangeListener?
-    private var binder: MainService.MainBinder
 
     // called for incoming calls
     constructor(
@@ -100,13 +96,15 @@ class RTCCall : DataChannel.Observer {
         commSocket: Socket?,
         offer: String?
     ) {
+        Log.d(this, "RTCCall created")
+
         this.context = context
         this.contact = contact
         this.commSocket = commSocket
-        listener = null
+        this.listener = null
         this.binder = binder
-        ownPublicKey = binder.getSettings().publicKey
-        ownSecretKey = binder.getSettings().secretKey
+        this.ownPublicKey = binder.getSettings().publicKey
+        this.ownSecretKey = binder.getSettings().secretKey
         this.offer = offer
 
         // usually empty
@@ -124,25 +122,29 @@ class RTCCall : DataChannel.Observer {
         contact: Contact,
         listener: OnStateChangeListener
     ) {
+        Log.d(this, "RTCCall created")
+
         this.context = context
         this.contact = contact
-        commSocket = null
+        this.commSocket = null
         this.listener = listener
         this.binder = binder
-        ownPublicKey = binder.getSettings().publicKey
-        ownSecretKey = binder.getSettings().secretKey
-        Log.d(this, "RTCCall created")
+        this.ownPublicKey = binder.getSettings().publicKey
+        this.ownSecretKey = binder.getSettings().secretKey
 
         // usually empty
         for (server in binder.getSettings().iceServers) {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
+
         initVideo(context)
+
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             context.setTheme(R.style.AppTheme_Dark)
         } else {
             context.setTheme(R.style.AppTheme_Light)
         }
+
         Thread {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
@@ -236,8 +238,7 @@ class RTCCall : DataChannel.Observer {
                                     return
                                 }
                                 val obj = JSONObject(decrypted)
-                                val action = obj.getString("action")
-                                when (action) {
+                                when (val action = obj.getString("action")) {
                                     "connected" -> {
                                         reportStateChange(CallState.CONNECTED)
                                         handleAnswer(obj.getString("answer"))
@@ -353,10 +354,10 @@ class RTCCall : DataChannel.Observer {
         try {
             Log.d(this, "onMessage: $s")
             var o = JSONObject(s)
-            if (o.has(StateChangeMessage)) {
-                when (val state = o.getString(StateChangeMessage)) {
-                    CameraEnabledMessage, CameraDisabledMessage -> {
-                        setRemoteVideoEnabled(state == CameraEnabledMessage)
+            if (o.has(STATE_CHANGE_MESSAGE)) {
+                when (val state = o.getString(STATE_CHANGE_MESSAGE)) {
+                    CAMERA_ENABLE_MESSAGE, CAMERA_DISABLE_MESSAGE -> {
+                        setRemoteVideoEnabled(state == CAMERA_ENABLE_MESSAGE)
                     }
                 }
             }
@@ -707,5 +708,11 @@ class RTCCall : DataChannel.Observer {
         fun setTarget(target: VideoSink?) {
             this.target = target
         }
+    }
+
+    companion object {
+        private const val STATE_CHANGE_MESSAGE = "StateChange"
+        private const val CAMERA_DISABLE_MESSAGE = "CameraDisabled"
+        private const val CAMERA_ENABLE_MESSAGE = "CameraEnabled"
     }
 }

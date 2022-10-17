@@ -135,7 +135,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
 
         val builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.confirm)
-        builder.setMessage(getString(R.string.contact_remove) + " ${name}")
+        builder.setMessage(String.format(getString(R.string.contact_remove), name))
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
                 binder.deleteContact(publicKey)

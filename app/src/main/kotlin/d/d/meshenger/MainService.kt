@@ -28,6 +28,7 @@ import java.net.Socket
 import java.util.*
 
 class MainService : Service(), Runnable {
+    private val binder = MainBinder()
     private var database: Database? = null
     var first_start = false
     private var database_path = ""
@@ -261,7 +262,7 @@ class MainService : Service(), Runnable {
                         // someone calls us
                         Log.d(this, "call...")
                         val offer = obj.getString("offer")
-                        currentCall = RTCCall(this, MainBinder(), contact, client, offer)
+                        currentCall = RTCCall(this, binder, contact, client, offer)
                         // respond that we accept the call
                         val encrypted = encryptMessage(
                             "{\"action\":\"ringing\"}",
@@ -428,7 +429,6 @@ class MainService : Service(), Runnable {
         var ownPublicKey: ByteArray?,
         var ownSecretKey: ByteArray?,
     ) : Runnable {
-        val binder = MainBinder()
         private fun setState(publicKey: ByteArray, state: Contact.State) {
             val contact = binder.getContacts().getContactByPublicKey(publicKey)
             if (contact != null) {
@@ -498,7 +498,7 @@ class MainService : Service(), Runnable {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return MainBinder()
+        return binder
     }
 
     companion object {

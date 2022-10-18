@@ -81,19 +81,15 @@ class MainService : Service(), Runnable {
     }
 
     fun loadDatabase() {
-        try {
-            if (File(database_path).exists()) {
-                // open existing database
-                val data = readInternalFile(database_path)
-                database = Database.fromData(data, database_password)
-                first_start = false
-            } else {
-                // create new database
-                database = Database()
-                first_start = true
-            }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+        if (File(database_path).exists()) {
+            // open existing database
+            val db = readInternalFile(database_path)
+            database = Database.fromData(db, database_password)
+            first_start = false
+        } else {
+            // create new database
+            database = Database()
+            first_start = true
         }
     }
 

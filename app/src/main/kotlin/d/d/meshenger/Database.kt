@@ -27,6 +27,8 @@ class Database {
         events.destroy()
     }
 
+    class WrongPasswordException() : Exception()
+
     companion object {
         private const val TAG = "Database"
         var version = "4.0.2" // current version
@@ -37,11 +39,15 @@ class Database {
                 Log.d(this, "Decrypt database")
                 val encrypted = decryptDatabase(db_data, password.toByteArray())
                 if (encrypted == null) {
-                    throw IOException(Resources.getSystem().getString(R.string.database_wrong_password))
+                    throw WrongPasswordException()
                 }
                 encrypted
             } else {
                 db_data
+            }
+
+            if (stringData.isEmpty() || stringData[0] != '{'.code.toByte()) {
+                throw WrongPasswordException()
             }
 
             val obj = JSONObject(

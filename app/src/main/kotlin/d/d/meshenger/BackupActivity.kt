@@ -141,10 +141,13 @@ class BackupActivity : BaseActivity(), ServiceConnection {
 
         try {
             val password = passwordEditText.text.toString()
-            val data = readExternalFile(this, uri)
-            new_database = Database.fromData(data, password)
+            val db = readExternalFile(this, uri)
+            new_database = Database.fromData(db, password)
+        } catch (e: Database.WrongPasswordException) {
+            Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
+            return
         } catch (e: Exception) {
-            showMessage(getString(R.string.error), e.toString())
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
             return
         }
 

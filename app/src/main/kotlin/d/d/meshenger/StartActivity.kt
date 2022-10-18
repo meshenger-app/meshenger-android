@@ -51,7 +51,15 @@ class StartActivity : BaseActivity(), ServiceConnection {
             1 -> {
                 Log.d(this, "init 1: load database")
                 // open without password
-                binder!!.getService().loadDatabase()
+                try {
+                    binder!!.getService().loadDatabase()
+                } catch (e: Database.WrongPasswordException) {
+                    // ignore and continue with initialization
+                } catch (e: Exception) {
+                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                    finish()
+                    return
+                }
                 continueInit()
             }
             2 -> {
@@ -295,10 +303,15 @@ class StartActivity : BaseActivity(), ServiceConnection {
         okButton.setOnClickListener {
             val password = passwordEditText.text.toString()
             binder!!.getService().database_password = password
-            binder!!.getService().loadDatabase()
-            if (binder!!.getDatabase() == null) {
+            try {
+                binder!!.getService().loadDatabase()
+            } catch (e: Database.WrongPasswordException) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
-            } else {
+            } catch (e: Exception) {
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+            }
+
+            if (binder!!.getDatabase() != null) {
                 // close dialog
                 ddialog.dismiss()
                 continueInit()

@@ -45,7 +45,6 @@ class MainService : Service(), Runnable {
         Thread(this).start()
     }
 
-    private val NOTIFICATION = 42
     private fun showNotification() {
         val channelId = "meshenger_service"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -77,7 +76,7 @@ class MainService : Service(), Runnable {
             .setContentText(resources.getText(R.string.listen_for_incoming_calls))
             .setContentIntent(pendingNotificationIntent)
             .build()
-        startForeground(NOTIFICATION, notification)
+        startForeground(NOTIFICATION_ID, notification)
     }
 
     fun loadDatabase() {
@@ -196,7 +195,7 @@ class MainService : Service(), Runnable {
             showNotification()
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "Received Stop Foreground Intent")
-            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION)
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION_ID)
             stopForeground(true)
             stopSelf()
         }
@@ -501,7 +500,8 @@ class MainService : Service(), Runnable {
         const val serverPort = 10001
         const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
         const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
-        private var server: ServerSocket? = null
+        private const val NOTIFICATION_ID = 42
+
         fun start(ctx: Context?) {
             val startIntent = Intent(ctx, MainService::class.java)
             startIntent.action = START_FOREGROUND_ACTION

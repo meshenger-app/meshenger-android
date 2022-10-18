@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textfield.TextInputEditText
 import d.d.meshenger.MainService.MainBinder
 import java.util.*
 
@@ -265,22 +266,24 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
     private fun showChangePasswordDialog() {
         val password = binder!!.getService().database_password
-        val et = EditText(this)
-        et.setText(password)
-        et.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        et.setSelection(password.length)
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.settings_change_password))
-            .setView(et)
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                val new_password = et.text.toString()
-                binder!!.getService().database_password = new_password
-                binder!!.saveDatabase()
-                Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
-                initViews()
-            }
-            .setNegativeButton(resources.getText(R.string.cancel), null)
-            .show()
+
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_database_password)
+        val passwordInput = dialog.findViewById<TextInputEditText>(R.id.change_password_edit_textview)
+		val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
+        val changeButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+
+        passwordInput.setText(password)
+        changeButton.setOnClickListener {
+            val new_password = passwordInput.text.toString()
+            binder!!.getService().database_password = new_password
+            binder!!.saveDatabase()
+            Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            initViews()
+            dialog.cancel()
+        }
+        abortButton.setOnClickListener { dialog.cancel() }
+        dialog.show()
     }
 
     private fun showChangeIceServersDialog() {

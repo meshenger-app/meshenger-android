@@ -293,7 +293,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     // ask for database password
     private fun showDatabasePasswordDialog() {
         val ddialog = Dialog(this)
-        ddialog.setContentView(R.layout.dialog_database_password)
+        ddialog.setContentView(R.layout.dialog_enter_database_password)
         ddialog.setCancelable(false)
         ddialog.setCanceledOnTouchOutside(false)
 

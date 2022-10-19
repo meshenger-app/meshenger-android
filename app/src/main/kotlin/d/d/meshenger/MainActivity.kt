@@ -2,10 +2,14 @@ package d.d.meshenger
 
 import android.Manifest
 import android.app.Activity
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
-import android.net.wifi.WifiManager
 import android.os.*
 import android.provider.Settings
 import android.view.Menu
@@ -60,6 +64,28 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }
     }
 
+    private fun isWifiConnected(): Boolean {
+        val context = this as Context
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+            return when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                //activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            val connManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            @Suppress("DEPRECATION")
+            val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI) ?: return false
+            @Suppress("DEPRECATION")
+            return mWifi.isConnected
+        }
+    }
+
     private fun showInvalidAddressSettingsWarning() {
         Handler(Looper.getMainLooper()).postDelayed({
             val localBinder = binder
@@ -76,8 +102,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 // no addresses configured at all
                 Toast.makeText(this, R.string.warning_no_addresses_configured, Toast.LENGTH_LONG).show()
             } else {
-                val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-                if (wifi.isWifiEnabled) {
+                if (isWifiConnected()) {
                     val systemAddresses = AddressUtils.collectAddresses().map { it.address }
                     if (storedIPAddresses.intersect(systemAddresses.toSet()).isEmpty()) {
                         // none of the configured addresses are used in the system

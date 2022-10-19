@@ -30,6 +30,7 @@ import java.util.*
 
 class MainService : Service(), Runnable {
     private val binder = MainBinder()
+    private var server: ServerSocket? = null
     private var database: Database? = null
     var first_start = false
     private var database_path = ""

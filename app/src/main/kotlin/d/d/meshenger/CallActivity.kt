@@ -31,7 +31,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
     private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
     private lateinit var nameTextView: TextView
-    private lateinit var binder: MainService.MainBinder
+    private var binder: MainService.MainBinder? = null
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
     private lateinit var contact: Contact
@@ -162,7 +162,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                     binder = iBinder as MainService.MainBinder
                     currentCall = RTCCall(
                         this@CallActivity,
-                        binder,
+                        binder!!,
                         contact,
                         stateChangeCallback
                     )
@@ -470,7 +470,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
             currentCall.decline()
         }
         currentCall.cleanup()
-        binder.getEvents().addEvent(contact, callEventType)
+        binder!!.getEvents().addEvent(contact, callEventType)
 
         unbindService(connection)
 

@@ -9,12 +9,12 @@ import java.util.*
 
 class Settings {
     var settingsMode = "basic"
-    var playVideo = false
-    var playAudio = false
+    //var playVideo = false
+    //var playAudio = false
 
-    var audioProcessing = false
-    var videoCodec = "VP8"
-    var audioCodec = "OPUS"
+    //var audioProcessing = false
+    //var videoCodec = "VP8"
+    //var audioCodec = "OPUS"
 
     /*
      * speakerphone:
@@ -23,8 +23,8 @@ class Settings {
      *  "true"  => enable hands-free talking
      *  "false" => disable hands-free talking
      */
-    var speakerphone = "true"
-    var videoResolution = "Default"
+    //var speakerphone = "true"
+    //var videoResolution = "Default"
 
     var username = ""
     var secretKey = byteArrayOf()

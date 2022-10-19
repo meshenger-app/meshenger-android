@@ -167,7 +167,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 (compoundButton as RadioButton).setTextColor(unselectedColor)
             }
         }
-
+/*
         setupSpinner(settings.videoCodec,
             R.id.spinnerVideoCodecs,
             R.array.videoCodecs,
@@ -221,7 +221,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             settings.playVideo = isChecked
             binder!!.saveDatabase()
         }
-
+*/
         val ignoreBatteryOptimizations = getIgnoreBatteryOptimizations()
         val ignoreBatteryOptimizationsCB =
             findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations)

@@ -312,13 +312,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         initViews()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val intent = Intent(this@SettingsActivity, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        startActivity(intent)
-    }
-
     private fun applySettingsMode(settingsMode: String) {
         when (settingsMode) {
             "basic" -> {

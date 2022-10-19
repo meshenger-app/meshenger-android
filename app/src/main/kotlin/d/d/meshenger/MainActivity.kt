@@ -109,7 +109,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        Log.d(this, "OnServiceConnected")
+        Log.d(this, "onServiceConnected")
         binder = iBinder as MainBinder
 
         viewPager.adapter = ViewPagerFragmentAdapter(this)
@@ -135,7 +135,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        Log.d(this, "OnServiceDisconnected")
+        Log.d(this, "onServiceConnected")
         binder = null
     }
 
@@ -196,8 +196,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         return true
     }
 
-    class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm)
-    {
+    class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
         override fun getItemCount(): Int {
             return 2
         }

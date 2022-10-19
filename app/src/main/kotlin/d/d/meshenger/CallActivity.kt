@@ -26,7 +26,7 @@ import org.webrtc.RTCStatsCollectorCallback
 import org.webrtc.RTCStatsReport
 import java.io.IOException
 
-class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
+class CallActivity : BaseActivity(), SensorEventListener {
     private val buttonAnimationDuration: Long = 400
     private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
@@ -193,8 +193,17 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
                 "meshenger:wakeup"
             )
             passiveWakeLock.acquire(10000)
-            connection = this
-            bindService(Intent(this, MainService::class.java), this, 0)
+            connection = object : ServiceConnection {
+                override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+                    binder = iBinder as MainService.MainBinder
+                    currentCall = binder!!.getCurrentCall()!!
+                }
+
+                override fun onServiceDisconnected(componentName: ComponentName) {
+                    binder = null
+                }
+            }
+            bindService(Intent(this, MainService::class.java), connection, 0)
 
             findViewById<View>(R.id.callAccept).visibility = View.VISIBLE
             startRinging()
@@ -485,15 +494,6 @@ class CallActivity : BaseActivity(), ServiceConnection, SensorEventListener {
             statusTextView.text = message
             Handler(mainLooper).postDelayed({ finish() }, 2000)
         }
-    }
-
-    override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainService.MainBinder
-        currentCall = binder.getCurrentCall()!!
-    }
-
-    override fun onServiceDisconnected(componentName: ComponentName) {
-        binder.shutdown()
     }
 
     override fun onSensorChanged(sensorEvent: SensorEvent) {

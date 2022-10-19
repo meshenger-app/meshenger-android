@@ -53,22 +53,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
         MainService.start(this)
 
         viewPager = findViewById(R.id.container)
-        viewPager.adapter = ViewPagerFragmentAdapter(this)
-
-        val tabLayout = findViewById<TabLayout>(R.id.tabs)
-
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.title_contacts)
-                else -> getString(R.string.title_events)
-            }
-        }.attach()
 
         // ask for audio recording permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 2)
-        } else {
-            showInvalidAddressSettingsWarning()
         }
     }
 
@@ -123,6 +111,18 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "OnServiceConnected")
         binder = iBinder as MainBinder
+
+        viewPager.adapter = ViewPagerFragmentAdapter(this)
+
+        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> getString(R.string.title_contacts)
+                else -> getString(R.string.title_events)
+            }
+        }.attach()
+
+        showInvalidAddressSettingsWarning()
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))

@@ -160,7 +160,7 @@ class RTCCall : DataChannel.Observer {
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         Log.d(this, "transferring offer...")
                         try {
-                            commSocket = contact.createSocket()
+                            commSocket = createCommSocket(contact)
                             if (commSocket == null) {
                                 Log.d(this, "cannot establish connection")
                                 reportStateChange(CallState.ERROR)
@@ -301,6 +301,20 @@ class RTCCall : DataChannel.Observer {
                 }
             }, constraints)
         }.start()
+    }
+
+    private fun createCommSocket(contact: Contact): Socket? {
+        val addresses = contact.getAllSocketAddresses()
+        Log.d(this, "addresses to try: " + addresses.joinToString())
+
+        for (address in addresses) {
+            Log.d(this, "try address: $address")
+            val socket = AddressUtils.establishConnection(address)
+            if (socket != null) {
+                return socket
+            }
+        }
+        return null
     }
 
     private fun closeCommSocket() {

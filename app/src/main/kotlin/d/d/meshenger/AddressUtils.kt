@@ -11,6 +11,33 @@ import kotlin.experimental.xor
 
 internal object AddressUtils
 {
+    fun establishConnection(address: InetSocketAddress): Socket? {
+        val connectionTimeout = 500
+        val socket = Socket()
+
+        try {
+            // timeout to establish connection
+            socket.connect(address, connectionTimeout)
+            return socket
+        } catch (e: SocketTimeoutException) {
+            // ignore
+        } catch (e: ConnectException) {
+            // device is online, but does not listen on the given port
+        } catch (e: UnknownHostException) {
+            Log.d(this, "unknown host: $address")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
+            socket.close()
+        } catch (e: Exception) {
+            // ignore
+        }
+
+        return null
+    }
+
     fun getAllSocketAddresses(initial_addresses: List<String>, last_working_address: InetSocketAddress?, port: Int): List<InetSocketAddress> {
         val addresses = mutableListOf<InetSocketAddress>()
 

@@ -121,6 +121,20 @@ class MainService : Service(), Runnable {
         }
     }
 
+    private fun createCommSocket(contact: Contact): Socket? {
+        val addresses = contact.getAllSocketAddresses()
+        Log.d(this, "addresses to try: " + addresses.joinToString())
+
+        for (address in addresses) {
+            Log.d(this, "try address: $address")
+            val socket = AddressUtils.establishConnection(address)
+            if (socket != null) {
+                return socket
+            }
+        }
+        return null
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         run = false
@@ -141,7 +155,7 @@ class MainService : Service(), Runnable {
                             ?: continue
                     var socket: Socket? = null
                     try {
-                        socket = contact.createSocket()
+                        socket = createCommSocket(contact)
                         if (socket == null) {
                             continue
                         }
@@ -442,7 +456,7 @@ class MainService : Service(), Runnable {
                 var socket: Socket? = null
                 val publicKey = contact.publicKey
                 try {
-                    socket = contact.createSocket()
+                    socket = createCommSocket(contact)
                     if (socket == null) {
                         setState(publicKey, Contact.State.OFFLINE)
                         continue

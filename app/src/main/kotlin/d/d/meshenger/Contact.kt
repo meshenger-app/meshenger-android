@@ -29,43 +29,8 @@ class Contact(
     // last working address (use this address next connection and for unknown contact initialization)
     var lastWorkingAddress: InetSocketAddress? = null
 
-    /*
-    * Create a connection to the contact.
-    * Must not be called on the GUI thread.
-    */
-    fun createSocket(): Socket? {
-        val connectionTimeout = 500
-
-        val addresses = AddressUtils.getAllSocketAddresses(addresses, lastWorkingAddress, MainService.serverPort)
-        Log.d(this, "addresses to try: " + addresses.joinToString())
-
-        for (address in addresses) {
-            Log.d(this, "try address: $address")
-
-            val socket = Socket()
-
-            try {
-                // timeout to establish connection
-                socket.connect(address, connectionTimeout)
-                return socket
-            } catch (e: SocketTimeoutException) {
-                // ignore
-            } catch (e: ConnectException) {
-                // device is online, but does not listen on the given port
-            } catch (e: UnknownHostException) {
-                Log.d(this, "unknown host: $address")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            try {
-                socket.close()
-            } catch (e: Exception) {
-                // ignore
-            }
-        }
-
-        return null
+    fun getAllSocketAddresses() : List<InetSocketAddress>{
+        return AddressUtils.getAllSocketAddresses(addresses, lastWorkingAddress, MainService.serverPort)
     }
 
     companion object {

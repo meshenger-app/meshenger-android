@@ -68,16 +68,6 @@ internal object Utils {
         return true
     }
 
-    fun getApplicationVersion(context: Context): String {
-        try {
-            val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            return info.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        return ""
-    }
-
     fun split(str: String): List<String> {
         return str.split("\\s*,\\s*")
     }

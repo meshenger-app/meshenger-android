@@ -26,7 +26,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         setTitle(getString(R.string.scan_invitation))
 
-        bindService()
+        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
 
         findViewById<View>(R.id.fabPresenter).setOnClickListener {
             startActivity(Intent(this, QRScanActivity::class.java))
@@ -53,11 +53,6 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
         if (binder != null) {
             unbindService(this)
         }
-    }
-
-    private fun bindService() {
-        val serviceIntent = Intent(this, MainService::class.java)
-        bindService(serviceIntent, this, BIND_AUTO_CREATE)
     }
 
     private fun generateQR(contact: Contact) {

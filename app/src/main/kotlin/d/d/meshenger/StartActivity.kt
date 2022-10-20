@@ -43,6 +43,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
 
         // start MainService and call back via onServiceConnected()
         startService(Intent(this, MainService::class.java))
+
+        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
     }
 
     private fun continueInit() {

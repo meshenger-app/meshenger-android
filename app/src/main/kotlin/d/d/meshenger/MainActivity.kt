@@ -56,6 +56,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
         permissionToDrawOverlays();
         MainService.start(this)
 
+        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+
         viewPager = findViewById(R.id.container)
 
         // ask for audio recording permissions

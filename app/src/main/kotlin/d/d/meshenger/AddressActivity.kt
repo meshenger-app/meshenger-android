@@ -53,7 +53,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
 		customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
 		systemAddresses = AddressUtils.collectAddresses().toMutableList()
 
-        bindService()
+        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
     }
 
     fun initViews() {
@@ -105,12 +105,6 @@ class AddressActivity : BaseActivity(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         unbindService(this)
-    }
-
-    private fun bindService() {
-        // ask MainService to get us the binder object
-        val serviceIntent = Intent(this, MainService::class.java)
-        bindService(serviceIntent, this, BIND_AUTO_CREATE)
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {

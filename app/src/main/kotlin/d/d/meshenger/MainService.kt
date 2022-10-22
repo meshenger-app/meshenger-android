@@ -70,6 +70,7 @@ class MainService : Service(), Runnable {
                 PendingIntent.FLAG_UPDATE_CURRENT)
         val mActivity = applicationContext
         val notification = NotificationCompat.Builder(mActivity, channelId)
+            .setSilent(true)
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_logo)
             .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.logo_small))

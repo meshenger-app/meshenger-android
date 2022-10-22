@@ -31,8 +31,10 @@ class RTCCall : DataChannel.Observer {
     private lateinit var connection: PeerConnection
     private var constraints: MediaConstraints? = null
     private var offer: String? = null
-    private var remoteRenderer: SurfaceViewRenderer? = null
-    private var localRenderer: SurfaceViewRenderer? = null
+
+    private var fullscreenRenderer: SurfaceViewRenderer? = null
+    private var pipRenderer: SurfaceViewRenderer? = null
+
     private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
     private var context: Context
@@ -56,11 +58,11 @@ class RTCCall : DataChannel.Observer {
                 if (enabled) {
                     capturer!!.startCapture(1280, 720, 25)
                     Handler(Looper.getMainLooper()).post {
-                        localRenderer!!.visibility = View.VISIBLE
-                        localRenderer!!.setZOrderOnTop(true)
+                        pipRenderer!!.visibility = View.VISIBLE
+                        pipRenderer!!.setZOrderOnTop(true)
                     }
                 } else {
-                    Handler(Looper.getMainLooper()).post { localRenderer!!.visibility = View.GONE }
+                    Handler(Looper.getMainLooper()).post { pipRenderer!!.visibility = View.GONE }
                     capturer!!.stopCapture()
                 }
                 val o = JSONObject()
@@ -338,13 +340,13 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    fun setRemoteRenderer(remoteRenderer: SurfaceViewRenderer?) {
-        this.remoteRenderer = remoteRenderer
+    fun setRemoteRenderer(fullscreenRenderer: SurfaceViewRenderer?) {
+        this.fullscreenRenderer = fullscreenRenderer
     }
 
-    fun setLocalRenderer(localRenderer: SurfaceViewRenderer?) {
-        this.localRenderer = localRenderer
-        this.localRenderer?.setMirror(!mIsCameraSwitched)
+    fun setLocalRenderer(pipRenderer: SurfaceViewRenderer?) {
+        this.pipRenderer = pipRenderer
+        this.pipRenderer?.setMirror(!mIsCameraSwitched)
     }
 
     fun setVideoStreamSwitchLayout(videoStreamSwitchLayout: View?) {
@@ -383,10 +385,10 @@ class RTCCall : DataChannel.Observer {
     private fun setRemoteVideoEnabled(enabled: Boolean) {
         Handler(Looper.getMainLooper()).post {
             if (enabled) {
-                remoteRenderer?.setBackgroundColor(Color.TRANSPARENT)
+                fullscreenRenderer?.setBackgroundColor(Color.TRANSPARENT)
             } else {
                 val color = MaterialColors.getColor(context, R.attr.backgroundCardColor, Color.BLACK)
-                remoteRenderer?.setBackgroundColor(color)
+                fullscreenRenderer?.setBackgroundColor(color)
             }
         }
     }
@@ -400,23 +402,23 @@ class RTCCall : DataChannel.Observer {
             }
         }
 
-        if (remoteRenderer != null) {
-            remoteRenderer!!.release()
+        if (fullscreenRenderer != null) {
+            fullscreenRenderer!!.release()
         }
 
-        if (localRenderer != null) {
-            localRenderer!!.release()
+        if (pipRenderer != null) {
+            pipRenderer!!.release()
         }
     }
 
     private fun handleMediaStream(stream: MediaStream) {
         Log.d(this, "handleMediaStream")
-        if (remoteRenderer == null || stream.videoTracks.size == 0) {
+        if (fullscreenRenderer == null || stream.videoTracks.size == 0) {
             return
         }
         Handler(Looper.getMainLooper()).post {
-            remoteRenderer!!.init(eglBaseContext, null)
-            stream.videoTracks[0].addSink(remoteRenderer)
+            fullscreenRenderer!!.init(eglBaseContext, null)
+            stream.videoTracks[0].addSink(fullscreenRenderer)
         }
     }
 
@@ -445,7 +447,7 @@ class RTCCall : DataChannel.Observer {
         if (capturer != null) {
             capturer!!.switchCamera(null)
             mIsCameraSwitched = !mIsCameraSwitched
-            this.localRenderer?.setMirror(!mIsCameraSwitched)
+            this.pipRenderer?.setMirror(!mIsCameraSwitched)
         }
     }
 
@@ -460,15 +462,15 @@ class RTCCall : DataChannel.Observer {
                 this@RTCCall.context,
                 videoSource.capturerObserver
             )
-            localRender.setTarget(localRenderer)
+            localRender.setTarget(pipRenderer)
             Handler(Looper.getMainLooper()).post {
-                localRenderer!!.init(
+                pipRenderer!!.init(
                     eglBaseContext,
                     null
                 )
             }
             val localVideoTrack = factory.createVideoTrack("video1", videoSource)
-            localVideoTrack.addSink(localRenderer)
+            localVideoTrack.addSink(pipRenderer)
             localVideoTrack.setEnabled(true)
             return localVideoTrack
         }

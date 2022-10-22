@@ -42,6 +42,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
     private var showCallStats = false
+    private lateinit var pipRenderer: SurfaceViewRenderer
+    private lateinit var fullscreenRenderer: SurfaceViewRenderer
+    private lateinit var videoStreamSwitchLayout: View
 
     private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
@@ -82,7 +85,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 Log.d(this, "stateChangeCallback: CONNECTED")
                 Handler(mainLooper).post {
                     setCallStats(showCallStats)
-                    findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
+                    videoStreamSwitchLayout.visibility = View.VISIBLE
                     //findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
                 }
                 setStatusText(getString(R.string.call_connected))
@@ -109,7 +112,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 setStatusText(getString(R.string.call_connected))
                 runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
                 Handler(mainLooper).post {
-                    findViewById<View>(R.id.videoStreamSwitchLayout).visibility = View.VISIBLE
+                    videoStreamSwitchLayout.visibility = View.VISIBLE
                     //findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
                     setCallStats(showCallStats)
                 }
@@ -139,6 +142,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
         statusTextView = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
         nameTextView = findViewById(R.id.callName)
+        pipRenderer = findViewById(R.id.pip_video_view)
+        fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
+        videoStreamSwitchLayout = findViewById(R.id.videoStreamSwitchLayout)
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
         findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
@@ -166,9 +172,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
                         contact,
                         stateChangeCallback
                     )
-                    currentCall.setRemoteRenderer(findViewById(R.id.fullscreen_video_view))
-                    currentCall.setLocalRenderer(findViewById(R.id.pip_video_view))
-                    currentCall.setVideoStreamSwitchLayout(findViewById(R.id.videoStreamSwitchLayout))
+                    currentCall.setRemoteRenderer(fullscreenRenderer)
+                    currentCall.setLocalRenderer(pipRenderer)
+                    currentCall.setVideoStreamSwitchLayout(videoStreamSwitchLayout)
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -235,9 +241,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 stopRinging()
                 Log.d(this, "accepted call...")
                 try {
-                    currentCall.setRemoteRenderer(findViewById(R.id.fullscreen_video_view))
-                    currentCall.setLocalRenderer(findViewById(R.id.pip_video_view))
-                    currentCall.setVideoStreamSwitchLayout(findViewById(R.id.videoStreamSwitchLayout))
+                    currentCall.setRemoteRenderer(fullscreenRenderer)
+                    currentCall.setLocalRenderer(pipRenderer)
+                    currentCall.setVideoStreamSwitchLayout(videoStreamSwitchLayout)
                     currentCall.setOnStateChangeListener(passiveCallback)
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()

@@ -112,9 +112,9 @@ class MainService : Service(), Runnable {
         try {
             val db = database
             if (db != null) {
-                val data = Database.toData(db, database_password)
-                if (data != null) {
-                    writeInternalFile(database_path, data)
+                val dbData = Database.toData(db, database_password)
+                if (dbData != null) {
+                    writeInternalFile(database_path, dbData)
                 }
             }
         } catch (e: java.lang.Exception) {
@@ -137,6 +137,7 @@ class MainService : Service(), Runnable {
     }
 
     override fun onDestroy() {
+        Log.d(this, "onDestroy")
         super.onDestroy()
         run = false
 
@@ -151,9 +152,7 @@ class MainService : Service(), Runnable {
                     if (contact.state === Contact.State.OFFLINE) {
                         continue
                     }
-                    val encrypted =
-                        encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey)
-                            ?: continue
+                    val encrypted = encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey) ?: continue
                     var socket: Socket? = null
                     try {
                         socket = createCommSocket(contact)
@@ -203,8 +202,10 @@ class MainService : Service(), Runnable {
         database?.destroy()
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent.action == null) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(this, "onStartCommand")
+
+        if (intent == null || intent.action == null) {
             // ignore
         } else if (intent.action == START_FOREGROUND_ACTION) {
             Log.d(this, "Received Start Foreground Intent")
@@ -227,12 +228,15 @@ class MainService : Service(), Runnable {
         val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val ownSecretKey = database!!.settings.secretKey
         val ownPublicKey = database!!.settings.publicKey
+
         try {
             val pw = PacketWriter(client)
             val pr = PacketReader(client)
             var contact: Contact? = null
             val remote_address = client.remoteSocketAddress as InetSocketAddress
+
             Log.d(this, "incoming connection from $remote_address")
+
             while (true) {
                 val request = pr.readMessage() ?: break
                 val decrypted = decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
@@ -258,16 +262,19 @@ class MainService : Service(), Runnable {
                         }
                         break
                     }
+
                     if (contact == null) {
                         // unknown caller
                         contact = Contact("", clientPublicKey.clone(), ArrayList())
                     }
                 }
+
                 // suspicious change of identity in during connection...
                 if (!contact.publicKey.contentEquals(clientPublicKey)) {
                     Log.d(this, "suspicious change of key")
                     continue
                 }
+
                 // remember last good address (the outgoing port is random and not the server port)
                 contact.lastWorkingAddress = InetSocketAddress(remote_address.address, serverPort)
 
@@ -286,7 +293,9 @@ class MainService : Service(), Runnable {
                             ownPublicKey,
                             ownSecretKey
                         )
+
                         pw.writeMessage(encrypted!!)
+
                         val intent = Intent(this, CallActivity::class.java)
                         intent.action = "ACTION_INCOMING_CALL"
                         intent.putExtra("EXTRA_CONTACT", contact)
@@ -519,14 +528,14 @@ class MainService : Service(), Runnable {
 
     companion object {
         const val serverPort = 10001
-        const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
-        const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
+        private const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
+        private const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
         private const val NOTIFICATION_ID = 42
 
-        fun start(ctx: Context?) {
+        fun start(ctx: Context) {
             val startIntent = Intent(ctx, MainService::class.java)
             startIntent.action = START_FOREGROUND_ACTION
-            ContextCompat.startForegroundService(ctx!!, startIntent)
+            ContextCompat.startForegroundService(ctx, startIntent)
         }
 
         fun stop(ctx: Context) {

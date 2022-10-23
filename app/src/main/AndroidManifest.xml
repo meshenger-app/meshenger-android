@@ -31,16 +31,13 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".QRShowActivity"
-            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".QRScanActivity"
-            android:exported="true"
             android:screenOrientation="portrait" />
 
         <service
@@ -62,23 +59,18 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity"
-            android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".AboutActivity"
-            android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".BackupActivity"
-            android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".AddressActivity"
-            android:exported="true"
             android:parentActivityName=".SettingsActivity" />
         <activity
             android:name=".LicenseActivity"
-            android:exported="true"
             android:parentActivityName=".AboutActivity" />
     </application>
 

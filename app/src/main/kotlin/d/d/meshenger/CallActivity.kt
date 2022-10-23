@@ -27,7 +27,7 @@ import org.webrtc.RTCStatsReport
 import java.io.IOException
 
 class CallActivity : BaseActivity(), SensorEventListener {
-    private val buttonAnimationDuration: Long = 400
+    private val buttonAnimationDuration = 400L
     private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
     private lateinit var nameTextView: TextView
@@ -38,7 +38,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
-    private var callEventType: Event.Type = Event.Type.UNKNOWN
+    private var callEventType = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
     private var showCallStats = false
@@ -181,10 +181,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
                     // nothing to do
                 }
             }
-
             bindService(Intent(this, MainService::class.java), connection, 0)
 
-            val declineListener = View.OnClickListener { view: View? ->
+            val declineListener = View.OnClickListener {
                 // end call
                 currentCall.hangUp()
                 callEventType = Event.Type.OUTGOING_DECLINED

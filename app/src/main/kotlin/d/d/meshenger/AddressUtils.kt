@@ -13,11 +13,13 @@ internal object AddressUtils
 {
     fun establishConnection(address: InetSocketAddress): Socket? {
         val connectionTimeout = 500
+        val readTimeout = 3000
         val socket = Socket()
 
         try {
             // timeout to establish connection
             socket.connect(address, connectionTimeout)
+            socket.soTimeout = readTimeout
             return socket
         } catch (e: SocketTimeoutException) {
             // ignore

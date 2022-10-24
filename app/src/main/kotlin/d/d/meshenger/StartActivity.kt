@@ -39,7 +39,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
         sodium = NaCl.sodium()
 
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
-        findViewById<TextView>(R.id.splashText).setTypeface(type)
+        findViewById<TextView>(R.id.splashText).typeface = type
 
         // start MainService and call back via onServiceConnected()
         startService(Intent(this, MainService::class.java))
@@ -99,13 +99,13 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 }
             }
             6 -> {
-                Log.d(this, "init 6: start contact list")
+                Log.d(this, "init 6: start MainActivity")
                 // set night mode
                 val nightMode = binder!!.getSettings().nightMode
                 AppCompatDelegate.setDefaultNightMode(
                     if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
-                // all done - show contact list
+                // all done - show main activity
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }

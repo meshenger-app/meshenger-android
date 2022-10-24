@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.PowerManager
 import android.provider.Settings
-import android.text.InputType
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -41,21 +40,13 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             setDisplayShowTitleEnabled(false)
         }
 
-        bindService()
+        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
         initViews()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (binder != null) {
-            unbindService(this)
-        }
-    }
-
-    private fun bindService() {
-        // ask MainService to get us the binder object
-        val serviceIntent = Intent(this, MainService::class.java)
-        bindService(serviceIntent, this, BIND_AUTO_CREATE)
+        unbindService(this)
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
@@ -336,7 +327,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         }
     }
 
-    fun setServiceAndSettings(str: String) {
+    private fun setServiceAndSettings(str: String) {
         //settings.settingsMode = str
         // binder!!.saveDatabase()
         applySettingsMode(str)

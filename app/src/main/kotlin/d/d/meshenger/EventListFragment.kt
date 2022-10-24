@@ -68,19 +68,15 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         super.onDestroy()
     }
 
-    fun refreshEventList() {
+    private fun refreshEventList() {
         Log.d(this, "refreshEventList")
 
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
-
         val events = binder.getEvents().eventList
         val contacts = binder.getContacts().contactList
 
-        Log.d(this, "refreshEventList update: ${events.size}")
-
-        Handler(Looper.getMainLooper()).post {
-            Log.d(this, "refreshEventList looper: ${events.size}")
+        activity.runOnUiThread {
             eventListAdapter.update(events, contacts)
             eventListAdapter.notifyDataSetChanged()
             eventListView.adapter = eventListAdapter

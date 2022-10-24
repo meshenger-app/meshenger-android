@@ -23,8 +23,6 @@ import java.util.*
 import java.util.concurrent.Executors
 
 class RTCCall : DataChannel.Observer {
-    private val eglBaseContext = EglBase.create().eglBaseContext
-    private val localRender = ProxyVideoSink()
     var state: CallState? = null
     var commSocket: Socket?
     private lateinit var factory: PeerConnectionFactory
@@ -32,17 +30,17 @@ class RTCCall : DataChannel.Observer {
     private var constraints: MediaConstraints? = null
     private var offer: String? = null
 
-    private var fullscreenRenderer: SurfaceViewRenderer? = null
-    private var pipRenderer: SurfaceViewRenderer? = null
+    private var remoteVideoSink: ProxyVideoSink? = null
+    private var localVideoSink: ProxyVideoSink? = null
 
-    private var videoStreamSwitchLayout: View? = null
     private var capturer: CameraVideoCapturer? = null
     private var context: Context
     private var contact: Contact
     private var ownPublicKey: ByteArray
     private var ownSecretKey: ByteArray
     private var iceServers = mutableListOf<IceServer>()
-    private var listener: OnStateChangeListener?
+    private var onStateChangeListener: OnStateChangeListener?
+    private var callActivity: CallActivity?
     private var binder: MainService.MainBinder
     private val statsTimer = Timer()
     private val executor = Executors.newSingleThreadExecutor()
@@ -51,26 +49,26 @@ class RTCCall : DataChannel.Observer {
     //private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
     var isSpeakerEnabled = false
+
+    // local video
     var isVideoEnabled = false
         set(enabled) {
+            Log.d(this, "setVideoEnabled: $enabled")
             field = enabled
             try {
                 if (enabled) {
                     capturer!!.startCapture(1280, 720, 25)
-                    Handler(Looper.getMainLooper()).post {
-                        pipRenderer!!.visibility = View.VISIBLE
-                        pipRenderer!!.setZOrderOnTop(true)
-                    }
+                    callActivity!!.setLocalVideoEnabled(true)
                 } else {
-                    Handler(Looper.getMainLooper()).post { pipRenderer!!.visibility = View.GONE }
+                    callActivity!!.setLocalVideoEnabled(false)
                     capturer!!.stopCapture()
                 }
                 val o = JSONObject()
-                o.put(
-                    STATE_CHANGE_MESSAGE,
-                    if (enabled) CAMERA_ENABLE_MESSAGE else CAMERA_DISABLE_MESSAGE
-                )
-                Log.d(this, "setVideoEnabled: $o")
+                if (enabled) {
+                    o.put(STATE_CHANGE_MESSAGE, CAMERA_ENABLE_MESSAGE)
+                } else {
+                    o.put(STATE_CHANGE_MESSAGE, CAMERA_DISABLE_MESSAGE)
+                }
                 Thread {
                     while (!::dataChannel.isInitialized) {
                         Thread.sleep(1000)
@@ -103,7 +101,8 @@ class RTCCall : DataChannel.Observer {
         this.context = context
         this.contact = contact
         this.commSocket = commSocket
-        this.listener = null
+        this.onStateChangeListener = null
+        this.callActivity = null
         this.binder = binder
         this.ownPublicKey = binder.getSettings().publicKey
         this.ownSecretKey = binder.getSettings().secretKey
@@ -129,7 +128,8 @@ class RTCCall : DataChannel.Observer {
         this.context = context
         this.contact = contact
         this.commSocket = null
-        this.listener = listener
+        this.onStateChangeListener = listener
+        this.callActivity = null
         this.binder = binder
         this.ownPublicKey = binder.getSettings().publicKey
         this.ownSecretKey = binder.getSettings().secretKey
@@ -182,6 +182,7 @@ class RTCCall : DataChannel.Observer {
                             val pr = PacketReader(commSocket!!)
                             reportStateChange(CallState.CONNECTING)
                             run {
+                                Log.d(this, "send call message")
                                 val obj = JSONObject()
                                 obj.put("action", "call")
                                 obj.put("offer", connection.localDescription.description)
@@ -202,6 +203,7 @@ class RTCCall : DataChannel.Observer {
                                 pw.writeMessage(encrypted)
                             }
                             run {
+                                Log.d(this, "read ringing message")
                                 val response = pr.readMessage()
                                 val decrypted = Crypto.decryptMessage(
                                     response,
@@ -287,8 +289,8 @@ class RTCCall : DataChannel.Observer {
             })!!
             dataChannel = connection.createDataChannel("data", DataChannel.Init())
             dataChannel.registerObserver(this)
-            //enable video button
-            Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
+
+            callActivity!!.showVideoButton()
 
             //Migrated to Unified Plan
             //val config = RTCConfiguration(iceServers)
@@ -306,11 +308,13 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun createCommSocket(contact: Contact): Socket? {
-        val addresses = contact.getAllSocketAddresses()
-        Log.d(this, "addresses to try: " + addresses.joinToString())
+        Log.d(this, "createCommSocket")
 
+        val addresses = contact.getAllSocketAddresses()
         for (address in addresses) {
             Log.d(this, "try address: $address")
+            //callActivity?.showTextMessage("call $address")
+
             val socket = AddressUtils.establishConnection(address)
             if (socket != null) {
                 return socket
@@ -340,17 +344,13 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    fun setRemoteRenderer(fullscreenRenderer: SurfaceViewRenderer?) {
-        this.fullscreenRenderer = fullscreenRenderer
+    fun setRemoteRenderer(remoteVideoSink: ProxyVideoSink?) {
+        this.remoteVideoSink = remoteVideoSink
     }
 
-    fun setLocalRenderer(pipRenderer: SurfaceViewRenderer?) {
-        this.pipRenderer = pipRenderer
-        this.pipRenderer?.setMirror(!mIsCameraSwitched)
-    }
-
-    fun setVideoStreamSwitchLayout(videoStreamSwitchLayout: View?) {
-        this.videoStreamSwitchLayout = videoStreamSwitchLayout
+    fun setLocalRenderer(localVideoSink: ProxyVideoSink?) {
+        this.localVideoSink = localVideoSink
+        //this.localVideoSink?.setMirror(!mIsCameraSwitched)
     }
 
     private var mIsCameraSwitched = false;
@@ -369,27 +369,19 @@ class RTCCall : DataChannel.Observer {
         val s = String(data)
         try {
             Log.d(this, "onMessage: $s")
-            var o = JSONObject(s)
+            val o = JSONObject(s)
             if (o.has(STATE_CHANGE_MESSAGE)) {
-                when (val state = o.getString(STATE_CHANGE_MESSAGE)) {
-                    CAMERA_ENABLE_MESSAGE, CAMERA_DISABLE_MESSAGE -> {
-                        setRemoteVideoEnabled(state == CAMERA_ENABLE_MESSAGE)
-                    }
+                when (o.getString(STATE_CHANGE_MESSAGE)) {
+                    CAMERA_ENABLE_MESSAGE -> callActivity!!.setRemoteVideoEnabled(true)
+                    CAMERA_DISABLE_MESSAGE -> callActivity!!.setRemoteVideoEnabled(false)
+                    else -> {}
                 }
+            } else {
+                Log.d(this, "unknown message: $s")
             }
+
         } catch (e: JSONException) {
             e.printStackTrace()
-        }
-    }
-
-    private fun setRemoteVideoEnabled(enabled: Boolean) {
-        Handler(Looper.getMainLooper()).post {
-            if (enabled) {
-                fullscreenRenderer?.setBackgroundColor(Color.TRANSPARENT)
-            } else {
-                val color = MaterialColors.getColor(context, R.attr.backgroundCardColor, Color.BLACK)
-                fullscreenRenderer?.setBackgroundColor(color)
-            }
         }
     }
 
@@ -401,24 +393,15 @@ class RTCCall : DataChannel.Observer {
                 e.printStackTrace()
             }
         }
-
-        if (fullscreenRenderer != null) {
-            fullscreenRenderer!!.release()
-        }
-
-        if (pipRenderer != null) {
-            pipRenderer!!.release()
-        }
     }
 
     private fun handleMediaStream(stream: MediaStream) {
         Log.d(this, "handleMediaStream")
-        if (fullscreenRenderer == null || stream.videoTracks.size == 0) {
+        if (remoteVideoSink == null || stream.videoTracks.size == 0) {
             return
         }
         Handler(Looper.getMainLooper()).post {
-            fullscreenRenderer!!.init(eglBaseContext, null)
-            stream.videoTracks[0].addSink(fullscreenRenderer)
+            stream.videoTracks[0].addSink(remoteVideoSink)
         }
     }
 
@@ -447,7 +430,7 @@ class RTCCall : DataChannel.Observer {
         if (capturer != null) {
             capturer!!.switchCamera(null)
             mIsCameraSwitched = !mIsCameraSwitched
-            this.pipRenderer?.setMirror(!mIsCameraSwitched)
+            //this.localVideoSink?.setMirror(!mIsCameraSwitched)
         }
     }
 
@@ -455,22 +438,16 @@ class RTCCall : DataChannel.Observer {
         capturer = createCapturer()
         if (capturer != null) {
             val surfaceTextureHelper =
-                SurfaceTextureHelper.create("CaptureThread", eglBaseContext)
+                SurfaceTextureHelper.create("CaptureThread", CallActivity.eglBaseContext)
             val videoSource = factory.createVideoSource(capturer!!.isScreencast)
             capturer!!.initialize(
                 surfaceTextureHelper,
                 this@RTCCall.context,
                 videoSource.capturerObserver
             )
-            localRender.setTarget(pipRenderer)
-            Handler(Looper.getMainLooper()).post {
-                pipRenderer!!.init(
-                    eglBaseContext,
-                    null
-                )
-            }
+
             val localVideoTrack = factory.createVideoTrack("video1", videoSource)
-            localVideoTrack.addSink(pipRenderer)
+            localVideoTrack.addSink(localVideoSink)
             localVideoTrack.setEnabled(true)
             return localVideoTrack
         }
@@ -493,8 +470,8 @@ class RTCCall : DataChannel.Observer {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
         if (videoCodecHwAcceleration) {
-            encoderFactory = HWVideoEncoderFactory(eglBaseContext, true, true)
-            decoderFactory = HWVideoDecoderFactory(eglBaseContext)
+            encoderFactory = HWVideoEncoderFactory(CallActivity.eglBaseContext, true, true)
+            decoderFactory = HWVideoDecoderFactory(CallActivity.eglBaseContext)
         } else {
             encoderFactory = SoftwareVideoEncoderFactory()
             decoderFactory = SoftwareVideoDecoderFactory()
@@ -528,8 +505,8 @@ class RTCCall : DataChannel.Observer {
 
     private fun reportStateChange(state: CallState) {
         this.state = state
-        if (listener != null) {
-            listener!!.onStateChange(state)
+        if (onStateChangeListener != null) {
+            onStateChangeListener!!.onStateChange(state)
         }
     }
 
@@ -538,7 +515,7 @@ class RTCCall : DataChannel.Observer {
             try {
                 statsTimer.schedule(object : TimerTask() {
                     override fun run() {
-                        executor.execute {connection.getStats(statsCollector) }
+                        executor.execute { connection.getStats(statsCollector) }
                     }
                 }, 0L, StatsReportUtil.STATS_INTERVAL_MS)
             } catch (e: Exception) {
@@ -549,8 +526,12 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
+    fun setCallActivity(activity: CallActivity?) {
+        this.callActivity = activity
+    }
+
     fun setOnStateChangeListener(listener: OnStateChangeListener?) {
-        this.listener = listener
+        this.onStateChangeListener = listener
         Thread {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
@@ -602,11 +583,11 @@ class RTCCall : DataChannel.Observer {
                 }
 
                 override fun onDataChannel(dataChannel: DataChannel) {
+                    Log.d(this, "onDataChannel")
                     super.onDataChannel(dataChannel)
                     this@RTCCall.dataChannel = dataChannel
                     this@RTCCall.dataChannel.registerObserver(this@RTCCall)
-                    //enable video button
-                    Handler(Looper.getMainLooper()).post {videoStreamSwitchLayout!!.visibility = View.VISIBLE}
+                    callActivity!!.showVideoButton()
                 }
             })!!
 
@@ -708,13 +689,13 @@ class RTCCall : DataChannel.Observer {
         fun onStateChange(state: CallState)
     }
 
-    private class ProxyVideoSink : VideoSink {
+    class ProxyVideoSink : VideoSink {
         private var target: VideoSink? = null
 
         @Synchronized
         override fun onFrame(frame: VideoFrame) {
             if (target == null) {
-                Logging.d(ContentValues.TAG, "Dropping frame in proxy because target is null.")
+                Log.d(ContentValues.TAG, "Dropping frame in proxy because target is null.")
                 return
             }
             target!!.onFrame(frame)

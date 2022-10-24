@@ -1,5 +1,6 @@
 package d.d.meshenger
 
+import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -17,13 +18,14 @@ import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCCall.CallState
 import d.d.meshenger.call.RTCCall.OnStateChangeListener
 import d.d.meshenger.call.StatsReportUtil
-import org.webrtc.RTCStatsCollectorCallback
-import org.webrtc.RTCStatsReport
+import org.webrtc.*
 import java.io.IOException
 
 class CallActivity : BaseActivity(), SensorEventListener {
@@ -41,19 +43,25 @@ class CallActivity : BaseActivity(), SensorEventListener {
     private var callEventType = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
-    private var showCallStats = false
+
+    private val remoteProxyVideoSink = RTCCall.ProxyVideoSink()
+    private val localProxyVideoSink = RTCCall.ProxyVideoSink()
+
     private lateinit var pipRenderer: SurfaceViewRenderer
     private lateinit var fullscreenRenderer: SurfaceViewRenderer
     private lateinit var videoStreamSwitchLayout: View
+
+    private var callStatsEnabled = false
+    private var isSwappedVideoFeeds = false
+    private var microphoneEnabled = true
+    private var cameraEnabled = true
 
     private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
 
         override fun onStatsDelivered(rtcStatsReport: RTCStatsReport) {
             val stats = statsReportUtil.getStatsReport(rtcStatsReport)
-            // If you need update UI, simply do this:
             runOnUiThread {
-                // update your UI component here.
                 callStats.text = stats
             }
         }
@@ -83,12 +91,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
             }
             CallState.CONNECTED -> {
                 Log.d(this, "stateChangeCallback: CONNECTED")
-                Handler(mainLooper).post {
-                    setCallStats(showCallStats)
-                    videoStreamSwitchLayout.visibility = View.VISIBLE
-                    //findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
-                }
                 setStatusText(getString(R.string.call_connected))
+                showVideoButton()
+                setSwappedVideoFeeds(false)
             }
             CallState.DISMISSED -> {
                 Log.d(this, "stateChangeCallback: DISMISSED")
@@ -105,17 +110,76 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
+    private fun setSwappedVideoFeeds(isSwappedVideoFeeds: Boolean) {
+        Log.d(this, "setSwappedVideoFeeds: $isSwappedVideoFeeds")
+        this.isSwappedVideoFeeds = isSwappedVideoFeeds
+        localProxyVideoSink.setTarget(if (isSwappedVideoFeeds) fullscreenRenderer else pipRenderer)
+        remoteProxyVideoSink.setTarget(if (isSwappedVideoFeeds) pipRenderer else fullscreenRenderer)
+        fullscreenRenderer.setMirror(isSwappedVideoFeeds)
+        pipRenderer.setMirror(!isSwappedVideoFeeds)
+    }
+
+    fun showVideoButton() {
+        runOnUiThread {
+            videoStreamSwitchLayout.visibility = View.VISIBLE
+        }
+    }
+
+    fun setLocalVideoEnabled(enabled: Boolean) {
+        Log.d(this, "setLocalVideoEnabled: $enabled")
+        runOnUiThread {
+            if (isSwappedVideoFeeds) {
+                setFullscreenEnabled(enabled)
+            } else {
+                setPipViewEnabled(enabled)
+            }
+        }
+    }
+
+    fun setRemoteVideoEnabled(enabled: Boolean) {
+        Log.d(this, "setRemoteVideoEnabled: $enabled")
+        runOnUiThread {
+            if (isSwappedVideoFeeds) {
+                setPipViewEnabled(enabled)
+            } else {
+                setFullscreenEnabled(enabled)
+            }
+        }
+    }
+
+    private fun setPipViewEnabled(enable: Boolean) {
+        if (enable) {
+            Log.d(this, "show pip video")
+            pipRenderer.visibility = View.VISIBLE
+        } else {
+            Log.d(this, "show pip video")
+            pipRenderer.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun setFullscreenEnabled(enable: Boolean) {
+        if (enable) {
+            Log.d(this, "show fullscreen video")
+            fullscreenRenderer.visibility = View.VISIBLE
+        } else {
+            Log.d(this, "hide fullscreen video")
+            fullscreenRenderer.visibility = View.INVISIBLE
+        }
+    }
+
+    fun showTextMessage(message: String) {
+        runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private val passiveCallback = OnStateChangeListener { callState: CallState? ->
         when (callState) {
             CallState.CONNECTED -> {
                 Log.d(this, "passiveCallback: CONNECTED")
                 setStatusText(getString(R.string.call_connected))
                 runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
-                Handler(mainLooper).post {
-                    videoStreamSwitchLayout.visibility = View.VISIBLE
-                    //findViewById<View>(R.id.speakerMode).visibility = View.VISIBLE
-                    setCallStats(showCallStats)
-                }
+                showVideoButton()
             }
             CallState.RINGING -> {
                 Log.d(this, "passiveCallback: RINGING")
@@ -134,11 +198,12 @@ class CallActivity : BaseActivity(), SensorEventListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(this, "onCreate")
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call)
 
-        // keep screen on during call (prevents pausing the app and cancellation of the call)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) // keep screen on during the call
         statusTextView = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
         nameTextView = findViewById(R.id.callName)
@@ -147,12 +212,18 @@ class CallActivity : BaseActivity(), SensorEventListener {
         videoStreamSwitchLayout = findViewById(R.id.videoStreamSwitchLayout)
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
-        findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
-            showCallStats = !showCallStats
-            setCallStats(showCallStats)
-        }
+        pipRenderer.init(eglBaseContext, null)
+        pipRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
 
-        val action = intent.action
+        fullscreenRenderer.init(eglBaseContext, null)
+        fullscreenRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL)
+
+        pipRenderer.setZOrderMediaOverlay(true)
+        pipRenderer.setEnableHardwareScaler(true)
+        fullscreenRenderer.setEnableHardwareScaler(false)
+
+        setPipViewEnabled(false)
+        setFullscreenEnabled(false)
 
         if (contact.name.isEmpty()) {
             nameTextView.text = resources.getString(R.string.unknown_caller)
@@ -160,8 +231,8 @@ class CallActivity : BaseActivity(), SensorEventListener {
             nameTextView.text = contact.name
         }
 
-        Log.d(this, "onCreate: $action")
-        if ("ACTION_OUTGOING_CALL" == action) {
+        Log.d(this, "onCreate: ${intent.action}")
+        if ("ACTION_OUTGOING_CALL" == intent.action) {
             callEventType = Event.Type.OUTGOING_UNKNOWN
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
@@ -172,9 +243,11 @@ class CallActivity : BaseActivity(), SensorEventListener {
                         contact,
                         stateChangeCallback
                     )
-                    currentCall.setRemoteRenderer(fullscreenRenderer)
-                    currentCall.setLocalRenderer(pipRenderer)
-                    currentCall.setVideoStreamSwitchLayout(videoStreamSwitchLayout)
+                    currentCall.setRemoteRenderer(remoteProxyVideoSink)
+                    currentCall.setLocalRenderer(localProxyVideoSink)
+                    currentCall.setCallActivity(this@CallActivity)
+
+                    setSwappedVideoFeeds(true)
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -191,7 +264,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
             }
             findViewById<View>(R.id.callDecline).setOnClickListener(declineListener)
             startSensor()
-        } else if ("ACTION_INCOMING_CALL" == action) {
+        } else if ("ACTION_INCOMING_CALL" == intent.action) {
             callEventType = Event.Type.INCOMING_UNKNOWN
             passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
                 PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
@@ -202,6 +275,8 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                     binder = iBinder as MainService.MainBinder
                     currentCall = binder!!.getCurrentCall()!!
+
+                    setSwappedVideoFeeds(false)
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -226,24 +301,29 @@ class CallActivity : BaseActivity(), SensorEventListener {
             }
 
             // hangup call
-            val hangupListener = View.OnClickListener { view: View? ->
-                stopRinging() // make sure ringing has stopped ;-)
+            val hangupListener = View.OnClickListener {
                 Log.d(this, "hangup call...")
+                stopRinging() // make sure ringing has stopped ;-)
+
                 currentCall.decline()
+
                 if (passiveWakeLock.isHeld) {
                     passiveWakeLock.release()
                 }
                 callEventType = Event.Type.INCOMING_ACCEPTED
+
                 finish()
             }
+
             val acceptListener = View.OnClickListener {
-                stopRinging()
                 Log.d(this, "accepted call...")
+                stopRinging()
+
                 try {
-                    currentCall.setRemoteRenderer(fullscreenRenderer)
-                    currentCall.setLocalRenderer(pipRenderer)
-                    currentCall.setVideoStreamSwitchLayout(videoStreamSwitchLayout)
+                    currentCall.setRemoteRenderer(remoteProxyVideoSink)
+                    currentCall.setLocalRenderer(localProxyVideoSink)
                     currentCall.setOnStateChangeListener(passiveCallback)
+                    currentCall.setCallActivity(this@CallActivity)
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()
                     }
@@ -259,14 +339,19 @@ class CallActivity : BaseActivity(), SensorEventListener {
             findViewById<View>(R.id.callAccept).setOnClickListener(acceptListener)
             findViewById<View>(R.id.callDecline).setOnClickListener(declineListener)
         } else {
-            Log.d(this, "missing action, should not happen")
+            Log.d(this, "missing action, should never happen")
             finish()
             return
         }
 
+        // Swap feeds on pip view click.
+        pipRenderer.setOnClickListener {
+            setSwappedVideoFeeds(!isSwappedVideoFeeds)
+        }
+
         findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
-            showCallStats = !showCallStats
-            setCallStats(showCallStats)
+            callStatsEnabled = !callStatsEnabled
+            setCallStats(callStatsEnabled)
         }
 
         findViewById<View>(R.id.speakerMode).setOnClickListener { button: View ->
@@ -467,8 +552,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Log.d(this, "onDestroy")
+        super.onDestroy()
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver)
         stopRinging()
         if (currentCall.state == CallState.CONNECTED) {
@@ -487,6 +573,10 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 e.printStackTrace()
             }
         }
+
+        pipRenderer.release()
+        fullscreenRenderer.release()
+
         currentCall.releaseCamera()
     }
 
@@ -536,6 +626,8 @@ class CallActivity : BaseActivity(), SensorEventListener {
     }
 
     companion object {
+        const val RECORD_AUDIO_PERMISSION_REQUEST_CODE = 1
         const val CAMERA_PERMISSION_REQUEST_CODE = 2
+        val eglBaseContext = EglBase.create().getEglBaseContext()
     }
 }

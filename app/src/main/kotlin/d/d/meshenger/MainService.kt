@@ -377,20 +377,35 @@ class MainService : Service(), Runnable {
             return this@MainService
         }
 
-        fun getDatabase(): Database? {
-            return this@MainService.database
+        fun isDatabaseLoaded(): Boolean {
+            return this@MainService.database != null
+        }
+
+        fun getDatabase(): Database {
+            if (this@MainService.database == null) {
+                Log.w(this, "database is null => try to reload")
+                try {
+                    // database is null, this should not happen, but
+                    // happens anyway, so let's mitigate it for now
+                    // => try to reload it
+                    this@MainService.loadDatabase()
+                } catch (e: Exception) {
+                    Log.e(this, "failed to reload database")
+                }
+            }
+            return this@MainService.database!!
         }
 
         fun getSettings(): Settings {
-            return this@MainService.database!!.settings
+            return getDatabase().settings
         }
 
         fun getContacts(): Contacts {
-            return this@MainService.database!!.contacts
+            return getDatabase().contacts
         }
 
         fun getEvents(): Events {
-            return this@MainService.database!!.events
+            return getDatabase().events
         }
 
         fun getCurrentCall(): RTCCall? {
@@ -398,8 +413,9 @@ class MainService : Service(), Runnable {
         }
 
         fun addContact(contact: Contact) {
-            database!!.contacts.addContact(contact)
+            getDatabase().contacts.addContact(contact)
             saveDatabase()
+
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
             LocalBroadcastManager.getInstance(this@MainService)
@@ -407,8 +423,9 @@ class MainService : Service(), Runnable {
         }
 
         fun deleteContact(pubKey: ByteArray) {
-            database!!.contacts.deleteContact(pubKey)
+            getDatabase().contacts.deleteContact(pubKey)
             saveDatabase()
+
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
             LocalBroadcastManager.getInstance(this@MainService)

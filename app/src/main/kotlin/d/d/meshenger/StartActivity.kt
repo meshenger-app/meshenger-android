@@ -66,7 +66,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             2 -> {
                 Log.d(this, "init 2: check database")
-                if (binder!!.getDatabase() == null) {
+                if (!binder!!.isDatabaseLoaded()) {
                     // database is probably encrypted
                     showDatabasePasswordDialog()
                 } else {
@@ -313,7 +313,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
             }
 
-            if (binder!!.getDatabase() != null) {
+            if (binder!!.isDatabaseLoaded()) {
                 // close dialog
                 ddialog.dismiss()
                 continueInit()

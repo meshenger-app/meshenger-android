@@ -52,8 +52,8 @@ class MainService : Service(), Runnable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val chan = NotificationChannel(
                 channelId,
-                "Meshenger Background Service",
-                NotificationManager.IMPORTANCE_DEFAULT
+                "Meshenger Call Listener",
+                NotificationManager.IMPORTANCE_LOW // display notification as collapsed by default
             )
             chan.lightColor = Color.RED
             chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE

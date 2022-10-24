@@ -88,6 +88,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         val scanAnimation: TranslateAnimation
         val generateAnimation: TranslateAnimation
         val alphaAnimation: AlphaAnimation
+
         if (fabExpanded) {
             scanAnimation = TranslateAnimation(0f, 0f, -distance, 0f)
             generateAnimation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
@@ -150,12 +151,14 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         alert.show()
     }
 
-    fun refreshContactList() {
+    private fun refreshContactList() {
+        Log.d(this, "refreshContactList")
+
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
+        val contacts = binder.getContacts().contactList
 
-        Handler(Looper.getMainLooper()).post {
-            val contacts = binder.getContacts().contactList
+        activity.runOnUiThread {
             contactListView.adapter = ContactListAdapter(activity, R.layout.item_contact, contacts)
         }
     }

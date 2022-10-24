@@ -115,11 +115,11 @@ class BackupActivity : BaseActivity(), ServiceConnection {
     private fun exportDatabase(uri: Uri) {
         val password = passwordEditText.text.toString()
         try {
-            val database = binder!!.getDatabase()!!
-            val data = Database.toData(database, password)
+            val database = binder!!.getDatabase()
+            val db_data = Database.toData(database, password)
 
-            if (data != null) {
-                writeExternalFile(this, uri, data)
+            if (db_data != null) {
+                writeExternalFile(this, uri, db_data)
                 Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, getString(R.string.failed_to_export_database), Toast.LENGTH_SHORT).show()

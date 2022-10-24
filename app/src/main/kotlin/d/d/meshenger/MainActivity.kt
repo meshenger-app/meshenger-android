@@ -1,12 +1,10 @@
 package d.d.meshenger
 
-import android.Manifest
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -17,8 +15,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -56,14 +52,20 @@ class MainActivity : BaseActivity(), ServiceConnection {
         permissionToDrawOverlays();
         MainService.start(this)
 
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
-
         viewPager = findViewById(R.id.container)
+        viewPager.adapter = ViewPagerFragmentAdapter(this)
+
+        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
 
         // ask for audio recording permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 2)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService(this)
     }
 
     private fun isWifiConnected(): Boolean {
@@ -90,7 +92,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     private fun showInvalidAddressSettingsWarning() {
         Handler(Looper.getMainLooper()).postDelayed({
-            val localBinder = binder
+            val localBinder = this@MainActivity.binder
             if (localBinder == null) {
                 Log.w(this, "binder is null")
                 return@postDelayed
@@ -138,8 +140,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "onServiceConnected")
         binder = iBinder as MainBinder
-
-        viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -193,16 +193,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onResume() {
-        Log.d(this, "OnResume")
+        Log.d(this, "onResume")
         super.onResume()
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
-        showInvalidAddressSettingsWarning()
-    }
 
-    override fun onPause() {
-        Log.d(this, "onPause")
-        super.onPause()
-        unbindService(this)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
+
     }
 
     override fun onRequestPermissionsResult(

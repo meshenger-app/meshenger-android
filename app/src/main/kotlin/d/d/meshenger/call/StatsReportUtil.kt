@@ -1,13 +1,14 @@
 package d.d.meshenger.call
 
+import d.d.meshenger.Log
 import org.webrtc.RTCStatsReport
 import java.math.BigInteger
 
 class StatsReportUtil {
-    private var lastBytesReceivedVideo = BigInteger.valueOf(0)
-    private var lastBytesSentVideo = BigInteger.valueOf(0)
-    private var lastBytesReceivedAudio = BigInteger.valueOf(0)
-    private var lastBytesSentAudio = BigInteger.valueOf(0)
+    private var lastBytesReceivedVideo = BigInteger.ZERO
+    private var lastBytesSentVideo = BigInteger.ZERO
+    private var lastBytesReceivedAudio = BigInteger.ZERO
+    private var lastBytesSentAudio = BigInteger.ZERO
     private var lastFrameDecodedOut = 0L
     private var lastFrameDecodedIn = 0L
 
@@ -15,6 +16,11 @@ class StatsReportUtil {
         if (report == null) {
             return ""
         }
+
+        var audioInFound = false
+        var videoInFound = false
+        var audioOutFound = false
+        var videoOutFound = false
 
         var audioInCodec = "unknown"
         var videoInCodec = "unknown"
@@ -40,6 +46,11 @@ class StatsReportUtil {
                 val mediaType = members["mediaType"]
 
                 if (mediaType == "video") {
+                    if (videoInFound) {
+                        Log.w(this, "Already found inbound video track")
+                        continue
+                    }
+
                     val codecId = members["codecId"] as String?
                     val trackId = members["trackId"] as String?
 
@@ -62,9 +73,15 @@ class StatsReportUtil {
                     val lastFrame = lastFrameDecodedIn
                     videoInFrameRate = ((framesDecoded!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
                     lastFrameDecodedIn = framesDecoded
+                    videoInFound = true
                 }
 
                 if (mediaType == "audio") {
+                    if (audioInFound) {
+                        Log.w(this, "Already found inbound audio track")
+                        continue
+                    }
+
                     val codecId = members["codecId"] as String?
                     if (codecId != null) {
                         val vmap = report.statsMap[codecId]!!
@@ -74,12 +91,18 @@ class StatsReportUtil {
                     val bytes = members["bytesReceived"] as BigInteger?
                     audioInBytesDelta = (bytes!!.toLong() - lastBytesReceivedAudio.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesReceivedAudio = bytes
+                    audioInFound = true
                 }
             } else if (stats.type == "outbound-rtp") {
                 val map = stats.members
                 val mediaType = map["mediaType"]
 
                 if (mediaType == "video") {
+                    if (videoOutFound) {
+                        Log.w(this, "Already found outbound video track")
+                        continue
+                    }
+
                     val trackId = map["trackId"] as String?
                     val codecId = map["codecId"] as String?
 
@@ -102,9 +125,15 @@ class StatsReportUtil {
                     val lastFrame = lastFrameDecodedOut
                     videoOutFrameRate = ((framesEncoded!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
                     lastFrameDecodedOut = framesEncoded
+                    videoOutFound = true
                 }
 
                 if (mediaType == "audio") {
+                    if (audioOutFound) {
+                        Log.w(this, "Already found outbound audio track")
+                        continue
+                    }
+
                     val codecId = map["codecId"] as String?
                     if (codecId != null) {
                         val vmap = report.statsMap[codecId]!!
@@ -114,8 +143,27 @@ class StatsReportUtil {
                     val bytes = map["bytesSent"] as BigInteger?
                     audioOutBytesDelta = (bytes!!.toLong() - lastBytesSentAudio.toLong())  * 8 / STATS_INTERVAL_MS
                     lastBytesSentAudio = bytes
+                    audioOutFound = true
                 }
             }
+        }
+
+        if (!videoInFound) {
+            lastFrameDecodedIn = 0
+            lastBytesReceivedVideo = BigInteger.ZERO
+        }
+
+        if (!audioInFound) {
+            lastBytesReceivedAudio = BigInteger.ZERO
+        }
+
+        if (!audioOutFound) {
+            lastBytesSentAudio = BigInteger.ZERO
+        }
+
+        if (!videoOutFound) {
+            lastFrameDecodedOut = 0
+            lastBytesSentVideo = BigInteger.ZERO
         }
 
         return " Receiving\n" +

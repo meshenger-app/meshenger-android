@@ -113,9 +113,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+        Log.d(this, "onServiceConnected")
         binder = iBinder as MainBinder
 
-        Log.d(this, "onServiceConnected")
         if (startState == 0) {
             if (binder!!.getService().first_start) {
                 // show delayed splash page
@@ -130,21 +130,13 @@ class StartActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
+        Log.d(this, "onServiceDisconnected")
         binder = null
-    }
-
-    override fun onResume() {
-        super.onResume()
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        unbindService(this)
     }
 
     override fun onDestroy() {
         dialog?.dismiss()
+        unbindService(this)
         super.onDestroy()
     }
 

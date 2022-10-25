@@ -40,7 +40,8 @@ class StatsReportUtil {
         var videoOutHeight = 0L
         var videoOutFrameRate = 0L
 
-        for (stats in report.statsMap.values) {
+        var statsMap = report.statsMap
+        for (stats in statsMap.values) {
             if (stats.type == "inbound-rtp") {
                 val members = stats.members
                 val mediaType = members["mediaType"]
@@ -55,12 +56,12 @@ class StatsReportUtil {
                     val trackId = members["trackId"] as String?
 
                     if (codecId != null) {
-                        val vmap = report.statsMap[codecId]!!
+                        val vmap = statsMap[codecId]!!
                         videoInCodec = (vmap.members["mimeType"] as String?) ?: videoInCodec
                     }
 
                     if (trackId != null) {
-                        val vmap = report.statsMap[trackId]!!
+                        val vmap = statsMap[trackId]!!
                         videoInWidth = (vmap.members["frameWidth"] as Long?) ?: 0L
                         videoInHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
                     }
@@ -84,7 +85,7 @@ class StatsReportUtil {
 
                     val codecId = members["codecId"] as String?
                     if (codecId != null) {
-                        val vmap = report.statsMap[codecId]!!
+                        val vmap = statsMap[codecId]!!
                         audioInCodec = (vmap.members["mimeType"] as String?) ?: audioInCodec
                     }
 
@@ -107,13 +108,13 @@ class StatsReportUtil {
                     val codecId = map["codecId"] as String?
 
                     if (trackId != null) {
-                        val vmap = report.statsMap[trackId]!!
+                        val vmap = statsMap[trackId]!!
                         videoOutWidth = (vmap.members["frameWidth"] as Long?) ?: 0L
                         videoOutHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
                     }
 
                     if (codecId != null) {
-                        val vmap = report.statsMap[codecId]!!
+                        val vmap = statsMap[codecId]!!
                         videoOutCodec = (vmap.members["mimeType"] as String?) ?: videoOutCodec
                     }
 
@@ -136,7 +137,7 @@ class StatsReportUtil {
 
                     val codecId = map["codecId"] as String?
                     if (codecId != null) {
-                        val vmap = report.statsMap[codecId]!!
+                        val vmap = statsMap[codecId]!!
                         audioOutCodec = (vmap.members["mimeType"] as String?) ?: audioOutCodec
                     }
 

@@ -2,12 +2,9 @@ package d.d.meshenger.call
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.color.MaterialColors
 import d.d.meshenger.*
 import d.d.meshenger.R
 import org.json.JSONException
@@ -48,10 +45,10 @@ class RTCCall : DataChannel.Observer {
     //Migrated to Unified Plan
     //private var upStream: MediaStream? = null
     private lateinit var dataChannel: DataChannel
-    var isSpeakerEnabled = false
+    private var isCameraSwitched = false
 
     // local video
-    var isVideoEnabled = false
+    var isCameraEnabled = false
         set(enabled) {
             Log.d(this, "setVideoEnabled: $enabled")
             field = enabled
@@ -166,7 +163,6 @@ class RTCCall : DataChannel.Observer {
                             if (commSocket == null) {
                                 Log.d(this, "cannot establish connection")
                                 reportStateChange(CallState.ERROR)
-                                //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                 return
                             }
                             val remote_address =
@@ -195,7 +191,6 @@ class RTCCall : DataChannel.Observer {
                                 if (encrypted == null) {
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return
                                 }
 
@@ -214,7 +209,6 @@ class RTCCall : DataChannel.Observer {
                                 if (decrypted == null || !contact.publicKey.contentEquals(otherPublicKey)) {
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return
                                 }
                                 val obj = JSONObject(decrypted)
@@ -222,7 +216,6 @@ class RTCCall : DataChannel.Observer {
                                     Log.d(this, "action not equals ringing")
                                     closeCommSocket()
                                     reportStateChange(CallState.ERROR)
-                                    //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     return
                                 }
                                 Log.d(this, "ringing...")
@@ -244,31 +237,28 @@ class RTCCall : DataChannel.Observer {
                                 val obj = JSONObject(decrypted)
                                 when (val action = obj.getString("action")) {
                                     "connected" -> {
+                                        Log.d(this, "connected")
                                         reportStateChange(CallState.CONNECTED)
                                         handleAnswer(obj.getString("answer"))
                                         // contact accepted receiving call
-                                        //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ACCEPTED);
                                     }
                                     "dismissed" -> {
                                         Log.d(this, "dismissed")
                                         closeCommSocket()
                                         reportStateChange(CallState.DISMISSED)
-                                        // contact declined receiving call
-                                        //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_DECLINED);
                                     }
                                     else -> {
                                         Log.d(this, "unknown action reply: $action")
                                         closeCommSocket()
                                         reportStateChange(CallState.ERROR)
-                                        //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                                     }
                                 }
                             }
+
                         } catch (e: Exception) {
                             closeCommSocket()
                             e.printStackTrace()
                             reportStateChange(CallState.ERROR)
-                            //RTCCall.this.binder.addCallEvent(contact, CallEvent.Type.OUTGOING_ERROR);
                         }
                     }
                 }
@@ -350,10 +340,8 @@ class RTCCall : DataChannel.Observer {
 
     fun setLocalRenderer(localVideoSink: ProxyVideoSink?) {
         this.localVideoSink = localVideoSink
-        //this.localVideoSink?.setMirror(!mIsCameraSwitched)
+        //this.localVideoSink?.setMirror(!isCameraSwitched)
     }
-
-    private var mIsCameraSwitched = false;
 
     override fun onBufferedAmountChange(l: Long) {
         // nothing to do
@@ -429,8 +417,8 @@ class RTCCall : DataChannel.Observer {
     fun switchFrontFacing() {
         if (capturer != null) {
             capturer!!.switchCamera(null)
-            mIsCameraSwitched = !mIsCameraSwitched
-            //this.localVideoSink?.setMirror(!mIsCameraSwitched)
+            isCameraSwitched = !isCameraSwitched
+            //this.localVideoSink?.setMirror(!isCameraSwitched)
         }
     }
 
@@ -455,8 +443,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun getAudioTrack(): AudioTrack {
-        return factory.createAudioTrack("audio1", factory.createAudioSource(MediaConstraints())
-        )
+        return factory.createAudioTrack("audio1", factory.createAudioSource(MediaConstraints()))
     }
 
     private fun initVideo(c: Context) {
@@ -486,7 +473,7 @@ class RTCCall : DataChannel.Observer {
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
         constraints!!.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
-        //initVideoTrack();
+        //initVideoTrack()
     }
 
     private fun handleAnswer(remoteDesc: String) {
@@ -504,6 +491,8 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun reportStateChange(state: CallState) {
+        Log.d(this, "reportStateChange: $state")
+
         this.state = state
         if (onStateChangeListener != null) {
             onStateChangeListener!!.onStateChange(state)
@@ -519,7 +508,7 @@ class RTCCall : DataChannel.Observer {
                     }
                 }, 0L, StatsReportUtil.STATS_INTERVAL_MS)
             } catch (e: Exception) {
-                Log.e(this, "Can not schedule statistics timer $e");
+                Log.e(this, "Cannot schedule statistics timer $e")
             }
         } else {
             statsTimer.cancel()
@@ -560,7 +549,7 @@ class RTCCall : DataChannel.Observer {
                             } else {
                                 reportStateChange(CallState.ERROR)
                             }
-                            //new Thread(new SpeakerRunnable(commSocket)).start();
+                            //new Thread(new SpeakerRunnable(commSocket)).start()
                         } catch (e: Exception) {
                             e.printStackTrace()
                             reportStateChange(CallState.ERROR)
@@ -638,19 +627,19 @@ class RTCCall : DataChannel.Observer {
             } finally {
                 cleanup()
             }
-        }.start()
+        }
     }
 
     fun cleanup() {
         closeCommSocket()
         if (state == CallState.CONNECTED) {
             /*for(AudioTrack track : this.upStream.audioTracks){
-                track.setEnabled(false);
-                track.dispose();
+                track.setEnabled(false)
+                track.dispose()
             }
-            for(VideoTrack track : this.upStream.videoTracks) track.dispose();*/
+            for(VideoTrack track : this.upStream.videoTracks) track.dispose()*/
             closePeerConnection()
-            //factory.dispose();
+            //factory.dispose()
         }
         statsTimer.cancel()
     }

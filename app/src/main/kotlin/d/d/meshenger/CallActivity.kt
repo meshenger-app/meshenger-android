@@ -29,17 +29,18 @@ import org.webrtc.*
 import java.io.IOException
 
 class CallActivity : BaseActivity(), SensorEventListener {
-    private val buttonAnimationDuration = 400L
+    private var binder: MainService.MainBinder? = null
     private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
     private lateinit var nameTextView: TextView
-    private var binder: MainService.MainBinder? = null
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
     private lateinit var contact: Contact
+
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
+
     private var callEventType = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
@@ -55,6 +56,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
     private var isSwappedVideoFeeds = false
     private var microphoneEnabled = true
     private var cameraEnabled = true
+    private var speakerEnabled = false
 
     private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
@@ -79,8 +81,8 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
-    private val stateChangeCallback = OnStateChangeListener { callState: CallState ->
-        when (callState) {
+    private val stateChangeCallback = OnStateChangeListener { state: CallState ->
+        when (state) {
             CallState.CONNECTING -> {
                 Log.d(this, "stateChangeCallback: CONNECTING")
                 setStatusText(getString(R.string.call_connecting))
@@ -173,8 +175,8 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
-    private val passiveCallback = OnStateChangeListener { callState: CallState? ->
-        when (callState) {
+    private val passiveCallback = OnStateChangeListener { state: CallState? ->
+        when (state) {
             CallState.CONNECTED -> {
                 Log.d(this, "passiveCallback: CONNECTED")
                 setStatusText(getString(R.string.call_connected))
@@ -359,7 +361,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
 
         findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View ->
-            switchVideoEnabled(button as ImageButton)
+            switchCameraEnabled(button as ImageButton)
         }
 
         findViewById<View>(R.id.frontFacingSwitch).setOnClickListener {
@@ -419,10 +421,10 @@ class CallActivity : BaseActivity(), SensorEventListener {
 
     private fun chooseVoiceMode(button: ImageButton) {
         val audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
-        currentCall.isSpeakerEnabled = !currentCall.isSpeakerEnabled
-        Log.d(this, "chooseVoiceMode: ${currentCall.isSpeakerEnabled}")
+        speakerEnabled = !speakerEnabled
+        Log.d(this, "chooseVoiceMode: $speakerEnabled")
 
-        if (currentCall.isSpeakerEnabled) {
+        if (speakerEnabled) {
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             audioManager.isSpeakerphoneOn = true
             button.alpha = 1.0f
@@ -434,13 +436,15 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
-    private fun switchVideoEnabled(button: ImageButton) {
+    private fun switchCameraEnabled(button: ImageButton) {
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE)
             return
         }
 
-        currentCall.isVideoEnabled = !currentCall.isVideoEnabled
+        // turn on/off camera
+        currentCall.isCameraEnabled = !currentCall.isCameraEnabled
+
         val animation = ScaleAnimation(
             1.0f,
             0.0f,
@@ -451,14 +455,19 @@ class CallActivity : BaseActivity(), SensorEventListener {
             Animation.RELATIVE_TO_SELF,
             0.5f
         )
-        animation.duration = buttonAnimationDuration / 2
+        animation.duration = BUTTON_ANIMATION_DURATION / 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
                 // nothing to do
             }
 
             override fun onAnimationEnd(animation: Animation) {
-                button.setImageResource(if (currentCall.isVideoEnabled) R.drawable.baseline_camera_alt_black_off_48 else R.drawable.baseline_camera_alt_black_48)
+                if (currentCall.isCameraEnabled) {
+                    button.setImageResource(R.drawable.baseline_camera_alt_black_off_48)
+                } else {
+                    button.setImageResource(R.drawable.baseline_camera_alt_black_48)
+                }
+
                 val a: Animation = ScaleAnimation(
                     0.0f,
                     1.0f,
@@ -469,7 +478,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                     Animation.RELATIVE_TO_SELF,
                     0.5f
                 )
-                a.duration = buttonAnimationDuration / 2
+                a.duration = BUTTON_ANIMATION_DURATION / 2
                 button.startAnimation(a)
             }
 
@@ -479,7 +488,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
         })
 
         val frontSwitch = findViewById<View>(R.id.frontFacingSwitch)
-        if (currentCall.isVideoEnabled) {
+        if (currentCall.isCameraEnabled) {
             frontSwitch.visibility = View.VISIBLE
             val scale: Animation = ScaleAnimation(
                 0f,
@@ -491,7 +500,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 Animation.RELATIVE_TO_SELF,
                 0.5f
             )
-            scale.duration = buttonAnimationDuration
+            scale.duration = BUTTON_ANIMATION_DURATION
             frontSwitch.startAnimation(scale)
         } else {
             val scale: Animation = ScaleAnimation(
@@ -504,7 +513,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 Animation.RELATIVE_TO_SELF,
                 0.5f
             )
-            scale.duration = buttonAnimationDuration
+            scale.duration = BUTTON_ANIMATION_DURATION
             scale.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {
                     // nothing to do
@@ -538,7 +547,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                 ).show()
                 return
             }
-            switchVideoEnabled(findViewById(R.id.videoStreamSwitch))
+            switchCameraEnabled(findViewById(R.id.videoStreamSwitch))
         }
     }
 
@@ -626,8 +635,9 @@ class CallActivity : BaseActivity(), SensorEventListener {
     }
 
     companion object {
-        const val RECORD_AUDIO_PERMISSION_REQUEST_CODE = 1
-        const val CAMERA_PERMISSION_REQUEST_CODE = 2
+        private const val RECORD_AUDIO_PERMISSION_REQUEST_CODE = 1
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 2
+        private const val BUTTON_ANIMATION_DURATION = 400L
         val eglBaseContext = EglBase.create().getEglBaseContext()
     }
 }

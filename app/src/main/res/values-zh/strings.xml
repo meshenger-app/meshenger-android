@@ -85,7 +85,7 @@
     <string name="contact_key_conflict">相同密钥联系人已存在</string>
     <string name="contact_name_empty">联系人名称为空</string>
     <string name="contact_name_exists">同样名称的联系人已经存在</string>
-    <string name="contact_remove">消除联系人？ %1$d</string>
+    <string name="contact_remove">消除联系人？ %1$s</string>
     <string name="error">出错</string>
     <string name="ok">好的</string>
     <string name="skip">跳过</string>

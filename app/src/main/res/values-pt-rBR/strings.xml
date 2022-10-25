@@ -113,7 +113,7 @@
     <string name="contact_key_conflict">Existe um contato com a mesma chave:</string>
     <string name="contact_name_empty">O contato não tem um nome.</string>
     <string name="contact_name_exists">Já existe um contato com esse nome:</string>
-    <string name="contact_remove">Apagar contato? %1$d</string>
+    <string name="contact_remove">Apagar contato? %1$s</string>
     <string name="error">Erro</string>
     <string name="ok">OK</string>
     <string name="skip">Pular</string>

@@ -85,7 +85,7 @@
     <string name="contact_key_conflict">Контакт с тем же ключом существует.</string>
     <string name="contact_name_empty">Имя контакта пустое.</string>
     <string name="contact_name_exists">Контакт с таким именем уже существует.</string>
-    <string name="contact_remove">Удалить контакт? %1$d</string>
+    <string name="contact_remove">Удалить контакт? %1$s</string>
     <string name="error">Ошибка</string>
     <string name="ok">Ок</string>
     <string name="skip">Пропустить</string>

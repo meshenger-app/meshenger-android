@@ -86,7 +86,7 @@
     <string name="contact_key_conflict">Ein Kontakt mit dem Schlüssel existiert bereits.</string>
     <string name="contact_name_empty">Der Name is leer.</string>
     <string name="contact_name_exists">Der Name existiert bereits.</string>
-    <string name="contact_remove">Kontakt löschen? %1$d</string>
+    <string name="contact_remove">Kontakt löschen? %1$s</string>
     <string name="error">Fehler</string>
     <string name="ok">Ok</string>
     <string name="skip">Überspringen</string>

@@ -4,6 +4,8 @@
     You can find contacts in real life. Meshenger has no discovery mechanism by design.
 * **Is Meshenger stable**
     Not really. There are crashes. It is beta software.
+* **Are calls over Layer 3 networks possible?**
+    Yes, Meshenger does not only use link local address, but also other kinds of IP addresses that are either configured or can be created from a MAC address.
 * **How much bandwidth does an Audio/Video call consume?**  
     Audio calls take 12KB/s, Video adds ~40KB/s per direction.
 * **Why create a new phone App - there are so many!**  

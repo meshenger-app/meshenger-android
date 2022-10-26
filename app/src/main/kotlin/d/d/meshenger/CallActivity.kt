@@ -52,8 +52,13 @@ class CallActivity : BaseActivity(), SensorEventListener {
     private lateinit var fullscreenRenderer: SurfaceViewRenderer
     private lateinit var videoStreamSwitchLayout: View
 
-    private var callStatsEnabled = false
-    private var isSwappedVideoFeeds = false
+    // UI state
+    private var callStatsEnabled = false // small window for video/audio statistics
+    private var swappedVideoFeeds = false // swapped fullscreen and pip video content
+    private var isCameraSwitched = false // back (false) or front (true) facing camera
+    private var isLocalVideoAvailable = false // own camera is on/off
+    private var isRemoteVideoAvailable = false // we receive a video feed
+
     private var microphoneEnabled = true
     private var cameraEnabled = true
     private var speakerEnabled = false
@@ -70,82 +75,69 @@ class CallActivity : BaseActivity(), SensorEventListener {
     }
 
     private fun setCallStats(enabled: Boolean) {
-        Handler(mainLooper).post {
-            Log.d(this, "show call stats: $enabled")
-            if (enabled) {
-                currentCall.setStatsCollector(statsCollector)
-                callStats.visibility = View.VISIBLE
-            } else {
-                callStats.visibility = View.GONE
-            }
+        Log.d(this, "show call stats: $enabled")
+        if (enabled) {
+            currentCall.setStatsCollector(statsCollector)
+            callStats.visibility = View.VISIBLE
+        } else {
+            callStats.visibility = View.GONE
         }
     }
 
     private val stateChangeCallback = OnStateChangeListener { state: CallState ->
-        when (state) {
-            CallState.CONNECTING -> {
-                Log.d(this, "stateChangeCallback: CONNECTING")
-                setStatusText(getString(R.string.call_connecting))
-            }
-            CallState.RINGING -> {
-                Log.d(this, "stateChangeCallback: RINGING")
-                setStatusText(getString(R.string.call_ringing))
-            }
-            CallState.CONNECTED -> {
-                Log.d(this, "stateChangeCallback: CONNECTED")
-                setStatusText(getString(R.string.call_connected))
-                showVideoButton()
-                setSwappedVideoFeeds(false)
-            }
-            CallState.DISMISSED -> {
-                Log.d(this, "stateChangeCallback: DISMISSED")
-                stopDelayed(getString(R.string.call_denied))
-            }
-            CallState.ENDED -> {
-                Log.d(this, "stateChangeCallback: ENDED")
-                stopDelayed(getString(R.string.call_ended))
-            }
-            CallState.ERROR -> {
-                Log.d(this, "stateChangeCallback: ERROR")
-                stopDelayed(getString(R.string.call_error))
+        runOnUiThread {
+            when (state) {
+                CallState.CONNECTING -> {
+                    Log.d(this, "stateChangeCallback: CONNECTING")
+                    setStatusText(getString(R.string.call_connecting))
+                }
+                CallState.RINGING -> {
+                    Log.d(this, "stateChangeCallback: RINGING")
+                    setStatusText(getString(R.string.call_ringing))
+                }
+                CallState.CONNECTED -> {
+                    Log.d(this, "stateChangeCallback: CONNECTED")
+                    setStatusText(getString(R.string.call_connected))
+                    showVideoButton()
+                }
+                CallState.DISMISSED -> {
+                    Log.d(this, "stateChangeCallback: DISMISSED")
+                    stopDelayed(getString(R.string.call_denied))
+                }
+                CallState.ENDED -> {
+                    Log.d(this, "stateChangeCallback: ENDED")
+                    stopDelayed(getString(R.string.call_ended))
+                }
+                CallState.ERROR -> {
+                    Log.d(this, "stateChangeCallback: ERROR")
+                    stopDelayed(getString(R.string.call_error))
+                }
             }
         }
     }
 
-    private fun setSwappedVideoFeeds(isSwappedVideoFeeds: Boolean) {
-        Log.d(this, "setSwappedVideoFeeds: $isSwappedVideoFeeds")
-        this.isSwappedVideoFeeds = isSwappedVideoFeeds
-        localProxyVideoSink.setTarget(if (isSwappedVideoFeeds) fullscreenRenderer else pipRenderer)
-        remoteProxyVideoSink.setTarget(if (isSwappedVideoFeeds) pipRenderer else fullscreenRenderer)
-        fullscreenRenderer.setMirror(isSwappedVideoFeeds)
-        pipRenderer.setMirror(!isSwappedVideoFeeds)
-    }
+    private fun updateVideoDisplay() {
+        Log.d(this, "updateVideoDisplay: swappedVideoFeeds=$swappedVideoFeeds, isCameraSwitched=$isCameraSwitched")
 
-    fun showVideoButton() {
-        runOnUiThread {
-            videoStreamSwitchLayout.visibility = View.VISIBLE
-        }
-    }
+        if (swappedVideoFeeds) {
+            localProxyVideoSink.setTarget(fullscreenRenderer)
+            remoteProxyVideoSink.setTarget(pipRenderer)
 
-    fun setLocalVideoEnabled(enabled: Boolean) {
-        Log.d(this, "setLocalVideoEnabled: $enabled")
-        runOnUiThread {
-            if (isSwappedVideoFeeds) {
-                setFullscreenEnabled(enabled)
-            } else {
-                setPipViewEnabled(enabled)
-            }
-        }
-    }
+            pipRenderer.setMirror(false)
+            fullscreenRenderer.setMirror(!isCameraSwitched)
 
-    fun setRemoteVideoEnabled(enabled: Boolean) {
-        Log.d(this, "setRemoteVideoEnabled: $enabled")
-        runOnUiThread {
-            if (isSwappedVideoFeeds) {
-                setPipViewEnabled(enabled)
-            } else {
-                setFullscreenEnabled(enabled)
-            }
+            setPipViewEnabled(isRemoteVideoAvailable)
+            setFullscreenEnabled(isLocalVideoAvailable)
+        } else {
+            // default
+            localProxyVideoSink.setTarget(pipRenderer)
+            remoteProxyVideoSink.setTarget(fullscreenRenderer)
+
+            pipRenderer.setMirror(!isCameraSwitched)
+            fullscreenRenderer.setMirror(false)
+
+            setPipViewEnabled(isLocalVideoAvailable)
+            setFullscreenEnabled(isRemoteVideoAvailable)
         }
     }
 
@@ -169,6 +161,28 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
+    fun showVideoButton() {
+        runOnUiThread {
+            videoStreamSwitchLayout.visibility = View.VISIBLE
+        }
+    }
+
+    fun setLocalVideoEnabled(enabled: Boolean) {
+        Log.d(this, "setLocalVideoEnabled: $enabled")
+        runOnUiThread {
+            isLocalVideoAvailable = enabled
+            updateVideoDisplay()
+        }
+    }
+
+    fun setRemoteVideoEnabled(enabled: Boolean) {
+        Log.d(this, "setRemoteVideoEnabled: $enabled")
+        runOnUiThread {
+            isRemoteVideoAvailable = enabled
+            updateVideoDisplay()
+        }
+    }
+
     fun showTextMessage(message: String) {
         runOnUiThread {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -176,26 +190,28 @@ class CallActivity : BaseActivity(), SensorEventListener {
     }
 
     private val passiveCallback = OnStateChangeListener { state: CallState? ->
-        when (state) {
-            CallState.CONNECTED -> {
-                Log.d(this, "passiveCallback: CONNECTED")
-                setStatusText(getString(R.string.call_connected))
-                runOnUiThread { findViewById<View>(R.id.callAccept).visibility = View.GONE }
-                showVideoButton()
+        runOnUiThread {
+            when (state) {
+                CallState.CONNECTED -> {
+                    Log.d(this, "passiveCallback: CONNECTED")
+                    setStatusText(getString(R.string.call_connected))
+                    findViewById<View>(R.id.callAccept).visibility = View.GONE
+                    showVideoButton()
+                }
+                CallState.RINGING -> {
+                    Log.d(this, "passiveCallback: RINGING")
+                    setStatusText(getString(R.string.call_ringing))
+                }
+                CallState.ENDED -> {
+                    Log.d(this, "passiveCallback: ENDED")
+                    stopDelayed(getString(R.string.call_ended))
+                }
+                CallState.ERROR -> {
+                    Log.d(this, "passiveCallback: ERROR")
+                    stopDelayed(getString(R.string.call_error))
+                }
+                else -> {}
             }
-            CallState.RINGING -> {
-                Log.d(this, "passiveCallback: RINGING")
-                setStatusText(getString(R.string.call_ringing))
-            }
-            CallState.ENDED -> {
-                Log.d(this, "passiveCallback: ENDED")
-                stopDelayed(getString(R.string.call_ended))
-            }
-            CallState.ERROR -> {
-                Log.d(this, "passiveCallback: ERROR")
-                stopDelayed(getString(R.string.call_error))
-            }
-            else -> {}
         }
     }
 
@@ -224,6 +240,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
         pipRenderer.setEnableHardwareScaler(true)
         fullscreenRenderer.setEnableHardwareScaler(false)
 
+        // make both invisible
         setPipViewEnabled(false)
         setFullscreenEnabled(false)
 
@@ -249,7 +266,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                     currentCall.setLocalRenderer(localProxyVideoSink)
                     currentCall.setCallActivity(this@CallActivity)
 
-                    setSwappedVideoFeeds(true)
+                    updateVideoDisplay()
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -278,7 +295,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
                     binder = iBinder as MainService.MainBinder
                     currentCall = binder!!.getCurrentCall()!!
 
-                    setSwappedVideoFeeds(false)
+                    updateVideoDisplay()
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -348,7 +365,15 @@ class CallActivity : BaseActivity(), SensorEventListener {
 
         // Swap feeds on pip view click.
         pipRenderer.setOnClickListener {
-            setSwappedVideoFeeds(!isSwappedVideoFeeds)
+            Log.d(this, "pipRenderer.setOnClickListener")
+            swappedVideoFeeds = !swappedVideoFeeds
+            updateVideoDisplay()
+        }
+
+        fullscreenRenderer.setOnClickListener {
+            Log.d(this, "fullscreenRenderer.setOnClickListener")
+            swappedVideoFeeds = !swappedVideoFeeds
+            updateVideoDisplay()
         }
 
         findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
@@ -365,7 +390,10 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
 
         findViewById<View>(R.id.frontFacingSwitch).setOnClickListener {
+            Log.d(this, "frontFacingSwitch: swappedVideoFeeds: $swappedVideoFeeds, isCameraSwitched: $isCameraSwitched")
             currentCall.switchFrontFacing()
+            isCameraSwitched = !isCameraSwitched
+            updateVideoDisplay()
         }
 
         LocalBroadcastManager.getInstance(this)

@@ -24,6 +24,7 @@ class RTCCall : DataChannel.Observer {
     var commSocket: Socket?
     private lateinit var factory: PeerConnectionFactory
     private lateinit var connection: PeerConnection
+    private lateinit var dataChannel: DataChannel
     private var constraints: MediaConstraints? = null
     private var offer: String? = null
 
@@ -41,11 +42,6 @@ class RTCCall : DataChannel.Observer {
     private var binder: MainService.MainBinder
     private val statsTimer = Timer()
     private val executor = Executors.newSingleThreadExecutor()
-
-    //Migrated to Unified Plan
-    //private var upStream: MediaStream? = null
-    private lateinit var dataChannel: DataChannel
-    private var isCameraSwitched = false
 
     // local video
     var isCameraEnabled = false
@@ -340,7 +336,6 @@ class RTCCall : DataChannel.Observer {
 
     fun setLocalRenderer(localVideoSink: ProxyVideoSink?) {
         this.localVideoSink = localVideoSink
-        //this.localVideoSink?.setMirror(!isCameraSwitched)
     }
 
     override fun onBufferedAmountChange(l: Long) {
@@ -417,8 +412,6 @@ class RTCCall : DataChannel.Observer {
     fun switchFrontFacing() {
         if (capturer != null) {
             capturer!!.switchCamera(null)
-            isCameraSwitched = !isCameraSwitched
-            //this.localVideoSink?.setMirror(!isCameraSwitched)
         }
     }
 
@@ -456,6 +449,7 @@ class RTCCall : DataChannel.Observer {
         val videoCodecHwAcceleration = true
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
+
         if (videoCodecHwAcceleration) {
             encoderFactory = HWVideoEncoderFactory(CallActivity.eglBaseContext, true, true)
             decoderFactory = HWVideoDecoderFactory(CallActivity.eglBaseContext)
@@ -521,7 +515,7 @@ class RTCCall : DataChannel.Observer {
 
     fun setOnStateChangeListener(listener: OnStateChangeListener?) {
         this.onStateChangeListener = listener
-        Thread {
+        executor.execute {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
@@ -604,11 +598,11 @@ class RTCCall : DataChannel.Observer {
                     }, constraints)
                 }
             }, SessionDescription(SessionDescription.Type.OFFER, offer))
-        }.start()
+        }
     }
 
     fun decline() {
-        Thread {
+        executor.execute {
             try {
                 Log.d(this, "declining...")
                 if (commSocket != null) {
@@ -645,7 +639,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun hangUp() {
-        Thread {
+        executor.execute {
             try {
                 if (commSocket != null) {
                     val pw = PacketWriter(commSocket!!)
@@ -667,7 +661,7 @@ class RTCCall : DataChannel.Observer {
                 e.printStackTrace()
                 reportStateChange(CallState.ERROR)
             }
-        }.start()
+        }
     }
 
     enum class CallState {
@@ -683,11 +677,13 @@ class RTCCall : DataChannel.Observer {
 
         @Synchronized
         override fun onFrame(frame: VideoFrame) {
+            val target = this.target
+
             if (target == null) {
                 Log.d(ContentValues.TAG, "Dropping frame in proxy because target is null.")
-                return
+            } else {
+                target.onFrame(frame)
             }
-            target!!.onFrame(frame)
         }
 
         @Synchronized

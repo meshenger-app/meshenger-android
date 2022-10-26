@@ -307,7 +307,7 @@ class MainService : Service(), Runnable {
                     "ping" -> {
                         Log.d(this, "ping...")
                         // someone wants to know if we are online
-                        setClientState(contact)
+                        contact.state = Contact.State.ONLINE
                         val encrypted = encryptMessage(
                             "{\"action\":\"pong\"}",
                             contact.publicKey,
@@ -318,7 +318,7 @@ class MainService : Service(), Runnable {
                     }
                     "status_change" -> {
                         if (obj.optString("status", "") == "offline") {
-                            setClientState(contact)
+                            contact.state = Contact.State.ONLINE
                         } else {
                             Log.d(this, "Received unknown status_change: " + obj.getString("status"))
                         }
@@ -336,10 +336,6 @@ class MainService : Service(), Runnable {
         }
         // zero out key
         Arrays.fill(clientPublicKey, 0.toByte())
-    }
-
-    private fun setClientState(contact: Contact) {
-        contact.state = Contact.State.ONLINE
     }
 
     override fun run() {

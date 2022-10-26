@@ -180,6 +180,12 @@ class Database {
                 new_from = "4.0.1"
             }
 
+            // 4.0.1 => 4.0.2
+            if (new_from == "4.0.1") {
+                // nothing to do
+                new_from = "4.0.2"
+            }
+
             // add missing keys with defaults and remove unexpected keys
             alignSettings(settings)
 

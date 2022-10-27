@@ -190,9 +190,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private val passiveCallback = OnStateChangeListener { state: CallState? ->
+    private val passiveCallback = OnStateChangeListener { state: CallState ->
         runOnUiThread {
             when (state) {
+                CallState.CONNECTING -> {
+                    // nothing to do?
+                }
+                CallState.DISMISSED -> {
+                    // nothing to do?
+                }
                 CallState.CONNECTED -> {
                     Log.d(this, "passiveCallback: CONNECTED")
                     setStatusText(getString(R.string.call_connected))
@@ -211,7 +217,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     Log.d(this, "passiveCallback: ERROR")
                     stopDelayed(getString(R.string.call_error))
                 }
-                else -> {}
             }
         }
     }

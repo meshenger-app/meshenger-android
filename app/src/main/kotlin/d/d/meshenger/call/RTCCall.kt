@@ -38,7 +38,7 @@ class RTCCall : DataChannel.Observer {
     private var ownSecretKey: ByteArray
     private var iceServers = mutableListOf<IceServer>()
     private var onStateChangeListener: OnStateChangeListener?
-    private var callActivity: CallActivity?
+    private var callActivity: CallContext?
     private var binder: MainService.MainBinder
     private val statsTimer = Timer()
     private val executor = Executors.newSingleThreadExecutor()
@@ -509,7 +509,7 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    fun setCallActivity(activity: CallActivity?) {
+    fun setCallContext(activity: CallContext?) {
         this.callActivity = activity
     }
 
@@ -670,6 +670,13 @@ class RTCCall : DataChannel.Observer {
 
     fun interface OnStateChangeListener {
         fun onStateChange(state: CallState)
+    }
+
+    interface CallContext {
+        fun setLocalVideoEnabled(enabled: Boolean)
+        fun setRemoteVideoEnabled(enabled: Boolean)
+        fun showVideoButton()
+        fun showTextMessage(message: String)
     }
 
     class ProxyVideoSink : VideoSink {

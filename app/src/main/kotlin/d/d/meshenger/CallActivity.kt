@@ -28,7 +28,8 @@ import d.d.meshenger.call.StatsReportUtil
 import org.webrtc.*
 import java.io.IOException
 
-class CallActivity : BaseActivity(), SensorEventListener {
+
+class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private var binder: MainService.MainBinder? = null
     private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
@@ -161,13 +162,13 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
-    fun showVideoButton() {
+    override fun showVideoButton() {
         runOnUiThread {
             videoStreamSwitchLayout.visibility = View.VISIBLE
         }
     }
 
-    fun setLocalVideoEnabled(enabled: Boolean) {
+    override fun setLocalVideoEnabled(enabled: Boolean) {
         Log.d(this, "setLocalVideoEnabled: $enabled")
         runOnUiThread {
             isLocalVideoAvailable = enabled
@@ -175,7 +176,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
-    fun setRemoteVideoEnabled(enabled: Boolean) {
+    override fun setRemoteVideoEnabled(enabled: Boolean) {
         Log.d(this, "setRemoteVideoEnabled: $enabled")
         runOnUiThread {
             isRemoteVideoAvailable = enabled
@@ -183,7 +184,7 @@ class CallActivity : BaseActivity(), SensorEventListener {
         }
     }
 
-    fun showTextMessage(message: String) {
+    override fun showTextMessage(message: String) {
         runOnUiThread {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }

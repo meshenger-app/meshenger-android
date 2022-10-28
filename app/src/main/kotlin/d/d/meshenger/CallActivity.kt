@@ -287,7 +287,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     )
                     currentCall.setRemoteRenderer(remoteProxyVideoSink)
                     currentCall.setLocalRenderer(localProxyVideoSink)
-                    currentCall.setCallActivity(this@CallActivity)
+                    currentCall.setCallContext(this@CallActivity)
 
                     updateVideoDisplay()
                 }
@@ -365,7 +365,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     currentCall.setRemoteRenderer(remoteProxyVideoSink)
                     currentCall.setLocalRenderer(localProxyVideoSink)
                     currentCall.setOnStateChangeListener(passiveCallback)
-                    currentCall.setCallActivity(this@CallActivity)
+                    currentCall.setCallContext(this@CallActivity)
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()
                     }

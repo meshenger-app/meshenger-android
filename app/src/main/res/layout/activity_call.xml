@@ -34,6 +34,15 @@
             android:layout_width="24dp"
             android:layout_height="24dp"/>
 
+        <ImageButton
+            android:id="@+id/toggle_pip_window"
+            android:background="@drawable/ic_toggle_pip"
+            android:contentDescription="Show pip window"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
         <TextView
             android:id="@+id/callStats"
             android:layout_width="150dp"

@@ -52,11 +52,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var pipRenderer: SurfaceViewRenderer
     private lateinit var fullscreenRenderer: SurfaceViewRenderer
     private lateinit var videoStreamSwitchLayout: View
+    private lateinit var togglePipWindowButton: View
 
     // UI state
     private var callStatsEnabled = false // small window for video/audio statistics
     private var swappedVideoFeeds = false // swapped fullscreen and pip video content
     private var isCameraSwitched = false // back (false) or front (true) facing camera
+    private var showPipEnabled = true
     private var isLocalVideoAvailable = false // own camera is on/off
     private var isRemoteVideoAvailable = false // we receive a video feed
 
@@ -127,8 +129,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             pipRenderer.setMirror(false)
             fullscreenRenderer.setMirror(!isCameraSwitched)
 
-            setPipViewEnabled(isRemoteVideoAvailable)
+            setPipViewEnabled(isRemoteVideoAvailable && showPipEnabled)
             setFullscreenEnabled(isLocalVideoAvailable)
+
+            // video availabe for pip
+            setPipButtonEnabled(isRemoteVideoAvailable)
         } else {
             // default
             localProxyVideoSink.setTarget(pipRenderer)
@@ -137,8 +142,19 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             pipRenderer.setMirror(!isCameraSwitched)
             fullscreenRenderer.setMirror(false)
 
-            setPipViewEnabled(isLocalVideoAvailable)
+            setPipViewEnabled(isLocalVideoAvailable && showPipEnabled)
             setFullscreenEnabled(isRemoteVideoAvailable)
+
+            // video availabe for pip
+            setPipButtonEnabled(isLocalVideoAvailable)
+        }
+    }
+
+    private fun setPipButtonEnabled(enable: Boolean) {
+        if (enable) {
+            togglePipWindowButton.visibility = View.VISIBLE
+        } else {
+            togglePipWindowButton.visibility = View.INVISIBLE
         }
     }
 
@@ -234,6 +250,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         pipRenderer = findViewById(R.id.pip_video_view)
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
         videoStreamSwitchLayout = findViewById(R.id.videoStreamSwitchLayout)
+        togglePipWindowButton = findViewById(R.id.toggle_pip_window)
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
         pipRenderer.init(eglBaseContext, null)
@@ -369,9 +386,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             return
         }
 
-        // Swap feeds on pip view click.
+        togglePipWindowButton.setOnClickListener {
+            Log.d(this, "togglePipWindowButton.setOnClickListener")
+            showPipEnabled = !showPipEnabled
+            updateVideoDisplay()
+        }
+
         pipRenderer.setOnClickListener {
             Log.d(this, "pipRenderer.setOnClickListener")
+            showPipEnabled = true
             swappedVideoFeeds = !swappedVideoFeeds
             updateVideoDisplay()
         }
@@ -379,6 +402,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         fullscreenRenderer.setOnClickListener {
             Log.d(this, "fullscreenRenderer.setOnClickListener")
             swappedVideoFeeds = !swappedVideoFeeds
+            showPipEnabled = true
             updateVideoDisplay()
         }
 

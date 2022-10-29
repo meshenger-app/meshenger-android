@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name" translatable="false">Meshenger</string>
-    <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
-    <string name="app_license" translatable="false">GPL-3.0-or-later</string>
+    
+    
+    
     <string name="app_description">无需服务器或互联网访问进行语音和视频通信。只需和联系人互扫二维码即可开始互相呼叫。 适用于多数网络，包括家庭网络、社区网络和公司网络。</string>
     <string name="action_settings">设置</string>
     <string name="name_prompt">该怎么称呼你？</string>

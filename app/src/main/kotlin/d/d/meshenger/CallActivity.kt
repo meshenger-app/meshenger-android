@@ -129,21 +129,21 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             pipRenderer.setMirror(false)
             fullscreenRenderer.setMirror(!isCameraSwitched)
 
-            setPipViewEnabled(isRemoteVideoAvailable && showPipEnabled)
-            setFullscreenEnabled(isLocalVideoAvailable)
+            showPipView(isRemoteVideoAvailable && showPipEnabled)
+            showFullscreenView(isLocalVideoAvailable)
 
             // video availabe for pip
             setPipButtonEnabled(isRemoteVideoAvailable)
         } else {
-            // default
+            // default (local video in pip, remote video in fullscreen)
             localProxyVideoSink.setTarget(pipRenderer)
             remoteProxyVideoSink.setTarget(fullscreenRenderer)
 
             pipRenderer.setMirror(!isCameraSwitched)
             fullscreenRenderer.setMirror(false)
 
-            setPipViewEnabled(isLocalVideoAvailable && showPipEnabled)
-            setFullscreenEnabled(isRemoteVideoAvailable)
+            showPipView(isLocalVideoAvailable && showPipEnabled)
+            showFullscreenView(isRemoteVideoAvailable)
 
             // video availabe for pip
             setPipButtonEnabled(isLocalVideoAvailable)
@@ -152,23 +152,25 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
     private fun setPipButtonEnabled(enable: Boolean) {
         if (enable) {
+            Log.d(this, "show pip button")
             togglePipWindowButton.visibility = View.VISIBLE
         } else {
+            Log.d(this, "hide pip button")
             togglePipWindowButton.visibility = View.INVISIBLE
         }
     }
 
-    private fun setPipViewEnabled(enable: Boolean) {
+    private fun showPipView(enable: Boolean) {
         if (enable) {
             Log.d(this, "show pip video")
             pipRenderer.visibility = View.VISIBLE
         } else {
-            Log.d(this, "show pip video")
+            Log.d(this, "hide pip video")
             pipRenderer.visibility = View.INVISIBLE
         }
     }
 
-    private fun setFullscreenEnabled(enable: Boolean) {
+    private fun showFullscreenView(enable: Boolean) {
         if (enable) {
             Log.d(this, "show fullscreen video")
             fullscreenRenderer.visibility = View.VISIBLE
@@ -264,8 +266,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         fullscreenRenderer.setEnableHardwareScaler(false)
 
         // make both invisible
-        setPipViewEnabled(false)
-        setFullscreenEnabled(false)
+        showPipView(false)
+        showFullscreenView(false)
 
         if (contact.name.isEmpty()) {
             nameTextView.text = resources.getString(R.string.unknown_caller)

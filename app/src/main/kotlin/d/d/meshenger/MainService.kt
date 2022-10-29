@@ -74,7 +74,6 @@ class MainService : Service(), Runnable {
             .setOngoing(true)
             .setShowWhen(false)
             .setSmallIcon(R.drawable.ic_logo)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.logo_small))
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setContentText(resources.getText(R.string.listen_for_incoming_calls))

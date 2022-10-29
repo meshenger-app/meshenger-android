@@ -72,6 +72,7 @@ class MainService : Service(), Runnable {
         val notification = NotificationCompat.Builder(mActivity, channelId)
             .setSilent(true)
             .setOngoing(true)
+            .setShowWhen(false)
             .setSmallIcon(R.drawable.ic_logo)
             .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.logo_small))
             .setPriority(NotificationCompat.PRIORITY_MIN)

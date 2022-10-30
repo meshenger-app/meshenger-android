@@ -225,119 +225,6 @@ class MainService : Service(), Runnable {
         return START_NOT_STICKY
     }
 
-    private fun handleClient(client: Socket) {
-        val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val ownSecretKey = database!!.settings.secretKey
-        val ownPublicKey = database!!.settings.publicKey
-
-        try {
-            val pw = PacketWriter(client)
-            val pr = PacketReader(client)
-            var contact: Contact? = null
-            val remote_address = client.remoteSocketAddress as InetSocketAddress
-
-            Log.d(this, "incoming connection from $remote_address")
-
-            while (true) {
-                val request = pr.readMessage() ?: break
-                val decrypted = decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
-                if (decrypted == null) {
-                    Log.d(this, "decryption failed")
-                    break
-                }
-
-                if (contact == null) {
-                    contact = database!!.contacts.getContactByPublicKey(clientPublicKey)
-                    if (contact == null && database!!.settings.blockUnknown) {
-                        if (currentCall != null) {
-                            Log.d(this, "block unknown contact => decline")
-                            currentCall!!.decline()
-                        }
-                        break
-                    }
-
-                    if (contact != null && contact.blocked) {
-                        if (currentCall != null) {
-                            Log.d(this, "blocked contact => decline")
-                            currentCall!!.decline()
-                        }
-                        break
-                    }
-
-                    if (contact == null) {
-                        // unknown caller
-                        contact = Contact("", clientPublicKey.clone(), ArrayList())
-                    }
-                }
-
-                // suspicious change of identity in during connection...
-                if (!contact.publicKey.contentEquals(clientPublicKey)) {
-                    Log.d(this, "suspicious change of key")
-                    continue
-                }
-
-                // remember last good address (the outgoing port is random and not the server port)
-                contact.lastWorkingAddress = InetSocketAddress(remote_address.address, serverPort)
-
-                val obj = JSONObject(decrypted)
-                val action = obj.optString("action", "")
-                when (action) {
-                    "call" -> {
-                        // someone calls us
-                        Log.d(this, "call...")
-                        val offer = obj.getString("offer")
-                        currentCall = RTCCall(this, binder, contact, client, offer)
-                        // respond that we accept the call
-                        val encrypted = encryptMessage(
-                            "{\"action\":\"ringing\"}",
-                            contact.publicKey,
-                            ownPublicKey,
-                            ownSecretKey
-                        )
-
-                        pw.writeMessage(encrypted!!)
-
-                        val intent = Intent(this, CallActivity::class.java)
-                        intent.action = "ACTION_INCOMING_CALL"
-                        intent.putExtra("EXTRA_CONTACT", contact)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        return
-                    }
-                    "ping" -> {
-                        Log.d(this, "ping...")
-                        // someone wants to know if we are online
-                        contact.state = Contact.State.ONLINE
-                        val encrypted = encryptMessage(
-                            "{\"action\":\"pong\"}",
-                            contact.publicKey,
-                            ownPublicKey,
-                            ownSecretKey
-                        )
-                        pw.writeMessage(encrypted!!)
-                    }
-                    "status_change" -> {
-                        if (obj.optString("status", "") == "offline") {
-                            contact.state = Contact.State.ONLINE
-                        } else {
-                            Log.d(this, "Received unknown status_change: " + obj.getString("status"))
-                        }
-                    }
-                }
-            }
-            Log.d(this, "client disconnected")
-            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("call_declined"))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d(this, "client disconnected (exception)")
-            if (currentCall != null) {
-                currentCall!!.decline()
-            }
-        }
-        // zero out key
-        Arrays.fill(clientPublicKey, 0.toByte())
-    }
-
     override fun run() {
         try {
             // wait until database is ready
@@ -352,7 +239,7 @@ class MainService : Service(), Runnable {
             while (run) {
                 try {
                     val socket = server!!.accept()
-                    Thread { handleClient(socket) }.start()
+                    Thread { RTCCall.createIncomingCall(binder, socket) }.start()
                 } catch (e: IOException) {
                     // ignore
                 }

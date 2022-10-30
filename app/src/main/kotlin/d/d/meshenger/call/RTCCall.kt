@@ -2,6 +2,7 @@ package d.d.meshenger.call
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatDelegate
@@ -703,5 +704,122 @@ class RTCCall : DataChannel.Observer {
         private const val STATE_CHANGE_MESSAGE = "StateChange"
         private const val CAMERA_DISABLE_MESSAGE = "CameraDisabled"
         private const val CAMERA_ENABLE_MESSAGE = "CameraEnabled"
+
+    fun createIncomingCall(binder: MainService.MainBinder, client: Socket) {
+        val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+        val ownSecretKey = binder.getDatabase().settings.secretKey
+        val ownPublicKey = binder.getDatabase().settings.publicKey
+        var currentCall: RTCCall? = null
+
+        try {
+            val pw = PacketWriter(client)
+            val pr = PacketReader(client)
+            var contact: Contact? = null
+            val remote_address = client.remoteSocketAddress as InetSocketAddress
+
+            Log.d(this, "incoming connection from $remote_address")
+
+            while (true) {
+                val request = pr.readMessage() ?: break
+                val decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
+                if (decrypted == null) {
+                    Log.d(this, "decryption failed")
+                    break
+                }
+
+                currentCall = binder.getCurrentCall()
+
+                if (contact == null) {
+                    contact = binder.getDatabase().contacts.getContactByPublicKey(clientPublicKey)
+                    if (contact == null && binder.getDatabase().settings.blockUnknown) {
+                        if (currentCall != null) {
+                            Log.d(this, "block unknown contact => decline")
+                            currentCall.decline()
+                        }
+                        break
+                    }
+
+                    if (contact != null && contact.blocked) {
+                        if (currentCall != null) {
+                            Log.d(this, "blocked contact => decline")
+                            currentCall.decline()
+                        }
+                        break
+                    }
+
+                    if (contact == null) {
+                        // unknown caller
+                        contact = Contact("", clientPublicKey.clone(), ArrayList())
+                    }
+                }
+
+                // suspicious change of identity in during connection...
+                if (!contact.publicKey.contentEquals(clientPublicKey)) {
+                    Log.d(this, "suspicious change of key")
+                    continue
+                }
+
+                // remember last good address (the outgoing port is random and not the server port)
+                contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+
+                val obj = JSONObject(decrypted)
+                val action = obj.optString("action", "")
+                when (action) {
+                    "call" -> {
+                        // someone calls us
+                        Log.d(this, "call...")
+                        val offer = obj.getString("offer")
+
+                        // respond that we accept the call (our phone is ringing)
+                        val encrypted = Crypto.encryptMessage(
+                            "{\"action\":\"ringing\"}",
+                            contact.publicKey,
+                            ownPublicKey,
+                            ownSecretKey
+                        )
+
+                        pw.writeMessage(encrypted!!)
+
+                        // TODO: keep ringing to keep socket open until resolved
+                        currentCall = RTCCall(binder.getService(), binder, contact, client, offer)
+                        binder.setCurrentCall(currentCall)
+                        val intent = Intent(binder.getService(), CallActivity::class.java)
+                        intent.action = "ACTION_INCOMING_CALL"
+                        intent.putExtra("EXTRA_CONTACT", contact)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        binder.getService().startActivity(intent)
+                    }
+                    "ping" -> {
+                        Log.d(this, "ping...")
+                        // someone wants to know if we are online
+                        contact.state = Contact.State.ONLINE
+                        val encrypted = Crypto.encryptMessage(
+                            "{\"action\":\"pong\"}",
+                            contact.publicKey,
+                            ownPublicKey,
+                            ownSecretKey
+                        )
+                        pw.writeMessage(encrypted!!)
+                    }
+                    "status_change" -> {
+                        if (obj.optString("status", "") == "offline") {
+                            contact.state = Contact.State.ONLINE
+                        } else {
+                            Log.d(this, "Received unknown status_change: " + obj.getString("status"))
+                        }
+                    }
+                }
+            }
+            Log.d(this, "client disconnected")
+            LocalBroadcastManager.getInstance(binder.getService()).sendBroadcast(Intent("call_declined"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d(this, "client disconnected (exception)")
+
+            currentCall?.decline()
+        }
+        // zero out key
+        Arrays.fill(clientPublicKey, 0.toByte())
+    }
     }
 }

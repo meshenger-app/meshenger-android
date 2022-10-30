@@ -2,7 +2,6 @@ package d.d.meshenger
 
 import android.Manifest
 import android.content.*
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -18,8 +17,7 @@ import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCCall.CallState
@@ -27,7 +25,6 @@ import d.d.meshenger.call.RTCCall.OnStateChangeListener
 import d.d.meshenger.call.StatsReportUtil
 import org.webrtc.*
 import java.io.IOException
-
 
 class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private var binder: MainService.MainBinder? = null
@@ -53,17 +50,19 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var fullscreenRenderer: SurfaceViewRenderer
     private lateinit var videoStreamSwitchLayout: View
     private lateinit var togglePipWindowButton: View
+    private lateinit var videoStreamSwitchButton: ImageButton
+    private lateinit var speakerModeButton: ImageButton
 
-    // UI state
+    // set by CallActivity
     private var callStatsEnabled = false // small window for video/audio statistics
     private var swappedVideoFeeds = false // swapped fullscreen and pip video content
-    private var isCameraSwitched = false // back (false) or front (true) facing camera
+    private var isCameraSwitched = false // own back (false) or front (true) facing camera
     private var showPipEnabled = true
+
+    // set by RTCall
     private var isLocalVideoAvailable = false // own camera is on/off
     private var isRemoteVideoAvailable = false // we receive a video feed
 
-    private var microphoneEnabled = true
-    private var cameraEnabled = true
     private var speakerEnabled = false
 
     private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
@@ -253,6 +252,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
         videoStreamSwitchLayout = findViewById(R.id.videoStreamSwitchLayout)
         togglePipWindowButton = findViewById(R.id.toggle_pip_window)
+        videoStreamSwitchButton = findViewById(R.id.videoStreamSwitch)
+        speakerModeButton = findViewById(R.id.speakerMode)
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
         pipRenderer.init(eglBaseContext, null)
@@ -275,11 +276,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             nameTextView.text = contact.name
         }
 
-        Log.d(this, "onCreate: ${intent.action}")
+        Log.d(this, "intent: ${intent.action}")
+
         if ("ACTION_OUTGOING_CALL" == intent.action) {
             callEventType = Event.Type.OUTGOING_UNKNOWN
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+                    Log.d(this@CallActivity, "onServiceConnected")
                     binder = iBinder as MainService.MainBinder
                     currentCall = RTCCall(
                         this@CallActivity,
@@ -317,6 +320,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             passiveWakeLock.acquire(10000)
             connection = object : ServiceConnection {
                 override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+                    Log.d(this@CallActivity, "onServiceConnected")
                     binder = iBinder as MainService.MainBinder
                     currentCall = binder!!.getCurrentCall()!!
 
@@ -337,6 +341,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 stopRinging()
                 Log.d(this, "declining call...")
                 currentCall.decline()
+
                 if (passiveWakeLock.isHeld) {
                     passiveWakeLock.release()
                 }
@@ -368,6 +373,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     currentCall.setLocalRenderer(localProxyVideoSink)
                     currentCall.setOnStateChangeListener(passiveCallback)
                     currentCall.setCallContext(this@CallActivity)
+                    currentCall.initIncoming()
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()
                     }
@@ -385,7 +391,64 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         } else {
             Log.d(this, "missing action, should never happen")
             finish()
-            return
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        polledStart()
+    }
+
+    // hack since we need access to binder and activity in state STARTED (for permissions launcher)
+    private fun polledStart(counter: Int = 0) {
+        Log.d(this, "polledStart")
+
+        val waitMS = 500L
+        Handler(mainLooper).postDelayed({
+            if (this@CallActivity.binder != null) {
+                continueCallSetup()
+            } else if ((counter * waitMS) > 4000) {
+                Log.d(this, "give up")
+                // give up
+                finish()
+            } else {
+                polledStart(counter + 1)
+            }
+        }, waitMS)
+    }
+
+    private fun continueCallSetup() {
+        Log.d(this, "continueCallSetup")
+
+        if (!Utils.hasRecordAudioPermission(this@CallActivity)) {
+            enabledMicrophoneForResult.launch(Manifest.permission.RECORD_AUDIO)
+            return;
+        }
+
+        currentCall.initVideo() // TODO: try to call this when video gets enabled
+
+        Log.d(this, "init.action: ${intent.action}, state: ${this.lifecycle.currentState}")
+        if (intent.action == "ACTION_OUTGOING_CALL") {
+            Log.d(this, "ACTION_OUTGOING_CALL")
+            currentCall.initOutgoing()
+        } else {
+            //currentCall.initIncoming()
+        }
+
+        // swap pip and fullscreen content
+        pipRenderer.setOnClickListener {
+            Log.d(this, "pipRenderer.setOnClickListener")
+            showPipEnabled = true
+            swappedVideoFeeds = !swappedVideoFeeds
+            updateVideoDisplay()
+        }
+
+        // swap pip and fullscreen content
+        fullscreenRenderer.setOnClickListener {
+            Log.d(this, "fullscreenRenderer.setOnClickListener")
+            swappedVideoFeeds = !swappedVideoFeeds
+            showPipEnabled = true
+            updateVideoDisplay()
         }
 
         togglePipWindowButton.setOnClickListener {
@@ -394,32 +457,19 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             updateVideoDisplay()
         }
 
-        pipRenderer.setOnClickListener {
-            Log.d(this, "pipRenderer.setOnClickListener")
-            showPipEnabled = true
-            swappedVideoFeeds = !swappedVideoFeeds
-            updateVideoDisplay()
-        }
-
-        fullscreenRenderer.setOnClickListener {
-            Log.d(this, "fullscreenRenderer.setOnClickListener")
-            swappedVideoFeeds = !swappedVideoFeeds
-            showPipEnabled = true
-            updateVideoDisplay()
-        }
-
         findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
             callStatsEnabled = !callStatsEnabled
-            setCallStats(callStatsEnabled)
+            if (callStatsEnabled) {
+                currentCall.setStatsCollector(statsCollector)
+                callStats.visibility = View.VISIBLE
+            } else {
+                currentCall.setStatsCollector(null)
+                callStats.visibility = View.GONE
+            }
         }
 
-        findViewById<View>(R.id.speakerMode).setOnClickListener { button: View ->
-            chooseVoiceMode(button as ImageButton)
-        }
-
-        findViewById<View>(R.id.videoStreamSwitch).setOnClickListener { button: View ->
-            switchCameraEnabled(button as ImageButton)
-        }
+        speakerModeButton.setOnClickListener { chooseVoiceMode() }
+        videoStreamSwitchButton.setOnClickListener { switchCameraEnabled() }
 
         findViewById<View>(R.id.frontFacingSwitch).setOnClickListener {
             Log.d(this, "frontFacingSwitch: swappedVideoFeeds: $swappedVideoFeeds, isCameraSwitched: $isCameraSwitched")
@@ -479,8 +529,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         ringtone?.stop()
     }
 
-    private fun chooseVoiceMode(button: ImageButton) {
+    private fun chooseVoiceMode() {
         val audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
+
+        val button = speakerModeButton
         speakerEnabled = !speakerEnabled
         Log.d(this, "chooseVoiceMode: $speakerEnabled")
 
@@ -496,14 +548,39 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private fun switchCameraEnabled(button: ImageButton) {
-        if (!Utils.hasCameraPermission(this)) {
-            Utils.requestCameraPermission(this, CAMERA_PERMISSION_REQUEST_CODE)
-            return
+    private val enabledMicrophoneForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted -> if (isGranted) {
+            continueCallSetup()
+        } else {
+            // do not turn on camera
+            showTextMessage("No calls without microphone for now")
+            finish()
         }
+    }
 
-        // turn on/off camera
-        currentCall.isCameraEnabled = !currentCall.isCameraEnabled
+    private val enabledCameraForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted -> if (isGranted) {
+            switchCameraEnabled()
+        } else {
+            // do not turn on camera
+            showTextMessage(getString(R.string.missing_camera_permissions))
+        }
+    }
+
+    private fun switchCameraEnabled() {
+        Log.d(this, "switchCameraEnabled")
+
+        if (currentCall.getCameraEnabled()) {
+            // turn camera off
+            currentCall.setCameraEnabled(false)
+        } else {
+            if (!Utils.hasCameraPermission(this)) {
+                enabledCameraForResult.launch(Manifest.permission.CAMERA)
+               return
+            }
+            // turn camera on
+            currentCall.setCameraEnabled(true)
+        }
 
         val animation = ScaleAnimation(
             1.0f,
@@ -515,6 +592,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             Animation.RELATIVE_TO_SELF,
             0.5f
         )
+
         animation.duration = BUTTON_ANIMATION_DURATION / 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
@@ -522,10 +600,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             }
 
             override fun onAnimationEnd(animation: Animation) {
-                if (currentCall.isCameraEnabled) {
-                    button.setImageResource(R.drawable.baseline_camera_alt_black_off_48)
+                if (currentCall.getCameraEnabled()) {
+                    videoStreamSwitchButton.setImageResource(R.drawable.baseline_camera_alt_black_off_48)
                 } else {
-                    button.setImageResource(R.drawable.baseline_camera_alt_black_48)
+                    videoStreamSwitchButton.setImageResource(R.drawable.baseline_camera_alt_black_48)
                 }
 
                 val a: Animation = ScaleAnimation(
@@ -539,7 +617,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     0.5f
                 )
                 a.duration = BUTTON_ANIMATION_DURATION / 2
-                button.startAnimation(a)
+                videoStreamSwitchButton.startAnimation(a)
             }
 
             override fun onAnimationRepeat(animation: Animation) {
@@ -547,9 +625,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             }
         })
 
-        val frontSwitch = findViewById<View>(R.id.frontFacingSwitch)
-        if (currentCall.isCameraEnabled) {
-            frontSwitch.visibility = View.VISIBLE
+        val frontSwitchButton = findViewById<View>(R.id.frontFacingSwitch)
+        if (currentCall.getCameraEnabled()) {
+            frontSwitchButton.visibility = View.VISIBLE
             val scale: Animation = ScaleAnimation(
                 0f,
                 1f,
@@ -561,7 +639,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 0.5f
             )
             scale.duration = BUTTON_ANIMATION_DURATION
-            frontSwitch.startAnimation(scale)
+            frontSwitchButton.startAnimation(scale)
         } else {
             val scale: Animation = ScaleAnimation(
                 1f,
@@ -580,35 +658,17 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 }
 
                 override fun onAnimationEnd(animation: Animation) {
-                    findViewById<View>(R.id.frontFacingSwitch).visibility = View.GONE
+                    frontSwitchButton.visibility = View.GONE
                 }
 
                 override fun onAnimationRepeat(animation: Animation) {
                     // nothing to do
                 }
             })
-            frontSwitch.startAnimation(scale)
+            frontSwitchButton.startAnimation(scale)
         }
-        button.startAnimation(animation)
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(
-                    this,
-                    "Camera permission needed in order to start video",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            }
-            switchCameraEnabled(findViewById(R.id.videoStreamSwitch))
-        }
+        videoStreamSwitchButton.startAnimation(animation)
     }
 
     private fun startSensor() {
@@ -646,7 +706,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         pipRenderer.release()
         fullscreenRenderer.release()
 
-        currentCall.releaseCamera()
+        currentCall?.releaseCamera()
     }
 
     private fun setStatusText(text: String) {
@@ -689,14 +749,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             finish()
         }
     }
-
+/*
     override fun onBackPressed() {
         moveTaskToBack(true)
     }
-
+*/
     companion object {
-        private const val RECORD_AUDIO_PERMISSION_REQUEST_CODE = 1
-        private const val CAMERA_PERMISSION_REQUEST_CODE = 2
         private const val BUTTON_ANIMATION_DURATION = 400L
         val eglBaseContext = EglBase.create().getEglBaseContext()
     }

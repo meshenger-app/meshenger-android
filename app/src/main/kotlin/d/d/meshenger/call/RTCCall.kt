@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.*
 import d.d.meshenger.R
 import org.json.JSONException
@@ -44,43 +45,57 @@ class RTCCall : DataChannel.Observer {
     private val statsTimer = Timer()
     private val executor = Executors.newSingleThreadExecutor()
 
-    // local video
-    var isCameraEnabled = false
-        set(enabled) {
-            Log.d(this, "setVideoEnabled: $enabled")
-            field = enabled
-            try {
-                if (enabled) {
-                    capturer!!.startCapture(1280, 720, 25)
-                    callActivity!!.setLocalVideoEnabled(true)
-                } else {
-                    callActivity!!.setLocalVideoEnabled(false)
-                    capturer!!.stopCapture()
-                }
-                val o = JSONObject()
-                if (enabled) {
-                    o.put(STATE_CHANGE_MESSAGE, CAMERA_ENABLE_MESSAGE)
-                } else {
-                    o.put(STATE_CHANGE_MESSAGE, CAMERA_DISABLE_MESSAGE)
-                }
-                Thread {
-                    while (!::dataChannel.isInitialized) {
-                        Thread.sleep(1000)
-                    }
-                    dataChannel.send(
-                        DataChannel.Buffer(
-                            ByteBuffer.wrap(
-                                o.toString().toByteArray()
-                            ), false
-                        )
-                    )
-                }.start()
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
+    private var isCameraEnabled = false
+    private var isMicrophoneEnabled = true
+
+    fun getMicrophoneEnabled(): Boolean {
+        return isMicrophoneEnabled
+    }
+
+    fun setMicrophoneEnabled(_enabled: Boolean) {
+        // TODO
+    }
+
+    fun getCameraEnabled(): Boolean {
+        return isCameraEnabled
+    }
+
+    fun setCameraEnabled(enabled: Boolean) {
+        this.isCameraEnabled = enabled
+        // TODO: run in executor?
+        Log.d(this, "setVideoEnabled: $enabled")
+        try {
+            if (enabled) {
+                capturer!!.startCapture(1280, 720, 25)
+                callActivity!!.setLocalVideoEnabled(true)
+            } else {
+                callActivity!!.setLocalVideoEnabled(false)
+                capturer!!.stopCapture()
             }
+            val o = JSONObject()
+            if (enabled) {
+                o.put(STATE_CHANGE_MESSAGE, CAMERA_ENABLE_MESSAGE)
+            } else {
+                o.put(STATE_CHANGE_MESSAGE, CAMERA_DISABLE_MESSAGE)
+            }
+            Thread {
+                while (!::dataChannel.isInitialized) {
+                    Thread.sleep(1000)
+                }
+                dataChannel.send(
+                    DataChannel.Buffer(
+                        ByteBuffer.wrap(
+                            o.toString().toByteArray()
+                        ), false
+                    )
+                )
+            }.start()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
         }
+    }
 
     // called for incoming calls
     constructor(
@@ -107,7 +122,7 @@ class RTCCall : DataChannel.Observer {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
 
-        initVideo(context)
+        //initVideo()
     }
 
     // called for outgoing calls
@@ -133,15 +148,18 @@ class RTCCall : DataChannel.Observer {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
 
-        initVideo(context)
+        //initVideo(context)
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             context.setTheme(R.style.AppTheme_Dark)
         } else {
             context.setTheme(R.style.AppTheme_Light)
         }
+        // initOutgoing()
+    }
 
-        Thread {
+    fun initOutgoing() {
+        executor.execute {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
@@ -154,7 +172,7 @@ class RTCCall : DataChannel.Observer {
                     val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
 
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
-                        Log.d(this, "transferring offer...")
+                        Log.d(this, "outgoing call: send offer")
                         try {
                             commSocket = createCommSocket(contact)
                             if (commSocket == null) {
@@ -171,11 +189,10 @@ class RTCCall : DataChannel.Observer {
                             contact.lastWorkingAddress =
                                 InetSocketAddress(remote_address.address, MainService.serverPort)
 
-                            Log.d(this, "connect..")
                             val pr = PacketReader(commSocket!!)
                             reportStateChange(CallState.CONNECTING)
                             run {
-                                Log.d(this, "send call message")
+                                Log.d(this, "outgoing call: send call")
                                 val obj = JSONObject()
                                 obj.put("action", "call")
                                 obj.put("offer", connection.localDescription.description)
@@ -195,7 +212,7 @@ class RTCCall : DataChannel.Observer {
                                 pw.writeMessage(encrypted)
                             }
                             run {
-                                Log.d(this, "read ringing message")
+                                Log.d(this, "outgoing call: got ringing")
                                 val response = pr.readMessage()
                                 val decrypted = Crypto.decryptMessage(
                                     response,
@@ -215,7 +232,6 @@ class RTCCall : DataChannel.Observer {
                                     reportStateChange(CallState.ERROR)
                                     return
                                 }
-                                Log.d(this, "ringing...")
                                 reportStateChange(CallState.RINGING)
                             }
                             run {
@@ -234,18 +250,18 @@ class RTCCall : DataChannel.Observer {
                                 val obj = JSONObject(decrypted)
                                 when (val action = obj.getString("action")) {
                                     "connected" -> {
-                                        Log.d(this, "connected")
+                                        Log.d(this, "outgoing call: connected")
                                         reportStateChange(CallState.CONNECTED)
                                         handleAnswer(obj.getString("answer"))
                                         // contact accepted receiving call
                                     }
                                     "dismissed" -> {
-                                        Log.d(this, "dismissed")
+                                        Log.d(this, "outgoing call:dismissed")
                                         closeCommSocket()
                                         reportStateChange(CallState.DISMISSED)
                                     }
                                     else -> {
-                                        Log.d(this, "unknown action reply: $action")
+                                        Log.d(this, "outgoing call: unknown action reply $action")
                                         closeCommSocket()
                                         reportStateChange(CallState.ERROR)
                                     }
@@ -291,7 +307,7 @@ class RTCCall : DataChannel.Observer {
                     connection.setLocalDescription(DefaultSdpObserver(), sessionDescription)
                 }
             }, constraints)
-        }.start()
+        }
     }
 
     private fun createCommSocket(contact: Contact): Socket? {
@@ -379,12 +395,13 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
+    // is this used?
     private fun handleMediaStream(stream: MediaStream) {
         Log.d(this, "handleMediaStream")
         if (remoteVideoSink == null || stream.videoTracks.size == 0) {
             return
         }
-        Handler(Looper.getMainLooper()).post {
+        executor.execute {
             stream.videoTracks[0].addSink(remoteVideoSink)
         }
     }
@@ -440,9 +457,9 @@ class RTCCall : DataChannel.Observer {
         return factory.createAudioTrack("audio1", factory.createAudioSource(MediaConstraints()))
     }
 
-    private fun initVideo(c: Context) {
+    fun initVideo() {
         PeerConnectionFactory.initialize(
-            PeerConnectionFactory.InitializationOptions.builder(c)
+            PeerConnectionFactory.InitializationOptions.builder(context)
                 .setEnableInternalTracer(true)
                 .createInitializationOptions()
         )
@@ -516,6 +533,9 @@ class RTCCall : DataChannel.Observer {
 
     fun setOnStateChangeListener(listener: OnStateChangeListener?) {
         this.onStateChangeListener = listener
+    }
+
+    fun initIncoming() {
         executor.execute {
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN

@@ -34,7 +34,7 @@ class RTCCall : DataChannel.Observer {
     private var localVideoSink: ProxyVideoSink? = null
 
     private var capturer: CameraVideoCapturer? = null
-    private var context: Context
+    private var appContext: Context
     private var contact: Contact
     private var ownPublicKey: ByteArray
     private var ownSecretKey: ByteArray
@@ -43,17 +43,19 @@ class RTCCall : DataChannel.Observer {
     private var callActivity: CallContext?
     private var binder: MainService.MainBinder
     private val statsTimer = Timer()
+    private var audioSource: AudioSource? = null
+    private var localAudioTrack: AudioTrack? = null
+
     private val executor = Executors.newSingleThreadExecutor()
 
+    private val audioConstraints = MediaConstraints()
+
     private var isCameraEnabled = false
-    private var isMicrophoneEnabled = true
+    private var isMicrophoneEnabled = false
+    private var useFrontFacingCamera = false
 
     fun getMicrophoneEnabled(): Boolean {
         return isMicrophoneEnabled
-    }
-
-    fun setMicrophoneEnabled(_enabled: Boolean) {
-        // TODO
     }
 
     fun getCameraEnabled(): Boolean {
@@ -67,9 +69,9 @@ class RTCCall : DataChannel.Observer {
         try {
             if (enabled) {
                 capturer!!.startCapture(1280, 720, 25)
-                callActivity!!.setLocalVideoEnabled(true)
+                callActivity!!.onLocalVideoEnabled(true)
             } else {
-                callActivity!!.setLocalVideoEnabled(false)
+                callActivity!!.onLocalVideoEnabled(false)
                 capturer!!.stopCapture()
             }
             val o = JSONObject()
@@ -80,7 +82,7 @@ class RTCCall : DataChannel.Observer {
             }
             Thread {
                 while (!::dataChannel.isInitialized) {
-                    Thread.sleep(1000)
+                    Thread.sleep(100)
                 }
                 dataChannel.send(
                     DataChannel.Buffer(
@@ -99,7 +101,7 @@ class RTCCall : DataChannel.Observer {
 
     // called for incoming calls
     constructor(
-        context: Context,
+        appContext: Context,
         binder: MainService.MainBinder,
         contact: Contact,
         commSocket: Socket?,
@@ -107,7 +109,7 @@ class RTCCall : DataChannel.Observer {
     ) {
         Log.d(this, "RTCCall created")
 
-        this.context = context
+        this.appContext = appContext
         this.contact = contact
         this.commSocket = commSocket
         this.onStateChangeListener = null
@@ -127,14 +129,14 @@ class RTCCall : DataChannel.Observer {
 
     // called for outgoing calls
     constructor(
-        context: Context,
+        appContext: Context,
         binder: MainService.MainBinder,
         contact: Contact,
         listener: OnStateChangeListener
     ) {
         Log.d(this, "RTCCall created")
 
-        this.context = context
+        this.appContext = appContext
         this.contact = contact
         this.commSocket = null
         this.onStateChangeListener = listener
@@ -147,15 +149,6 @@ class RTCCall : DataChannel.Observer {
         for (server in binder.getSettings().iceServers) {
             iceServers.add(IceServer.builder(server).createIceServer())
         }
-
-        //initVideo(context)
-
-        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            context.setTheme(R.style.AppTheme_Dark)
-        } else {
-            context.setTheme(R.style.AppTheme_Light)
-        }
-        // initOutgoing()
     }
 
     fun initOutgoing() {
@@ -293,7 +286,7 @@ class RTCCall : DataChannel.Observer {
             dataChannel = connection.createDataChannel("data", DataChannel.Init())
             dataChannel.registerObserver(this)
 
-            callActivity!!.showVideoButton()
+            callActivity!!.onCameraEnabled()
 
             //Migrated to Unified Plan
             //val config = RTCConfiguration(iceServers)
@@ -301,6 +294,7 @@ class RTCCall : DataChannel.Observer {
             //connection.setConfiguration(config)
 
             addTrack()
+
             connection.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
                     super.onCreateSuccess(sessionDescription)
@@ -372,8 +366,8 @@ class RTCCall : DataChannel.Observer {
             val o = JSONObject(s)
             if (o.has(STATE_CHANGE_MESSAGE)) {
                 when (o.getString(STATE_CHANGE_MESSAGE)) {
-                    CAMERA_ENABLE_MESSAGE -> callActivity!!.setRemoteVideoEnabled(true)
-                    CAMERA_DISABLE_MESSAGE -> callActivity!!.setRemoteVideoEnabled(false)
+                    CAMERA_ENABLE_MESSAGE -> callActivity!!.onRemoteVideoEnabled(true)
+                    CAMERA_DISABLE_MESSAGE -> callActivity!!.onRemoteVideoEnabled(false)
                     else -> {}
                 }
             } else {
@@ -395,7 +389,6 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    // is this used?
     private fun handleMediaStream(stream: MediaStream) {
         Log.d(this, "handleMediaStream")
         if (remoteVideoSink == null || stream.videoTracks.size == 0) {
@@ -410,42 +403,44 @@ class RTCCall : DataChannel.Observer {
         //Migrated to Unified Plan
         //upStream = factory.createLocalMediaStream("stream1")
         try {
-            connection.addTrack(getAudioTrack(), listOf("stream1"))
-            connection.addTrack(getVideoTrack(), listOf("stream1"))
+            connection.addTrack(createAudioTrack(), listOf("stream1"))
+            connection.addTrack(createVideoTrack(), listOf("stream1"))
         } catch (e: Exception){
             e.printStackTrace()
         }
     }
 
-    private fun createCapturer(): CameraVideoCapturer? {
-        val enumerator: CameraEnumerator = Camera1Enumerator()
-        for (name in enumerator.deviceNames) {
-            if (enumerator.isFrontFacing(name)) {
-                return enumerator.createCapturer(name, null)
+    fun getFrontCameraEnabled(): Boolean {
+        return useFrontFacingCamera
+    }
+
+    fun setFrontCameraEnabled(enabled: Boolean) {
+        if (capturer != null) {
+            if (enabled != useFrontFacingCamera) {
+                capturer!!.switchCamera(null)
+                useFrontFacingCamera = enabled
+                callActivity?.onFrontFacingCamera(enabled)
             }
         }
-        return null
     }
 
-    fun switchFrontFacing() {
-        if (capturer != null) {
-            capturer!!.switchCamera(null)
+    private fun createVideoTrack(): VideoTrack? {
+        capturer = null
+        val enumerator = Camera1Enumerator()
+        for (name in enumerator.deviceNames) {
+            if (enumerator.isFrontFacing(name)) {
+                capturer = enumerator.createCapturer(name, null)
+                break
+            }
         }
-    }
 
-    private fun getVideoTrack(): VideoTrack? {
-        capturer = createCapturer()
         if (capturer != null) {
             val surfaceTextureHelper =
                 SurfaceTextureHelper.create("CaptureThread", CallActivity.eglBaseContext)
             val videoSource = factory.createVideoSource(capturer!!.isScreencast)
-            capturer!!.initialize(
-                surfaceTextureHelper,
-                this@RTCCall.context,
-                videoSource.capturerObserver
-            )
+            capturer!!.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
 
-            val localVideoTrack = factory.createVideoTrack("video1", videoSource)
+            val localVideoTrack = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource)
             localVideoTrack.addSink(localVideoSink)
             localVideoTrack.setEnabled(true)
             return localVideoTrack
@@ -453,13 +448,25 @@ class RTCCall : DataChannel.Observer {
         return null
     }
 
-    private fun getAudioTrack(): AudioTrack {
-        return factory.createAudioTrack("audio1", factory.createAudioSource(MediaConstraints()))
+    private fun createAudioTrack(): AudioTrack? {
+        audioSource = factory.createAudioSource(audioConstraints)
+        localAudioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, audioSource)
+        localAudioTrack?.setEnabled(isMicrophoneEnabled)
+        return localAudioTrack
+    }
+
+    fun setMicrophoneEnabled(enabled: Boolean) {
+        Log.d(this, "setMicrophoneEnabled: $enabled")
+        executor.execute {
+            isMicrophoneEnabled = enabled
+            localAudioTrack?.setEnabled(enabled)
+            callActivity!!.onMicrophoneEnabled(enabled)
+        }
     }
 
     fun initVideo() {
         PeerConnectionFactory.initialize(
-            PeerConnectionFactory.InitializationOptions.builder(context)
+            PeerConnectionFactory.InitializationOptions.builder(appContext)
                 .setEnableInternalTracer(true)
                 .createInitializationOptions()
         )
@@ -591,7 +598,7 @@ class RTCCall : DataChannel.Observer {
                     super.onDataChannel(dataChannel)
                     this@RTCCall.dataChannel = dataChannel
                     this@RTCCall.dataChannel.registerObserver(this@RTCCall)
-                    callActivity!!.showVideoButton()
+                    callActivity!!.onCameraEnabled()
                 }
             })!!
 
@@ -656,6 +663,7 @@ class RTCCall : DataChannel.Observer {
             closePeerConnection()
             //factory.dispose()
         }
+        audioSource?.dispose()
         statsTimer.cancel()
     }
 
@@ -694,9 +702,11 @@ class RTCCall : DataChannel.Observer {
     }
 
     interface CallContext {
-        fun setLocalVideoEnabled(enabled: Boolean)
-        fun setRemoteVideoEnabled(enabled: Boolean)
-        fun showVideoButton()
+        fun onLocalVideoEnabled(enabled: Boolean)
+        fun onRemoteVideoEnabled(enabled: Boolean)
+        fun onFrontFacingCamera(enabled: Boolean)
+        fun onMicrophoneEnabled(enabled: Boolean)
+        fun onCameraEnabled()
         fun showTextMessage(message: String)
     }
 
@@ -724,8 +734,12 @@ class RTCCall : DataChannel.Observer {
         private const val STATE_CHANGE_MESSAGE = "StateChange"
         private const val CAMERA_DISABLE_MESSAGE = "CameraDisabled"
         private const val CAMERA_ENABLE_MESSAGE = "CameraEnabled"
+        private const val AUDIO_TRACK_ID = "audio1"
+        private const val VIDEO_TRACK_ID = "video1"
 
     fun createIncomingCall(binder: MainService.MainBinder, client: Socket) {
+        Log.d(this, "createIncomingCall")
+
         val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val ownSecretKey = binder.getDatabase().settings.secretKey
         val ownPublicKey = binder.getDatabase().settings.publicKey

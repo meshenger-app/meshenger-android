@@ -35,6 +35,12 @@ internal object Utils {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun hasRecordAudioPermission(activity: Activity): Boolean {
+        return ContextCompat.checkSelfPermission(
+            activity, Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     fun requestCameraPermission(activity: Activity, request_code: Int) {
         ActivityCompat.requestPermissions(
             activity, arrayOf(

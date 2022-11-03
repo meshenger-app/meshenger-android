@@ -60,11 +60,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
         viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
-
-        // ask for audio recording permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 2)
-        }
     }
 
     override fun onDestroy() {
@@ -203,18 +198,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
 
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, R.string.permission_mic, Toast.LENGTH_LONG).show()
-            finish()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

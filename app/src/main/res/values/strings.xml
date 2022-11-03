@@ -17,6 +17,8 @@
     <string name="path_title">Import/Export Path</string>
     <string name="import_dialog">Import new settings and add %1$d contacts and %2$d events?</string>
     <string name="password_title">Password</string>
+    <string name="missing_camera_permissions">Missing permission. Camera disabled.</string>
+    <string name="missing_microphone_permissions">Missing permission. Microphone disabled.</string>
     <string name="camera_permission_request">Camera permission needed to scan codes</string>
     <string name="invalid_qr">Invalid QR-Code</string>
     <string name="network_connect_invitation">No information available, please connect to a network</string>

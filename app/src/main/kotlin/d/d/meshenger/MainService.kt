@@ -293,6 +293,10 @@ class MainService : Service(), Runnable {
             return currentCall
         }
 
+        fun setCurrentCall(call: RTCCall?) {
+            currentCall = call
+        }
+
         fun addContact(contact: Contact) {
             getDatabase().contacts.addContact(contact)
             saveDatabase()

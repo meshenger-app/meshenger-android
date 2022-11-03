@@ -35,8 +35,6 @@ class StartActivity : BaseActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        // load libsodium for JNI access
-        sodium = NaCl.sodium()
 
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
         findViewById<TextView>(R.id.splashText).typeface = type
@@ -325,7 +323,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
     }
 
     companion object {
-        private var sodium: Sodium? = null
+        // load libsodium for JNI access
+        private var sodium = NaCl.sodium()
     }
 
     private fun generateRandomUserName(): String {

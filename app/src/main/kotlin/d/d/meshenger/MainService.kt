@@ -14,8 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import d.d.meshenger.Crypto.decryptMessage
-import d.d.meshenger.Crypto.encryptMessage
 import d.d.meshenger.Utils.readInternalFile
 import d.d.meshenger.Utils.writeInternalFile
 import d.d.meshenger.call.RTCCall
@@ -23,7 +21,7 @@ import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import java.io.File
 import java.io.IOException
-import java.net.InetSocketAddress
+import java.net.ConnectException
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -153,7 +151,7 @@ class MainService : Service(), Runnable {
                     if (contact.state === Contact.State.OFFLINE) {
                         continue
                     }
-                    val encrypted = encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey) ?: continue
+                    val encrypted = Crypto.encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey) ?: continue
                     var socket: Socket? = null
                     try {
                         socket = createCommSocket(contact)
@@ -351,70 +349,80 @@ class MainService : Service(), Runnable {
 
     internal inner class PingRunnable(
         var context: Context,
-        private val contacts: List<Contact>,
-        var ownPublicKey: ByteArray?,
-        var ownSecretKey: ByteArray?,
+        val contacts: List<Contact>,
+        var ownPublicKey: ByteArray,
+        var ownSecretKey: ByteArray,
     ) : Runnable {
-        private fun setState(publicKey: ByteArray, state: Contact.State) {
-            val contact = binder.getContacts().getContactByPublicKey(publicKey)
-            if (contact != null) {
-                contact.state = state
+        private fun pingContact(contact: Contact) : Contact.State {
+            val publicKey = contact.publicKey
+            var connected = false
+            val socket = Socket()
+
+            try {
+                // try to connect
+                for (address in contact.getAllSocketAddresses()) {
+                    try {
+                        socket.connect(address, 500)
+                        connected = true
+                        break
+                    } catch (e: ConnectException) {
+                        // target online, but Meshenger not running
+                        return Contact.State.PENDING
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
+
+                if (!connected) {
+                    return Contact.State.OFFLINE
+                }
+
+                val pw = PacketWriter(socket)
+                val pr = PacketReader(socket)
+
+                Log.d(this, "send ping to ${contact.name}")
+                val encrypted = Crypto.encryptMessage(
+                    "{\"action\":\"ping\"}",
+                    publicKey,
+                    ownPublicKey,
+                    ownSecretKey
+                ) ?: return Contact.State.BROKEN
+
+                pw.writeMessage(encrypted)
+                val request = pr.readMessage() ?: return Contact.State.BROKEN
+                val decrypted = Crypto.decryptMessage(
+                    request,
+                    publicKey,
+                    ownPublicKey,
+                    ownSecretKey
+                ) ?: return Contact.State.BROKEN
+
+                val obj = JSONObject(decrypted)
+                val action = obj.optString("action", "")
+                if (action == "pong") {
+                    Log.d(this, "got pong")
+                    return Contact.State.ONLINE
+                } else {
+                    return Contact.State.BROKEN
+                }
+            } catch (e: Exception) {
+                return Contact.State.BROKEN
+            } finally {
+                try {
+                    socket.close()
+                } catch (_: Exception) {
+                    // ignore
+                }
             }
         }
 
         override fun run() {
             for (contact in contacts) {
-                var socket: Socket? = null
-                val publicKey = contact.publicKey
-                try {
-                    socket = createCommSocket(contact)
-                    if (socket == null) {
-                        setState(publicKey, Contact.State.OFFLINE)
-                        continue
-                    }
-                    val pw = PacketWriter(socket)
-                    val pr = PacketReader(socket)
-                    Log.d(this, "send ping to ${contact.name}")
-                    val encrypted = encryptMessage(
-                        "{\"action\":\"ping\"}",
-                        publicKey,
-                        ownPublicKey!!,
-                        ownSecretKey
-                    )
-                    if (encrypted == null) {
-                        socket.close()
-                        continue
-                    }
-                    pw.writeMessage(encrypted)
-                    val request = pr.readMessage()
-                    if (request == null) {
-                        socket.close()
-                        continue
-                    }
-                    val decrypted = decryptMessage(request, publicKey, ownPublicKey, ownSecretKey)
-                    if (decrypted == null) {
-                        Log.d(this, "decryption failed")
-                        socket.close()
-                        continue
-                    }
-                    val obj = JSONObject(decrypted)
-                    val action = obj.optString("action", "")
-                    if (action == "pong") {
-                        Log.d(this, "got pong")
-                        setState(publicKey, Contact.State.ONLINE)
-                    }
-                    socket.close()
-                } catch (e: Exception) {
-                    setState(publicKey, Contact.State.OFFLINE)
-                    if (socket != null) {
-                        try {
-                            socket.close()
-                        } catch (ee: Exception) {
-                            // ignore
-                        }
-                    }
-                    e.printStackTrace()
-                }
+                val state = pingContact(contact)
+                // set contact state
+                binder.getContacts()
+                    .getContactByPublicKey(contact.publicKey)
+                    ?.state = state
             }
 
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_contact_list"))

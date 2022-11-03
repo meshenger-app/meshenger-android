@@ -20,7 +20,10 @@ class Contact(
     var blocked: Boolean = false
 ) : Serializable {
     enum class State {
-        ONLINE, OFFLINE, PENDING
+        ONLINE,
+        OFFLINE,
+        PENDING, // host is online, but Meshenger does not run
+        BROKEN, // something went wrong during communication
     }
 
     // contact state

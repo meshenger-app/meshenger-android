@@ -28,6 +28,7 @@ Details can be found in the [Documentation](docs/Documentation.md) or in the [FA
 
 ## Similar Projects
 
+* [Keet](https://keet.io) - many features, uses a DHT, Bitcoin payments
 * [Jami](https://jami.net/) - many feature, but might not work in mesh networks
 * [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE.
 * [CupLink](https://github.com/RiV-chain/CupLink) - for RiV-mesh and a fork of Meshenger

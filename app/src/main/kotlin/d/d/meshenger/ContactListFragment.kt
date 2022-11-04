@@ -244,6 +244,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
             Toast.makeText(activity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
             return
         }
+
+        Log.d(this, "start CallActivity")
         val intent = Intent(activity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

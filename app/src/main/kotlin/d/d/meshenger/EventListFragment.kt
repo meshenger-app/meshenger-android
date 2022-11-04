@@ -196,6 +196,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         }
 
         // start call
+        Log.d(this, "start CallActivity")
         val intent = Intent(activity, CallActivity::class.java)
         intent.action = "ACTION_OUTGOING_CALL"
         intent.putExtra("EXTRA_CONTACT", contact)

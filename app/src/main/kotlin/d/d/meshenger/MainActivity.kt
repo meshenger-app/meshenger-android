@@ -169,9 +169,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onOptionsItemSelected")
         when (item.itemId) {
             R.id.action_settings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
             R.id.action_backup -> {
                 startActivity(Intent(this, BackupActivity::class.java))

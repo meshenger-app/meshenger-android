@@ -806,6 +806,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             }
         }
 
+        binder!!.setCurrentCall(null)
+
         pipRenderer.release()
         fullscreenRenderer.release()
 

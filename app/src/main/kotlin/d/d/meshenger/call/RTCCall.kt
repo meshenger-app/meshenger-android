@@ -798,10 +798,17 @@ class RTCCall : DataChannel.Observer {
 
                 val obj = JSONObject(decrypted)
                 val action = obj.optString("action", "")
+                Log.d(this, "action: $action")
                 when (action) {
                     "call" -> {
+                        // busy
+                        if (binder.getCurrentCall() != null) {
+                            Log.d(this, "call in progress => abort call")
+                            client.close()
+                            return
+                        }
+
                         // someone calls us
-                        Log.d(this, "call...")
                         val offer = obj.getString("offer")
 
                         // respond that we accept the call (our phone is ringing)
@@ -818,9 +825,9 @@ class RTCCall : DataChannel.Observer {
                         currentCall = RTCCall(binder.getService(), binder, contact, client, offer)
                         binder.setCurrentCall(currentCall)
                         val intent = Intent(binder.getService(), CallActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         intent.action = "ACTION_INCOMING_CALL"
                         intent.putExtra("EXTRA_CONTACT", contact)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         binder.getService().startActivity(intent)
                     }
                     "ping" -> {

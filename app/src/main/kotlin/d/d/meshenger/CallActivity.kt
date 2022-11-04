@@ -304,8 +304,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         // make both invisible
         showPipView(false)
         showFullscreenView(false)
+
         acceptButton.visibility = View.GONE
         declineButton.visibility = View.GONE
+        toggleMicButton.visibility = View.GONE
+        toggleCameraButton.visibility = View.GONE
+        toggleFrontCameraButton.visibility = View.GONE
 
         if (contact.name.isEmpty()) {
             nameTextView.text = resources.getString(R.string.unknown_caller)
@@ -417,6 +421,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     if (passiveWakeLock.isHeld) {
                         passiveWakeLock.release()
                     }
+
                     declineButton.setOnClickListener(hangupListener)
                     acceptButton.visibility = View.GONE
                     declineButton.visibility = View.VISIBLE
@@ -552,6 +557,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         if (settings.frontCameraEnabled != currentCall.getFrontCameraEnabled()) {
             currentCall.setFrontCameraEnabled(settings.frontCameraEnabled)
         }
+
+        toggleMicButton.visibility = View.VISIBLE
+        toggleCameraButton.visibility = View.VISIBLE
+        toggleFrontCameraButton.visibility = View.GONE
     }
 
     override fun onFrontFacingCamera(_enabled: Boolean) {

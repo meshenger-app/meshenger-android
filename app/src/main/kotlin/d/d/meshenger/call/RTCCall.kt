@@ -27,7 +27,6 @@ class RTCCall : DataChannel.Observer {
     private lateinit var factory: PeerConnectionFactory
     private lateinit var connection: PeerConnection
     private lateinit var dataChannel: DataChannel
-    private var constraints: MediaConstraints? = null
     private var offer: String? = null
 
     private var remoteVideoSink: ProxyVideoSink? = null
@@ -49,6 +48,7 @@ class RTCCall : DataChannel.Observer {
     private val executor = Executors.newSingleThreadExecutor()
 
     private val audioConstraints = MediaConstraints()
+    private val videoConstraints = MediaConstraints()
 
     private var isCameraEnabled = false
     private var isMicrophoneEnabled = false
@@ -300,7 +300,7 @@ class RTCCall : DataChannel.Observer {
                     super.onCreateSuccess(sessionDescription)
                     connection.setLocalDescription(DefaultSdpObserver(), sessionDescription)
                 }
-            }, constraints)
+            }, videoConstraints)
         }
     }
 
@@ -488,10 +488,9 @@ class RTCCall : DataChannel.Observer {
             .setVideoDecoderFactory(decoderFactory)
             .createPeerConnectionFactory()
 
-        constraints = MediaConstraints()
-        constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
-        constraints!!.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
-        constraints!!.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
+        videoConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
+        videoConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
+        videoConstraints.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
         //initVideoTrack()
     }
 
@@ -623,7 +622,7 @@ class RTCCall : DataChannel.Observer {
                             super.onCreateFailure(s)
                             Log.d(this, "onCreateFailure: $s")
                         }
-                    }, constraints)
+                    }, videoConstraints)
                 }
             }, SessionDescription(SessionDescription.Type.OFFER, offer))
         }

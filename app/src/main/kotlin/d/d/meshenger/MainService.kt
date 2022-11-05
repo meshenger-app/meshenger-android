@@ -45,7 +45,14 @@ class MainService : Service(), Runnable {
         Thread(this).start()
     }
 
-    private fun showNotification() {
+    private fun updateNotification(text: String) {
+        val notification = getNotification(text)
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        manager.notify(NOTIFICATION_ID, notification)
+    }
+
+    private fun getNotification(text: String): Notification {
         val channelId = "meshenger_service"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val chan = NotificationChannel(
@@ -58,16 +65,17 @@ class MainService : Service(), Runnable {
             val service = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             service.createNotificationChannel(chan)
         }
+
         // start MainActivity
         val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingNotificationIntent =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                PendingIntent.getActivity(this, 0, notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-            else PendingIntent.getActivity(this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
-        val mActivity = applicationContext
-        val notification = NotificationCompat.Builder(mActivity, channelId)
+        val pendingNotificationIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        } else {
+            PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
+        return NotificationCompat.Builder(applicationContext, channelId)
             .setSilent(true)
             .setOngoing(true)
             .setShowWhen(false)
@@ -77,6 +85,11 @@ class MainService : Service(), Runnable {
             .setContentText(resources.getText(R.string.listen_for_incoming_calls))
             .setContentIntent(pendingNotificationIntent)
             .build()
+    }
+
+    private fun showNotification() {
+        val notification = getNotification(resources.getText(R.string.listen_for_incoming_calls).toString())
+
         startForeground(NOTIFICATION_ID, notification)
     }
 
@@ -208,7 +221,8 @@ class MainService : Service(), Runnable {
             // ignore
         } else if (intent.action == START_FOREGROUND_ACTION) {
             Log.d(this, "Received Start Foreground Intent")
-            showNotification()
+            val notification = getNotification(resources.getText(R.string.listen_for_incoming_calls).toString())
+            startForeground(NOTIFICATION_ID, notification)
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "Received Stop Foreground Intent")
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION_ID)

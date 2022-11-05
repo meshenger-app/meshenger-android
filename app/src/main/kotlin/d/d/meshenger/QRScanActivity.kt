@@ -41,7 +41,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
         barcodeView = findViewById(R.id.barcodeScannerView)
 
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(Intent(this, MainService::class.java), this, 0)
         if (!Utils.hasCameraPermission(this)) {
             Utils.requestCameraPermission(this, 1)
         }

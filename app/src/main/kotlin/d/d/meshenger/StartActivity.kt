@@ -40,9 +40,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
         findViewById<TextView>(R.id.splashText).typeface = type
 
         // start MainService and call back via onServiceConnected()
-        startService(Intent(this, MainService::class.java))
+        MainService.start(this)
 
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(Intent(this, MainService::class.java), this, 0)
     }
 
     private fun continueInit() {

@@ -53,13 +53,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
         setContentView(R.layout.activity_main)
 
         initToolbar()
-        permissionToDrawOverlays();
-        MainService.start(this)
+        permissionToDrawOverlays()
 
         viewPager = findViewById(R.id.container)
         viewPager.adapter = ViewPagerFragmentAdapter(this)
 
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(Intent(this, MainService::class.java), this, 0)
     }
 
     override fun onDestroy() {
@@ -179,11 +178,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             }
             R.id.action_exit -> {
                 MainService.stop(this)
-                if (Build.VERSION.SDK_INT >= 21) {
-                    finishAndRemoveTask()
-                } else {
-                    finish()
-                }
+                finish()
             }
         }
         return super.onOptionsItemSelected(item)

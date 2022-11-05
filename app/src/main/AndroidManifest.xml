@@ -42,7 +42,7 @@
 
         <service
             android:name=".MainService"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".StartActivity"

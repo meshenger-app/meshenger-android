@@ -53,7 +53,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
 		customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
 		systemAddresses = AddressUtils.collectAddresses().toMutableList()
 
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(Intent(this, MainService::class.java), this, 0)
     }
 
     fun initViews() {

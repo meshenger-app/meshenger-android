@@ -26,7 +26,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         setTitle(getString(R.string.scan_invitation))
 
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(Intent(this, MainService::class.java), this, 0)
 
         findViewById<View>(R.id.fabPresenter).setOnClickListener {
             startActivity(Intent(this, QRScanActivity::class.java))

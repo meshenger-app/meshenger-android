@@ -49,7 +49,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
-        bindService(Intent(this, MainService::class.java), this, BIND_AUTO_CREATE)
+        bindService(Intent(this, MainService::class.java), this, 0)
         initViews()
     }
 

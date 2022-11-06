@@ -147,7 +147,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
             }
         }.attach()
 
-        showInvalidAddressSettingsWarning()
+        if (!address_warning_shown) {
+            showInvalidAddressSettingsWarning()
+            address_warning_shown = true
+        }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
@@ -211,5 +214,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 return EventListFragment()
             }
         }
+    }
+
+    companion object {
+        private var address_warning_shown = false
     }
 }

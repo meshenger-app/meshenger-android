@@ -11,7 +11,9 @@ import android.media.RingtoneManager
 import android.os.*
 import android.os.PowerManager.WakeLock
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
@@ -35,6 +37,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
     private lateinit var contact: Contact
+    private lateinit var eglBase: EglBase
 
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
@@ -266,6 +269,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         Log.d(this, "onCreate")
 
         super.onCreate(savedInstanceState)
+
+        // keep screen on during the call
+        window.addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         setContentView(R.layout.activity_call)
 
         if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -275,7 +282,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
 
         // keep screen on during the call
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         statusTextView = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
@@ -291,10 +298,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         toggleFrontCameraButton = findViewById(R.id.frontFacingSwitch)
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
-        pipRenderer.init(eglBaseContext, null)
+        eglBase = EglBase.create()
+
+        pipRenderer.init(eglBase.eglBaseContext, null)
         pipRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
 
-        fullscreenRenderer.init(eglBaseContext, null)
+        fullscreenRenderer.init(eglBase.eglBaseContext, null)
         fullscreenRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL)
 
         pipRenderer.setZOrderMediaOverlay(true)
@@ -334,6 +343,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     currentCall.setRemoteRenderer(remoteProxyVideoSink)
                     currentCall.setLocalRenderer(localProxyVideoSink)
                     currentCall.setCallContext(this@CallActivity)
+                    currentCall.setEglBase(eglBase)
 
                     updateVideoDisplay()
                 }
@@ -416,6 +426,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     currentCall.setLocalRenderer(localProxyVideoSink)
                     currentCall.setOnStateChangeListener(passiveCallback)
                     currentCall.setCallContext(this@CallActivity)
+                    currentCall.setEglBase(eglBase)
                     currentCall.initIncoming()
 
                     if (passiveWakeLock.isHeld) {
@@ -447,14 +458,21 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             Log.d(this, "missing action, should never happen")
             finish()
         }
+
+        Log.d(this, "state: ${this.lifecycle.currentState}")
     }
+
+    var polledStartInit = true
 
     override fun onResume() {
         super.onResume()
-        polledStart()
+        if (polledStartInit) {
+            polledStartInit = false
+            polledStart()
+        }
     }
 
-    // hack since we need access to binder and activity in state STARTED (for permissions launcher)
+    // hack since we need access to binder _and_ activity in state STARTED (for permissions launcher)
     private fun polledStart(counter: Int = 0) {
         Log.d(this, "polledStart")
 
@@ -479,10 +497,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         Log.d(this, "has record video permissions: " + Utils.hasCameraPermission(this))
         Log.d(this, "init.action: ${intent.action}, state: ${this.lifecycle.currentState}")
 
-        currentCall.initVideo() // TODO: try to call this when video gets enabled
+        currentCall.initVideo()
 
         if (intent.action == "ACTION_OUTGOING_CALL") {
             currentCall.initOutgoing()
+            initCall()
         }
 
         // swap pip and fullscreen content
@@ -528,16 +547,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 !currentCall.getFrontCameraEnabled()
             )
         }
-
-        if (intent.action == "ACTION_OUTGOING_CALL") {
-            initCall()
-        }
-
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(declineBroadcastReceiver, IntentFilter("call_declined"))
     }
 
     private fun initCall() {
+        Log.d(this, "initCall")
+
         val settings = InitialSettings()
 
         Log.d(this, "mic ${settings.micEnabled} ${currentCall.getMicrophoneEnabled()}")
@@ -563,7 +577,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         toggleFrontCameraButton.visibility = View.GONE
     }
 
-    override fun onFrontFacingCamera(_enabled: Boolean) {
+    override fun onFrontFacingCamera(enabled: Boolean) {
         runOnUiThread {
             updateVideoDisplay()
         }
@@ -787,12 +801,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         Log.d(this, "onDestroy")
         super.onDestroy()
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(declineBroadcastReceiver)
         stopRinging()
+
+        binder!!.setCurrentCall(null)
+        currentCall.cleanup()
+
         if (currentCall.state == CallState.CONNECTED) {
             currentCall.decline()
         }
-        currentCall.cleanup()
+        //currentCall.cleanup()
         binder!!.getEvents().addEvent(contact, callEventType)
 
         unbindService(connection)
@@ -806,12 +823,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             }
         }
 
-        binder!!.setCurrentCall(null)
+        remoteProxyVideoSink.setTarget(null)
+        localProxyVideoSink.setTarget(null)
 
         pipRenderer.release()
         fullscreenRenderer.release()
 
-        currentCall?.releaseCamera()
+        currentCall.releaseCamera()
+
+        eglBase.release()
     }
 
     private fun setStatusText(text: String) {
@@ -848,19 +868,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         // nothing to do
     }
 
-    private var declineBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            Log.d(this, "declineBroadcastCastReceiver onReceive")
-            finish()
-        }
-    }
-/*
-    override fun onBackPressed() {
-        moveTaskToBack(true)
-    }
-*/
     companion object {
         private const val BUTTON_ANIMATION_DURATION = 400L
-        val eglBaseContext = EglBase.create().getEglBaseContext()
     }
 }

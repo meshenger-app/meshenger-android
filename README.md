@@ -1,6 +1,6 @@
 # Meshenger
 
- A P2P Voice- and video phone App without the need for accounts or access to the Internet. Scan each others QR-Code and call each others IP address. This works in many local networks such as community mesh networks, company networks or at home.
+True P2P Voice- and video phone calls without the need for accounts or access to the Internet. There is no discovery mechanism. Just scan each others QR-Code that will contain the contacts IP address. This works in many local networks such as community mesh networks, company networks or at home.
 
 Features:
 

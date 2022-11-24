@@ -176,6 +176,115 @@ class RTCCall : DataChannel.Observer {
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
     }
 
+    private fun createOutgoingCall(contact: Contact, offer: String) {
+        try {
+            val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+            val socket = createCommSocket(contact)
+            if (socket == null) {
+                Log.d(this, "cannot establish peerConnection")
+                reportStateChange(CallState.ERROR)
+                return
+            } else {
+                commSocket = socket
+            }
+            val remote_address = socket.remoteSocketAddress as InetSocketAddress
+
+            Log.d(this, "outgoing call from remote address: $remote_address")
+
+            // remember latest working address
+            contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+
+            val pr = PacketReader(socket)
+            reportStateChange(CallState.CONNECTING)
+            run {
+                Log.d(this, "outgoing call: send call")
+                val obj = JSONObject()
+                obj.put("action", "call")
+                obj.put("offer", offer) // WebRTC offer!
+                val encrypted = Crypto.encryptMessage(
+                    obj.toString(),
+                    contact.publicKey,
+                    ownPublicKey,
+                    ownSecretKey
+                )
+
+                if (encrypted == null) {
+                    closeCommSocket()
+                    reportStateChange(CallState.ERROR)
+                    return
+                }
+
+                val pw = PacketWriter(socket)
+                pw.writeMessage(encrypted)
+            }
+            run {
+                Log.d(this, "outgoing call: got ringing")
+                val response = pr.readMessage()
+                val decrypted = Crypto.decryptMessage(
+                    response,
+                    otherPublicKey,
+                    ownPublicKey,
+                    ownSecretKey
+                )
+
+                if (!contact.publicKey.contentEquals(otherPublicKey)) {
+                    closeCommSocket()
+                    reportStateChange(CallState.ERROR)
+                    return
+                }
+
+                val obj = JSONObject(decrypted!!)
+                if (obj.optString("action", "") != "ringing") {
+                    Log.d(this, "action not equals ringing")
+                    closeCommSocket()
+                    reportStateChange(CallState.ERROR)
+                    return
+                }
+                reportStateChange(CallState.RINGING)
+            }
+            run {
+                val response = pr.readMessage()
+                val decrypted = Crypto.decryptMessage(
+                    response,
+                    otherPublicKey,
+                    ownPublicKey,
+                    ownSecretKey
+                )
+
+                if (decrypted == null || !contact.publicKey.contentEquals(otherPublicKey)) {
+                    closeCommSocket()
+                    reportStateChange(CallState.ERROR)
+                    return
+                }
+
+                val obj = JSONObject(decrypted)
+                when (val action = obj.getString("action")) {
+                    "connected" -> {
+                        Log.d(this, "outgoing call: connected")
+                        reportStateChange(CallState.CONNECTED)
+                        handleAnswer(obj.getString("answer"))
+                        // contact accepted receiving call
+                    }
+                    "dismissed" -> {
+                        Log.d(this, "outgoing call:dismissed")
+                        closeCommSocket()
+                        reportStateChange(CallState.DISMISSED)
+                    }
+                    else -> {
+                        Log.d(this, "outgoing call: unknown action reply $action")
+                        closeCommSocket()
+                        reportStateChange(CallState.ERROR)
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            closeCommSocket()
+            e.printStackTrace()
+            reportStateChange(CallState.ERROR)
+        }
+    }
+
     fun initOutgoing() {
         executor.execute {
             val rtcConfig = RTCConfiguration(emptyList())
@@ -185,112 +294,10 @@ class RTCCall : DataChannel.Observer {
             peerConnection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
 
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
-
                     super.onIceGatheringChange(iceGatheringState)
-                    val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         Log.d(this, "outgoing call: send offer")
-                        try {
-                            commSocket = createCommSocket(contact)
-                            if (commSocket == null) {
-                                Log.d(this, "cannot establish peerConnection")
-                                reportStateChange(CallState.ERROR)
-                                return
-                            }
-                            val remote_address =
-                                commSocket!!.remoteSocketAddress as InetSocketAddress
-
-                            Log.d(this, "outgoing call from remote address: $remote_address")
-
-                            // remember latest working address
-                            contact.lastWorkingAddress =
-                                InetSocketAddress(remote_address.address, MainService.serverPort)
-
-                            val pr = PacketReader(commSocket!!)
-                            reportStateChange(CallState.CONNECTING)
-                            run {
-                                Log.d(this, "outgoing call: send call")
-                                val obj = JSONObject()
-                                obj.put("action", "call")
-                                obj.put("offer", peerConnection.localDescription.description)
-                                val encrypted = Crypto.encryptMessage(
-                                    obj.toString(),
-                                    contact.publicKey,
-                                    ownPublicKey,
-                                    ownSecretKey
-                                )
-                                if (encrypted == null) {
-                                    closeCommSocket()
-                                    reportStateChange(CallState.ERROR)
-                                    return
-                                }
-
-                                val pw = PacketWriter(commSocket!!)
-                                pw.writeMessage(encrypted)
-                            }
-                            run {
-                                Log.d(this, "outgoing call: got ringing")
-                                val response = pr.readMessage()
-                                val decrypted = Crypto.decryptMessage(
-                                    response,
-                                    otherPublicKey,
-                                    ownPublicKey,
-                                    ownSecretKey
-                                )
-                                if (!contact.publicKey.contentEquals(otherPublicKey)) {
-                                    closeCommSocket()
-                                    reportStateChange(CallState.ERROR)
-                                    return
-                                }
-                                val obj = JSONObject(decrypted!!)
-                                if (obj.optString("action", "") != "ringing") {
-                                    Log.d(this, "action not equals ringing")
-                                    closeCommSocket()
-                                    reportStateChange(CallState.ERROR)
-                                    return
-                                }
-                                reportStateChange(CallState.RINGING)
-                            }
-                            run {
-                                val response = pr.readMessage()
-                                val decrypted = Crypto.decryptMessage(
-                                    response,
-                                    otherPublicKey,
-                                    ownPublicKey,
-                                    ownSecretKey
-                                )
-                                if (decrypted == null || !contact.publicKey.contentEquals(otherPublicKey)) {
-                                    closeCommSocket()
-                                    reportStateChange(CallState.ERROR)
-                                    return
-                                }
-                                val obj = JSONObject(decrypted)
-                                when (val action = obj.getString("action")) {
-                                    "connected" -> {
-                                        Log.d(this, "outgoing call: connected")
-                                        reportStateChange(CallState.CONNECTED)
-                                        handleAnswer(obj.getString("answer"))
-                                        // contact accepted receiving call
-                                    }
-                                    "dismissed" -> {
-                                        Log.d(this, "outgoing call:dismissed")
-                                        closeCommSocket()
-                                        reportStateChange(CallState.DISMISSED)
-                                    }
-                                    else -> {
-                                        Log.d(this, "outgoing call: unknown action reply $action")
-                                        closeCommSocket()
-                                        reportStateChange(CallState.ERROR)
-                                    }
-                                }
-                            }
-
-                        } catch (e: Exception) {
-                            closeCommSocket()
-                            e.printStackTrace()
-                            reportStateChange(CallState.ERROR)
-                        }
+                        createOutgoingCall(contact, peerConnection.localDescription.description)
                     }
                 }
 

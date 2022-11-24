@@ -2,6 +2,8 @@
 
 * **How to find new contacts?**  
     You can find contacts in real life. Meshenger has no discovery mechanism by design. That would also require broadcast/multicast packets, which are usually blocked in mesh networks that Meshenger has a primary target area.
+* **Why can I not connect to a contact?**  
+    Either the contact does not have running Meshenger, is on a different LAN or the address (e.g. MAC address) of the device has changed. The devices MAC address can change due to Androids MAC address randomization. It changes the MAC address on each reconnect or for each WLAN network. You can check in Meshengers address management settings if the used address is still present on the system. MAC address randomization can be configured, but it depends on the Android version how to do it.
 * **Is Meshenger stable**  
     Not really. There are crashes. It is beta software.
 * **Are calls over Layer 3 networks possible?**  

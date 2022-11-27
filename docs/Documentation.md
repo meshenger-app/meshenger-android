@@ -13,10 +13,14 @@ Meshenger uses primarily IPv6 addresses (fc00::/7) to establish direct connectio
 
 From the contacts MAC address, IPv6 addresses are derived by looking at the own IPv6 addresses. If the own phone has addresses that contain the own MAC address, then these addresses are taken and the MAC substituded with the contacts MAC address. These generated addresses will be used to try to reach the contact.
 
-All IPv6 capable devices have these addresses in the form of IPv6 link local addresses: e.g. `fe80:1122:33ff:fe44:5566` when the MAC is `11:22:33:44:55:66`. (Also a bit needs to be flipped, but we ignore that here for the sake of simplicity.)
+All IPv6 capable devices have these addresses in the form of IPv6 link local addresses: e.g. `fe80:1122:33ff:fe44:5566` when the MAC is `11:22:33:44:55:66`. (Also, a bit needs to be flipped, but we ignore that here for the sake of simplicity.)
 Other types of IPv6 addresses of the same scheme ([EUI-64](https://de.wikipedia.org/wiki/EUI-64)) might also be present.
 
-Instead of MAC addresses, IPv4/IPv6 addresses or DNS names can also be used as well. The only limitation is that both phones need to have a reachable IP address.
+Instead of MAC addresses, IPv4/IPv6 addresses or DNS names (e.g. `hostname.local`) can also be used as well. The only limitation is that both phones need to have a reachable IP address.
+
+## Randomised MAC Addresses
+
+Most Android version these days try to prevent identification of phones by changing the MAC address. The MAC address might be randomly initialised different for each WiFi network, change on every connect or after some timeout (IPv6 Privacy Extensions). This is a major drawback for Meshenger, since connections cannot be established anymore after the address changes. If this is an issue for you, then you need to try to disable MAC address randomisation for a paritcular network. The Adnroid Developer Settings let you disable it, but this might be not what you want.
 
 ## WebRTC
 
@@ -32,7 +36,7 @@ Resources:
 
 ## Crypto
 
-For encryption and authentication, libsodium is used.
+[libsodium](https://github.com/jedisct1/libsodium) is used for the encryption and authentication of the initial connection. After that, WebRTC is used. WebRTC uses it's own encryption.
 
 ### Database
 

@@ -71,6 +71,7 @@
     <string name="about_app_license">Lizenz:</string>
     <string name="app_description">Die Meshenger-App ermöglicht Sprach- und Video kommunikation ohne Server- oder Internetzugriff. Einfach gegenseitig scannen, QR-Code kontaktieren und sich gegenseitig anrufen. Dies funktioniert in den meisten Netzwerken, z. B. zu Hause, in Community-Netzwerken oder auf der Arbeit</string>
     <string name="address_management">Adressen Verwaltung</string>
+    <string name="custom_address">Adresse hinzufügen</string>
     <string name="currently_active">Gerade Aktiv</string>
     <string name="address_management_help_text">Wähle eine Adresse oder mehrere aus die mit in den QR-Code integriert werden. Eine gute Idee is es, die MAC Adresse des WLAN Adapters (wlan0) zu verwenden. Beachte aber, das die Addresse and die Hardware des Gerätes gebunden ist. Schalte das WLAN an, falls die MAC Adresse nicht sichtbar ist.</string>
     <string name="listen_for_incoming_calls">Warte auf eingehende Anrufe.</string>

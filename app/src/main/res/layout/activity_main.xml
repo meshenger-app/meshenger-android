@@ -41,11 +41,12 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
-            android:layout_margin="16dp"
-            app:tabBackground="@drawable/tabs_selector"
-            style="@style/RoundedTabLayoutStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            style="@style/CustomTabLayoutStyle"
+            app:tabTextAppearance="@style/CustomTabTextStyle"
+            app:tabBackground="@drawable/tabs_selector" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

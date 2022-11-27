@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/root"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lato_bold"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="18sp"
+                android:textSize="@dimen/headline_text_size"
                 android:text="@string/menu_backup"/>
 
         </androidx.appcompat.widget.Toolbar>

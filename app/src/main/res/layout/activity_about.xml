@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lato_bold"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="20sp"
+                android:textSize="@dimen/headline_text_size"
                 android:text="@string/menu_about"/>
 
         </androidx.appcompat.widget.Toolbar>

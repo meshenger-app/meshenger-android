@@ -37,11 +37,13 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10%</item>
     </style>
-    <style name="RoundedTabLayoutStyle" parent="Widget.Design.TabLayout">
+    <style name="CustomTabLayoutStyle" parent="Widget.Design.TabLayout">
         <item name="tabIndicator">@null</item>
-        <item name="android:background">@drawable/tab_layout_bg</item>
         <item name="tabSelectedTextColor">@color/white</item>
         <item name="tabTextColor">@color/selectedColor</item>
+    </style>
+    <style name="CustomTabTextStyle" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/headline_text_size</item>
     </style>
 
     <style name="RadioButtonTheme" parent="AppTheme">

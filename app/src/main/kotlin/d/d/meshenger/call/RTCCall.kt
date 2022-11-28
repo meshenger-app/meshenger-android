@@ -550,9 +550,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "reportStateChange: $state")
 
         this.state = state
-        if (onStateChangeListener != null) {
-            onStateChangeListener!!.onStateChange(state)
-        }
+        onStateChangeListener!!.onStateChange(state)
     }
 
     fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {

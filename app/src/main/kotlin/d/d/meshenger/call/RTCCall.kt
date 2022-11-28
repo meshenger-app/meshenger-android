@@ -196,7 +196,7 @@ class RTCCall : DataChannel.Observer {
             val socket = createCommSocket(contact)
             if (socket == null) {
                 Log.d(this, "cannot establish peerConnection")
-                reportStateChange(CallState.ERROR)
+                reportStateChange(CallState.ERROR_CONN)
                 return
             } else {
                 commSocket = socket
@@ -224,7 +224,7 @@ class RTCCall : DataChannel.Observer {
 
                 if (encrypted == null) {
                     closeCommSocket()
-                    reportStateChange(CallState.ERROR)
+                    reportStateChange(CallState.ERROR_CRYPTO)
                     return
                 }
 
@@ -243,7 +243,7 @@ class RTCCall : DataChannel.Observer {
 
                 if (!contact.publicKey.contentEquals(otherPublicKey)) {
                     closeCommSocket()
-                    reportStateChange(CallState.ERROR)
+                    reportStateChange(CallState.ERROR_AUTH)
                     return
                 }
 
@@ -251,7 +251,7 @@ class RTCCall : DataChannel.Observer {
                 if (obj.optString("action", "") != "ringing") {
                     Log.d(this, "action not equals ringing")
                     closeCommSocket()
-                    reportStateChange(CallState.ERROR)
+                    reportStateChange(CallState.ERROR_OTHER)
                     return
                 }
                 reportStateChange(CallState.RINGING)
@@ -265,9 +265,15 @@ class RTCCall : DataChannel.Observer {
                     ownSecretKey
                 )
 
-                if (decrypted == null || !contact.publicKey.contentEquals(otherPublicKey)) {
+                if (decrypted == null) {
                     closeCommSocket()
-                    reportStateChange(CallState.ERROR)
+                    reportStateChange(CallState.ERROR_CRYPTO)
+                    return
+                }
+
+                if (!contact.publicKey.contentEquals(otherPublicKey)) {
+                    closeCommSocket()
+                    reportStateChange(CallState.ERROR_AUTH)
                     return
                 }
 
@@ -287,7 +293,7 @@ class RTCCall : DataChannel.Observer {
                     else -> {
                         Log.d(this, "outgoing call: unknown action reply $action")
                         closeCommSocket()
-                        reportStateChange(CallState.ERROR)
+                        reportStateChange(CallState.ERROR_OTHER)
                     }
                 }
             }
@@ -295,7 +301,7 @@ class RTCCall : DataChannel.Observer {
         } catch (e: Exception) {
             closeCommSocket()
             e.printStackTrace()
-            reportStateChange(CallState.ERROR)
+            reportStateChange(CallState.ERROR_OTHER)
         }
     }
 
@@ -606,12 +612,12 @@ class RTCCall : DataChannel.Observer {
                                 pw.writeMessage(encrypted)
                                 reportStateChange(CallState.CONNECTED)
                             } else {
-                                reportStateChange(CallState.ERROR)
+                                reportStateChange(CallState.ERROR_CRYPTO)
                             }
                             //new Thread(new SpeakerRunnable(commSocket)).start()
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            reportStateChange(CallState.ERROR)
+                            reportStateChange(CallState.ERROR_OTHER)
                         }
                     }
                 }
@@ -727,7 +733,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     enum class CallState {
-        CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR
+        CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR_CONN, ERROR_CRYPTO, ERROR_AUTH, ERROR_OTHER
     }
 
     fun interface OnStateChangeListener {

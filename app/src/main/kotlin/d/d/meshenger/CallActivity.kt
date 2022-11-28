@@ -122,8 +122,16 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     Log.d(this, "stateChangeCallback: ENDED")
                     stopDelayed(getString(R.string.call_ended))
                 }
-                CallState.ERROR -> {
-                    Log.d(this, "stateChangeCallback: ERROR")
+                CallState.ERROR_CONN -> {
+                    Log.d(this, "stateChangeCallback: ERROR_CONN")
+                    stopDelayed(getString(R.string.call_connection_failed))
+                }
+                CallState.ERROR_AUTH -> {
+                    Log.d(this, "stateChangeCallback: ERROR_AUTH")
+                    stopDelayed(getString(R.string.call_authentication_failed))
+                }
+                CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
+                    Log.d(this, "passiveCallback: ERROR")
                     stopDelayed(getString(R.string.call_error))
                 }
             }
@@ -257,7 +265,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     Log.d(this, "passiveCallback: ENDED")
                     stopDelayed(getString(R.string.call_ended))
                 }
-                CallState.ERROR -> {
+                CallState.ERROR_CONN -> {
+                    Log.d(this, "stateChangeCallback: ERROR_CONN")
+                    stopDelayed(getString(R.string.call_connection_failed))
+                }
+                CallState.ERROR_AUTH -> {
+                    Log.d(this, "stateChangeCallback: ERROR_AUTH")
+                    stopDelayed(getString(R.string.call_authentication_failed))
+                }
+                CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
                     Log.d(this, "passiveCallback: ERROR")
                     stopDelayed(getString(R.string.call_error))
                 }

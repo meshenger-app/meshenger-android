@@ -83,6 +83,8 @@
     <string name="call_denied">Declined</string>
     <string name="call_waiting">Waiting...</string>
     <string name="call_ringing">Ringing...</string>
+    <string name="call_connection_failed">Connection Failed.</string>
+    <string name="call_authentication_failed">Authentication Failed.</string>
     <string name="call_ended">Call Ended</string>
     <string name="call_error">Error</string>
     <string name="button_select">Select</string>

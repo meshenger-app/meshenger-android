@@ -82,17 +82,7 @@ class RTCCall : DataChannel.Observer {
 
             Log.d(this, "setVideoEnabled: $enabled")
             try {
-                if (enabled) {
-                    videoCapturer!!.startCapture(1280, 720, 25)
-                    callActivity.onLocalVideoEnabled(true)
-                } else {
-                    callActivity.onLocalVideoEnabled(false)
-                    videoCapturer!!.stopCapture()
-                }
-
-                this.isCameraEnabled = enabled
-
-                // send camera state over data channel
+                // send own camera state over data channel
                 val o = JSONObject()
                 if (enabled) {
                     o.put(STATE_CHANGE_MESSAGE, CAMERA_ENABLE_MESSAGE)
@@ -100,22 +90,46 @@ class RTCCall : DataChannel.Observer {
                     o.put(STATE_CHANGE_MESSAGE, CAMERA_DISABLE_MESSAGE)
                 }
 
-                Log.d(this, "send on datachannel")
+                if (sendOnDataChannel(o)) {
+                    if (enabled) {
+                        videoCapturer!!.startCapture(1280, 720, 25)
+                        callActivity.onLocalVideoEnabled(true)
+                    } else {
+                        callActivity.onLocalVideoEnabled(false)
+                        videoCapturer!!.stopCapture()
+                    }
 
-                dataChannel!!.send(
-                    DataChannel.Buffer(
-                        ByteBuffer.wrap(
-                            o.toString().toByteArray()
-                        ), false
-                    )
-                )
-            } catch (e: JSONException) {
-                e.printStackTrace()
+                    this.isCameraEnabled = enabled
+                }
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
             Log.d(this, "setCameraEnabled() executor end")
         }
+    }
+
+    private fun sendOnDataChannel(obj: JSONObject): Boolean {
+        Log.d(this, "send on datachannel")
+
+        if (dataChannel == null) {
+            Log.w(this, "setCameraEnabled dataChannel not set => ignore")
+            return false
+        }
+
+        if (dataChannel!!.state() != DataChannel.State.OPEN) {
+            Log.w(this, "setCameraEnabled dataChannel not ready => ignore")
+            return false
+        }
+
+        dataChannel!!.send(
+            DataChannel.Buffer(
+                ByteBuffer.wrap(
+                    obj.toString().toByteArray()
+                ), false
+            )
+        )
+
+        return true
     }
 
     // called for incoming calls

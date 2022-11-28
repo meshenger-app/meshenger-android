@@ -88,16 +88,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private fun setCallStats(enabled: Boolean) {
-        Log.d(this, "show call stats: $enabled")
-        if (enabled) {
-            currentCall.setStatsCollector(statsCollector)
-            callStats.visibility = View.VISIBLE
-        } else {
-            callStats.visibility = View.GONE
-        }
-    }
-
     private val stateChangeCallback = OnStateChangeListener { state: CallState ->
         runOnUiThread {
             when (state) {

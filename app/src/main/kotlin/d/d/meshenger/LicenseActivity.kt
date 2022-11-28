@@ -37,7 +37,7 @@ class LicenseActivity : BaseActivity() {
                     val line = reader.readLine()
                     if (line != null) {
                         if (line.trim().isEmpty()){
-                            buffer.append("\n");
+                            buffer.append("\n")
                         } else {
                             buffer.append(line + "\n")
                         }

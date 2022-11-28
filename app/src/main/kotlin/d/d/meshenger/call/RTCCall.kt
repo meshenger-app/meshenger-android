@@ -830,9 +830,12 @@ class RTCCall : DataChannel.Observer {
                     return
                 }
 
+                //Log.d(this, "request: ${request.toHex()}")
+
                 val decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
                 if (decrypted == null) {
                     Log.d(this, "decryption failed")
+                    // cause: the caller might use the wrong key
                     socket.close()
                     return
                 }

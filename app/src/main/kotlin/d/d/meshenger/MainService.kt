@@ -218,7 +218,7 @@ class MainService : Service(), Runnable {
         Log.d(this, "onStartCommand")
 
         if (intent == null || intent.action == null) {
-            // ignore
+            Log.d(this, "Received invalid intent")
         } else if (intent.action == START_FOREGROUND_ACTION) {
             Log.d(this, "Received Start Foreground Intent")
             val notification = getNotification(resources.getText(R.string.listen_for_incoming_calls).toString())
@@ -245,12 +245,14 @@ class MainService : Service(), Runnable {
             while (run) {
                 try {
                     val socket = server!!.accept()
+                    Log.d(this, "new incoming connection")
                     Thread { RTCCall.createIncomingCall(binder, socket) }.start()
                 } catch (e: IOException) {
                     // ignore
                 }
             }
         } catch (e: IOException) {
+            Log.e(this, "Exit service: $e")
             e.printStackTrace()
             Handler(mainLooper).post { Toast.makeText(this, e.message, Toast.LENGTH_LONG).show() }
             stopSelf()
@@ -272,7 +274,7 @@ class MainService : Service(), Runnable {
 
         fun getDatabase(): Database {
             if (this@MainService.database == null) {
-                Log.w(this, "database is null => try to reload")
+                Log.e(this, "database is null => try to reload")
                 try {
                     // database is null, this should not happen, but
                     // happens anyway, so let's mitigate it for now
@@ -315,8 +317,8 @@ class MainService : Service(), Runnable {
                 .sendBroadcast(Intent("refresh_event_list"))
         }
 
-        fun deleteContact(pubKey: ByteArray) {
-            getDatabase().contacts.deleteContact(pubKey)
+        fun deleteContact(publicKey: ByteArray) {
+            getDatabase().contacts.deleteContact(publicKey)
             saveDatabase()
 
             LocalBroadcastManager.getInstance(this@MainService)
@@ -330,6 +332,7 @@ class MainService : Service(), Runnable {
         }
 
         fun pingContacts() {
+            Log.d(this, "pingContacts")
             val settings = getSettings()
             val contactList = getContacts().contactList
             Thread(

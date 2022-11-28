@@ -50,8 +50,8 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             addressListViewAdapter.toggle(i)
         }
 
-		customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
-		systemAddresses = AddressUtils.collectAddresses().toMutableList()
+        customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
+        systemAddresses = AddressUtils.collectAddresses().toMutableList()
 
         bindService(Intent(this, MainService::class.java), this, 0)
     }

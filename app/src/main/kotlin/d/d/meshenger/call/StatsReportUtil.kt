@@ -149,17 +149,17 @@ class StatsReportUtil {
             }
         }
 
-        if (!videoInFound) {
-            lastFrameDecodedIn = 0
-            lastBytesReceivedVideo = BigInteger.ZERO
-        }
-
         if (!audioInFound) {
             lastBytesReceivedAudio = BigInteger.ZERO
         }
 
         if (!audioOutFound) {
             lastBytesSentAudio = BigInteger.ZERO
+        }
+
+        if (!videoInFound) {
+            lastFrameDecodedIn = 0
+            lastBytesReceivedVideo = BigInteger.ZERO
         }
 
         if (!videoOutFound) {

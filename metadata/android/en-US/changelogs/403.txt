@@ -2,4 +2,4 @@
 * smaller notification without logo and time
 * contact state color orange (host online) and brown (communication error - should not happen)
 * update Chinese translation (by sr093906)
-* update Brazilian-Portuguese translation (m_s_)
+* update Brazilian-Portuguese translation (by m_s_)

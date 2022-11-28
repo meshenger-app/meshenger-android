@@ -127,7 +127,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
         val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)
 
-        applySettingsMode("basic");
+        applySettingsMode("basic")
         basicRadioButton.isChecked = true
         basicRadioButton.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
@@ -261,7 +261,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_database_password)
         val passwordInput = dialog.findViewById<TextInputEditText>(R.id.change_password_edit_textview)
-		val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
+        val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
         val changeButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
 
         passwordInput.setText(password)

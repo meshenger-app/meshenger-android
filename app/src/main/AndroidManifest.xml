@@ -56,7 +56,9 @@
 
         <activity
             android:name=".CallActivity"
-            android:screenOrientation="portrait" />
+            android:parentActivityName=".MainActivity"
+            android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout"
+            android:screenOrientation="fullUser" />
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />

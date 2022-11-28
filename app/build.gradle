@@ -44,12 +44,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.4.1'
-    implementation 'org.webrtc:google-webrtc:1.0.24064'
+//    implementation 'org.webrtc:google-webrtc:1.0.24064'
+    implementation 'dev.bargen:webrtc-android:107.0.0'
     implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
-}
-repositories {
-    mavenCentral()
 }

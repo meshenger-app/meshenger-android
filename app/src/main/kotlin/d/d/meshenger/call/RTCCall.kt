@@ -376,15 +376,6 @@ class RTCCall : DataChannel.Observer {
         commSocket = null
     }
 
-    private fun closePeerConnection() {
-        Log.d(this, "closePeerConnection")
-        try {
-            peerConnection.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     fun setRemoteRenderer(remoteVideoSink: ProxyVideoSink?) {
         this.remoteVideoSink = remoteVideoSink
     }
@@ -699,16 +690,13 @@ class RTCCall : DataChannel.Observer {
 
     fun cleanup() {
         closeCommSocket()
-        if (state == CallState.CONNECTED) {
-            /*for(AudioTrack track : this.upStream.audioTracks){
-                track.setEnabled(false)
-                track.dispose()
-            }
-            for(VideoTrack track : this.upStream.videoTracks) track.dispose()*/
-            closePeerConnection()
-            //factory.dispose()
+
+        try {
+            peerConnection.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        audioSource?.dispose()
+
         statsTimer.cancel()
     }
 

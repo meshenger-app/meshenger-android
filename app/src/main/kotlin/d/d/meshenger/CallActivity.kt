@@ -449,11 +449,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 }
             }
 
-            acceptButton.visibility = View.VISIBLE
-            declineButton.visibility = View.GONE
-
             acceptButton.setOnClickListener(acceptListener)
             declineButton.setOnClickListener(declineListener)
+
+            acceptButton.visibility = View.VISIBLE
+            declineButton.visibility = View.VISIBLE
         } else {
             Log.d(this, "missing action, should never happen")
             finish()

@@ -727,12 +727,12 @@ class RTCCall : DataChannel.Observer {
                     }
                 }
                 closeCommSocket()
-                closePeerConnection()
                 statsTimer.cancel()
+                statsTimer.purge()
                 reportStateChange(CallState.ENDED)
             } catch (e: IOException) {
                 e.printStackTrace()
-                reportStateChange(CallState.ERROR)
+                reportStateChange(CallState.ERROR_OTHER)
             }
         }
     }

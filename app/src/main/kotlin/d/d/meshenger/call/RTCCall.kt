@@ -36,7 +36,7 @@ class RTCCall : DataChannel.Observer {
     private lateinit var callActivity: CallContext
     private lateinit var eglBase: EglBase
     private var binder: MainService.MainBinder
-    private val statsTimer = Timer()
+    private var statsTimer = Timer()
     private var audioSource: AudioSource? = null
     private var localAudioTrack: AudioTrack? = null
 
@@ -557,17 +557,23 @@ class RTCCall : DataChannel.Observer {
     fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {
         if (statsCollector == null) {
             statsTimer.cancel()
-        }
-        statsTimer.schedule(object : TimerTask() {
-            override fun run() {
-                executor.execute {
-                    Log.d(this, "setStatsCollector() executor start")
-                    try { peerConnection.getStats(statsCollector) }
-                    catch (e: Exception) { Log.e(this, "Cannot schedule statistics timer $e") }
-                    Log.d(this, "setStatsCollector() executor end")
+            statsTimer.purge()
+        } else {
+            statsTimer = Timer()
+            statsTimer.schedule(object : TimerTask() {
+                override fun run() {
+                    executor.execute {
+                        Log.d(this, "setStatsCollector() executor start")
+                        try {
+                            peerConnection.getStats(statsCollector)
+                        } catch (e: Exception) {
+                            Log.e(this, "Cannot schedule statistics timer $e")
+                        }
+                        Log.d(this, "setStatsCollector() executor end")
+                    }
                 }
-            }
-        }, 0L, StatsReportUtil.STATS_INTERVAL_MS)
+            }, 0L, StatsReportUtil.STATS_INTERVAL_MS)
+        }
     }
 
     fun setEglBase(eglBase: EglBase) {

@@ -28,11 +28,13 @@ import d.d.meshenger.call.RTCCall.OnStateChangeListener
 import d.d.meshenger.call.StatsReportUtil
 import org.webrtc.*
 import java.io.IOException
+import java.net.InetSocketAddress
 
 class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private var binder: MainService.MainBinder? = null
     private lateinit var statusTextView: TextView
     private lateinit var callStats: TextView
+    private lateinit var callAddress: TextView
     private lateinit var nameTextView: TextView
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
@@ -61,7 +63,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var speakerModeButton: ImageButton
 
     // set by CallActivity
-    private var callStatsEnabled = false // small window for video/audio statistics
+    private var debugOutputEnabled = false // small window for video/audio statistics and other debug data
     private var swappedVideoFeeds = false // swapped fullscreen and pip video content
     private var showPipEnabled = true // enable PIP window
 
@@ -225,6 +227,18 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
+    // set debug output
+    override fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean) {
+        runOnUiThread {
+            val addr = address.toString().replace("/", "")
+            if (isConnected) {
+                callAddress.text = String.format(getString(R.string.connected_to_address), addr)
+            } else {
+                callAddress.text = String.format(getString(R.string.connecting_to_address), addr)
+            }
+        }
+    }
+
     override fun showTextMessage(message: String) {
         runOnUiThread {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -292,6 +306,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         statusTextView = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
+        callAddress = findViewById(R.id.callAddress)
         nameTextView = findViewById(R.id.callName)
         pipRenderer = findViewById(R.id.pip_video_view)
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
@@ -532,14 +547,16 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             updateVideoDisplay()
         }
 
-        findViewById<ImageButton>(R.id.toggle_call_stats).setOnClickListener {
-            callStatsEnabled = !callStatsEnabled
-            if (callStatsEnabled) {
+        findViewById<ImageButton>(R.id.toggle_debug_output).setOnClickListener {
+            debugOutputEnabled = !debugOutputEnabled
+            if (debugOutputEnabled) {
                 currentCall.setStatsCollector(statsCollector)
                 callStats.visibility = View.VISIBLE
+                callAddress.visibility = View.VISIBLE
             } else {
                 currentCall.setStatsCollector(null)
                 callStats.visibility = View.GONE
+                callAddress.visibility = View.GONE
             }
         }
 

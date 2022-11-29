@@ -359,11 +359,12 @@ class RTCCall : DataChannel.Observer {
 
         val addresses = contact.getAllSocketAddresses()
         for (address in addresses) {
+            callActivity.onRemoteAddressChange(address, false)
             Log.d(this, "try address: $address")
-            //callActivity.showTextMessage("call $address")
 
             val socket = AddressUtils.establishConnection(address)
             if (socket != null) {
+                callActivity.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
                 return socket
             }
         }
@@ -744,6 +745,7 @@ class RTCCall : DataChannel.Observer {
         fun onFrontFacingCamera(enabled: Boolean)
         fun onMicrophoneEnabled(enabled: Boolean)
         fun onCameraEnabled()
+        fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean)
         fun showTextMessage(message: String)
     }
 

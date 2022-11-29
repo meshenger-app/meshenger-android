@@ -26,13 +26,13 @@
             android:layout_height="match_parent" />
 
         <ImageButton
-            android:id="@+id/toggle_call_stats"
+            android:id="@+id/toggle_debug_output"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:background="@drawable/ic_call_stats"
-            android:contentDescription="Toggle debug info" />
+            android:contentDescription="Toggle debug output" />
 
         <ImageButton
             android:id="@+id/toggle_pip_window"
@@ -53,6 +53,17 @@
             android:visibility="invisible"
             android:alpha="0.6"
             android:background="@color/colorBackgroundDark"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/callAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text=""
+            android:visibility="gone"
             android:textColor="@android:color/holo_green_light"
             android:textSize="12sp" />
 

@@ -121,41 +121,28 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        val selectedColor = ContextCompat.getColor(this, R.color.selectedColor)
-        val unselectedColor = ContextCompat.getColor(this, R.color.platform_grey)
         val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
         val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
         val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)
 
         applySettingsMode("basic")
+
         basicRadioButton.isChecked = true
         basicRadioButton.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
-                (compoundButton as RadioButton).setTextColor(selectedColor)
-                setServiceAndSettings("basic")
-                // settingsViewModel.currentSettingsMode = 0
-            } else {
-                (compoundButton as RadioButton).setTextColor(unselectedColor)
+                applySettingsMode("basic")
             }
         }
 
         advancedRadioButton.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
-                (compoundButton as RadioButton).setTextColor(selectedColor)
-                setServiceAndSettings("advanced")
-                //settingsViewModel.currentSettingsMode = 1
-            } else {
-                (compoundButton as RadioButton).setTextColor(unselectedColor)
+                applySettingsMode("advanced")
             }
         }
 
         expertRadioButton.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
-                (compoundButton as RadioButton).setTextColor(selectedColor)
-                setServiceAndSettings("expert")
-                // settingsViewModel.currentSettingsMode = 2
-            } else {
-                (compoundButton as RadioButton).setTextColor(unselectedColor)
+                applySettingsMode("expert")
             }
         }
 /*
@@ -325,12 +312,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 "Invalid settings mode: $settingsMode"
             )
         }
-    }
-
-    private fun setServiceAndSettings(str: String) {
-        //settings.settingsMode = str
-        // binder!!.saveDatabase()
-        applySettingsMode(str)
     }
 
     private fun getIgnoreBatteryOptimizations(): Boolean {

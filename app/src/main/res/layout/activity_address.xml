@@ -76,6 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"
             android:hint="@string/custom_address"
+            android:gravity="center_horizontal"
             android:inputType="textNoSuggestions"
             android:layout_weight="1"
             android:textSize="16sp" />

@@ -18,7 +18,7 @@ Features:
 
 ## Screenshots
 
-<img src="docs/logo_4.0.4.png" width="170"> <img src="docs/hello_4.0.4.png" width="170"> <img src="docs/qrcode_4.0.4.png" width="170"> <img src="docs/contacts_4.0.4.png" width="170"> <img src="docs/ringing_4.0.4.png" width="170"> <img src="docs/video_call_4.0.4.png" width="170"> <img src="docs/settings_4.0.4.png" width="170"> <img src="docs/address_management_4.0.4.png" width="170">
+<img src="graphical-assets/phone-screenshots/logo_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/hello_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/qrcode_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/contacts_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/ringing_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/video_call_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/settings_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/address_management_4.0.4.png" width="170">
 
 ## Documentation
 

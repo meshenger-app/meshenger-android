@@ -31,5 +31,6 @@ Details can be found in the [Documentation](docs/documentation.md) or in the [FA
 * [Keet](https://keet.io) - many features, uses a DHT, Bitcoin payments
 * [Briar](https://briarproject.org/) - text messages only, for the Internet the Tor network is used
 * [Jami](https://jami.net/) - many features, but might not work in mesh or local networks
-* [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE.
+* [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE
+* [Qaul](https://qaul.net/) - many features, interlinked P2P mesh via BLE, Wifi & Internet-overlay
 * [CupLink](https://github.com/RiV-chain/CupLink) - for RiV-mesh and a fork of Meshenger

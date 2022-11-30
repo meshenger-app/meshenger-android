@@ -32,7 +32,7 @@ import java.net.InetSocketAddress
 
 class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private var binder: MainService.MainBinder? = null
-    private lateinit var statusTextView: TextView
+    private lateinit var callStatus: TextView
     private lateinit var callStats: TextView
     private lateinit var callAddress: TextView
     private lateinit var nameTextView: TextView
@@ -95,36 +95,41 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             when (state) {
                 CallState.CONNECTING -> {
                     Log.d(this, "stateChangeCallback: CONNECTING")
-                    setStatusText(getString(R.string.call_connecting))
+                    callStatus.text = getString(R.string.call_connecting)
                 }
                 CallState.RINGING -> {
                     Log.d(this, "stateChangeCallback: RINGING")
-                    setStatusText(getString(R.string.call_ringing))
+                    callStatus.text = getString(R.string.call_ringing)
                 }
                 CallState.CONNECTED -> {
                     Log.d(this, "stateChangeCallback: CONNECTED")
-                    setStatusText(getString(R.string.call_connected))
+                    callStatus.text = getString(R.string.call_connected)
                     onCameraEnabled()
                 }
                 CallState.DISMISSED -> {
                     Log.d(this, "stateChangeCallback: DISMISSED")
-                    stopDelayed(getString(R.string.call_denied))
+                    callStatus.text = getString(R.string.call_denied)
+                    finishDelayed()
                 }
                 CallState.ENDED -> {
                     Log.d(this, "stateChangeCallback: ENDED")
-                    stopDelayed(getString(R.string.call_ended))
+                    callStatus.text = getString(R.string.call_ended)
+                    finishDelayed()
                 }
                 CallState.ERROR_CONN -> {
                     Log.d(this, "stateChangeCallback: ERROR_CONN")
-                    stopDelayed(getString(R.string.call_connection_failed))
+                    callStatus.text = getString(R.string.call_connection_failed)
+                    finishDelayed()
                 }
                 CallState.ERROR_AUTH -> {
                     Log.d(this, "stateChangeCallback: ERROR_AUTH")
-                    stopDelayed(getString(R.string.call_authentication_failed))
+                    callStatus.text = getString(R.string.call_authentication_failed)
+                    finishDelayed()
                 }
                 CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
                     Log.d(this, "passiveCallback: ERROR")
-                    stopDelayed(getString(R.string.call_error))
+                    callStatus.text = getString(R.string.call_error)
+                    finishDelayed()
                 }
             }
         }
@@ -256,30 +261,34 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 }
                 CallState.CONNECTED -> {
                     Log.d(this, "passiveCallback: CONNECTED")
-                    setStatusText(getString(R.string.call_connected))
+                    callStatus.text = getString(R.string.call_connected)
                     acceptButton.visibility = View.GONE
                     declineButton.visibility = View.VISIBLE
                     onCameraEnabled()
                 }
                 CallState.RINGING -> {
                     Log.d(this, "passiveCallback: RINGING")
-                    setStatusText(getString(R.string.call_ringing))
+                    callStatus.text = getString(R.string.call_ringing)
                 }
                 CallState.ENDED -> {
                     Log.d(this, "passiveCallback: ENDED")
-                    stopDelayed(getString(R.string.call_ended))
+                    callStatus.text = getString(R.string.call_ended)
+                    finishDelayed()
                 }
                 CallState.ERROR_CONN -> {
                     Log.d(this, "stateChangeCallback: ERROR_CONN")
-                    stopDelayed(getString(R.string.call_connection_failed))
+                    callStatus.text = getString(R.string.call_connection_failed)
+                    finishDelayed()
                 }
                 CallState.ERROR_AUTH -> {
                     Log.d(this, "stateChangeCallback: ERROR_AUTH")
-                    stopDelayed(getString(R.string.call_authentication_failed))
+                    callStatus.text = getString(R.string.call_authentication_failed)
+                    finishDelayed()
                 }
                 CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
                     Log.d(this, "passiveCallback: ERROR")
-                    stopDelayed(getString(R.string.call_error))
+                    callStatus.text = getString(R.string.call_error)
+                    finishDelayed()
                 }
             }
         }
@@ -304,7 +313,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         // keep screen on during the call
         //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        statusTextView = findViewById(R.id.callStatus)
+        callStatus = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
         callAddress = findViewById(R.id.callAddress)
         nameTextView = findViewById(R.id.callName)
@@ -857,15 +866,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         eglBase.release()
     }
 
-    private fun setStatusText(text: String) {
-        Handler(mainLooper).post { statusTextView.text = text }
-    }
-
-    private fun stopDelayed(message: String) {
-        Handler(mainLooper).post {
-            statusTextView.text = message
-            Handler(mainLooper).postDelayed({ finish() }, 2000)
-        }
+    private fun finishDelayed() {
+        Handler(mainLooper).postDelayed({ finish() }, 2000)
     }
 
     override fun onSensorChanged(sensorEvent: SensorEvent) {

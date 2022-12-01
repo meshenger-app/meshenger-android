@@ -41,10 +41,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var contact: Contact
     private lateinit var eglBase: EglBase
 
+    private var currentCallSet = false
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
 
+    private var polledStartInit = true
+    private var active = true
     private var callEventType = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
@@ -93,6 +96,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private val stateChangeCallback = OnStateChangeListener { state: CallState ->
         runOnUiThread {
             when (state) {
+                CallState.WAITING -> {
+                    Log.d(this, "stateChangeCallback: WAITING")
+                    callStatus.text = getString(R.string.call_waiting)
+                }
                 CallState.CONNECTING -> {
                     Log.d(this, "stateChangeCallback: CONNECTING")
                     callStatus.text = getString(R.string.call_connecting)
@@ -253,10 +260,16 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private val passiveCallback = OnStateChangeListener { state: CallState ->
         runOnUiThread {
             when (state) {
+                CallState.WAITING -> {
+                    Log.d(this, "passiveCallback: WAITING")
+                    // nothing to do?
+                }
                 CallState.CONNECTING -> {
+                    Log.d(this, "passiveCallback: CONNECTING")
                     // nothing to do?
                 }
                 CallState.DISMISSED -> {
+                    Log.d(this, "passiveCallback: DISMISSED")
                     // nothing to do?
                 }
                 CallState.CONNECTED -> {
@@ -370,12 +383,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                         contact,
                         stateChangeCallback
                     )
-                    currentCall.setRemoteRenderer(remoteProxyVideoSink)
-                    currentCall.setLocalRenderer(localProxyVideoSink)
-                    currentCall.setCallContext(this@CallActivity)
-                    currentCall.setEglBase(eglBase)
+                    currentCallSet = true
 
                     updateVideoDisplay()
+
+                    acceptButton.performClick() // start call immediately
                 }
 
                 override fun onServiceDisconnected(componentName: ComponentName) {
@@ -384,15 +396,37 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             }
             bindService(Intent(this, MainService::class.java), connection, 0)
 
+            val startCallListener = View.OnClickListener {
+                Log.d(this, "start call...")
+                if (!currentCallSet) {
+                    Log.d(this, "currentCall not set")
+                    return@OnClickListener
+                }
+
+                currentCall.setRemoteRenderer(remoteProxyVideoSink)
+                currentCall.setLocalRenderer(localProxyVideoSink)
+                currentCall.setCallContext(this@CallActivity)
+                currentCall.setEglBase(eglBase)
+
+                currentCall.initVideo()
+                currentCall.initOutgoing()
+
+                initCall()
+
+                acceptButton.visibility = View.GONE
+                declineButton.visibility = View.VISIBLE
+            }
+
             val declineListener = View.OnClickListener {
-                // end call
-                currentCall.hangUp()
+                currentCall.hangup()
                 callEventType = Event.Type.OUTGOING_DECLINED
                 finish()
             }
 
-            acceptButton.visibility = View.GONE
+            acceptButton.visibility = View.VISIBLE
             declineButton.visibility = View.VISIBLE
+
+            acceptButton.setOnClickListener(startCallListener)
             declineButton.setOnClickListener(declineListener)
             startSensor()
         } else if ("ACTION_INCOMING_CALL" == intent.action) {
@@ -407,6 +441,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     Log.d(this@CallActivity, "onServiceConnected")
                     binder = iBinder as MainService.MainBinder
                     currentCall = binder!!.getCurrentCall()!!
+                    currentCallSet = true
 
                     updateVideoDisplay()
                 }
@@ -419,64 +454,66 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
             startRinging()
 
-            // decline call
+            // decline before call starts
             val declineListener = View.OnClickListener {
-                stopRinging()
                 Log.d(this, "declining call...")
+
+                stopRinging()
                 currentCall.decline()
 
                 if (passiveWakeLock.isHeld) {
                     passiveWakeLock.release()
                 }
+
                 callEventType = Event.Type.INCOMING_DECLINED
                 finish()
             }
 
-            // hangup call
+            // hangup active call
             val hangupListener = View.OnClickListener {
                 Log.d(this, "hangup call...")
-                stopRinging() // make sure ringing has stopped ;-)
 
-                currentCall.decline()
+                stopRinging()
+                currentCall.hangup()
 
                 if (passiveWakeLock.isHeld) {
                     passiveWakeLock.release()
                 }
-                callEventType = Event.Type.INCOMING_ACCEPTED
 
+                callEventType = Event.Type.INCOMING_ACCEPTED
                 finish()
             }
 
+            // accept call
             val acceptListener = View.OnClickListener {
-                Log.d(this, "accepted call...")
+                Log.d(this, "accept call...")
+                if (!currentCallSet) {
+                    Log.d(this, "currentCall not set")
+                    return@OnClickListener
+                }
+
                 stopRinging()
 
-                try {
-                    currentCall.setRemoteRenderer(remoteProxyVideoSink)
-                    currentCall.setLocalRenderer(localProxyVideoSink)
-                    currentCall.setOnStateChangeListener(passiveCallback)
-                    currentCall.setCallContext(this@CallActivity)
-                    currentCall.setEglBase(eglBase)
-                    currentCall.initIncoming()
+                currentCall.setRemoteRenderer(remoteProxyVideoSink)
+                currentCall.setLocalRenderer(localProxyVideoSink)
+                currentCall.setOnStateChangeListener(passiveCallback)
+                currentCall.setCallContext(this@CallActivity)
+                currentCall.setEglBase(eglBase)
 
-                    if (passiveWakeLock.isHeld) {
-                        passiveWakeLock.release()
-                    }
-
-                    declineButton.setOnClickListener(hangupListener)
-                    acceptButton.visibility = View.GONE
-                    declineButton.visibility = View.VISIBLE
-
-                    initCall()
-
-                    startSensor()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    stopDelayed("Error accepting call")
-                    acceptButton.visibility = View.GONE
-                    declineButton.visibility = View.GONE
-                    callEventType = Event.Type.INCOMING_ERROR
+                if (passiveWakeLock.isHeld) {
+                    passiveWakeLock.release()
                 }
+
+                declineButton.setOnClickListener(hangupListener)
+                acceptButton.visibility = View.GONE
+                declineButton.visibility = View.VISIBLE
+
+                currentCall.initVideo()
+                currentCall.initIncoming()
+
+                initCall()
+
+                startSensor()
             }
 
             acceptButton.setOnClickListener(acceptListener)
@@ -491,8 +528,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         Log.d(this, "state: ${this.lifecycle.currentState}")
     }
-
-    var polledStartInit = true
 
     override fun onResume() {
         super.onResume()
@@ -526,13 +561,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         Log.d(this, "has record audio permissions: " + Utils.hasRecordAudioPermission(this))
         Log.d(this, "has record video permissions: " + Utils.hasCameraPermission(this))
         Log.d(this, "init.action: ${intent.action}, state: ${this.lifecycle.currentState}")
-
-        currentCall.initVideo()
-
-        if (intent.action == "ACTION_OUTGOING_CALL") {
-            currentCall.initOutgoing()
-            initCall()
-        }
 
         // swap pip and fullscreen content
         pipRenderer.setOnClickListener {
@@ -831,29 +859,18 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
-        super.onDestroy()
 
         stopRinging()
 
         binder!!.setCurrentCall(null)
+
         currentCall.cleanup()
 
-        if (currentCall.state == CallState.CONNECTED) {
-            currentCall.decline()
-        }
-        //currentCall.cleanup()
         binder!!.getEvents().addEvent(contact, callEventType)
 
         unbindService(connection)
 
         wakeLock?.release()
-        if (currentCall.commSocket != null && currentCall.commSocket!!.isConnected && !currentCall.commSocket!!.isClosed) {
-            try {
-                currentCall.commSocket!!.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
 
         remoteProxyVideoSink.setTarget(null)
         localProxyVideoSink.setTarget(null)
@@ -864,10 +881,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         currentCall.releaseCamera()
 
         eglBase.release()
+
+        super.onDestroy()
     }
 
     private fun finishDelayed() {
-        Handler(mainLooper).postDelayed({ finish() }, 2000)
+        if (active) {
+            active = false
+            Handler(mainLooper).postDelayed({ finish() }, 2000)
+        }
     }
 
     override fun onSensorChanged(sensorEvent: SensorEvent) {

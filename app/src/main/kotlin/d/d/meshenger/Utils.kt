@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Looper
 import android.provider.OpenableColumns
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -15,6 +16,18 @@ internal object Utils {
     fun getThreadInfo(): String {
         val thread =  Thread.currentThread()
         return "@[name=${thread.name}, id=${thread.id}]"
+    }
+
+    fun checkIsOnMainThread() {
+        if (Thread.currentThread() != Looper.getMainLooper().thread) {
+            throw IllegalStateException("Code must run on the main thread!")
+        }
+    }
+
+    fun checkIsNotOnMainThread() {
+        if (Thread.currentThread() == Looper.getMainLooper().thread) {
+            throw IllegalStateException("Code must _not_ run on the main thread!")
+        }
     }
 
     fun hasReadPermission(activity: Activity): Boolean {

@@ -38,17 +38,23 @@ internal object AddressUtils
         return null
     }
 
-    fun getAllSocketAddresses(initial_addresses: List<String>, last_working_address: InetSocketAddress?, port: Int): List<InetSocketAddress> {
+    fun getAllSocketAddresses(contact: Contact, useSystemTable: Boolean = false): List<InetSocketAddress> {
+        val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
+        val macs = mutableSetOf<String>()
 
-        if (last_working_address != null) {
-            addresses.add(last_working_address)
+        val lastWorkingAddress = contact.lastWorkingAddress
+        if (lastWorkingAddress != null) {
+            addresses.add(lastWorkingAddress)
         }
 
-        for (address in initial_addresses) {
+        for (address in contact.addresses) {
             if (isMACAddress(address)) {
                 val mac = macAddressToBytes(address)
                 addresses.addAll(mapMACtoPrefixes(mac, port))
+                if (useSystemTable && mac != null) {
+                    macs.add(formatMAC(mac))
+                }
             } else {
                 val socketAddress = stringToInetSocketAddress(address, port)
                 if (socketAddress != null) {
@@ -64,8 +70,17 @@ internal object AddressUtils
                     }
                     val mac = extractMAC(inetAddress)
                     addresses.addAll(mapMACtoPrefixes(mac, port))
+                    if (useSystemTable && mac != null) {
+                        macs.add(formatMAC(mac))
+                    }
                 }
             }
+        }
+
+        if (useSystemTable) {
+            addresses.addAll(
+                getAddressesFromNeighborTable(macs.toList(), port)
+            )
         }
 
         return addresses.distinct()
@@ -387,10 +402,7 @@ internal object AddressUtils
     }
 
     // experimental feature
-    private fun getAddressesFromNeighborTable(
-        lookup_mac: String,
-        port: Int
-    ): List<InetSocketAddress> {
+    private fun getAddressesFromNeighborTable(lookup_macs: List<String>, port: Int): List<InetSocketAddress> {
         val addresses = mutableListOf<InetSocketAddress>()
         try {
             // get IPv4 and IPv6 entries
@@ -407,15 +419,16 @@ internal object AddressUtils
                     val device = tokens[2]
                     val mac = tokens[4]
                     val state = tokens[5]
-                    if (lookup_mac.equals(
-                            mac,
-                            ignoreCase = true
-                        ) && isIPAddress(address) && !state.equals("failed", ignoreCase = true)
-                    ) {
-                        if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
-                            addresses.add(InetSocketAddress("$address%$device", port))
-                        } else {
-                            addresses.add(InetSocketAddress(address, port))
+                    for (lookup_mac in lookup_macs) {
+                        if (lookup_mac.equals(mac, ignoreCase = true)
+                            && isIPAddress(address)
+                            && !state.equals("failed", ignoreCase = true)
+                        ) {
+                            if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
+                                addresses.add(InetSocketAddress("$address%$device", port))
+                            } else {
+                                addresses.add(InetSocketAddress(address, port))
+                            }
                         }
                     }
                 }
@@ -426,15 +439,16 @@ internal object AddressUtils
                     val device = tokens[2]
                     val mac = tokens[4]
                     val state = tokens[6]
-                    if (mac.equals(
-                            lookup_mac,
-                            ignoreCase = true
-                        ) && isIPAddress(address) && !state.equals("failed", ignoreCase = true)
-                    ) {
-                        if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
-                            addresses.add(InetSocketAddress("$address%$device", port))
-                        } else {
-                            addresses.add(InetSocketAddress(address, port))
+                    for (lookup_mac in lookup_macs) {
+                        if (lookup_mac.equals(mac, ignoreCase = true)
+                            && isIPAddress(address)
+                            && !state.equals("failed", ignoreCase = true)
+                        ) {
+                            if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
+                                addresses.add(InetSocketAddress("$address%$device", port))
+                            } else {
+                                addresses.add(InetSocketAddress(address, port))
+                            }
                         }
                     }
                 }

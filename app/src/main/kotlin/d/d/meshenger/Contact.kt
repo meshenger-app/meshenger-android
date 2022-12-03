@@ -32,10 +32,6 @@ class Contact(
     // last working address (use this address next connection and for unknown contact initialization)
     var lastWorkingAddress: InetSocketAddress? = null
 
-    fun getAllSocketAddresses() : List<InetSocketAddress>{
-        return AddressUtils.getAllSocketAddresses(addresses, lastWorkingAddress, MainService.serverPort)
-    }
-
     companion object {
         @Throws(JSONException::class)
         fun toJSON(contact: Contact, all: Boolean): JSONObject {

@@ -135,7 +135,8 @@ class MainService : Service(), Runnable {
     }
 
     private fun createCommSocket(contact: Contact): Socket? {
-        val addresses = contact.getAllSocketAddresses()
+        val useSystemTable = binder.getSettings().useSystemTable
+        val addresses = AddressUtils.getAllSocketAddresses(contact, useSystemTable)
         Log.d(this, "addresses to try: " + addresses.joinToString())
 
         for (address in addresses) {
@@ -375,7 +376,8 @@ class MainService : Service(), Runnable {
 
             try {
                 // try to connect
-                for (address in contact.getAllSocketAddresses()) {
+                val useSystemTable = binder.getSettings().useSystemTable
+                for (address in AddressUtils.getAllSocketAddresses(contact, useSystemTable)) {
                     try {
                         socket.connect(address, 500)
                         connected = true

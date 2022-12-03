@@ -357,7 +357,8 @@ class RTCCall : DataChannel.Observer {
     private fun createCommSocket(contact: Contact): Socket? {
         Log.d(this, "createCommSocket")
 
-        val addresses = contact.getAllSocketAddresses()
+        val useSystemTable = binder.getSettings().useSystemTable
+        val addresses = AddressUtils.getAllSocketAddresses(contact, useSystemTable)
         for (address in addresses) {
             callActivity.onRemoteAddressChange(address, false)
             Log.d(this, "try address: $address")

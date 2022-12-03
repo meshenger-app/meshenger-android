@@ -145,6 +145,16 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 applySettingsMode("expert")
             }
         }
+
+        val useSystemTable = settings.useSystemTable
+        val useSystemTableCB = findViewById<SwitchMaterial>(R.id.switchUseSystemTable)
+        useSystemTableCB.apply {
+            isChecked = useSystemTable
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.useSystemTable = isChecked
+                binder!!.saveDatabase()
+            }
+        }
 /*
         setupSpinner(settings.videoCodec,
             R.id.spinnerVideoCodecs,

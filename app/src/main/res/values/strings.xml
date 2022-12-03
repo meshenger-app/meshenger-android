@@ -42,6 +42,7 @@
     <string name="settings_password">Password</string>
     <string name="settings_change_password">Change Password</string>
     <string name="settings_ice_servers">ICE Servers</string>
+    <string name="settings_use_system_table">Use System Table (ARP/ND)</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>

@@ -560,6 +560,41 @@
                     android:visibility="gone"
                     app:dividerColor="@color/light_grey" />
 
+                <RelativeLayout
+                    android:id="@+id/useSystemTableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_use_system_table"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchUseSystemTable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="5dp"
+                        app:thumbTint="@color/selectedColor" />
+
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
+                    android:visibility="gone"
+                    app:dividerColor="@color/light_grey" />
+
                 <LinearLayout
                     android:id="@+id/iceServersLayout"
                     android:layout_width="match_parent"

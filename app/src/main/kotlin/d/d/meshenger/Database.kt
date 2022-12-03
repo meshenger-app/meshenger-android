@@ -15,7 +15,8 @@ import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 
-class Database {
+class Database() {
+    var version = BuildConfig.VERSION_NAME
     var settings = Settings()
     var contacts = Contacts()
     var events = Events()
@@ -31,7 +32,6 @@ class Database {
 
     companion object {
         private const val TAG = "Database"
-        var version = "4.0.4" // current version
 
         fun fromData(db_data: ByteArray, password: String?): Database {
             // encrypt database
@@ -46,15 +46,12 @@ class Database {
                 db_data
             }
 
-            if (stringData.isEmpty() || stringData[0] != '{'.code.toByte()) {
-                throw WrongPasswordException()
-            }
-
             val obj = JSONObject(
                 String(stringData, Charset.forName("UTF-8"))
             )
 
-            upgradeDatabase(obj.getString("version"), version, obj)
+            upgradeDatabase(obj)
+
             val db = fromJSON(obj)
             Log.d(this, "Loaded ${db.contacts.contactList.size} contacts")
             Log.d(this, "Loaded ${db.events.eventList.size} events")
@@ -76,6 +73,7 @@ class Database {
             return dbdata
         }
 
+        // add missing keys with defaults and remove unexpected keys
         @Throws(JSONException::class)
         private fun alignSettings(settings: JSONObject) {
             val defaults: JSONObject = Settings.toJSON(Settings())
@@ -109,8 +107,10 @@ class Database {
             }
         }
 
-        @Throws(JSONException::class)
-        private fun upgradeDatabase(from: String, to: String, db: JSONObject): Boolean {
+        private fun upgradeDatabase(db: JSONObject): Boolean {
+            val from = db.getString("version")
+            val to = BuildConfig.VERSION_NAME
+
             if (from == to) {
                 return false
             }
@@ -170,17 +170,16 @@ class Database {
 
                 db.put("contacts", Contacts.toJSON(contacts))
 
-                var events = Events()
+                val events = Events()
                 db.put("events", Events.toJSON(events))
             }
 
             // 4.0.0+ => 4.0.4
             if (new_from in listOf("4.0.0", "4.0.1", "4.0.2", "4.0.3")) {
                 // nothing to do
-                new_from = "4.0.4"
+                new_from = to
             }
 
-            // add missing keys with defaults and remove unexpected keys
             alignSettings(settings)
 
             db.put("version", new_from)
@@ -188,9 +187,9 @@ class Database {
         }
 
         @Throws(JSONException::class)
-        fun toJSON(db: Database): JSONObject {
+        private fun toJSON(db: Database): JSONObject {
             val obj = JSONObject()
-            obj.put("version", version)
+            obj.put("version", db.version)
             obj.put("settings", Settings.toJSON(db.settings))
             obj.put("contacts", Contacts.toJSON(db.contacts))
             obj.put("events", Events.toJSON(db.events))
@@ -198,11 +197,10 @@ class Database {
         }
 
         @Throws(JSONException::class)
-        fun fromJSON(obj: JSONObject): Database {
+        private fun fromJSON(obj: JSONObject): Database {
             val db = Database()
 
-            // import version
-            version = obj.getString("version")
+            db.version = obj.getString("version")
 
             // import contacts
             val contacts = obj.getJSONObject("contacts")

@@ -176,6 +176,11 @@ class Database() {
             // 4.0.0+ => 4.0.4
             if (new_from in listOf("4.0.0", "4.0.1", "4.0.2", "4.0.3")) {
                 // nothing to do
+                new_from = "4.0.4"
+            }
+
+            if (new_from == "4.0.4") {
+                db.put("use_system_table", false)
                 new_from = to
             }
 

@@ -87,7 +87,6 @@ class Event(
             }
         }
 
-        @Throws(JSONException::class)
         fun toJSON(event: Event): JSONObject {
             val obj = JSONObject()
             obj.put("public_key", Utils.byteArrayToHexString(event.publicKey))
@@ -97,7 +96,6 @@ class Event(
             return obj
         }
 
-        @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject): Event {
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
             val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"), MainService.serverPort)

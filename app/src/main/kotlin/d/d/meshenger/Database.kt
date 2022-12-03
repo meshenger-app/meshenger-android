@@ -74,7 +74,6 @@ class Database() {
         }
 
         // add missing keys with defaults and remove unexpected keys
-        @Throws(JSONException::class)
         private fun alignSettings(settings: JSONObject) {
             val defaults: JSONObject = Settings.toJSON(Settings())
 
@@ -186,7 +185,6 @@ class Database() {
             return true
         }
 
-        @Throws(JSONException::class)
         private fun toJSON(db: Database): JSONObject {
             val obj = JSONObject()
             obj.put("version", db.version)
@@ -196,7 +194,6 @@ class Database() {
             return obj
         }
 
-        @Throws(JSONException::class)
         private fun fromJSON(obj: JSONObject): Database {
             val db = Database()
 

@@ -12,7 +12,6 @@ internal class PacketWriter(socket: Socket) {
     val os = socket.getOutputStream()
     val header = ByteArray(4)
 
-    @Throws(IOException::class)
     fun writeMessage(message: ByteArray) {
         writeMessageHeader(header, message.size)
         // need to concatenate?

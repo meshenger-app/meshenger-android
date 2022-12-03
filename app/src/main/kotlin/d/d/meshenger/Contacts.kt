@@ -60,7 +60,6 @@ class Contacts {
     }
 
     companion object {
-        @Throws(JSONException::class)
         fun toJSON(contacts: Contacts): JSONObject {
             val obj = JSONObject()
             val array = JSONArray()
@@ -71,7 +70,6 @@ class Contacts {
             return obj
         }
 
-        @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject): Contacts {
             val contacts = Contacts()
             val array = obj.getJSONArray("entries")

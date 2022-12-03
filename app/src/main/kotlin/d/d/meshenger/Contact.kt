@@ -33,7 +33,6 @@ class Contact(
     var lastWorkingAddress: InetSocketAddress? = null
 
     companion object {
-        @Throws(JSONException::class)
         fun toJSON(contact: Contact, all: Boolean): JSONObject {
             val obj = JSONObject()
             val array = JSONArray()
@@ -49,7 +48,6 @@ class Contact(
             return obj
         }
 
-        @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject, all: Boolean): Contact {
             val name = obj.getString("name")
             if (!Utils.isValidName(name)) {

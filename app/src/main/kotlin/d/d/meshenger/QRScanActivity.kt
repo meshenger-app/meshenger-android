@@ -56,7 +56,6 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         findViewById<View>(R.id.fabManualInput).setOnClickListener { startManualInput() }
     }
 
-    @Throws(JSONException::class)
     private fun addContact(data: String) {
         val obj = JSONObject(data)
         val new_contact = Contact.fromJSON(obj, false)

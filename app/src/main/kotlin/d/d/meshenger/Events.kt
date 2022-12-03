@@ -51,7 +51,6 @@ class Events {
     }
 
     companion object {
-        @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject): Events {
             val eventList = mutableListOf<Event>()
             val array = obj.getJSONArray("entries")
@@ -71,7 +70,6 @@ class Events {
             return events
         }
 
-        @Throws(JSONException::class)
         fun toJSON(events: Events): JSONObject {
             val obj = JSONObject()
             val array = JSONArray()

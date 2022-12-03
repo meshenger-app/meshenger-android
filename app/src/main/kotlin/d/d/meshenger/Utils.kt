@@ -121,7 +121,6 @@ internal object Utils {
     }
 
     // write file to external storage
-    @Throws(IOException::class)
     fun writeExternalFile(filepath: String, data: ByteArray?) {
         val file = File(filepath)
         if (file.exists() && file.isFile) {
@@ -136,7 +135,6 @@ internal object Utils {
     }
 
     // read file from external storage
-    @Throws(IOException::class)
     fun readExternalFile(filepath: String): ByteArray {
         val file = File(filepath)
         if (!file.exists() || !file.isFile) {
@@ -162,7 +160,6 @@ internal object Utils {
         return size
     }
 
-    @Throws(IOException::class)
     fun readExternalFile(ctx: Context, uri: Uri): ByteArray {
         val size = getExternalFileSize(ctx, uri).toInt()
         val isstream = ctx.contentResolver.openInputStream(uri)
@@ -176,7 +173,6 @@ internal object Utils {
         return dataArray
     }
 
-    @Throws(IOException::class)
     fun writeExternalFile(ctx: Context, uri: Uri, dataArray: ByteArray) {
         val fos = ctx.contentResolver.openOutputStream(uri)
         fos!!.write(dataArray)
@@ -184,7 +180,6 @@ internal object Utils {
     }
 
     // write file to external storage
-    @Throws(IOException::class)
     fun writeInternalFile(filePath: String, dataArray: ByteArray) {
         val file = File(filePath)
         if (file.exists() && file.isFile) {
@@ -199,7 +194,6 @@ internal object Utils {
     }
 
     // read file from external storage
-    @Throws(IOException::class)
     fun readInternalFile(filePath: String): ByteArray {
         val file = File(filePath)
         if (!file.exists() || !file.isFile) {

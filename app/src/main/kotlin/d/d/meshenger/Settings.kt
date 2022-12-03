@@ -90,7 +90,6 @@ class Settings {
             return s
         }
 
-        @Throws(JSONException::class)
         fun toJSON(s: Settings): JSONObject {
             val obj = JSONObject()
             obj.put("username", s.username)

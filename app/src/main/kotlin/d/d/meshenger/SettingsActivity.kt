@@ -146,12 +146,12 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        val useSystemTable = settings.useSystemTable
-        val useSystemTableCB = findViewById<SwitchMaterial>(R.id.switchUseSystemTable)
-        useSystemTableCB.apply {
-            isChecked = useSystemTable
+        val useNeighborTable = settings.useNeighborTable
+        val useNeighborTableCB = findViewById<SwitchMaterial>(R.id.switchUseNeighborTable)
+        useNeighborTableCB.apply {
+            isChecked = useNeighborTable
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.useSystemTable = isChecked
+                settings.useNeighborTable = isChecked
                 binder!!.saveDatabase()
             }
         }

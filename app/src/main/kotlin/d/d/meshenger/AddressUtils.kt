@@ -38,7 +38,7 @@ internal object AddressUtils
         return null
     }
 
-    fun getAllSocketAddresses(contact: Contact, useSystemTable: Boolean = false): List<InetSocketAddress> {
+    fun getAllSocketAddresses(contact: Contact, useNeighborTable: Boolean = false): List<InetSocketAddress> {
         val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
@@ -52,7 +52,7 @@ internal object AddressUtils
             if (isMACAddress(address)) {
                 val mac = macAddressToBytes(address)
                 addresses.addAll(mapMACtoPrefixes(mac, port))
-                if (useSystemTable && mac != null) {
+                if (useNeighborTable && mac != null) {
                     macs.add(formatMAC(mac))
                 }
             } else {
@@ -70,14 +70,14 @@ internal object AddressUtils
                     }
                     val mac = extractMAC(inetAddress)
                     addresses.addAll(mapMACtoPrefixes(mac, port))
-                    if (useSystemTable && mac != null) {
+                    if (useNeighborTable && mac != null) {
                         macs.add(formatMAC(mac))
                     }
                 }
             }
         }
 
-        if (useSystemTable) {
+        if (useNeighborTable) {
             addresses.addAll(
                 getAddressesFromNeighborTable(macs.toList(), port)
             )

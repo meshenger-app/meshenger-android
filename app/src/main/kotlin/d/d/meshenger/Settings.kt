@@ -31,7 +31,7 @@ class Settings {
     var publicKey = byteArrayOf()
     var nightMode = false
     var blockUnknown = false
-    var useSystemTable = false
+    var useNeighborTable = false
     var addresses = mutableListOf<String>()
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
@@ -54,7 +54,7 @@ class Settings {
             s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
             s.nightMode = obj.getBoolean("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
-            s.useSystemTable = obj.getBoolean("use_system_table")
+            s.useNeighborTable = obj.getBoolean("use_neighbor_table")
 
             s.settingsMode = obj.getString("settings_mode")
             //s.playVideo = obj.getBoolean("play_video")
@@ -97,7 +97,7 @@ class Settings {
             obj.put("public_key", Utils.byteArrayToHexString(s.publicKey))
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)
-            obj.put("use_system_table", s.useSystemTable)
+            obj.put("use_neighbor_table", s.useNeighborTable)
             obj.put("settings_mode", s.settingsMode)
             //obj.put("play_video", s.playVideo)
             //obj.put("play_audio", s.playAudio)

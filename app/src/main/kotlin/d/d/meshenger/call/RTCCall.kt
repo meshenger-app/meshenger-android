@@ -33,7 +33,6 @@ class RTCCall : DataChannel.Observer {
     private var ownPublicKey: ByteArray
     private var ownSecretKey: ByteArray
     private var iceServers = mutableListOf<IceServer>()
-    private var onStateChangeListener: OnStateChangeListener?
     private var callActivity: CallContext? = null
     private lateinit var eglBase: EglBase
     private var binder: MainService.MainBinder
@@ -155,7 +154,6 @@ class RTCCall : DataChannel.Observer {
         this.appContext = appContext
         this.contact = contact
         this.commSocket = commSocket
-        this.onStateChangeListener = null
         this.binder = binder
         this.ownPublicKey = binder.getSettings().publicKey
         this.ownSecretKey = binder.getSettings().secretKey
@@ -173,15 +171,13 @@ class RTCCall : DataChannel.Observer {
     constructor(
         appContext: Context,
         binder: MainService.MainBinder,
-        contact: Contact,
-        listener: OnStateChangeListener
+        contact: Contact
     ) {
         Log.d(this, "RTCCall created for outgoing calls")
 
         this.appContext = appContext
         this.contact = contact
         this.commSocket = null
-        this.onStateChangeListener = listener
         this.binder = binder
         this.ownPublicKey = binder.getSettings().publicKey
         this.ownSecretKey = binder.getSettings().secretKey
@@ -574,7 +570,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "reportStateChange: $state")
 
         this.state = state
-        onStateChangeListener?.onStateChange(state)
+        callActivity?.onStateChange(state)
     }
 
     fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {
@@ -605,10 +601,6 @@ class RTCCall : DataChannel.Observer {
 
     fun setCallContext(activity: CallContext?) {
         this.callActivity = activity
-    }
-
-    fun setOnStateChangeListener(listener: OnStateChangeListener?) {
-        this.onStateChangeListener = listener
     }
 
     fun initIncoming() {
@@ -774,7 +766,6 @@ class RTCCall : DataChannel.Observer {
 
         executor.execute {
             Log.d(this, "cleanup() executor start")
-            setOnStateChangeListener(null)
             setCallContext(null)
             setStatsCollector(null)
 
@@ -807,11 +798,8 @@ class RTCCall : DataChannel.Observer {
         WAITING, CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR_CONN, ERROR_CRYPTO, ERROR_AUTH, ERROR_OTHER
     }
 
-    fun interface OnStateChangeListener {
-        fun onStateChange(state: CallState)
-    }
-
     interface CallContext {
+        fun onStateChange(state: CallState)
         fun onLocalVideoEnabled(enabled: Boolean)
         fun onRemoteVideoEnabled(enabled: Boolean)
         fun onFrontFacingCamera(enabled: Boolean)

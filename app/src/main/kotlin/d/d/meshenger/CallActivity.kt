@@ -24,7 +24,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCCall.CallState
-import d.d.meshenger.call.RTCCall.OnStateChangeListener
 import d.d.meshenger.call.StatsReportUtil
 import org.webrtc.*
 import java.io.IOException
@@ -93,33 +92,36 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private val stateChangeCallback = OnStateChangeListener { state: CallState ->
+    override fun onStateChange(state: CallState) {
         runOnUiThread {
+            val isIncoming = (intent.action == "ACTION_INCOMING_CALL")
             when (state) {
                 CallState.WAITING -> {
-                    Log.d(this, "stateChangeCallback: WAITING")
+                    Log.d(this, "onStateChange: WAITING")
                     callStatus.text = getString(R.string.call_waiting)
                 }
                 CallState.CONNECTING -> {
-                    Log.d(this, "stateChangeCallback: CONNECTING")
+                    Log.d(this, "onStateChange: CONNECTING")
                     callStatus.text = getString(R.string.call_connecting)
                 }
-                CallState.RINGING -> {
-                    Log.d(this, "stateChangeCallback: RINGING")
-                    callStatus.text = getString(R.string.call_ringing)
-                }
-                CallState.CONNECTED -> {
-                    Log.d(this, "stateChangeCallback: CONNECTED")
-                    callStatus.text = getString(R.string.call_connected)
-                    onCameraEnabled()
-                }
                 CallState.DISMISSED -> {
-                    Log.d(this, "stateChangeCallback: DISMISSED")
+                    Log.d(this, "onStateChange: DISMISSED")
                     callStatus.text = getString(R.string.call_denied)
                     finishDelayed()
                 }
+                CallState.CONNECTED -> {
+                    Log.d(this, "onStateChange: CONNECTED")
+                    acceptButton.visibility = View.GONE
+                    declineButton.visibility = View.VISIBLE
+                    callStatus.text = getString(R.string.call_connected)
+                    onCameraEnabled()
+                }
+                CallState.RINGING -> {
+                    Log.d(this, "onStateChange: RINGING")
+                    callStatus.text = getString(R.string.call_ringing)
+                }
                 CallState.ENDED -> {
-                    Log.d(this, "stateChangeCallback: ENDED")
+                    Log.d(this, "onStateChange: ENDED")
                     callStatus.text = getString(R.string.call_ended)
                     finishDelayed()
                 }
@@ -134,7 +136,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                     finishDelayed()
                 }
                 CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
-                    Log.d(this, "passiveCallback: ERROR")
+                    Log.d(this, "onStateChange: ERROR")
                     callStatus.text = getString(R.string.call_error)
                     finishDelayed()
                 }
@@ -257,56 +259,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private val passiveCallback = OnStateChangeListener { state: CallState ->
-        runOnUiThread {
-            when (state) {
-                CallState.WAITING -> {
-                    Log.d(this, "passiveCallback: WAITING")
-                    // nothing to do?
-                }
-                CallState.CONNECTING -> {
-                    Log.d(this, "passiveCallback: CONNECTING")
-                    // nothing to do?
-                }
-                CallState.DISMISSED -> {
-                    Log.d(this, "passiveCallback: DISMISSED")
-                    // nothing to do?
-                }
-                CallState.CONNECTED -> {
-                    Log.d(this, "passiveCallback: CONNECTED")
-                    callStatus.text = getString(R.string.call_connected)
-                    acceptButton.visibility = View.GONE
-                    declineButton.visibility = View.VISIBLE
-                    onCameraEnabled()
-                }
-                CallState.RINGING -> {
-                    Log.d(this, "passiveCallback: RINGING")
-                    callStatus.text = getString(R.string.call_ringing)
-                }
-                CallState.ENDED -> {
-                    Log.d(this, "passiveCallback: ENDED")
-                    callStatus.text = getString(R.string.call_ended)
-                    finishDelayed()
-                }
-                CallState.ERROR_CONN -> {
-                    Log.d(this, "stateChangeCallback: ERROR_CONN")
-                    callStatus.text = getString(R.string.call_connection_failed)
-                    finishDelayed()
-                }
-                CallState.ERROR_AUTH -> {
-                    Log.d(this, "stateChangeCallback: ERROR_AUTH")
-                    callStatus.text = getString(R.string.call_authentication_failed)
-                    finishDelayed()
-                }
-                CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
-                    Log.d(this, "passiveCallback: ERROR")
-                    callStatus.text = getString(R.string.call_error)
-                    finishDelayed()
-                }
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(this, "onCreate")
 
@@ -390,8 +342,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 currentCall = RTCCall(
                     this@CallActivity,
                     binder!!,
-                    contact,
-                    stateChangeCallback
+                    contact
                 )
                 currentCallSet = true
 
@@ -508,7 +459,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
             currentCall.setRemoteRenderer(remoteProxyVideoSink)
             currentCall.setLocalRenderer(localProxyVideoSink)
-            currentCall.setOnStateChangeListener(passiveCallback)
             currentCall.setCallContext(this@CallActivity)
             currentCall.setEglBase(eglBase)
 

@@ -369,164 +369,170 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             nameTextView.text = contact.name
         }
 
-        Log.d(this, "intent: ${intent.action}")
+        Log.d(this, "intent: ${intent.action}, state: ${this.lifecycle.currentState}")
 
-        if ("ACTION_OUTGOING_CALL" == intent.action) {
-            callEventType = Event.Type.OUTGOING_UNKNOWN
-            connection = object : ServiceConnection {
-                override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                    Log.d(this@CallActivity, "onServiceConnected")
-                    binder = iBinder as MainService.MainBinder
-                    currentCall = RTCCall(
-                        this@CallActivity,
-                        binder!!,
-                        contact,
-                        stateChangeCallback
-                    )
-                    currentCallSet = true
-
-                    updateVideoDisplay()
-
-                    acceptButton.performClick() // start call immediately
-                }
-
-                override fun onServiceDisconnected(componentName: ComponentName) {
-                    // nothing to do
-                }
-            }
-            bindService(Intent(this, MainService::class.java), connection, 0)
-
-            val startCallListener = View.OnClickListener {
-                Log.d(this, "start call...")
-                if (!currentCallSet) {
-                    Log.d(this, "currentCall not set")
-                    return@OnClickListener
-                }
-
-                currentCall.setRemoteRenderer(remoteProxyVideoSink)
-                currentCall.setLocalRenderer(localProxyVideoSink)
-                currentCall.setCallContext(this@CallActivity)
-                currentCall.setEglBase(eglBase)
-
-                currentCall.initVideo()
-                currentCall.initOutgoing()
-
-                initCall()
-
-                acceptButton.visibility = View.GONE
-                declineButton.visibility = View.VISIBLE
-            }
-
-            val declineListener = View.OnClickListener {
-                currentCall.hangup()
-                callEventType = Event.Type.OUTGOING_DECLINED
+        when (intent.action) {
+            "ACTION_OUTGOING_CALL" -> createOutgoingCall()
+            "ACTION_INCOMING_CALL" -> createIncomingCall()
+            else -> {
+                Log.e(this, "invalid action: ${intent.action}, this should never happen")
                 finish()
             }
+        }
+    }
 
-            acceptButton.visibility = View.VISIBLE
+    private fun createOutgoingCall() {
+        callEventType = Event.Type.OUTGOING_UNKNOWN
+        connection = object : ServiceConnection {
+            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+                Log.d(this@CallActivity, "onServiceConnected")
+                binder = iBinder as MainService.MainBinder
+                currentCall = RTCCall(
+                    this@CallActivity,
+                    binder!!,
+                    contact,
+                    stateChangeCallback
+                )
+                currentCallSet = true
+
+                updateVideoDisplay()
+
+                acceptButton.performClick() // start call immediately
+            }
+
+            override fun onServiceDisconnected(componentName: ComponentName) {
+                // nothing to do
+            }
+        }
+        bindService(Intent(this, MainService::class.java), connection, 0)
+
+        val startCallListener = View.OnClickListener {
+            Log.d(this, "start call...")
+            if (!currentCallSet) {
+                Log.d(this, "currentCall not set")
+                return@OnClickListener
+            }
+
+            currentCall.setRemoteRenderer(remoteProxyVideoSink)
+            currentCall.setLocalRenderer(localProxyVideoSink)
+            currentCall.setCallContext(this@CallActivity)
+            currentCall.setEglBase(eglBase)
+
+            currentCall.initVideo()
+            currentCall.initOutgoing()
+
+            initCall()
+
+            acceptButton.visibility = View.GONE
             declineButton.visibility = View.VISIBLE
+        }
 
-            acceptButton.setOnClickListener(startCallListener)
-            declineButton.setOnClickListener(declineListener)
-            startSensor()
-        } else if ("ACTION_INCOMING_CALL" == intent.action) {
-            callEventType = Event.Type.INCOMING_UNKNOWN
-            passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
-                PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
-                "meshenger:wakeup"
-            )
-            passiveWakeLock.acquire(10000)
-            connection = object : ServiceConnection {
-                override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                    Log.d(this@CallActivity, "onServiceConnected")
-                    binder = iBinder as MainService.MainBinder
-                    currentCall = binder!!.getCurrentCall()!!
-                    currentCallSet = true
-
-                    updateVideoDisplay()
-                }
-
-                override fun onServiceDisconnected(componentName: ComponentName) {
-                    binder = null
-                }
-            }
-            bindService(Intent(this, MainService::class.java), connection, 0)
-
-            startRinging()
-
-            // decline before call starts
-            val declineListener = View.OnClickListener {
-                Log.d(this, "declining call...")
-
-                stopRinging()
-                currentCall.decline()
-
-                if (passiveWakeLock.isHeld) {
-                    passiveWakeLock.release()
-                }
-
-                callEventType = Event.Type.INCOMING_DECLINED
-                finish()
-            }
-
-            // hangup active call
-            val hangupListener = View.OnClickListener {
-                Log.d(this, "hangup call...")
-
-                stopRinging()
-                currentCall.hangup()
-
-                if (passiveWakeLock.isHeld) {
-                    passiveWakeLock.release()
-                }
-
-                callEventType = Event.Type.INCOMING_ACCEPTED
-                finish()
-            }
-
-            // accept call
-            val acceptListener = View.OnClickListener {
-                Log.d(this, "accept call...")
-                if (!currentCallSet) {
-                    Log.d(this, "currentCall not set")
-                    return@OnClickListener
-                }
-
-                stopRinging()
-
-                currentCall.setRemoteRenderer(remoteProxyVideoSink)
-                currentCall.setLocalRenderer(localProxyVideoSink)
-                currentCall.setOnStateChangeListener(passiveCallback)
-                currentCall.setCallContext(this@CallActivity)
-                currentCall.setEglBase(eglBase)
-
-                if (passiveWakeLock.isHeld) {
-                    passiveWakeLock.release()
-                }
-
-                declineButton.setOnClickListener(hangupListener)
-                acceptButton.visibility = View.GONE
-                declineButton.visibility = View.VISIBLE
-
-                currentCall.initVideo()
-                currentCall.initIncoming()
-
-                initCall()
-
-                startSensor()
-            }
-
-            acceptButton.setOnClickListener(acceptListener)
-            declineButton.setOnClickListener(declineListener)
-
-            acceptButton.visibility = View.VISIBLE
-            declineButton.visibility = View.VISIBLE
-        } else {
-            Log.d(this, "missing action, should never happen")
+        val declineListener = View.OnClickListener {
+            currentCall.hangup()
+            callEventType = Event.Type.OUTGOING_DECLINED
             finish()
         }
 
-        Log.d(this, "state: ${this.lifecycle.currentState}")
+        acceptButton.visibility = View.VISIBLE
+        declineButton.visibility = View.VISIBLE
+
+        acceptButton.setOnClickListener(startCallListener)
+        declineButton.setOnClickListener(declineListener)
+        startSensor()
+    }
+
+    private fun createIncomingCall() {
+        callEventType = Event.Type.INCOMING_UNKNOWN
+        passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
+            PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
+            "meshenger:wakeup"
+        )
+        passiveWakeLock.acquire(10000)
+        connection = object : ServiceConnection {
+            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+                Log.d(this@CallActivity, "onServiceConnected")
+                binder = iBinder as MainService.MainBinder
+                currentCall = binder!!.getCurrentCall()!!
+                currentCallSet = true
+
+                updateVideoDisplay()
+            }
+
+            override fun onServiceDisconnected(componentName: ComponentName) {
+                binder = null
+            }
+        }
+        bindService(Intent(this, MainService::class.java), connection, 0)
+
+        startRinging()
+
+        // decline before call starts
+        val declineListener = View.OnClickListener {
+            Log.d(this, "declining call...")
+
+            stopRinging()
+            currentCall.decline()
+
+            if (passiveWakeLock.isHeld) {
+                passiveWakeLock.release()
+            }
+
+            callEventType = Event.Type.INCOMING_DECLINED
+            finish()
+        }
+
+        // hangup active call
+        val hangupListener = View.OnClickListener {
+            Log.d(this, "hangup call...")
+
+            stopRinging()
+            currentCall.hangup()
+
+            if (passiveWakeLock.isHeld) {
+                passiveWakeLock.release()
+            }
+
+            callEventType = Event.Type.INCOMING_ACCEPTED
+            finish()
+        }
+
+        // accept call
+        val acceptListener = View.OnClickListener {
+            Log.d(this, "accept call...")
+            if (!currentCallSet) {
+                Log.d(this, "currentCall not set")
+                return@OnClickListener
+            }
+
+            stopRinging()
+
+            currentCall.setRemoteRenderer(remoteProxyVideoSink)
+            currentCall.setLocalRenderer(localProxyVideoSink)
+            currentCall.setOnStateChangeListener(passiveCallback)
+            currentCall.setCallContext(this@CallActivity)
+            currentCall.setEglBase(eglBase)
+
+            if (passiveWakeLock.isHeld) {
+                passiveWakeLock.release()
+            }
+
+            declineButton.setOnClickListener(hangupListener)
+            acceptButton.visibility = View.GONE
+            declineButton.visibility = View.VISIBLE
+
+            currentCall.initVideo()
+            currentCall.initIncoming()
+
+            initCall()
+
+            startSensor()
+        }
+
+        acceptButton.setOnClickListener(acceptListener)
+        declineButton.setOnClickListener(declineListener)
+
+        acceptButton.visibility = View.VISIBLE
+        declineButton.visibility = View.VISIBLE
     }
 
     override fun onResume() {

@@ -14,8 +14,6 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -209,7 +207,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
     override fun onCameraEnabled() {
         runOnUiThread {
-            updateCameraButtons(currentCall.getCameraEnabled())
+            updateCameraButtons()
         }
     }
 
@@ -218,7 +216,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         runOnUiThread {
             isLocalVideoAvailable = enabled
             updateVideoDisplay()
-            updateCameraButtons(currentCall.getCameraEnabled())
+            updateCameraButtons()
         }
     }
 
@@ -715,93 +713,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private fun updateCameraButtons(enabled: Boolean) {
-        val animation = ScaleAnimation(
-            1.0f,
-            0.0f,
-            1.0f,
-            1.0f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f
-        )
-
-        animation.duration = BUTTON_ANIMATION_DURATION / 2
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation) {
-                // nothing to do
-            }
-
-            override fun onAnimationEnd(animation: Animation) {
-                if (enabled) {
-                    toggleCameraButton.setImageResource(R.drawable.ic_camera_off)
-                } else {
-                    toggleCameraButton.setImageResource(R.drawable.ic_camera_on)
-                }
-
-                val a: Animation = ScaleAnimation(
-                    0.0f,
-                    1.0f,
-                    1.0f,
-                    1.0f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f
-                )
-                a.duration = BUTTON_ANIMATION_DURATION / 2
-                toggleCameraButton.startAnimation(a)
-            }
-
-            override fun onAnimationRepeat(animation: Animation) {
-                // nothing to do
-            }
-        })
-
-        if (enabled) {
+    private fun updateCameraButtons() {
+        if (currentCall.getCameraEnabled()) {
             toggleFrontCameraButton.visibility = View.VISIBLE
-            val scale: Animation = ScaleAnimation(
-                0f,
-                1f,
-                0f,
-                1f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
-            )
-            scale.duration = BUTTON_ANIMATION_DURATION
-            toggleFrontCameraButton.startAnimation(scale)
+            toggleCameraButton.setImageResource(R.drawable.ic_camera_off)
         } else {
-            val scale: Animation = ScaleAnimation(
-                1f,
-                0f,
-                1f,
-                0f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
-            )
-            scale.duration = BUTTON_ANIMATION_DURATION
-            scale.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {
-                    // nothing to do
-                }
-
-                override fun onAnimationEnd(animation: Animation) {
-                    toggleFrontCameraButton.visibility = View.GONE
-                }
-
-                override fun onAnimationRepeat(animation: Animation) {
-                    // nothing to do
-                }
-            })
-            toggleFrontCameraButton.startAnimation(scale)
+            toggleFrontCameraButton.visibility = View.GONE
+            toggleCameraButton.setImageResource(R.drawable.ic_camera_on)
         }
-
-        toggleCameraButton.startAnimation(animation)
     }
 
     private fun startSensor() {
@@ -869,9 +788,5 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
     override fun onAccuracyChanged(sensor: Sensor, i: Int) {
         // nothing to do
-    }
-
-    companion object {
-        private const val BUTTON_ANIMATION_DURATION = 400L
     }
 }

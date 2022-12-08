@@ -903,12 +903,6 @@ class RTCCall : DataChannel.Observer {
                     return
                 }
 
-                if (binder.getCurrentCall() != null) {
-                    Log.d(this, "call in progress => decline")
-                    decline()
-                    return
-                }
-
                 var contact = binder.getDatabase().contacts.getContactByPublicKey(clientPublicKey)
                 if (contact == null && binder.getDatabase().settings.blockUnknown) {
                     Log.d(this, "block unknown contact => decline")
@@ -942,6 +936,12 @@ class RTCCall : DataChannel.Observer {
                 Log.d(this, "action: $action")
                 when (action) {
                     "call" -> {
+                        if (binder.getCurrentCall() != null) {
+                            Log.d(this, "call in progress => decline")
+                            decline() // TODO: send busy
+                            return
+                        }
+
                         // someone calls us
                         val offer = obj.getString("offer")
 

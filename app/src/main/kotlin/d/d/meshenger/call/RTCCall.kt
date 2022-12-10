@@ -694,6 +694,10 @@ class RTCCall : DataChannel.Observer {
                     }
                 }
 
+                override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+                    Log.d(this, "onConnectionChange: ${newState.name}")
+                }
+
                 override fun onAddStream(mediaStream: MediaStream) {
                     Log.d(this, "onAddStream")
                     super.onAddStream(mediaStream)

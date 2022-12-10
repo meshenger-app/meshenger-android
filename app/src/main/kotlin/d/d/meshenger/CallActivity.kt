@@ -350,6 +350,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 binder = iBinder as MainService.MainBinder
                 currentCall = RTCCall(binder!!, contact)
                 currentCallSet = true
+                binder!!.setCurrentCall(currentCall)
 
                 updateVideoDisplay()
 

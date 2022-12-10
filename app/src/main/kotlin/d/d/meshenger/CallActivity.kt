@@ -754,7 +754,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         currentCall.cleanup()
 
-        binder!!.getEvents().addEvent(contact, callEventType)
+        if (callEventType != Event.Type.UNKNOWN) {
+            binder!!.getEvents().addEvent(contact, callEventType)
+        }
 
         unbindService(connection)
 

@@ -121,6 +121,16 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        val promptOutgoingCalls = settings.promptOutgoingCalls
+        val promptOutgoingCallsCB = findViewById<SwitchMaterial>(R.id.switchPromptOutgoingCalls)
+        promptOutgoingCallsCB.apply {
+            isChecked = promptOutgoingCalls
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.promptOutgoingCalls = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
         val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
         val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
         val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)

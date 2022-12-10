@@ -31,6 +31,7 @@ class Settings {
     var nightMode = false
     var blockUnknown = false
     var useNeighborTable = false
+    var promptOutgoingCalls = false
     var addresses = mutableListOf<String>()
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
@@ -54,6 +55,7 @@ class Settings {
             s.nightMode = obj.getBoolean("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
+            s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
 
             //s.playVideo = obj.getBoolean("play_video")
             //s.playAudio = obj.getBoolean("play_audio")
@@ -96,6 +98,7 @@ class Settings {
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
+            obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
             //obj.put("play_video", s.playVideo)
             //obj.put("play_audio", s.playAudio)
             //obj.put("audio_processing", s.audioProcessing)

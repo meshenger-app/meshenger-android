@@ -47,6 +47,7 @@
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>
     <string name="settings_settings_mode">Settings Mode</string>
+    <string name="settings_prompt_outgoing_calls">Prompt Outgoing Calls</string>
     <string name="settings_speakerphone">Speakerphone</string>
     <string name="settings_video_resolutions">Video Resolutions</string>
     <string name="settings_video_codecs">Video Codecs</string>

@@ -354,7 +354,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
                 updateVideoDisplay()
 
-                acceptButton.performClick() // start call immediately
+                if (!binder!!.getSettings().promptOutgoingCalls) {
+                    // start ougoing call immediately
+                    acceptButton.performClick()
+                }
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {

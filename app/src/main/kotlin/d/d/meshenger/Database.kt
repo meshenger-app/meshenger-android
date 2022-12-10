@@ -181,6 +181,7 @@ class Database() {
 
             if (new_from == "4.0.4") {
                 db.put("use_system_table", false)
+                db.put("prompt_outgoing_calls", false)
                 db.remove("settings_mode")
                 new_from = to
             }

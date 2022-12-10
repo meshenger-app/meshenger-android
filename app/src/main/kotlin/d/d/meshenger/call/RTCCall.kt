@@ -199,14 +199,14 @@ class RTCCall : DataChannel.Observer {
     private fun createOutgoingCall(contact: Contact, offer: String) {
         try {
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-            val socket = createCommSocket(contact)
+            val socket = createCommSocket(contact, 500)
             if (socket == null) {
-                Log.d(this, "cannot establish peerConnection")
-                reportStateChange(CallState.ERROR_CONN)
                 return
-            } else {
-                commSocket = socket
             }
+
+            callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
+            commSocket = socket
+
             val remote_address = socket.remoteSocketAddress as InetSocketAddress
 
             Log.d(this, "outgoing call from remote address: $remote_address")
@@ -229,7 +229,7 @@ class RTCCall : DataChannel.Observer {
                 )
 
                 if (encrypted == null) {
-                    reportStateChange(CallState.ERROR_CRYPTO)
+                    reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
                     return
                 }
 
@@ -247,7 +247,7 @@ class RTCCall : DataChannel.Observer {
                 )
 
                 if (!contact.publicKey.contentEquals(otherPublicKey)) {
-                    reportStateChange(CallState.ERROR_AUTH)
+                    reportStateChange(CallState.ERROR_AUTHENTICATION)
                     return
                 }
 
@@ -269,12 +269,12 @@ class RTCCall : DataChannel.Observer {
                 )
 
                 if (decrypted == null) {
-                    reportStateChange(CallState.ERROR_CRYPTO)
+                    reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
                     return
                 }
 
                 if (!contact.publicKey.contentEquals(otherPublicKey)) {
-                    reportStateChange(CallState.ERROR_AUTH)
+                    reportStateChange(CallState.ERROR_AUTHENTICATION)
                     return
                 }
 
@@ -358,20 +358,62 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    private fun createCommSocket(contact: Contact): Socket? {
+    private fun createCommSocket(contact: Contact, connectionTimeoutMs: Int): Socket? {
         Log.d(this, "createCommSocket")
 
+        Utils.checkIsNotOnMainThread()
+
         val useNeighborTable = binder.getSettings().useNeighborTable
-        val addresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
-        for (address in addresses) {
+
+        var unknownHostException = false
+        var connectException = false
+        var socketTimeoutException = false
+        var exception = false
+
+        for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
             callActivity?.onRemoteAddressChange(address, false)
             Log.d(this, "try address: $address")
 
-            val socket = AddressUtils.establishConnection(address)
-            if (socket != null) {
-                callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
+            val socket = Socket()
+
+            try {
+                socket.connect(address, connectionTimeoutMs)
+                reportStateChange(CallState.CONNECTING)
                 return socket
+            } catch (e: SocketTimeoutException) {
+                // no connection
+                Log.d(this, "socket has thrown SocketTimeoutException")
+                socketTimeoutException = true
+            } catch (e: ConnectException) {
+                // device is online, but does not listen on the given port
+                Log.d(this, "socket has thrown ConnectException")
+                connectException = true
+            } catch (e: UnknownHostException) {
+                // hostname did not resolve
+                Log.d(this, "socket has thrown UnknownHostException")
+                unknownHostException = true
+            } catch (e: Exception) {
+                Log.d(this, "socket has thrown Exception")
+                exception = true
             }
+
+            try {
+                socket.close()
+            } catch (e: Exception) {
+                // ignore
+            }
+        }
+
+        if (connectException) {
+            reportStateChange(CallState.ERROR_CONNECT_PORT)
+        } else if (unknownHostException) {
+            reportStateChange(CallState.ERROR_UNKNOWN_HOST)
+        } else if (exception) {
+            reportStateChange(CallState.ERROR_OTHER)
+        } else if (socketTimeoutException) {
+            reportStateChange(CallState.ERROR_NO_CONNECTION)
+        } else {
+            reportStateChange(CallState.ERROR_NO_ADDRESSES)
         }
 
         return null
@@ -634,7 +676,7 @@ class RTCCall : DataChannel.Observer {
                                 pw.writeMessage(encrypted)
                                 reportStateChange(CallState.CONNECTED)
                             } else {
-                                reportStateChange(CallState.ERROR_CRYPTO)
+                                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
                             }
                             //new Thread(new SpeakerRunnable(commSocket)).start()
                         } catch (e: Exception) {
@@ -744,7 +786,7 @@ class RTCCall : DataChannel.Observer {
                 }
                 reportStateChange(CallState.DISMISSED)
             } else {
-                reportStateChange(CallState.ERROR_CRYPTO)
+                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
             }
         }
     }
@@ -795,7 +837,19 @@ class RTCCall : DataChannel.Observer {
     }
 
     enum class CallState {
-        WAITING, CONNECTING, RINGING, CONNECTED, DISMISSED, ENDED, ERROR_CONN, ERROR_CRYPTO, ERROR_AUTH, ERROR_OTHER
+        WAITING,
+        CONNECTING,
+        RINGING,
+        CONNECTED,
+        DISMISSED,
+        ENDED,
+        ERROR_AUTHENTICATION,
+        ERROR_CRYPTOGRAPHY,
+        ERROR_CONNECT_PORT,
+        ERROR_UNKNOWN_HOST,
+        ERROR_OTHER,
+        ERROR_NO_CONNECTION,
+        ERROR_NO_ADDRESSES
     }
 
     interface CallContext {

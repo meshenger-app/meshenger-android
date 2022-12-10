@@ -92,49 +92,56 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
     override fun onStateChange(state: CallState) {
         runOnUiThread {
-            val isIncoming = (intent.action == "ACTION_INCOMING_CALL")
+            Log.d(this, "onStateChange: $state")
             when (state) {
                 CallState.WAITING -> {
-                    Log.d(this, "onStateChange: WAITING")
                     callStatus.text = getString(R.string.call_waiting)
                 }
                 CallState.CONNECTING -> {
-                    Log.d(this, "onStateChange: CONNECTING")
                     callStatus.text = getString(R.string.call_connecting)
                 }
                 CallState.DISMISSED -> {
-                    Log.d(this, "onStateChange: DISMISSED")
                     callStatus.text = getString(R.string.call_denied)
                     finishDelayed()
                 }
                 CallState.CONNECTED -> {
-                    Log.d(this, "onStateChange: CONNECTED")
                     acceptButton.visibility = View.GONE
                     declineButton.visibility = View.VISIBLE
                     callStatus.text = getString(R.string.call_connected)
-                    onCameraEnabled()
+                    updateCameraButtons()
                 }
                 CallState.RINGING -> {
-                    Log.d(this, "onStateChange: RINGING")
                     callStatus.text = getString(R.string.call_ringing)
                 }
                 CallState.ENDED -> {
-                    Log.d(this, "onStateChange: ENDED")
                     callStatus.text = getString(R.string.call_ended)
                     finishDelayed()
                 }
-                CallState.ERROR_CONN -> {
-                    Log.d(this, "stateChangeCallback: ERROR_CONN")
+                CallState.ERROR_NO_CONNECTION -> {
                     callStatus.text = getString(R.string.call_connection_failed)
                     finishDelayed()
                 }
-                CallState.ERROR_AUTH -> {
-                    Log.d(this, "stateChangeCallback: ERROR_AUTH")
+                CallState.ERROR_AUTHENTICATION -> {
                     callStatus.text = getString(R.string.call_authentication_failed)
                     finishDelayed()
                 }
-                CallState.ERROR_CRYPTO, CallState.ERROR_OTHER -> {
-                    Log.d(this, "onStateChange: ERROR")
+                CallState.ERROR_CRYPTOGRAPHY -> {
+                    callStatus.text = getString(R.string.call_error)
+                    finishDelayed()
+                }
+                CallState.ERROR_CONNECT_PORT -> {
+                    callStatus.text = getString(R.string.call_error_not_listening)
+                    finishDelayed()
+                }
+                CallState.ERROR_NO_ADDRESSES -> {
+                    callStatus.text = getString(R.string.call_error_no_address)
+                    finishDelayed()
+                }
+                CallState.ERROR_UNKNOWN_HOST -> {
+                    callStatus.text = getString(R.string.call_error_unresolved_hostname)
+                    finishDelayed()
+                }
+                CallState.ERROR_OTHER -> {
                     callStatus.text = getString(R.string.call_error)
                     finishDelayed()
                 }

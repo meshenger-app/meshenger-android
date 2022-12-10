@@ -8,7 +8,6 @@ import org.json.JSONException
 import java.util.*
 
 class Settings {
-    var settingsMode = "basic"
     //var playVideo = false
     //var playAudio = false
 
@@ -56,7 +55,6 @@ class Settings {
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
 
-            s.settingsMode = obj.getString("settings_mode")
             //s.playVideo = obj.getBoolean("play_video")
             //s.playAudio = obj.getBoolean("play_audio")
             //s.audioProcessing = obj.getBoolean("audio_processing")
@@ -98,7 +96,6 @@ class Settings {
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
-            obj.put("settings_mode", s.settingsMode)
             //obj.put("play_video", s.playVideo)
             //obj.put("play_audio", s.playAudio)
             //obj.put("audio_processing", s.audioProcessing)

@@ -80,13 +80,13 @@
     <string name="failed_to_export_database">Failed to export database</string>
     <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
     <string name="call_connecting">Calling...</string>
-    <string name="call_connected">Connected.</string>
-    <string name="call_dismissed">Dismissed.</string>
+    <string name="call_connected">Connected</string>
+    <string name="call_dismissed">Dismissed</string>
     <string name="call_denied">Declined</string>
     <string name="call_waiting">Waiting...</string>
     <string name="call_ringing">Ringing...</string>
-    <string name="call_connection_failed">Connection Failed.</string>
-    <string name="call_authentication_failed">Authentication Failed.</string>
+    <string name="call_connection_failed">Connection Failed</string>
+    <string name="call_authentication_failed">Authentication Failed</string>
     <string name="call_ended">Call Ended</string>
     <string name="call_error">Error</string>
     <string name="call_start_or_abort">Start or Abort Call</string>

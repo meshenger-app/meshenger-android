@@ -333,8 +333,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         Log.d(this, "intent: ${intent.action}, state: ${this.lifecycle.currentState}")
 
         when (intent.action) {
-            "ACTION_OUTGOING_CALL" -> createOutgoingCall()
-            "ACTION_INCOMING_CALL" -> createIncomingCall()
+            "ACTION_OUTGOING_CALL" -> initOutgoingCall()
+            "ACTION_INCOMING_CALL" -> initIncomingCall()
             else -> {
                 Log.e(this, "invalid action: ${intent.action}, this should never happen")
                 finish()
@@ -342,7 +342,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private fun createOutgoingCall() {
+    private fun initOutgoingCall() {
         callEventType = Event.Type.OUTGOING_UNKNOWN
         connection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
@@ -397,7 +397,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         startSensor()
     }
 
-    private fun createIncomingCall() {
+    private fun initIncomingCall() {
         callEventType = Event.Type.INCOMING_UNKNOWN
         passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
             PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,

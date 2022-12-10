@@ -44,7 +44,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var passiveWakeLock: WakeLock
 
     private var polledStartInit = true
-    private var active = true
+    private var activityActive = true
     private var callEventType = Event.Type.UNKNOWN
     private var vibrator: Vibrator? = null
     private var ringtone: Ringtone? = null
@@ -768,8 +768,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     }
 
     private fun finishDelayed() {
-        if (active) {
-            active = false
+        if (activityActive) {
+            activityActive = false
             Handler(mainLooper).postDelayed({ finish() }, 2000)
         }
     }

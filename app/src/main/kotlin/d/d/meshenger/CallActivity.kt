@@ -743,6 +743,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     override fun onDestroy() {
         Log.d(this, "onDestroy")
 
+        currentCall.setCallContext(null)
+
         stopRinging()
 
         binder!!.setCurrentCall(null)

@@ -20,11 +20,13 @@ internal object AddressUtils
             socket.connect(address, connectionTimeout)
             return socket
         } catch (e: SocketTimeoutException) {
-            // ignore
+            Log.d(this, "SocketTimeoutException: $address")
         } catch (e: ConnectException) {
             // device is online, but does not listen on the given port
+            Log.d(this, "ConnectException: $address")
         } catch (e: UnknownHostException) {
-            Log.d(this, "unknown host: $address")
+            // hostname did not resolve
+            Log.d(this, "UnknownHostException: $address")
         } catch (e: Exception) {
             e.printStackTrace()
         }

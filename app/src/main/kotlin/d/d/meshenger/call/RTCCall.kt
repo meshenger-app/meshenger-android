@@ -338,6 +338,10 @@ class RTCCall : DataChannel.Observer {
                     }
                 }
 
+                override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+                    Log.d(this, "onConnectionChange: ${newState.name}")
+                }
+
                 override fun onAddStream(mediaStream: MediaStream) {
                     super.onAddStream(mediaStream)
                     handleMediaStream(mediaStream)
@@ -818,15 +822,11 @@ class RTCCall : DataChannel.Observer {
             setCallContext(null)
             setStatsCollector(null)
 
-            //decline_internal()
-
             try {
                 commSocket?.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-            //hangup_internal()
 
             try {
                 peerConnection.close()
@@ -916,6 +916,7 @@ class RTCCall : DataChannel.Observer {
             val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
             val ownSecretKey = binder.getDatabase().settings.secretKey
             val ownPublicKey = binder.getDatabase().settings.publicKey
+
             val decline = {
                 Log.d(this, "declining...")
 

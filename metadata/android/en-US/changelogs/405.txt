@@ -1,3 +1,7 @@
-- add experimental feature to lookup MAC address in the system (ARP/ND) table
-  - disabled by default
+- simplify internal code structures
+- fix some crashes on call start and end
 - improve updates from previous versions
+- add setting to prompt before a call starts
+- remove button animation
+- add experimental feature to lookup MAC address in the system (ARP/ND) table
+- remove ICE Servers setting, no use and not used

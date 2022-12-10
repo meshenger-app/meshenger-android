@@ -90,6 +90,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
+    override fun getContext(): Context {
+        return this.applicationContext
+    }
+
     override fun onStateChange(state: CallState) {
         runOnUiThread {
             Log.d(this, "onStateChange: $state")
@@ -344,11 +348,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 Log.d(this@CallActivity, "onServiceConnected")
                 binder = iBinder as MainService.MainBinder
-                currentCall = RTCCall(
-                    this@CallActivity,
-                    binder!!,
-                    contact
-                )
+                currentCall = RTCCall(binder!!, contact)
                 currentCallSet = true
 
                 updateVideoDisplay()

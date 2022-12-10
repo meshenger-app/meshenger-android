@@ -29,7 +29,6 @@ class RTCCall : DataChannel.Observer {
     private var localVideoSink: ProxyVideoSink? = null
 
     private var videoCapturer: VideoCapturer? = null
-    private var appContext: Context
     private var contact: Contact
     private var ownPublicKey: ByteArray
     private var ownSecretKey: ByteArray
@@ -153,7 +152,6 @@ class RTCCall : DataChannel.Observer {
 
     // called for incoming calls
     constructor(
-        appContext: Context,
         binder: MainService.MainBinder,
         contact: Contact,
         commSocket: Socket?,
@@ -161,7 +159,6 @@ class RTCCall : DataChannel.Observer {
     ) {
         Log.d(this, "RTCCall created for incoming calls")
 
-        this.appContext = appContext
         this.contact = contact
         this.commSocket = commSocket
         this.binder = binder
@@ -179,13 +176,11 @@ class RTCCall : DataChannel.Observer {
 
     // called for outgoing calls
     constructor(
-        appContext: Context,
         binder: MainService.MainBinder,
         contact: Contact
     ) {
         Log.d(this, "RTCCall created for outgoing calls")
 
-        this.appContext = appContext
         this.contact = contact
         this.commSocket = null
         this.binder = binder
@@ -545,7 +540,7 @@ class RTCCall : DataChannel.Observer {
             val surfaceTextureHelper =
                 SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
             val videoSource = factory.createVideoSource(videoCapturer!!.isScreencast)
-            videoCapturer!!.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
+            videoCapturer!!.initialize(surfaceTextureHelper, callActivity!!.getContext(), videoSource.capturerObserver)
 
             val localVideoTrack = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource)
             localVideoTrack.addSink(localVideoSink)
@@ -583,7 +578,7 @@ class RTCCall : DataChannel.Observer {
 
         // must be created in Main/GUI Thread!
         PeerConnectionFactory.initialize(
-            PeerConnectionFactory.InitializationOptions.builder(appContext)
+            PeerConnectionFactory.InitializationOptions.builder(callActivity!!.getContext())
                 .setEnableInternalTracer(true)
                 .createInitializationOptions()
         )
@@ -872,7 +867,9 @@ class RTCCall : DataChannel.Observer {
         fun onMicrophoneEnabled(enabled: Boolean)
         fun onCameraEnabled()
         fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean)
+
         fun showTextMessage(message: String)
+        fun getContext(): Context
     }
 
     class ProxyVideoSink : VideoSink {
@@ -1030,7 +1027,7 @@ class RTCCall : DataChannel.Observer {
 
                         // TODO: keep ringing to keep socket open until resolved
                         val service = binder.getService()
-                        val currentCall = RTCCall(service, binder, contact, socket, offer)
+                        val currentCall = RTCCall(binder, contact, socket, offer)
                         binder.setCurrentCall(currentCall)
                         val intent = Intent(service, CallActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

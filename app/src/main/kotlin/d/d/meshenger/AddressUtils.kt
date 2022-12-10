@@ -45,6 +45,8 @@ internal object AddressUtils
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
 
+        Utils.checkIsNotOnMainThread()
+
         val lastWorkingAddress = contact.lastWorkingAddress
         if (lastWorkingAddress != null) {
             addresses.add(lastWorkingAddress)

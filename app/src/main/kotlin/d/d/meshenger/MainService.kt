@@ -246,8 +246,10 @@ class MainService : Service(), Runnable {
             while (run) {
                 try {
                     val socket = server!!.accept()
-                    Log.d(this, "new incoming connection")
-                    Thread { RTCCall.createIncomingCall(binder, socket) }.start()
+                    Thread {
+                        Log.d(this, "new incoming connection")
+                        RTCCall.createIncomingCall(binder, socket)
+                    }.start()
                 } catch (e: IOException) {
                     // ignore
                 }

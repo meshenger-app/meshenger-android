@@ -301,26 +301,27 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun applySettingsMode(settingsMode: String) {
+        val basicSettingsLayout = findViewById<View>(R.id.basicSettingsLayout)
+        val advancedSettingsLayout = findViewById<View>(R.id.advancedSettingsLayout)
+        val expertSettingsLayout = findViewById<View>(R.id.expertSettingsLayout)
+
         when (settingsMode) {
             "basic" -> {
-                findViewById<View>(R.id.basicSettingsLayout).visibility = View.VISIBLE
-                findViewById<View>(R.id.advancedSettingsLayout).visibility = View.INVISIBLE
-                findViewById<View>(R.id.expertSettingsLayout).visibility = View.INVISIBLE
+                basicSettingsLayout.visibility = View.VISIBLE
+                advancedSettingsLayout.visibility = View.INVISIBLE
+                expertSettingsLayout.visibility = View.INVISIBLE
             }
             "advanced" -> {
-                findViewById<View>(R.id.basicSettingsLayout).visibility = View.VISIBLE
-                findViewById<View>(R.id.advancedSettingsLayout).visibility = View.VISIBLE
-                findViewById<View>(R.id.expertSettingsLayout).visibility = View.INVISIBLE
+                basicSettingsLayout.visibility = View.VISIBLE
+                advancedSettingsLayout.visibility = View.VISIBLE
+                expertSettingsLayout.visibility = View.INVISIBLE
             }
             "expert" -> {
-                findViewById<View>(R.id.basicSettingsLayout).visibility = View.VISIBLE
-                findViewById<View>(R.id.advancedSettingsLayout).visibility = View.VISIBLE
-                findViewById<View>(R.id.expertSettingsLayout).visibility = View.VISIBLE
+                basicSettingsLayout.visibility = View.VISIBLE
+                advancedSettingsLayout.visibility = View.VISIBLE
+                expertSettingsLayout.visibility = View.VISIBLE
             }
-            else -> Log.e(
-                ContentValues.TAG,
-                "Invalid settings mode: $settingsMode"
-            )
+            else -> Log.e(this, "Invalid settings mode: $settingsMode")
         }
     }
 

@@ -1016,14 +1016,18 @@ class RTCCall : DataChannel.Observer {
                         pw.writeMessage(encrypted)
 
                         // TODO: keep ringing to keep socket open until resolved
-                        val service = binder.getService()
                         val currentCall = RTCCall(binder, contact, socket, offer)
-                        binder.setCurrentCall(currentCall)
-                        val intent = Intent(service, CallActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        intent.action = "ACTION_INCOMING_CALL"
-                        intent.putExtra("EXTRA_CONTACT", contact)
-                        service.startActivity(intent)
+                        try {
+                            val service = binder.getService()
+                            binder.setCurrentCall(currentCall)
+                            val intent = Intent(service, CallActivity::class.java)
+                            intent.action = "ACTION_INCOMING_CALL"
+                            intent.putExtra("EXTRA_CONTACT", contact)
+                            service.startActivity(intent)
+                        } catch (e: Exception) {
+                            binder.setCurrentCall(null)
+                            e.printStackTrace()
+                        }
                         return
                     }
                     "ping" -> {

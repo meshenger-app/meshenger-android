@@ -86,7 +86,7 @@
                 android:id="@+id/callStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/call_waiting"
+                android:text="@string/call_start_or_abort"
                 android:textColor="?attr/secondaryTextColor"
                 android:textSize="20sp" />
 

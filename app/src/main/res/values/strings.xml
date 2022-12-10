@@ -41,7 +41,6 @@
     <string name="settings_addresses">Addresses</string>
     <string name="settings_password">Password</string>
     <string name="settings_change_password">Change Password</string>
-    <string name="settings_ice_servers">ICE Servers</string>
     <string name="settings_use_neighbor_table">Use Neighbor Table (ARP/ND)</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
@@ -78,7 +77,6 @@
     <string name="empty_list_item">Empty</string>
     <string name="database_wrong_password">Wrong database password</string>
     <string name="failed_to_export_database">Failed to export database</string>
-    <string name="set_ice_servers_description">Set public ICE servers that help to traverse network boundaries.</string>
     <string name="call_connecting">Calling...</string>
     <string name="call_connected">Connected</string>
     <string name="call_dismissed">Dismissed</string>

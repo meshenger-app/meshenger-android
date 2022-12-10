@@ -32,7 +32,6 @@ class RTCCall : DataChannel.Observer {
     private var contact: Contact
     private var ownPublicKey: ByteArray
     private var ownSecretKey: ByteArray
-    private var iceServers = mutableListOf<IceServer>()
     private var callActivity: CallContext? = null
     private lateinit var eglBase: EglBase
     private var binder: MainService.MainBinder
@@ -166,11 +165,6 @@ class RTCCall : DataChannel.Observer {
         this.ownSecretKey = binder.getSettings().secretKey
         this.offer = offer
 
-        // usually empty
-        for (server in binder.getSettings().iceServers) {
-            iceServers.add(IceServer.builder(server).createIceServer())
-        }
-
         createMediaConstraints()
     }
 
@@ -186,11 +180,6 @@ class RTCCall : DataChannel.Observer {
         this.binder = binder
         this.ownPublicKey = binder.getSettings().publicKey
         this.ownSecretKey = binder.getSettings().secretKey
-
-        // usually empty
-        for (server in binder.getSettings().iceServers) {
-            iceServers.add(IceServer.builder(server).createIceServer())
-        }
 
         createMediaConstraints()
     }

@@ -38,7 +38,6 @@
     <string name="settings_addresses">Endereços</string>
     <string name="settings_password">Senha</string>
     <string name="settings_change_password">Mudar senha</string>
-    <string name="settings_ice_servers">Servidores ICE</string>
     <string name="settings_nightmode">Modo escuro</string>
     <string name="settings_block_unknown">Bloqueie ligações desconhecidas</string>
     <string name="settings_ignore_battery_optimizations">Ignore otimizações da bateria</string>
@@ -73,7 +72,6 @@
     <string name="empty_list_item">Nada aqui</string>
     <string name="database_wrong_password">Senha da base de dados incorreta</string>
     <string name="failed_to_export_database">Falha ao exportar base de dados</string>
-    <string name="set_ice_servers_description">Defina servidores públicos ICE que ajudam a atravessar os limites da rede.</string>
     <string name="call_connecting">Chamando...</string>
     <string name="call_connected">Conectado.</string>
     <string name="call_dismissed">Ignorado.</string>

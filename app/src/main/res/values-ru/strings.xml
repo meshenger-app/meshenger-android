@@ -27,7 +27,6 @@
     <string name="settings_name">Изменить имя</string>
     <string name="settings_addresses">Изменить адрес</string>
     <string name="settings_password">Изменить пароль</string>
-    <string name="settings_ice_servers">Изменить ICE сервера</string>
     <string name="settings_nightmode">Ночной режим</string>
     <string name="settings_block_unknown">Блокировать неизвестных абонентов</string>
     <string name="settings_ignore_battery_optimizations">Игнорировать оптимизацию батареи</string>
@@ -51,7 +50,6 @@
     <string name="permission_mic">Разрешение микрофона, необходимое для совершения звонков</string>
     <string name="hello">Привет!</string>
     <string name="empty_list_item">Пусто</string>
-    <string name="set_ice_servers_description">Установите общедоступные серверы ICE, которые помогают пересекать границы сети.</string>
     <string name="call_connected">Соединено</string>
     <string name="call_denied">Отклонено</string>
     <string name="call_ringing">Звонит...</string>

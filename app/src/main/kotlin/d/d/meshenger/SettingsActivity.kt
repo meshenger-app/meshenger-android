@@ -67,7 +67,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         findViewById<View>(R.id.nameLayout).setOnClickListener { showChangeNameDialog() }
         findViewById<View>(R.id.passwordLayout).setOnClickListener { showChangePasswordDialog() }
-        findViewById<View>(R.id.iceServersLayout).setOnClickListener { showChangeIceServersDialog() }
         findViewById<View>(R.id.addressLayout).setOnClickListener {
             val intent = Intent(this, AddressActivity::class.java)
             startActivity(intent)
@@ -84,10 +83,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val password = binder!!.getService().database_password
         (findViewById<View>(R.id.passwordTv) as TextView).text =
             if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
-
-        val iceServers = settings.iceServers
-        (findViewById<View>(R.id.iceServersTv) as TextView).text =
-            if (iceServers.isEmpty()) getString(R.string.none) else iceServers.joinToString()
 
         val blockUnknown = settings.blockUnknown
         val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
@@ -278,27 +273,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             binder!!.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()
-            dialog.cancel()
-        }
-        abortButton.setOnClickListener { dialog.cancel() }
-        dialog.show()
-    }
-
-    private fun showChangeIceServersDialog() {
-        val settings = binder!!.getSettings()
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_set_ice_server)
-        val iceServersTextView = dialog.findViewById<TextView>(R.id.iceServersEditText)
-        val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
-        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
-        iceServersTextView.text = settings.iceServers.joinToString()
-        saveButton.setOnClickListener {
-            val iceServers = ArrayList<String>()
-            Utils.split(iceServersTextView.text.toString()).let {
-                iceServers.addAll(it)
-            }
-            settings.iceServers = iceServers
-            Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }
         abortButton.setOnClickListener { dialog.cancel() }

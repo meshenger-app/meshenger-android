@@ -34,9 +34,6 @@ class Settings {
     var promptOutgoingCalls = false
     var addresses = mutableListOf<String>()
 
-    // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
-    var iceServers = mutableListOf<String>()
-
     fun getOwnContact(): Contact {
         return Contact(username, publicKey, addresses)
     }
@@ -82,11 +79,6 @@ class Settings {
             }
             s.addresses = addresses.toMutableList()
 
-            val iceServers = obj.getJSONArray("ice_servers")
-            for (i in 0 until iceServers.length()) {
-                s.iceServers.add(iceServers.getString(i))
-            }
-
             return s
         }
 
@@ -111,12 +103,6 @@ class Settings {
                 addresses.put(s.addresses[i])
             }
             obj.put("addresses", addresses)
-
-            val iceServers = JSONArray()
-            for (i in s.iceServers.indices) {
-                iceServers.put(s.iceServers[i])
-            }
-            obj.put("ice_servers", iceServers)
 
             return obj
         }

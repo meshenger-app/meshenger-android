@@ -183,6 +183,7 @@ class Database() {
                 db.put("use_system_table", false)
                 db.put("prompt_outgoing_calls", false)
                 db.remove("settings_mode")
+                db.remove("ice_servers")
                 new_from = to
             }
 

@@ -14,6 +14,7 @@ import java.net.Socket
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
 class RTCCall : DataChannel.Observer {
@@ -61,7 +62,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "setCameraEnabled")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "setCameraEnabled() executor start")
             if (videoCapturer == null) {
                 Log.w(this, "setCameraEnabled no ready to be called => ignore")
@@ -108,6 +109,15 @@ class RTCCall : DataChannel.Observer {
                 e.printStackTrace()
             }
             Log.d(this, "setCameraEnabled() executor end")
+        }
+    }
+
+    private fun execute(r: Runnable) {
+        try {
+            executor.execute(r)
+        } catch (e: RejectedExecutionException) {
+            // can happen when the executor has shut down
+            Log.w(this, "got RejectedExecutionException")
         }
     }
 
@@ -307,7 +317,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "initOutgoing")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "initOutgoing() executor start")
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
@@ -319,7 +329,9 @@ class RTCCall : DataChannel.Observer {
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         Log.d(this, "outgoing call: send offer")
-                        createOutgoingCall(contact, peerConnection.localDescription.description)
+                        execute {
+                            createOutgoingCall(contact, peerConnection.localDescription.description)
+                        }
                     }
                 }
 
@@ -484,7 +496,7 @@ class RTCCall : DataChannel.Observer {
     private fun handleMediaStream(stream: MediaStream) {
         Log.d(this, "handleMediaStream")
 
-        executor.execute {
+        execute {
             Log.d(this, "handleMediaStream() executor start")
             if (remoteVideoSink == null || stream.videoTracks.size == 0) {
                 return@execute
@@ -555,7 +567,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "setMicrophoneEnabled: $enabled")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "setMicrophoneEnabled() executor start")
             isMicrophoneEnabled = enabled
             localAudioTrack?.setEnabled(enabled)
@@ -623,7 +635,7 @@ class RTCCall : DataChannel.Observer {
             statsTimer = Timer()
             statsTimer.schedule(object : TimerTask() {
                 override fun run() {
-                    executor.execute {
+                    execute {
                         Log.d(this, "setStatsCollector() executor start")
                         try {
                             peerConnection.getStats(statsCollector)
@@ -649,7 +661,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "initIncoming")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "initIncoming() executor start")
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
@@ -757,7 +769,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "hangup")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "hangup() executor start")
             hangup_internal()
             Log.d(this, "hangup() executor end")
@@ -795,7 +807,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "decline")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "decline() executor start")
             decline_internal()
             Log.d(this, "decline() executor end")
@@ -806,7 +818,7 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "cleanup")
         Utils.checkIsOnMainThread()
 
-        executor.execute {
+        execute {
             Log.d(this, "cleanup() executor start")
             setCallContext(null)
             setStatsCollector(null)

@@ -94,9 +94,41 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         return this.applicationContext
     }
 
+    var callWasStarted = false
+
     override fun onStateChange(state: CallState) {
         runOnUiThread {
             Log.d(this, "onStateChange: $state")
+            val isIncoming = (intent.action == "ACTION_INCOMING_CALL")
+
+            val handleError = { messageId: Int ->
+                callStatus.text = getString(messageId)
+                callEventType = if (isIncoming) {
+                    Event.Type.INCOMING_ERROR
+                } else {
+                    Event.Type.OUTGOING_ERROR
+                }
+                finishDelayed()
+            }
+
+            val handleExit = { messageId: Int ->
+                callStatus.text = getString(messageId)
+                callEventType = if (callWasStarted) {
+                    if (isIncoming) {
+                        Event.Type.INCOMING_ACCEPTED
+                    } else {
+                        Event.Type.OUTGOING_ACCEPTED
+                    }
+                } else {
+                    if (isIncoming) {
+                        Event.Type.INCOMING_MISSED
+                    } else {
+                        Event.Type.OUTGOING_MISSED
+                    }
+                }
+                finishDelayed()
+            }
+
             when (state) {
                 CallState.WAITING -> {
                     callStatus.text = getString(R.string.call_waiting)
@@ -104,50 +136,45 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 CallState.CONNECTING -> {
                     callStatus.text = getString(R.string.call_connecting)
                 }
-                CallState.DISMISSED -> {
-                    callStatus.text = getString(R.string.call_denied)
-                    finishDelayed()
+                CallState.RINGING -> {
+                    callStatus.text = getString(R.string.call_ringing)
                 }
                 CallState.CONNECTED -> {
+                    // call started
                     acceptButton.visibility = View.GONE
                     declineButton.visibility = View.VISIBLE
                     callStatus.text = getString(R.string.call_connected)
                     updateCameraButtons()
+                    callWasStarted = true
                 }
-                CallState.RINGING -> {
-                    callStatus.text = getString(R.string.call_ringing)
+                CallState.DISMISSED -> {
+                    // call did not start
+                    handleExit(R.string.call_denied)
                 }
                 CallState.ENDED -> {
-                    callStatus.text = getString(R.string.call_ended)
-                    finishDelayed()
+                    // normal call end
+                    handleExit(R.string.call_ended)
                 }
                 CallState.ERROR_NO_CONNECTION -> {
-                    callStatus.text = getString(R.string.call_connection_failed)
-                    finishDelayed()
+                    handleError(R.string.call_connection_failed)
                 }
                 CallState.ERROR_AUTHENTICATION -> {
-                    callStatus.text = getString(R.string.call_authentication_failed)
-                    finishDelayed()
+                    handleError(R.string.call_authentication_failed)
                 }
                 CallState.ERROR_CRYPTOGRAPHY -> {
-                    callStatus.text = getString(R.string.call_error)
-                    finishDelayed()
+                    handleError(R.string.call_error)
                 }
                 CallState.ERROR_CONNECT_PORT -> {
-                    callStatus.text = getString(R.string.call_error_not_listening)
-                    finishDelayed()
+                    handleError(R.string.call_error_not_listening)
                 }
                 CallState.ERROR_NO_ADDRESSES -> {
-                    callStatus.text = getString(R.string.call_error_no_address)
-                    finishDelayed()
+                    handleError(R.string.call_error_no_address)
                 }
                 CallState.ERROR_UNKNOWN_HOST -> {
-                    callStatus.text = getString(R.string.call_error_unresolved_hostname)
-                    finishDelayed()
+                    handleError(R.string.call_error_unresolved_hostname)
                 }
                 CallState.ERROR_OTHER -> {
-                    callStatus.text = getString(R.string.call_error)
-                    finishDelayed()
+                    handleError(R.string.call_error)
                 }
             }
         }
@@ -343,7 +370,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     }
 
     private fun initOutgoingCall() {
-        callEventType = Event.Type.OUTGOING_UNKNOWN
         connection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 Log.d(this@CallActivity, "onServiceConnected")
@@ -389,7 +415,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         val declineListener = View.OnClickListener {
             currentCall.hangup()
-            callEventType = Event.Type.OUTGOING_DECLINED
             finish()
         }
 
@@ -402,7 +427,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     }
 
     private fun initIncomingCall() {
-        callEventType = Event.Type.INCOMING_UNKNOWN
         passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
             PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
             "meshenger:wakeup"
@@ -437,7 +461,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 passiveWakeLock.release()
             }
 
-            callEventType = Event.Type.INCOMING_DECLINED
             finish()
         }
 
@@ -452,7 +475,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 passiveWakeLock.release()
             }
 
-            callEventType = Event.Type.INCOMING_ACCEPTED
             finish()
         }
 

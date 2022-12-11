@@ -11,8 +11,14 @@ class Event(
 ) {
     enum class Type {
         UNKNOWN,
-        OUTGOING_UNKNOWN, OUTGOING_ACCEPTED, OUTGOING_DECLINED, OUTGOING_MISSED, OUTGOING_ERROR,
-        INCOMING_UNKNOWN, INCOMING_ACCEPTED, INCOMING_DECLINED, INCOMING_MISSED, INCOMING_ERROR
+
+        INCOMING_ACCEPTED, // call was successful
+        INCOMING_MISSED, // call did not start
+        INCOMING_ERROR, // some error happened
+
+        OUTGOING_ACCEPTED, // call was successful
+        OUTGOING_MISSED, // call did not start
+        OUTGOING_ERROR // some error happened
     }
 
     fun createUnknownContact(name: String): Contact {
@@ -35,54 +41,34 @@ class Event(
     }
 
     fun isMissedCall(): Boolean {
-        return when (type) {
-                Type.UNKNOWN -> false
-                Type.OUTGOING_UNKNOWN -> false
-                Type.OUTGOING_ACCEPTED -> false
-                Type.OUTGOING_DECLINED -> false
-                Type.OUTGOING_MISSED -> false
-                Type.OUTGOING_ERROR -> false
-                Type.INCOMING_UNKNOWN -> true
-                Type.INCOMING_ACCEPTED -> false
-                Type.INCOMING_DECLINED -> true
-                Type.INCOMING_MISSED -> true
-                Type.INCOMING_ERROR -> true
-            }
+        return type == Type.INCOMING_MISSED || type == Type.OUTGOING_MISSED
     }
 
     companion object {
         private fun eventTypeToString(value: Type): String {
             return when (value) {
                 Type.UNKNOWN -> "UNKNOWN"
-                Type.OUTGOING_UNKNOWN -> "OUTGOING_UNKNOWN"
-                Type.OUTGOING_ACCEPTED -> "OUTGOING_ACCEPTED"
-                Type.OUTGOING_DECLINED -> "OUTGOING_DECLINED"
-                Type.OUTGOING_MISSED -> "OUTGOING_MISSED"
-                Type.OUTGOING_ERROR -> "OUTGOING_ERROR"
-                Type.INCOMING_UNKNOWN -> "INCOMING_UNKNOWN"
                 Type.INCOMING_ACCEPTED -> "INCOMING_ACCEPTED"
-                Type.INCOMING_DECLINED -> "INCOMING_DECLINED"
                 Type.INCOMING_MISSED -> "INCOMING_MISSED"
                 Type.INCOMING_ERROR -> "INCOMING_ERROR"
+                Type.OUTGOING_ACCEPTED -> "OUTGOING_ACCEPTED"
+                Type.OUTGOING_MISSED -> "OUTGOING_MISSED"
+                Type.OUTGOING_ERROR -> "OUTGOING_ERROR"
             }
         }
 
         private fun eventTypeFromString(value: String): Type {
             return when (value) {
                 "UNKNOWN" -> Type.UNKNOWN
-                "OUTGOING_UNKNOWN" -> Type.OUTGOING_UNKNOWN
-                "OUTGOING_ACCEPTED" -> Type.OUTGOING_ACCEPTED
-                "OUTGOING_DECLINED" -> Type.OUTGOING_DECLINED
-                "OUTGOING_MISSED" -> Type.OUTGOING_MISSED
-                "OUTGOING_ERROR" -> Type.OUTGOING_ERROR
-                "INCOMING_UNKNOWN" -> Type.INCOMING_UNKNOWN
                 "INCOMING_ACCEPTED" -> Type.INCOMING_ACCEPTED
-                "INCOMING_DECLINED" -> Type.INCOMING_DECLINED
                 "INCOMING_MISSED" -> Type.INCOMING_MISSED
                 "INCOMING_ERROR" -> Type.INCOMING_ERROR
+                "OUTGOING_ACCEPTED" -> Type.OUTGOING_ACCEPTED
+                "OUTGOING_MISSED" -> Type.OUTGOING_MISSED
+                "OUTGOING_ERROR" -> Type.OUTGOING_ERROR
                 else -> {
                     Log.w(this, "Invalid call event type: $value")
-                    Type.OUTGOING_UNKNOWN
+                    Type.UNKNOWN
                 }
             }
         }

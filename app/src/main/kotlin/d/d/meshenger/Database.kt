@@ -185,6 +185,23 @@ class Database() {
                 db.put("prompt_outgoing_calls", false)
                 db.remove("settings_mode")
                 db.remove("ice_servers")
+
+                val eventsObject = db.getJSONObject("events")
+                val eventsArray = eventsObject.getJSONArray("entries")
+                for (i in 0 until eventsArray.length()) {
+                    val eventObject = eventsArray.getJSONObject(i)
+                    val oldType = eventObject.getString("type")
+                    val newType = when (oldType) {
+                        "OUTGOING_UNKNOWN" -> "UNKNOWN"
+                        "INCOMING_UNKNOWN" -> "UNKNOWN"
+                        "OUTGOING_DECLINED" -> "OUTGOING_ACCEPTED"
+                        "INCOMING_DECLINED" -> "INCOMING_ACCEPTED"
+                        else -> oldType
+                    }
+
+                    eventObject.put("type", newType)
+                }
+
                 new_from = to
             }
 

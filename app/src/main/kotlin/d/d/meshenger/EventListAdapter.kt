@@ -69,14 +69,10 @@ internal class EventListAdapter(
         val type_iv = view.findViewById<ImageView>(R.id.call_type)
         when (event.type) {
             Event.Type.UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
-            Event.Type.INCOMING_UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
             Event.Type.INCOMING_ACCEPTED -> type_iv.setImageResource(R.drawable.ic_incoming_call_accepted)
-            Event.Type.INCOMING_DECLINED -> type_iv.setImageResource(R.drawable.ic_incoming_call_declined)
             Event.Type.INCOMING_MISSED -> type_iv.setImageResource(R.drawable.ic_incoming_call_missed)
             Event.Type.INCOMING_ERROR -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
-            Event.Type.OUTGOING_UNKNOWN -> type_iv.setImageResource(R.drawable.ic_incoming_call_error)
             Event.Type.OUTGOING_ACCEPTED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_accepted)
-            Event.Type.OUTGOING_DECLINED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_declined)
             Event.Type.OUTGOING_MISSED -> type_iv.setImageResource(R.drawable.ic_outgoing_call_missed)
             Event.Type.OUTGOING_ERROR -> type_iv.setImageResource(R.drawable.ic_outgoing_call_error)
         }

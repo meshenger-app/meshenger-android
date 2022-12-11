@@ -587,6 +587,38 @@
                     android:layout_marginBottom="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
+                <LinearLayout
+                    android:id="@+id/connectTimeoutLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_20"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_connect_timeout"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <TextView
+                        android:id="@+id/connectTimeoutTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/options_text_size" />
+
+                </LinearLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
+                    app:dividerColor="@color/light_grey" />
+
                 <RelativeLayout
                     android:id="@+id/useNeighborTableLayout"
                     android:layout_width="match_parent"

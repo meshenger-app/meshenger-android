@@ -193,7 +193,8 @@ class RTCCall : DataChannel.Observer {
     private fun createOutgoingCall(contact: Contact, offer: String) {
         try {
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-            val socket = createCommSocket(contact, 500)
+
+            val socket = createCommSocket(contact)
             if (socket == null) {
                 return
             }
@@ -358,12 +359,14 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    private fun createCommSocket(contact: Contact, connectionTimeoutMs: Int): Socket? {
+    private fun createCommSocket(contact: Contact): Socket? {
         Log.d(this, "createCommSocket")
 
         Utils.checkIsNotOnMainThread()
 
-        val useNeighborTable = binder.getSettings().useNeighborTable
+        val settings = binder.getSettings()
+        val useNeighborTable = settings.useNeighborTable
+        val connectTimeout = settings.connectTimeout
 
         var unknownHostException = false
         var connectException = false
@@ -377,7 +380,7 @@ class RTCCall : DataChannel.Observer {
             val socket = Socket()
 
             try {
-                socket.connect(address, connectionTimeoutMs)
+                socket.connect(address, connectTimeout)
                 reportStateChange(CallState.CONNECTING)
                 return socket
             } catch (e: SocketTimeoutException) {

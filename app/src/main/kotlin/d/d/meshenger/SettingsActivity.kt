@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import d.d.meshenger.MainService.MainBinder
+import java.lang.Integer.parseInt
 import java.util.*
 
 class SettingsActivity : BaseActivity(), ServiceConnection {
@@ -115,6 +116,9 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 }
             }
         }
+
+        findViewById<TextView>(R.id.connectTimeoutTv).text = "${settings.connectTimeout}"
+        findViewById<View>(R.id.connectTimeoutLayout).setOnClickListener { showChangeConnectTimeoutDialog() }
 
         val promptOutgoingCalls = settings.promptOutgoingCalls
         val promptOutgoingCallsCB = findViewById<SwitchMaterial>(R.id.switchPromptOutgoingCalls)
@@ -255,6 +259,38 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
             .setNegativeButton(resources.getText(R.string.cancel), null)
             .show()
+    }
+
+    private fun showChangeConnectTimeoutDialog() {
+        val settings = binder!!.getSettings()
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_connect_timeout)
+        val connectTimeoutEditText = dialog.findViewById<TextView>(R.id.connectTimeoutEditText)
+        val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
+        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
+        connectTimeoutEditText.text = "${settings.connectTimeout}"
+        saveButton.setOnClickListener {
+            var connectTimeout = -1
+            val text = connectTimeoutEditText.text.toString()
+            try {
+                connectTimeout = parseInt(text)
+            } catch (e: Exception) {
+                // ignore
+            }
+
+            if (connectTimeout in 20..4000) {
+                settings.connectTimeout = connectTimeout
+                binder!!.saveDatabase()
+                initViews()
+                Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@SettingsActivity, R.string.invalid_timeout, Toast.LENGTH_SHORT).show()
+            }
+
+            dialog.cancel()
+        }
+        abortButton.setOnClickListener { dialog.cancel() }
+        dialog.show()
     }
 
     private fun showChangePasswordDialog() {

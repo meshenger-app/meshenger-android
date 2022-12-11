@@ -135,17 +135,18 @@ class MainService : Service(), Runnable {
     }
 
     private fun createCommSocket(contact: Contact): Socket? {
-        val useNeighborTable = binder.getSettings().useNeighborTable
-        val addresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
-        Log.d(this, "addresses to try: " + addresses.joinToString())
+        val settings = binder.getSettings()
+        val useNeighborTable = settings.useNeighborTable
+        val connectTimeout = settings.connectTimeout
 
-        for (address in addresses) {
+        for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
             Log.d(this, "try address: $address")
-            val socket = AddressUtils.establishConnection(address)
+            val socket = AddressUtils.establishConnection(address, connectTimeout)
             if (socket != null) {
                 return socket
             }
         }
+
         return null
     }
 

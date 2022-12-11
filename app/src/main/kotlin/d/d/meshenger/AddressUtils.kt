@@ -11,8 +11,7 @@ import kotlin.experimental.xor
 
 internal object AddressUtils
 {
-    fun establishConnection(address: InetSocketAddress): Socket? {
-        val connectionTimeout = 500
+    fun establishConnection(address: InetSocketAddress, connectionTimeout: Int = 500): Socket? {
         val socket = Socket()
 
         try {

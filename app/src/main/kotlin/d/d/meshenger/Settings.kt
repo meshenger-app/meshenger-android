@@ -32,6 +32,7 @@ class Settings {
     var blockUnknown = false
     var useNeighborTable = false
     var promptOutgoingCalls = false
+    var connectTimeout = 500
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -52,6 +53,7 @@ class Settings {
             s.nightMode = obj.getBoolean("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
+            s.connectTimeout = obj.getInt("connect_timeout")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
 
             //s.playVideo = obj.getBoolean("play_video")
@@ -90,6 +92,7 @@ class Settings {
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
+            obj.put("connect_timeout", s.connectTimeout)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
             //obj.put("play_video", s.playVideo)
             //obj.put("play_audio", s.playAudio)

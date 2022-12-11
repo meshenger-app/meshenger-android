@@ -282,7 +282,7 @@ class RTCCall : DataChannel.Observer {
                         // contact accepted receiving call
                     }
                     "dismissed" -> {
-                        Log.d(this, "outgoing call:dismissed")
+                        Log.d(this, "outgoing call: dismissed")
                         reportStateChange(CallState.DISMISSED)
                     }
                     else -> {
@@ -321,7 +321,7 @@ class RTCCall : DataChannel.Observer {
                 }
 
                 override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {
-                    Log.d(this, "onIceConnectionChange " + iceConnectionState.name)
+                    Log.d(this, "onIceConnectionChange ${iceConnectionState.name}")
                     super.onIceConnectionChange(iceConnectionState)
                     if (iceConnectionState == IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED)
@@ -690,7 +690,7 @@ class RTCCall : DataChannel.Observer {
                 }
 
                 override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {
-                    Log.d(this, "onIceConnectionChange")
+                    Log.d(this, "onIceConnectionChange: ${iceConnectionState.name}")
                     super.onIceConnectionChange(iceConnectionState)
                     if (iceConnectionState == IceConnectionState.DISCONNECTED) {
                         reportStateChange(CallState.ENDED)

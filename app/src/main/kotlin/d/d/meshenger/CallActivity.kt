@@ -195,7 +195,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             showPipView(isRemoteVideoAvailable && showPipEnabled)
             showFullscreenView(isLocalVideoAvailable)
 
-            // video availabe for pip
+            // video available for pip
             setPipButtonEnabled(isRemoteVideoAvailable)
         } else {
             // default (local video in pip, remote video in fullscreen)
@@ -381,7 +381,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 updateVideoDisplay()
 
                 if (!binder!!.getSettings().promptOutgoingCalls) {
-                    // start ougoing call immediately
+                    // start outgoing call immediately
                     acceptButton.performClick()
                 }
             }

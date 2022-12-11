@@ -1,5 +1,7 @@
 - simplify internal code structures
 - fix some crashes on call start and end
+- rework call event types
+- make connect timeout configurable
 - improve updates from previous versions
 - add setting to prompt before a call starts
 - remove button animation

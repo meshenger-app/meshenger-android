@@ -58,10 +58,13 @@ class MainActivity : BaseActivity(), ServiceConnection {
         viewPager = findViewById(R.id.container)
         viewPager.adapter = ViewPagerFragmentAdapter(this)
 
+        instance = this
+
         bindService(Intent(this, MainService::class.java), this, 0)
     }
 
     override fun onDestroy() {
+        instance = null
         super.onDestroy()
         unbindService(this)
     }
@@ -218,5 +221,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     companion object {
         private var address_warning_shown = false
+        public var instance: MainActivity? = null
     }
 }

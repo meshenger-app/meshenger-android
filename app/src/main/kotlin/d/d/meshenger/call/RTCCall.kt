@@ -1,7 +1,9 @@
 package d.d.meshenger.call
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.Lifecycle
 import d.d.meshenger.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -1025,12 +1027,23 @@ class RTCCall : DataChannel.Observer {
                         // TODO: keep ringing to keep socket open until resolved
                         val currentCall = RTCCall(binder, contact, socket, offer)
                         try {
-                            val service = binder.getService()
                             binder.setCurrentCall(currentCall)
-                            val intent = Intent(service, CallActivity::class.java)
-                            intent.action = "ACTION_INCOMING_CALL"
-                            intent.putExtra("EXTRA_CONTACT", contact)
-                            service.startActivity(intent)
+                            val activity = MainActivity.instance
+                            if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                                Log.d(this, "start incoming call from stored MainActivity")
+                                val intent = Intent(activity, CallActivity::class.java)
+                                intent.action = "ACTION_INCOMING_CALL"
+                                intent.putExtra("EXTRA_CONTACT", contact)
+                                activity.startActivity(intent)
+                            } else {
+                                Log.d(this, "start incoming call from Service")
+                                val service = binder.getService()
+                                val intent = Intent(service, CallActivity::class.java)
+                                intent.action = "ACTION_INCOMING_CALL"
+                                intent.putExtra("EXTRA_CONTACT", contact)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                service.startActivity(intent)
+                            }
                         } catch (e: Exception) {
                             binder.setCurrentCall(null)
                             e.printStackTrace()

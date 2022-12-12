@@ -242,12 +242,17 @@ class RTCCall : DataChannel.Observer {
                     ownSecretKey
                 )
 
+                if (decrypted == null) {
+                    reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                    return
+                }
+
                 if (!contact.publicKey.contentEquals(otherPublicKey)) {
                     reportStateChange(CallState.ERROR_AUTHENTICATION)
                     return
                 }
 
-                val obj = JSONObject(decrypted!!)
+                val obj = JSONObject(decrypted)
                 if (obj.optString("action", "") != "ringing") {
                     Log.d(this, "action not equals ringing")
                     reportStateChange(CallState.ERROR_OTHER)

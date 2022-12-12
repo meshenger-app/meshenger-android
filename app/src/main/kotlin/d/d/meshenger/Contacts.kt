@@ -1,10 +1,7 @@
 package d.d.meshenger
 
-import kotlin.Throws
-import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONArray
-import java.util.*
 
 class Contacts {
     val contactList = mutableListOf<Contact>()

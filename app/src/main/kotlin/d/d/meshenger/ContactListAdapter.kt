@@ -1,11 +1,9 @@
 package d.d.meshenger
 
 import android.content.Context
-import d.d.meshenger.Contact
 import android.widget.ArrayAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import d.d.meshenger.R
 import android.widget.TextView
 import android.graphics.Bitmap
 import android.graphics.Canvas

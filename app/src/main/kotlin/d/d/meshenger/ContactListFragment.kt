@@ -1,10 +1,7 @@
 package d.d.meshenger
 
-import android.app.Activity
 import android.content.*
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View

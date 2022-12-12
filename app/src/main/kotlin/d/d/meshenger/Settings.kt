@@ -1,10 +1,7 @@
 package d.d.meshenger
 
-import android.util.Log
-import kotlin.Throws
 import org.json.JSONObject
 import org.json.JSONArray
-import org.json.JSONException
 import java.util.*
 
 class Settings {

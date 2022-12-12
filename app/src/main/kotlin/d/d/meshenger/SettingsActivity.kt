@@ -13,12 +13,10 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import d.d.meshenger.MainService.MainBinder
 import java.lang.Integer.parseInt
-import java.util.*
 
 class SettingsActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null

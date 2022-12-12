@@ -2,7 +2,6 @@ package d.d.meshenger
 
 import org.libsodium.jni.Sodium
 import org.libsodium.jni.SodiumConstants
-import d.d.meshenger.Crypto
 import java.nio.charset.Charset
 import java.util.*
 

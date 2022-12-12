@@ -1,14 +1,7 @@
 package d.d.meshenger
 
-import d.d.meshenger.Utils
-import d.d.meshenger.Contact
-import d.d.meshenger.Log
-import d.d.meshenger.MainService
-import d.d.meshenger.QRShowActivity
-import d.d.meshenger.R
 import android.content.ServiceConnection
 import android.os.Bundle
-import kotlin.Throws
 import org.json.JSONObject
 import android.widget.Toast
 import android.widget.TextView

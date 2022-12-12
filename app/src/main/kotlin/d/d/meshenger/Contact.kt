@@ -1,15 +1,10 @@
 package d.d.meshenger
 
-import d.d.meshenger.Utils
-import d.d.meshenger.MainService
-import kotlin.Throws
-import d.d.meshenger.Contact
 import org.json.JSONObject
 import org.json.JSONArray
 import org.json.JSONException
 import org.libsodium.jni.Sodium
 import java.io.Serializable
-import java.lang.Exception
 import java.net.*
 import java.util.*
 

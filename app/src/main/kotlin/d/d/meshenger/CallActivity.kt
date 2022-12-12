@@ -11,20 +11,16 @@ import android.media.RingtoneManager
 import android.os.*
 import android.os.PowerManager.WakeLock
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import android.view.WindowManager.LayoutParams
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCCall.CallState
 import d.d.meshenger.call.StatsReportUtil
 import org.webrtc.*
-import java.io.IOException
 import java.net.InetSocketAddress
 
 class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {

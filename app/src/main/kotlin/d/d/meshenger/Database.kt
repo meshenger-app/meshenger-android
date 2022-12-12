@@ -1,19 +1,10 @@
 package d.d.meshenger
 
-import android.content.res.Resources
 import d.d.meshenger.Crypto.decryptDatabase
-import d.d.meshenger.Event
-import d.d.meshenger.Contacts
 import d.d.meshenger.Crypto.encryptDatabase
-import d.d.meshenger.Contact
-import kotlin.Throws
-import org.json.JSONException
-import d.d.meshenger.Crypto
 import org.json.JSONObject
 import org.json.JSONArray
-import java.io.IOException
 import java.nio.charset.Charset
-import java.util.*
 
 class Database() {
     var version = BuildConfig.VERSION_NAME

@@ -1,12 +1,6 @@
 package d.d.meshenger
 
-import d.d.meshenger.Log.d
-import kotlin.Throws
-import d.d.meshenger.PacketReader
-import java.io.IOException
-import java.io.InputStream
 import java.net.Socket
-import kotlin.experimental.and
 
 /* Read the message size from the header and return the message of the correct size */
 internal class PacketReader(socket: Socket) {

@@ -3,14 +3,12 @@ package d.d.meshenger
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -18,13 +16,11 @@ import d.d.meshenger.Utils.readInternalFile
 import d.d.meshenger.Utils.writeInternalFile
 import d.d.meshenger.call.RTCCall
 import org.json.JSONObject
-import org.libsodium.jni.Sodium
 import java.io.File
 import java.io.IOException
 import java.net.ConnectException
 import java.net.ServerSocket
 import java.net.Socket
-import java.util.*
 
 class MainService : Service(), Runnable {
     private val binder = MainBinder()

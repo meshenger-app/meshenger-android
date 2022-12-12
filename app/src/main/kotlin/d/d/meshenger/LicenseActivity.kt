@@ -3,7 +3,6 @@ package d.d.meshenger
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
-import d.d.meshenger.R
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import java.io.BufferedReader

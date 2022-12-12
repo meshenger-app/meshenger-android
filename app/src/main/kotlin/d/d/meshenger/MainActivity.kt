@@ -129,10 +129,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     var requestDrawOverlaysPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode != Activity.RESULT_OK) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (!Settings.canDrawOverlays(this)) {
-                    // ADD UI FOR USER TO KNOW THAT UI for SYSTEM_ALERT_WINDOW permission was not granted earlier...
+                    Toast.makeText(this, getString(R.string.overlay_permission_missing), Toast.LENGTH_LONG).show()
                 }
             }
         }

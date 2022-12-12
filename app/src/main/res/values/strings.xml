@@ -138,6 +138,7 @@
     <string name="basic">Basic</string>
     <string name="advanced">Advanced</string>
     <string name="expert">Expert</string>
+    <string name="overlay_permission_missing">Overlay permission missing. Won\'t be able to receive calls while in background!</string>
     <string name="call_error_not_listening">Error: no app running</string>
     <string name="call_error_no_address">Error: no address</string>
     <string name="call_error_unresolved_hostname">Error: cannot resolve address</string>

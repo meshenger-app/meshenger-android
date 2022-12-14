@@ -192,115 +192,126 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun createOutgoingCall(contact: Contact, offer: String) {
-        try {
-            val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+        Log.d(this, "createOutgoingCall")
+        Thread {
+            try {
+                createOutgoingCallInternal(contact, offer)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                reportStateChange(CallState.ERROR_OTHER)
+            }
+        }.start()
+    }
 
-            val socket = createCommSocket(contact)
-            if (socket == null) {
+    private fun createOutgoingCallInternal(contact: Contact, offer: String) {
+        Log.d(this, "createOutgoingCallInternal")
+
+        val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+
+        val socket = createCommSocket(contact)
+        if (socket == null) {
+            return
+        }
+
+        startCallWatchdog()
+
+        callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
+        commSocket = socket
+
+        val remote_address = socket.remoteSocketAddress as InetSocketAddress
+
+        Log.d(this, "outgoing call from remote address: $remote_address")
+
+        // remember latest working address
+        contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+
+        val pr = PacketReader(socket)
+        reportStateChange(CallState.CONNECTING)
+        run {
+            Log.d(this, "outgoing call: send call")
+            val obj = JSONObject()
+            obj.put("action", "call")
+            obj.put("offer", offer) // WebRTC offer!
+            val encrypted = Crypto.encryptMessage(
+                obj.toString(),
+                contact.publicKey,
+                ownPublicKey,
+                ownSecretKey
+            )
+
+            if (encrypted == null) {
+                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
                 return
             }
 
-            callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
-            commSocket = socket
+            val pw = PacketWriter(socket)
+            pw.writeMessage(encrypted)
+        }
+        run {
+            Log.d(this, "outgoing call: expect ringing")
+            val response = pr.readMessage()
+            val decrypted = Crypto.decryptMessage(
+                response,
+                otherPublicKey,
+                ownPublicKey,
+                ownSecretKey
+            )
 
-            val remote_address = socket.remoteSocketAddress as InetSocketAddress
-
-            Log.d(this, "outgoing call from remote address: $remote_address")
-
-            // remember latest working address
-            contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
-
-            val pr = PacketReader(socket)
-            reportStateChange(CallState.CONNECTING)
-            run {
-                Log.d(this, "outgoing call: send call")
-                val obj = JSONObject()
-                obj.put("action", "call")
-                obj.put("offer", offer) // WebRTC offer!
-                val encrypted = Crypto.encryptMessage(
-                    obj.toString(),
-                    contact.publicKey,
-                    ownPublicKey,
-                    ownSecretKey
-                )
-
-                if (encrypted == null) {
-                    reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
-                    return
-                }
-
-                val pw = PacketWriter(socket)
-                pw.writeMessage(encrypted)
+            if (decrypted == null) {
+                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                return
             }
-            run {
-                Log.d(this, "outgoing call: got ringing")
-                val response = pr.readMessage()
-                val decrypted = Crypto.decryptMessage(
-                    response,
-                    otherPublicKey,
-                    ownPublicKey,
-                    ownSecretKey
-                )
 
-                if (decrypted == null) {
-                    reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
-                    return
+            if (!contact.publicKey.contentEquals(otherPublicKey)) {
+                reportStateChange(CallState.ERROR_AUTHENTICATION)
+                return
+            }
+
+            val obj = JSONObject(decrypted)
+            if (obj.optString("action", "") != "ringing") {
+                Log.d(this, "action not equals ringing")
+                reportStateChange(CallState.ERROR_OTHER)
+                return
+            }
+            reportStateChange(CallState.RINGING)
+        }
+        run {
+            Log.d(this, "outgoing call: expect connected/dismissed")
+            val response = pr.readMessage()
+            val decrypted = Crypto.decryptMessage(
+                response,
+                otherPublicKey,
+                ownPublicKey,
+                ownSecretKey
+            )
+
+            if (decrypted == null) {
+                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                return
+            }
+
+            if (!contact.publicKey.contentEquals(otherPublicKey)) {
+                reportStateChange(CallState.ERROR_AUTHENTICATION)
+                return
+            }
+
+            val obj = JSONObject(decrypted)
+            when (val action = obj.getString("action")) {
+                "connected" -> {
+                    Log.d(this, "outgoing call: connected")
+                    reportStateChange(CallState.CONNECTED)
+                    handleAnswer(obj.getString("answer"))
+                    // contact accepted receiving call
                 }
-
-                if (!contact.publicKey.contentEquals(otherPublicKey)) {
-                    reportStateChange(CallState.ERROR_AUTHENTICATION)
-                    return
+                "dismissed" -> {
+                    Log.d(this, "outgoing call: dismissed")
+                    reportStateChange(CallState.DISMISSED)
                 }
-
-                val obj = JSONObject(decrypted)
-                if (obj.optString("action", "") != "ringing") {
-                    Log.d(this, "action not equals ringing")
+                else -> {
+                    Log.d(this, "outgoing call: unknown action reply $action")
                     reportStateChange(CallState.ERROR_OTHER)
-                    return
-                }
-                reportStateChange(CallState.RINGING)
-            }
-            run {
-                val response = pr.readMessage()
-                val decrypted = Crypto.decryptMessage(
-                    response,
-                    otherPublicKey,
-                    ownPublicKey,
-                    ownSecretKey
-                )
-
-                if (decrypted == null) {
-                    reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
-                    return
-                }
-
-                if (!contact.publicKey.contentEquals(otherPublicKey)) {
-                    reportStateChange(CallState.ERROR_AUTHENTICATION)
-                    return
-                }
-
-                val obj = JSONObject(decrypted)
-                when (val action = obj.getString("action")) {
-                    "connected" -> {
-                        Log.d(this, "outgoing call: connected")
-                        reportStateChange(CallState.CONNECTED)
-                        handleAnswer(obj.getString("answer"))
-                        // contact accepted receiving call
-                    }
-                    "dismissed" -> {
-                        Log.d(this, "outgoing call: dismissed")
-                        reportStateChange(CallState.DISMISSED)
-                    }
-                    else -> {
-                        Log.d(this, "outgoing call: unknown action reply $action")
-                        reportStateChange(CallState.ERROR_OTHER)
-                    }
                 }
             }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            reportStateChange(CallState.ERROR_OTHER)
         }
     }
 
@@ -320,9 +331,7 @@ class RTCCall : DataChannel.Observer {
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         Log.d(this, "outgoing call: send offer")
-                        execute {
-                            createOutgoingCall(contact, peerConnection.localDescription.description)
-                        }
+                        createOutgoingCall(contact, peerConnection.localDescription.description)
                     }
                 }
 
@@ -604,17 +613,21 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun handleAnswer(remoteDesc: String) {
-        peerConnection.setRemoteDescription(object : DefaultSdpObserver() {
-            override fun onSetSuccess() {
-                super.onSetSuccess()
-                Log.d(this, "onSetSuccess")
-            }
+        execute {
+            Log.d(this, "handleAnswer() executor start")
+            peerConnection.setRemoteDescription(object : DefaultSdpObserver() {
+                override fun onSetSuccess() {
+                    super.onSetSuccess()
+                    Log.d(this, "onSetSuccess")
+                }
 
-            override fun onSetFailure(s: String) {
-                super.onSetFailure(s)
-                Log.d(this, "onSetFailure: $s")
-            }
-        }, SessionDescription(SessionDescription.Type.ANSWER, remoteDesc))
+                override fun onSetFailure(s: String) {
+                    super.onSetFailure(s)
+                    Log.d(this, "onSetFailure: $s")
+                }
+            }, SessionDescription(SessionDescription.Type.ANSWER, remoteDesc))
+            Log.d(this, "handleAnswer() executor end")
+        }
     }
 
     private fun reportStateChange(state: CallState) {
@@ -913,7 +926,18 @@ class RTCCall : DataChannel.Observer {
         }
 
         fun createIncomingCall(binder: MainService.MainBinder, socket: Socket) {
-            Log.d(this, "createIncomingCall")
+            Thread {
+                try {
+                    createIncomingCallInternal(binder, socket)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    //decline()
+                }
+            }.start()
+        }
+
+        private fun createIncomingCallInternal(binder: MainService.MainBinder, socket: Socket) {
+            Log.d(this, "createIncomingCallInternal")
 
             val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
             val ownSecretKey = binder.getDatabase().settings.secretKey
@@ -945,145 +969,140 @@ class RTCCall : DataChannel.Observer {
                 }
             }
 
-            try {
-                val remote_address = socket.remoteSocketAddress as InetSocketAddress
-                val pw = PacketWriter(socket)
-                val pr = PacketReader(socket)
+            val remote_address = socket.remoteSocketAddress as InetSocketAddress
+            val pw = PacketWriter(socket)
+            val pr = PacketReader(socket)
 
-                Log.d(this, "incoming peerConnection from $remote_address")
+            Log.d(this, "incoming peerConnection from $remote_address")
 
-                val request = pr.readMessage()
-                if (request == null) {
-                    Log.d(this, "connection closed")
-                    socket.close()
-                    return
-                }
+            val request = pr.readMessage()
+            if (request == null) {
+                Log.d(this, "connection closed")
+                socket.close()
+                return
+            }
 
-                //Log.d(this, "request: ${request.toHex()}")
+            //Log.d(this, "request: ${request.toHex()}")
 
-                val decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
-                if (decrypted == null) {
-                    Log.d(this, "decryption failed")
-                    // cause: the caller might use the wrong key
-                    socket.close()
-                    return
-                }
+            val decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
+            if (decrypted == null) {
+                Log.d(this, "decryption failed")
+                // cause: the caller might use the wrong key
+                socket.close()
+                return
+            }
 
-                var contact = binder.getDatabase().contacts.getContactByPublicKey(clientPublicKey)
-                if (contact == null && binder.getDatabase().settings.blockUnknown) {
-                    Log.d(this, "block unknown contact => decline")
-                    decline()
-                    return
-                }
+            var contact = binder.getDatabase().contacts.getContactByPublicKey(clientPublicKey)
+            if (contact == null && binder.getDatabase().settings.blockUnknown) {
+                Log.d(this, "block unknown contact => decline")
+                decline()
+                return
+            }
 
-                if (contact != null && contact.blocked) {
-                    Log.d(this, "blocked contact => decline")
-                    decline()
-                    return
-                }
+            if (contact != null && contact.blocked) {
+                Log.d(this, "blocked contact => decline")
+                decline()
+                return
+            }
 
-                if (contact == null) {
-                    // unknown caller
-                    contact = Contact("", clientPublicKey.clone(), ArrayList())
-                }
+            if (contact == null) {
+                // unknown caller
+                contact = Contact("", clientPublicKey.clone(), ArrayList())
+            }
 
-                // suspicious change of identity in during peerConnection...
-                if (!contact.publicKey.contentEquals(clientPublicKey)) {
-                    Log.d(this, "suspicious change of key")
-                    decline()
-                    return
-                }
+            // suspicious change of identity in during peerConnection...
+            if (!contact.publicKey.contentEquals(clientPublicKey)) {
+                Log.d(this, "suspicious change of key")
+                decline()
+                return
+            }
 
-                // remember last good address (the outgoing port is random and not the server port)
-                contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+            // remember last good address (the outgoing port is random and not the server port)
+            contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
 
-                val obj = JSONObject(decrypted)
-                val action = obj.optString("action", "")
-                Log.d(this, "action: $action")
-                when (action) {
-                    "call" -> {
-                        if (binder.getCurrentCall() != null) {
-                            Log.d(this, "call in progress => decline")
-                            decline() // TODO: send busy
-                            return
-                        }
-
-                        // someone calls us
-                        val offer = obj.getString("offer")
-
-                        // respond that we accept the call (our phone is ringing)
-                        val encrypted = Crypto.encryptMessage(
-                            "{\"action\":\"ringing\"}",
-                            contact.publicKey,
-                            ownPublicKey,
-                            ownSecretKey
-                        )
-
-                        if (encrypted == null) {
-                            Log.d(this, "encryption failed")
-                            decline()
-                            return
-                        }
-
-                        debugPacket("send ringing message:", encrypted)
-                        pw.writeMessage(encrypted)
-
-                        // TODO: keep ringing to keep socket open until resolved
-                        val currentCall = RTCCall(binder, contact, socket, offer)
-                        try {
-                            binder.setCurrentCall(currentCall)
-                            val activity = MainActivity.instance
-                            if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                                Log.d(this, "start incoming call from stored MainActivity")
-                                val intent = Intent(activity, CallActivity::class.java)
-                                intent.action = "ACTION_INCOMING_CALL"
-                                intent.putExtra("EXTRA_CONTACT", contact)
-                                activity.startActivity(intent)
-                            } else {
-                                Log.d(this, "start incoming call from Service")
-                                val service = binder.getService()
-                                val intent = Intent(service, CallActivity::class.java)
-                                intent.action = "ACTION_INCOMING_CALL"
-                                intent.putExtra("EXTRA_CONTACT", contact)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                service.startActivity(intent)
-                            }
-                        } catch (e: Exception) {
-                            binder.setCurrentCall(null)
-                            e.printStackTrace()
-                        }
+            val obj = JSONObject(decrypted)
+            val action = obj.optString("action", "")
+            Log.d(this, "action: $action")
+            when (action) {
+                "call" -> {
+                    if (binder.getCurrentCall() != null) {
+                        Log.d(this, "call in progress => decline")
+                        decline() // TODO: send busy
                         return
                     }
-                    "ping" -> {
-                        Log.d(this, "ping...")
-                        // someone wants to know if we are online
-                        contact.state = Contact.State.ONLINE
-                        val encrypted = Crypto.encryptMessage(
-                            "{\"action\":\"pong\"}",
-                            contact.publicKey,
-                            ownPublicKey,
-                            ownSecretKey
-                        )
 
-                        if (encrypted == null) {
-                            Log.d(this, "encryption failed")
-                            decline()
-                            return
-                        }
+                    // someone calls us
+                    val offer = obj.getString("offer")
 
-                        pw.writeMessage(encrypted)
+                    // respond that we accept the call (our phone is ringing)
+                    val encrypted = Crypto.encryptMessage(
+                        "{\"action\":\"ringing\"}",
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    )
+
+                    if (encrypted == null) {
+                        Log.d(this, "encryption failed")
+                        decline()
+                        return
                     }
-                    "status_change" -> {
-                        if (obj.optString("status", "") == "offline") {
-                            contact.state = Contact.State.ONLINE
+
+                    debugPacket("send ringing message:", encrypted)
+                    pw.writeMessage(encrypted)
+
+                    // TODO: keep ringing to keep socket open until resolved
+                    val currentCall = RTCCall(binder, contact, socket, offer)
+                    try {
+                        binder.setCurrentCall(currentCall)
+                        val activity = MainActivity.instance
+                        if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                            Log.d(this, "start incoming call from stored MainActivity")
+                            val intent = Intent(activity, CallActivity::class.java)
+                            intent.action = "ACTION_INCOMING_CALL"
+                            intent.putExtra("EXTRA_CONTACT", contact)
+                            activity.startActivity(intent)
                         } else {
-                            Log.d(this, "Received unknown status_change: " + obj.getString("status"))
+                            Log.d(this, "start incoming call from Service")
+                            val service = binder.getService()
+                            val intent = Intent(service, CallActivity::class.java)
+                            intent.action = "ACTION_INCOMING_CALL"
+                            intent.putExtra("EXTRA_CONTACT", contact)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            service.startActivity(intent)
                         }
+                    } catch (e: Exception) {
+                        binder.setCurrentCall(null)
+                        e.printStackTrace()
+                    }
+                    return
+                }
+                "ping" -> {
+                    Log.d(this, "ping...")
+                    // someone wants to know if we are online
+                    contact.state = Contact.State.ONLINE
+                    val encrypted = Crypto.encryptMessage(
+                        "{\"action\":\"pong\"}",
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    )
+
+                    if (encrypted == null) {
+                        Log.d(this, "encryption failed")
+                        decline()
+                        return
+                    }
+
+                    pw.writeMessage(encrypted)
+                }
+                "status_change" -> {
+                    if (obj.optString("status", "") == "offline") {
+                        contact.state = Contact.State.ONLINE
+                    } else {
+                        Log.d(this, "Received unknown status_change: " + obj.getString("status"))
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                decline()
             }
         }
     }

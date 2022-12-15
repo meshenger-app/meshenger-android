@@ -22,7 +22,7 @@ class RTCCall : DataChannel.Observer {
     var state = CallState.WAITING
     var commSocket: Socket?
     private lateinit var factory: PeerConnectionFactory
-    private lateinit var peerConnection: PeerConnection
+    private var peerConnection: PeerConnection? = null
     private var dataChannel: DataChannel? = null
     private var offer: String? = null
 
@@ -331,7 +331,7 @@ class RTCCall : DataChannel.Observer {
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         Log.d(this, "outgoing call: send offer")
-                        createOutgoingCall(contact, peerConnection.localDescription.description)
+                        createOutgoingCall(contact, peerConnection!!.localDescription.description)
                     }
                 }
 
@@ -356,17 +356,17 @@ class RTCCall : DataChannel.Observer {
 
             val init = DataChannel.Init()
             init.ordered = true
-            dataChannel = peerConnection.createDataChannel("data", init)
+            dataChannel = peerConnection!!.createDataChannel("data", init)
             dataChannel!!.registerObserver(this)
 
             callActivity?.onCameraEnabled()
 
             createPeerConnection()
 
-            peerConnection.createOffer(object : DefaultSdpObserver() {
+            peerConnection!!.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
                     super.onCreateSuccess(sessionDescription)
-                    peerConnection.setLocalDescription(DefaultSdpObserver(), sessionDescription)
+                    peerConnection!!.setLocalDescription(DefaultSdpObserver(), sessionDescription)
                 }
             }, sdpMediaConstraints)
 
@@ -514,8 +514,8 @@ class RTCCall : DataChannel.Observer {
 
     private fun createPeerConnection() {
         try {
-            peerConnection.addTrack(createAudioTrack(), listOf("stream1"))
-            peerConnection.addTrack(createVideoTrack(), listOf("stream1"))
+            peerConnection!!.addTrack(createAudioTrack(), listOf("stream1"))
+            peerConnection!!.addTrack(createVideoTrack(), listOf("stream1"))
         } catch (e: Exception){
             e.printStackTrace()
         }
@@ -615,7 +615,7 @@ class RTCCall : DataChannel.Observer {
     private fun handleAnswer(remoteDesc: String) {
         execute {
             Log.d(this, "handleAnswer() executor start")
-            peerConnection.setRemoteDescription(object : DefaultSdpObserver() {
+            peerConnection!!.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {
                     super.onSetSuccess()
                     Log.d(this, "onSetSuccess")
@@ -648,7 +648,7 @@ class RTCCall : DataChannel.Observer {
                     execute {
                         Log.d(this, "setStatsCollector() executor start")
                         try {
-                            peerConnection.getStats(statsCollector)
+                            peerConnection!!.getStats(statsCollector)
                         } catch (e: Exception) {
                             Log.e(this, "Cannot schedule statistics timer $e")
                         }
@@ -687,7 +687,7 @@ class RTCCall : DataChannel.Observer {
                             val pw = PacketWriter(commSocket!!)
                             val obj = JSONObject()
                             obj.put("action", "connected")
-                            obj.put("answer", peerConnection.localDescription.description)
+                            obj.put("answer", peerConnection!!.localDescription.description)
                             val encrypted = Crypto.encryptMessage(
                                 obj.toString(),
                                 contact.publicKey,
@@ -738,15 +738,15 @@ class RTCCall : DataChannel.Observer {
             createPeerConnection()
 
             Log.d(this, "setting remote description")
-            peerConnection.setRemoteDescription(object : DefaultSdpObserver() {
+            peerConnection!!.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {
                     super.onSetSuccess()
                     Log.d(this, "creating answer...")
-                    peerConnection.createAnswer(object : DefaultSdpObserver() {
+                    peerConnection!!.createAnswer(object : DefaultSdpObserver() {
                         override fun onCreateSuccess(sessionDescription: SessionDescription) {
                             Log.d(this, "onCreateSuccess")
                             super.onCreateSuccess(sessionDescription)
-                            peerConnection.setLocalDescription(
+                            peerConnection!!.setLocalDescription(
                                 DefaultSdpObserver(),
                                 sessionDescription
                             )
@@ -844,7 +844,7 @@ class RTCCall : DataChannel.Observer {
             }
 
             try {
-                peerConnection.close()
+                peerConnection?.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

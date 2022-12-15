@@ -31,7 +31,7 @@ class MainService : Service(), Runnable {
     var database_password = ""
 
     @Volatile
-    private var run = true
+    private var isServerSocketRunning = true
     private var currentCall: RTCCall? = null
 
     override fun onCreate() {
@@ -149,7 +149,7 @@ class MainService : Service(), Runnable {
     override fun onDestroy() {
         Log.d(this, "onDestroy")
         super.onDestroy()
-        run = false
+        isServerSocketRunning = false
 
         // say goodbye
         val database = this.database
@@ -232,7 +232,7 @@ class MainService : Service(), Runnable {
     override fun run() {
         try {
             // wait until database is ready
-            while (database == null && run) {
+            while (database == null && isServerSocketRunning) {
                 try {
                     Thread.sleep(1000)
                 } catch (e: Exception) {
@@ -240,7 +240,7 @@ class MainService : Service(), Runnable {
                 }
             }
             server = ServerSocket(serverPort)
-            while (run) {
+            while (isServerSocketRunning) {
                 try {
                     val socket = server!!.accept()
                     Log.d(this, "new incoming connection")

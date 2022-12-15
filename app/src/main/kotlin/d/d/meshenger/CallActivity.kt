@@ -276,11 +276,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     // set debug output
     override fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean) {
         runOnUiThread {
-            val addr = address.toString().replace("/", "")
+            val addressString = address.toString().replace("/", "")
             if (isConnected) {
-                callAddress.text = String.format(getString(R.string.connected_to_address), addr)
+                callAddress.text = String.format(getString(R.string.connected_to_address), addressString)
             } else {
-                callAddress.text = String.format(getString(R.string.connecting_to_address), addr)
+                callAddress.text = String.format(getString(R.string.connecting_to_address), addressString)
             }
         }
     }

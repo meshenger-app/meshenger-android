@@ -92,28 +92,20 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 binder!!.saveDatabase()
             }
         }
-        val nightMode = settings.nightMode
-        val nightModeCB = findViewById<SwitchMaterial>(R.id.switchButtonNightMode)
-        nightModeCB.apply {
-            isChecked = nightMode
-            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                try {
-                    // apply value
-                    if (isChecked) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    } else {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        setupSpinner(settings.nightMode,
+            R.id.spinnerNightModes,
+            R.array.nightModes,
+            R.array.nightModesValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        settings.nightMode = it
+                        binder!!.saveDatabase()
+                        updateNightMode(newValue)
                     }
-                    // save value
-                    settings.nightMode = isChecked
-                    binder!!.saveDatabase()
-                    // apply theme
-                    recreate()
-                } finally {
-                    finish()
                 }
-            }
-        }
+            })
 
         findViewById<TextView>(R.id.connectTimeoutTv).text = "${settings.connectTimeout}"
         findViewById<View>(R.id.connectTimeoutLayout).setOnClickListener { showChangeConnectTimeoutDialog() }

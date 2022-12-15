@@ -1,37 +1,31 @@
 package d.d.meshenger
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 
 /*
- * Activity base class to apply night mode
+ * Base class for every Activity
 */
 open class BaseActivity : AppCompatActivity() {
-    private var darkActive = false
+    fun updateNightMode(nightModeSetting: String) {
+        Log.d(this, "Make sure night is $nightModeSetting")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        darkActive = darkModeEnabled()
-        if (darkActive) {
-            setTheme(R.style.AppTheme_Dark_NoActionBar)
-        } else {
-            setTheme(R.style.AppTheme_Light_NoActionBar)
+        val nightMode = when (nightModeSetting) {
+            "on" -> AppCompatDelegate.MODE_NIGHT_YES
+            "off" -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                }
+            }
         }
-    }
 
-    private fun darkModeEnabled(): Boolean {
-        return AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // recreate activity to apply mode
-        val darkActiveNow = darkModeEnabled()
-        if (darkActive != darkActiveNow) {
-            darkActive = darkActiveNow
-            recreate()
+        if (nightMode != AppCompatDelegate.getDefaultNightMode()) {
+            Log.d(this, "Change night mode to $nightModeSetting")
+            AppCompatDelegate.setDefaultNightMode(nightMode)
         }
     }
 }

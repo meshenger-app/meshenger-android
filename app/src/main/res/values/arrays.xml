@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="nightModes">
+        <item>Auto</item>
+        <item>On</item>
+        <item>Off</item>
+    </string-array>
+
+    <string-array name="nightModesValues">
+        <item>auto</item>
+        <item>on</item>
+        <item>off</item>
+    </string-array>
 
     <string-array name="settingsMode">
         <item>Basic</item>

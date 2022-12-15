@@ -301,12 +301,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         setContentView(R.layout.activity_call)
 
-        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            setTheme(R.style.AppTheme_Dark)
-        } else {
-            setTheme(R.style.AppTheme_Light)
-        }
-
         // keep screen on during the call
         //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 

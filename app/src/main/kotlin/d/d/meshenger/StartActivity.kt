@@ -6,10 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Typeface
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
@@ -97,11 +94,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             6 -> {
                 Log.d(this, "init 6: start MainActivity")
-                // set night mode
-                val nightMode = binder!!.getSettings().nightMode
-                AppCompatDelegate.setDefaultNightMode(
-                    if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-                )
+
+                updateNightMode(binder!!.getSettings().nightMode)
+
                 // all done - show main activity
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()

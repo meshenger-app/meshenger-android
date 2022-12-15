@@ -25,7 +25,7 @@ class Settings {
     var username = ""
     var secretKey = byteArrayOf()
     var publicKey = byteArrayOf()
-    var nightMode = false
+    var nightMode = "auto" // on, off, auto
     var blockUnknown = false
     var useNeighborTable = false
     var promptOutgoingCalls = false
@@ -47,7 +47,7 @@ class Settings {
             s.username = obj.getString("username")
             s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))!!
             s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
-            s.nightMode = obj.getBoolean("night_mode")
+            s.nightMode = obj.getString("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
             s.connectTimeout = obj.getInt("connect_timeout")

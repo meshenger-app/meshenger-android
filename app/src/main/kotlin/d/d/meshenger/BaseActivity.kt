@@ -24,8 +24,9 @@ open class BaseActivity : AppCompatActivity() {
         }
 
         if (nightMode != AppCompatDelegate.getDefaultNightMode()) {
-            Log.d(this, "Change night mode to $nightModeSetting")
+            Log.d(this, "Change night mode to $nightModeSetting and finish activity (will be restarted automatically)")
             AppCompatDelegate.setDefaultNightMode(nightMode)
+            finish()
         }
     }
 }

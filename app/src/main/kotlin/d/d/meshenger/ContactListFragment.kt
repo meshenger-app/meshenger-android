@@ -64,9 +64,18 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
     }
 
     private val refreshContactListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        private var lastTimeRefreshed = 0L
+
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d(this, "trigger refreshContactList() from broadcast")
-            refreshContactList()
+            Log.d(this@ContactListFragment, "trigger refreshContactList() from broadcast")
+            // prevent this method from being called too often
+            val now = System.currentTimeMillis()
+            if ((now - lastTimeRefreshed) < 1000) {
+                return
+            } else {
+                lastTimeRefreshed = now
+                refreshContactList()
+            }
         }
     }
 

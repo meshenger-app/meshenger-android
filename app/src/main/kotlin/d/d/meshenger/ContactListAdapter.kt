@@ -41,8 +41,8 @@ internal class ContactListAdapter(
         }
         canvas.drawCircle(100f, 100f, 100f, p)
         if (contact.blocked) {
-            // draw smaller red circle on top
-            p.color = -0x13c1c2 // red
+            // draw smaller dark red circle on top
+            p.color = Color.parseColor("#ba0000")
             canvas.drawCircle(100f, 100f, 70f, p)
         }
         state.setImageBitmap(bitmap)

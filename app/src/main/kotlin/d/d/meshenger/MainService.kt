@@ -24,7 +24,7 @@ import java.net.Socket
 
 class MainService : Service(), Runnable {
     private val binder = MainBinder()
-    private var server: ServerSocket? = null
+    private var serverSocket: ServerSocket? = null
     private var database: Database? = null
     var first_start = false
     private var database_path = ""
@@ -239,10 +239,10 @@ class MainService : Service(), Runnable {
                     break
                 }
             }
-            server = ServerSocket(serverPort)
+            serverSocket = ServerSocket(serverPort)
             while (isServerSocketRunning) {
                 try {
-                    val socket = server!!.accept()
+                    val socket = serverSocket!!.accept()
                     Log.d(this, "new incoming connection")
                     RTCCall.createIncomingCall(binder, socket)
                 } catch (e: IOException) {

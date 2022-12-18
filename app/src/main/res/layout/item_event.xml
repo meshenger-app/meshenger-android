@@ -24,7 +24,6 @@
                 android:id="@+id/call_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/primaryTextColor"
                 android:textSize="26sp" />
 
             <ImageView
@@ -47,16 +46,14 @@
                 android:id="@+id/call_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="?attr/secondaryTextColor" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/call_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:textSize="10sp"
-                android:textColor="?attr/secondaryTextColor" />
+                android:textSize="10sp" />
 
         </LinearLayout>
 

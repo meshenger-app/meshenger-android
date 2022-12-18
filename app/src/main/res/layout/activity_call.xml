@@ -79,7 +79,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/unknown_caller"
-                android:textColor="?attr/primaryTextColor"
                 android:textSize="30sp" />
 
             <TextView
@@ -87,7 +86,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/call_start_or_abort"
-                android:textColor="?attr/secondaryTextColor"
                 android:textSize="20sp" />
 
         </LinearLayout>

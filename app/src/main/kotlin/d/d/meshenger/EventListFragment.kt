@@ -55,9 +55,18 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
     }
 
     private val refreshEventListReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        private var lastTimeRefreshed = 0L
+
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d(this, "trigger refreshEventList() from broadcast")
-            refreshEventList()
+            Log.d(this@EventListFragment, "trigger refreshEventList() from broadcast")
+            // prevent this method from being called too often
+            val now = System.currentTimeMillis()
+            if ((now - lastTimeRefreshed) < 1000) {
+                return
+            } else {
+                lastTimeRefreshed = now
+                refreshEventList()
+            }
         }
     }
 

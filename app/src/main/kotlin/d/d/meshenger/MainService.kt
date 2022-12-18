@@ -125,7 +125,7 @@ class MainService : Service(), Runnable {
                     writeInternalFile(database_path, dbData)
                 }
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -148,12 +148,11 @@ class MainService : Service(), Runnable {
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
-        super.onDestroy()
         isServerSocketRunning = false
 
         // say goodbye
         val database = this.database
-        if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
+        if (database != null && serverSocket != null && serverSocket!!.isBound && !serverSocket!!.isClosed) {
             try {
                 val ownPublicKey = database.settings.publicKey
                 val ownSecretKey = database.settings.secretKey
@@ -187,29 +186,15 @@ class MainService : Service(), Runnable {
             }
         }
 
-        // The database might be null here if no correct
-        // database password was supplied to open it.
-        if (database != null) {
-            try {
-                val data = Database.toData(database, database_password)
-                if (data != null) {
-                    writeInternalFile(database_path, data)
-                }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        // shutdown listening socket
-        if (database != null && server != null && server!!.isBound && !server!!.isClosed) {
-            try {
-                server!!.close()
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
+        try {
+            serverSocket?.close()
+        } catch (e: Exception) {
+            // ignore
         }
 
         database?.destroy()
+
+        super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

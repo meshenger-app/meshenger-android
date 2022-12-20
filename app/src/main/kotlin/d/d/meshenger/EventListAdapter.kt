@@ -83,7 +83,7 @@ internal class EventListAdapter(
         if (address != null) {
             address_tv.text = address.toString().trimStart {it == '/'}
         } else {
-            address_tv.text = "???"
+            address_tv.text = ""
         }
 
         return view

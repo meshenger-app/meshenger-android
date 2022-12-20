@@ -254,6 +254,11 @@ class RTCCall : DataChannel.Observer {
         run {
             Log.d(this, "outgoing call: expect ringing")
             val response = pr.readMessage()
+            if (response == null) {
+                reportStateChange(CallState.ERROR_OTHER)
+                return
+            }
+
             val decrypted = Crypto.decryptMessage(
                 response,
                 otherPublicKey,
@@ -282,6 +287,10 @@ class RTCCall : DataChannel.Observer {
         run {
             Log.d(this, "outgoing call: expect connected/dismissed")
             val response = pr.readMessage()
+            if (response == null) {
+                return
+            }
+
             val decrypted = Crypto.decryptMessage(
                 response,
                 otherPublicKey,
@@ -305,7 +314,6 @@ class RTCCall : DataChannel.Observer {
                     Log.d(this, "outgoing call: connected")
                     reportStateChange(CallState.CONNECTED)
                     handleAnswer(obj.getString("answer"))
-                    // contact accepted receiving call
                 }
                 "dismissed" -> {
                     Log.d(this, "outgoing call: dismissed")
@@ -317,6 +325,56 @@ class RTCCall : DataChannel.Observer {
                 }
             }
         }
+
+        continueOnSocket()
+    }
+
+    // Continue listening for socket message.
+    // Must run on separate thread!
+    fun continueOnSocket() {
+        val socket = commSocket
+        if (socket == null) {
+            throw IllegalStateException("commSocket expected not to be null")
+        }
+
+        val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+        val pr = PacketReader(socket)
+
+        while (!socket.isClosed) {
+            val response = pr.readMessage() ?: continue
+
+            val decrypted = Crypto.decryptMessage(
+                response,
+                otherPublicKey,
+                ownPublicKey,
+                ownSecretKey
+            )
+
+            if (decrypted == null) {
+                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                break
+            }
+
+            val obj = JSONObject(decrypted)
+            when (val action = obj.getString("action")) {
+                "dismissed" -> {
+                    Log.d(this, "outgoing call: dismissed")
+                    reportStateChange(CallState.DISMISSED)
+                }
+                "detach" -> {
+                    // meant for future versions that do
+                    // not need to keep the socket open
+                    Log.d(this, "outgoing call: dismissed")
+                    return
+                }
+                else -> {
+                    Log.d(this, "outgoing call: unknown action reply $action")
+                    reportStateChange(CallState.ERROR_OTHER)
+                }
+            }
+        }
+
+        reportStateChange(CallState.DISMISSED)
     }
 
     fun initOutgoing() {
@@ -794,6 +852,7 @@ class RTCCall : DataChannel.Observer {
 
             if (encrypted != null) {
                 try {
+                    Log.d(this, "write dismissed message to socket")
                     pw.writeMessage(encrypted)
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -826,6 +885,7 @@ class RTCCall : DataChannel.Observer {
             setStatsCollector(null)
 
             try {
+                Log.d(this, "close socket")
                 commSocket?.close()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -1049,10 +1109,9 @@ class RTCCall : DataChannel.Observer {
                     debugPacket("send ringing message:", encrypted)
                     pw.writeMessage(encrypted)
 
-                    // TODO: keep ringing to keep socket open until resolved
                     val currentCall = RTCCall(binder, contact, socket, offer)
+                    binder.setCurrentCall(currentCall)
                     try {
-                        binder.setCurrentCall(currentCall)
                         val activity = MainActivity.instance
                         if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                             Log.d(this, "start incoming call from stored MainActivity")
@@ -1071,9 +1130,9 @@ class RTCCall : DataChannel.Observer {
                         }
                     } catch (e: Exception) {
                         binder.setCurrentCall(null)
+                        currentCall.cleanup()
                         e.printStackTrace()
                     }
-                    return
                 }
                 "ping" -> {
                     Log.d(this, "ping...")
@@ -1098,7 +1157,7 @@ class RTCCall : DataChannel.Observer {
                     if (obj.optString("status", "") == "offline") {
                         contact.state = Contact.State.ONLINE
                     } else {
-                        Log.d(this, "Received unknown status_change: " + obj.getString("status"))
+                        Log.d(this, "Received unknown status_change: ${obj.getString("status")}")
                     }
                 }
             }

@@ -384,6 +384,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
         bindService(Intent(this, MainService::class.java), connection, 0)
 
+        val declineListener = View.OnClickListener {
+            Log.d(this, "decline call...")
+            currentCall.decline()
+            finish()
+        }
+
         val startCallListener = View.OnClickListener {
             Log.d(this, "start call...")
             if (!currentCallSet) {
@@ -403,11 +409,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
             acceptButton.visibility = View.GONE
             declineButton.visibility = View.VISIBLE
-        }
-
-        val declineListener = View.OnClickListener {
-            currentCall.hangup()
-            finish()
         }
 
         acceptButton.visibility = View.VISIBLE
@@ -430,6 +431,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 binder = iBinder as MainService.MainBinder
                 currentCall = binder!!.getCurrentCall()!!
                 currentCallSet = true
+
+                currentCall.setCallContext(this@CallActivity)
+                Thread {
+                    currentCall.continueOnSocket()
+                }.start()
 
                 updateVideoDisplay()
             }
@@ -461,7 +467,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             Log.d(this, "hangup call...")
 
             stopRinging()
-            currentCall.hangup()
+            currentCall.decline()
 
             if (passiveWakeLock.isHeld) {
                 passiveWakeLock.release()
@@ -482,7 +488,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
             currentCall.setRemoteRenderer(remoteProxyVideoSink)
             currentCall.setLocalRenderer(localProxyVideoSink)
-            currentCall.setCallContext(this@CallActivity)
             currentCall.setEglBase(eglBase)
 
             if (passiveWakeLock.isHeld) {

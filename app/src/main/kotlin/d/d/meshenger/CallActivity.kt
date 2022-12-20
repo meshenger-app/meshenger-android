@@ -795,6 +795,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
     private fun finishDelayed() {
         if (activityActive) {
+            stopRinging() // do not wait
             activityActive = false
             Handler(mainLooper).postDelayed({ finish() }, 2000)
         }

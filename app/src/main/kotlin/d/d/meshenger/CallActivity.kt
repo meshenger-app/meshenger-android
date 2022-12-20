@@ -42,8 +42,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private var polledStartInit = true
     private var activityActive = true
     private var callEventType = Event.Type.UNKNOWN
-    private var vibrator: Vibrator? = null
-    private var ringtone: Ringtone? = null
+    private lateinit var vibrator: Vibrator
+    private lateinit var ringtone: Ringtone
 
     private val remoteProxyVideoSink = RTCCall.ProxyVideoSink()
     private val localProxyVideoSink = RTCCall.ProxyVideoSink()
@@ -341,6 +341,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         toggleCameraButton.visibility = View.GONE
         toggleFrontCameraButton.visibility = View.GONE
 
+        initRinging()
+
         if (contact.name.isEmpty()) {
             nameTextView.text = resources.getString(R.string.unknown_caller)
         } else {
@@ -620,34 +622,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private fun startRinging() {
-        Log.d(this, "startRinging")
-        val ringerMode = (getSystemService(AUDIO_SERVICE) as AudioManager).ringerMode
-        if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
-            return
-        }
+    private fun initRinging() {
+        Log.d(this, "initRinging")
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibrator = vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-        }
-
-        val pattern = longArrayOf(1500, 800, 800, 800)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val vibe = VibrationEffect.createWaveform(pattern, 1)
-            vibrator!!.vibrate(vibe)
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator!!.vibrate(pattern, 1)
-        }
-
-        if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
-            return
-        }
-
+        // init ringtone
         ringtone = RingtoneManager.getRingtone(
             this,
             RingtoneManager.getActualDefaultRingtoneUri(
@@ -655,16 +633,44 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 RingtoneManager.TYPE_RINGTONE
             )
         )
-        ringtone!!.play()
+
+        // init vibrator
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibrator = vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
+    }
+
+    private fun startRinging() {
+        Log.d(this, "startRinging")
+        val ringerMode = (getSystemService(AUDIO_SERVICE) as AudioManager).ringerMode
+        if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
+            return
+        }
+
+        val pattern = longArrayOf(1500, 800, 800, 800)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val vibe = VibrationEffect.createWaveform(pattern, 1)
+            vibrator.vibrate(vibe)
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(pattern, 1)
+        }
+
+        if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
+            return
+        }
+
+        ringtone.play()
     }
 
     private fun stopRinging() {
         Log.d(this, "stopRinging")
-        if (vibrator != null) {
-            vibrator!!.cancel()
-            vibrator = null
-        }
-        ringtone?.stop()
+        vibrator.cancel()
+        ringtone.stop()
     }
 
     private fun chooseVoiceMode() {

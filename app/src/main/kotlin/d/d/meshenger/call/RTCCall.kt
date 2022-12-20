@@ -222,8 +222,12 @@ class RTCCall : DataChannel.Observer {
 
         Log.d(this, "outgoing call from remote address: $remote_address")
 
-        // remember latest working address
-        contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+        run {
+            // remember latest working address
+            val workingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+            val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
+            storedContact?.lastWorkingAddress = workingAddress
+        }
 
         val pr = PacketReader(socket)
         reportStateChange(CallState.CONNECTING)
@@ -939,7 +943,7 @@ class RTCCall : DataChannel.Observer {
         private fun createIncomingCallInternal(binder: MainService.MainBinder, socket: Socket) {
             Log.d(this, "createIncomingCallInternal")
 
-            val clientPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+            val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
             val ownSecretKey = binder.getDatabase().settings.secretKey
             val ownPublicKey = binder.getDatabase().settings.publicKey
 
@@ -949,7 +953,7 @@ class RTCCall : DataChannel.Observer {
                 try {
                     val encrypted = Crypto.encryptMessage(
                         "{\"action\":\"dismissed\"}",
-                        clientPublicKey,
+                        otherPublicKey,
                         ownPublicKey,
                         ownSecretKey
                     )
@@ -984,7 +988,7 @@ class RTCCall : DataChannel.Observer {
 
             //Log.d(this, "request: ${request.toHex()}")
 
-            val decrypted = Crypto.decryptMessage(request, clientPublicKey, ownPublicKey, ownSecretKey)
+            val decrypted = Crypto.decryptMessage(request, otherPublicKey, ownPublicKey, ownSecretKey)
             if (decrypted == null) {
                 Log.d(this, "decryption failed")
                 // cause: the caller might use the wrong key
@@ -992,7 +996,9 @@ class RTCCall : DataChannel.Observer {
                 return
             }
 
-            var contact = binder.getDatabase().contacts.getContactByPublicKey(clientPublicKey)
+            Log.d(this, "request: $decrypted")
+
+            var contact = binder.getDatabase().contacts.getContactByPublicKey(otherPublicKey)
             if (contact == null && binder.getDatabase().settings.blockUnknown) {
                 Log.d(this, "block unknown contact => decline")
                 decline()
@@ -1007,18 +1013,22 @@ class RTCCall : DataChannel.Observer {
 
             if (contact == null) {
                 // unknown caller
-                contact = Contact("", clientPublicKey.clone(), ArrayList())
+                contact = Contact("", otherPublicKey.clone(), ArrayList())
             }
 
             // suspicious change of identity in during peerConnection...
-            if (!contact.publicKey.contentEquals(clientPublicKey)) {
+            if (!contact.publicKey.contentEquals(otherPublicKey)) {
                 Log.d(this, "suspicious change of key")
                 decline()
                 return
             }
 
-            // remember last good address (the outgoing port is random and not the server port)
-            contact.lastWorkingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+            run {
+                // remember latest working address
+                val workingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+                val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
+                storedContact?.lastWorkingAddress = workingAddress
+            }
 
             val obj = JSONObject(decrypted)
             val action = obj.optString("action", "")

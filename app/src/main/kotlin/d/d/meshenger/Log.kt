@@ -10,7 +10,7 @@ object Log {
         if (context is String) {
             return context
         } else {
-            return context.javaClass.simpleName
+            return context::class.java.name.substringAfterLast('.')
         }
     }
 

@@ -102,7 +102,9 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                     newValue?.let {
                         settings.nightMode = it
                         binder!!.saveDatabase()
-                        updateNightMode(newValue)
+                        setDefaultNightMode(newValue)
+                        applyNightMode()
+                        finish()
                     }
                 }
             })

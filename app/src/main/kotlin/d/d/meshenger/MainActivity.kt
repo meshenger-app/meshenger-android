@@ -45,6 +45,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(this, "onCreate")
+
+        // need to be called before super.onCreate()
+        applyNightMode()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

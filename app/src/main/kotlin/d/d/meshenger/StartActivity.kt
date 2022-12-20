@@ -6,14 +6,16 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Typeface
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import d.d.meshenger.MainService.MainBinder
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
@@ -95,9 +97,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
             6 -> {
                 Log.d(this, "init 6: start MainActivity")
 
-                updateNightMode(binder!!.getSettings().nightMode)
+                setDefaultNightMode(binder!!.getSettings().nightMode)
 
-                // all done - show main activity
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }

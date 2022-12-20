@@ -8,25 +8,30 @@ import androidx.appcompat.app.AppCompatDelegate
  * Base class for every Activity
 */
 open class BaseActivity : AppCompatActivity() {
-    fun updateNightMode(nightModeSetting: String) {
-        Log.d(this, "Make sure night is $nightModeSetting")
-
-        val nightMode = when (nightModeSetting) {
-            "on" -> AppCompatDelegate.MODE_NIGHT_YES
-            "off" -> AppCompatDelegate.MODE_NIGHT_NO
-            else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    fun setDefaultNightMode(nightModeSetting: String) {
+        when (nightModeSetting) {
+            "on" -> nightMode = AppCompatDelegate.MODE_NIGHT_YES
+            "off" -> nightMode = AppCompatDelegate.MODE_NIGHT_NO
+            "auto" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 } else {
                     AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
                 }
+            else -> {
+                Log.e(this, "invalid night mode setting: $nightModeSetting")
             }
         }
+    }
 
+    // prefer to be called before super.onCreate()
+    fun applyNightMode() {
         if (nightMode != AppCompatDelegate.getDefaultNightMode()) {
-            Log.d(this, "Change night mode to $nightModeSetting and finish activity (will be restarted automatically)")
+            Log.d(this, "Change night mode to $nightMode")
             AppCompatDelegate.setDefaultNightMode(nightMode)
-            finish()
         }
+    }
+
+    companion object {
+        private var nightMode = AppCompatDelegate.getDefaultNightMode()
     }
 }

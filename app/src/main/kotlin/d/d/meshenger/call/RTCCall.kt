@@ -419,11 +419,7 @@ class RTCCall : DataChannel.Observer {
                 exception = true
             }
 
-            try {
-                socket.close()
-            } catch (e: Exception) {
-                // ignore
-            }
+            closeSocket(socket)
         }
 
         if (connectException) {
@@ -439,18 +435,6 @@ class RTCCall : DataChannel.Observer {
         }
 
         return null
-    }
-
-    private fun closeCommSocket() {
-        Log.d(this, "closeCommSocket")
-
-        try {
-            commSocket?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        commSocket = null
     }
 
     fun setRemoteRenderer(remoteVideoSink: ProxyVideoSink?) {
@@ -929,6 +913,14 @@ class RTCCall : DataChannel.Observer {
             }
         }
 
+        private fun closeSocket(socket: Socket) {
+            try {
+                socket.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         fun createIncomingCall(binder: MainService.MainBinder, socket: Socket) {
             Thread {
                 try {
@@ -965,11 +957,7 @@ class RTCCall : DataChannel.Observer {
 
                     socket.close()
                 } catch (e: Exception) {
-                    try {
-                        socket.close()
-                    } catch (e: Exception) {
-                        // ignore
-                    }
+                    closeSocket(socket)
                 }
             }
 

@@ -154,7 +154,7 @@ class RTCCall : DataChannel.Observer {
     constructor(
         binder: MainService.MainBinder,
         contact: Contact,
-        commSocket: Socket?,
+        commSocket: Socket,
         offer: String?
     ) {
         Log.d(this, "RTCCall created for incoming calls")
@@ -963,9 +963,9 @@ class RTCCall : DataChannel.Observer {
         private const val AUDIO_TRACK_ID = "audio1"
         private const val VIDEO_TRACK_ID = "video1"
 
-        fun ByteArray.toHex(): String = joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
+        private fun ByteArray.toHex(): String = joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
 
-        fun debugPacket(label: String, msg: ByteArray?) {
+        private fun debugPacket(label: String, msg: ByteArray?) {
             if (msg != null) {
                 Log.d(this, "$label: ${msg.size}, ${msg.toHex()}")
             } else {

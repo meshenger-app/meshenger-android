@@ -85,7 +85,6 @@ class MainService : Service(), Runnable {
 
     private fun showNotification() {
         val notification = getNotification(resources.getText(R.string.listen_for_incoming_calls).toString())
-
         startForeground(NOTIFICATION_ID, notification)
     }
 

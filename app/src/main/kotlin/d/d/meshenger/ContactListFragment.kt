@@ -18,10 +18,10 @@ import org.json.JSONException
 
 class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private lateinit var contactListView: ListView
-    private var fabExpanded = false
     private lateinit var fabScan: FloatingActionButton
     private lateinit var fabGen: FloatingActionButton
     private lateinit var fab: FloatingActionButton
+    private var fabExpanded = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,9 +70,7 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
             Log.d(this@ContactListFragment, "trigger refreshContactList() from broadcast")
             // prevent this method from being called too often
             val now = System.currentTimeMillis()
-            if ((now - lastTimeRefreshed) < 1000) {
-                return
-            } else {
+            if ((now - lastTimeRefreshed) > 1000) {
                 lastTimeRefreshed = now
                 refreshContactList()
             }

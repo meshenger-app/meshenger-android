@@ -221,6 +221,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     companion object {
         private var address_warning_shown = false
-        public var instance: MainActivity? = null
+        var instance: MainActivity? = null
     }
 }

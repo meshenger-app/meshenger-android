@@ -61,9 +61,7 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
             Log.d(this@EventListFragment, "trigger refreshEventList() from broadcast")
             // prevent this method from being called too often
             val now = System.currentTimeMillis()
-            if ((now - lastTimeRefreshed) < 1000) {
-                return
-            } else {
+            if ((now - lastTimeRefreshed) > 1000) {
                 lastTimeRefreshed = now
                 refreshEventList()
             }

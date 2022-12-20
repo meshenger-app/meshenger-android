@@ -7,3 +7,4 @@
 - remove button animation
 - add experimental feature to lookup MAC address in the system (ARP/ND) table
 - remove ICE Servers setting, no use and not used
+- add "auto" value to night mode setting

@@ -193,7 +193,7 @@ class Database() {
                     eventObject.put("type", newType)
                 }
 
-                if (settings.getBoolean("might_mode")) {
+                if (settings.getBoolean("night_mode")) {
                     settings.put("night_mode", "on")
                 } else {
                     settings.put("night_mode", "off")

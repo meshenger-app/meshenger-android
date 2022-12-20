@@ -213,8 +213,6 @@ class RTCCall : DataChannel.Observer {
             return
         }
 
-        startCallWatchdog()
-
         callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
         commSocket = socket
 

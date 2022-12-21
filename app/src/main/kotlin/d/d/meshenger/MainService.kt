@@ -18,9 +18,7 @@ import d.d.meshenger.call.RTCCall
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
-import java.net.ConnectException
-import java.net.ServerSocket
-import java.net.Socket
+import java.net.*
 
 class MainService : Service(), Runnable {
     private val binder = MainBinder()
@@ -136,9 +134,28 @@ class MainService : Service(), Runnable {
 
         for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
             Log.d(this, "try address: $address")
-            val socket = AddressUtils.establishConnection(address, connectTimeout)
-            if (socket != null) {
+            val socket = Socket()
+
+            try {
+                socket.connect(address, connectTimeout)
+                //socket.soTimeout = socketTimeout
                 return socket
+            } catch (e: SocketTimeoutException) {
+                Log.d(this, "SocketTimeoutException: $address")
+            } catch (e: ConnectException) {
+                // device is online, but does not listen on the given port
+                Log.d(this, "ConnectException: $address")
+            } catch (e: UnknownHostException) {
+                // hostname did not resolve
+                Log.d(this, "UnknownHostException: $address")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            try {
+                socket.close()
+            } catch (e: Exception) {
+                // ignore
             }
         }
 

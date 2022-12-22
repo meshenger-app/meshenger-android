@@ -199,7 +199,12 @@ class Database() {
                     settings.put("night_mode", "off")
                 }
 
-                new_from = to
+                new_from = "4.0.5"
+            }
+
+            if (new_from == "4.0.5") {
+                // nothing to do
+                new_from = "4.1.0"
             }
 
             alignSettings(settings)

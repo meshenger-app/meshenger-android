@@ -369,15 +369,17 @@ class MainService : Service(), Runnable {
     ) : Runnable {
         private fun pingContact(contact: Contact) : Contact.State {
             val publicKey = contact.publicKey
+            val settings = binder.getSettings()
+            val useNeighborTable = settings.useNeighborTable
+            val connectTimeout = settings.connectTimeout
             var connected = false
             val socket = Socket()
 
             try {
                 // try to connect
-                val useNeighborTable = binder.getSettings().useNeighborTable
                 for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
                     try {
-                        socket.connect(address, 500)
+                        socket.connect(address, connectTimeout)
                         connected = true
                         break
                     } catch (e: ConnectException) {

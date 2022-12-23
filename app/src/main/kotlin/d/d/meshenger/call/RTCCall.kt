@@ -31,8 +31,6 @@ class RTCCall : DataChannel.Observer {
 
     private var videoCapturer: VideoCapturer? = null
     private var contact: Contact
-    private var ownPublicKey: ByteArray
-    private var ownSecretKey: ByteArray
     private var callActivity: CallContext? = null
     private lateinit var eglBase: EglBase
     private var binder: MainService.MainBinder
@@ -162,8 +160,6 @@ class RTCCall : DataChannel.Observer {
         this.contact = contact
         this.commSocket = commSocket
         this.binder = binder
-        this.ownPublicKey = binder.getSettings().publicKey
-        this.ownSecretKey = binder.getSettings().secretKey
         this.offer = offer
 
         createMediaConstraints()
@@ -179,8 +175,6 @@ class RTCCall : DataChannel.Observer {
         this.contact = contact
         this.commSocket = null
         this.binder = binder
-        this.ownPublicKey = binder.getSettings().publicKey
-        this.ownSecretKey = binder.getSettings().secretKey
 
         createMediaConstraints()
     }
@@ -207,6 +201,9 @@ class RTCCall : DataChannel.Observer {
         Log.d(this, "createOutgoingCallInternal")
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+        val settings = binder.getSettings()
+        val ownPublicKey = settings.publicKey
+        val ownSecretKey = settings.secretKey
 
         val socket = createCommSocket(contact)
         if (socket == null) {
@@ -336,6 +333,9 @@ class RTCCall : DataChannel.Observer {
         }
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+        val settings = binder.getSettings()
+        val ownPublicKey = settings.publicKey
+        val ownSecretKey = settings.secretKey
         val pr = PacketReader(socket)
 
         while (!socket.isClosed) {
@@ -728,6 +728,9 @@ class RTCCall : DataChannel.Observer {
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         Log.d(this, "onIceGatheringChange")
                         try {
+                            val settings = binder.getSettings()
+                            val ownPublicKey = settings.publicKey
+                            val ownSecretKey = settings.secretKey
                             val pw = PacketWriter(commSocket!!)
                             val obj = JSONObject()
                             obj.put("action", "connected")
@@ -841,6 +844,10 @@ class RTCCall : DataChannel.Observer {
         val socket = commSocket
         if (socket != null && !socket.isClosed) {
             val pw = PacketWriter(socket)
+            val settings = binder.getSettings()
+            val ownPublicKey = settings.publicKey
+            val ownSecretKey = settings.secretKey
+
             val encrypted = Crypto.encryptMessage(
                 "{\"action\":\"dismissed\"}",
                 contact.publicKey,
@@ -994,8 +1001,9 @@ class RTCCall : DataChannel.Observer {
             Log.d(this, "createIncomingCallInternal")
 
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-            val ownSecretKey = binder.getDatabase().settings.secretKey
-            val ownPublicKey = binder.getDatabase().settings.publicKey
+            val settings = binder.getSettings()
+            val ownSecretKey = settings.secretKey
+            val ownPublicKey = settings.publicKey
 
             val decline = {
                 Log.d(this, "declining...")

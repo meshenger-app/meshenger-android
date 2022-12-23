@@ -169,18 +169,16 @@ class StatsReportUtil {
 
         return " Receiving\n" +
                "  Video Codec: $videoInCodec\n" +
-               "   Resolution: ${videoInWidth}x$videoInHeight\n" +
-               "   FramesRate: $videoInFrameRate\n" +
-               "   Bitrate: ${videoInBytesDelta}kbps\n" +
+               "   Quality: ${videoInWidth}x$videoInHeight @ $videoInFrameRate fps\n" +
+               "   Bitrate: ${videoInBytesDelta} kbps\n" +
                "  Audio Codec: $audioInCodec\n" +
-               "   Bitrate: ${audioInBytesDelta}kbps\n" +
+               "   Bitrate: ${audioInBytesDelta} kbps\n" +
                " Sending\n" +
                "  Video Codec: $videoOutCodec\n" +
-               "   Resolution: ${videoOutWidth}x$videoOutHeight\n" +
-               "   FramesRate: $videoOutFrameRate\n" +
-               "   Bitrate: ${videoOutBytesDelta}kbps\n" +
+               "   Quality: ${videoOutWidth}x$videoOutHeight @ $videoOutFrameRate fps\n" +
+               "   Bitrate: ${videoOutBytesDelta} kbps\n" +
                "  Audio Codec: $audioOutCodec\n" +
-               "   Bitrate: ${audioOutBytesDelta}kbps\n"
+               "   Bitrate: ${audioOutBytesDelta} kbps\n"
     }
 
     companion object {

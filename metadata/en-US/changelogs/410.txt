@@ -1,0 +1,4 @@
+* add video quality slider in debug mode
+* allow to enable hardware acceleration for video
+* allow to disable audio processing (e.g. echo cancellation)
+* fix select lists for settings (e.g. for night mode)

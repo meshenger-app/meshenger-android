@@ -30,6 +30,7 @@ class Settings {
     var useNeighborTable = false
     var promptOutgoingCalls = false
     var videoHardwareAcceleration = false
+    var noAudioProcessing = false
     var connectTimeout = 500
     var addresses = mutableListOf<String>()
 
@@ -52,6 +53,7 @@ class Settings {
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
             s.videoHardwareAcceleration = obj.getBoolean("video_hardware_acceleration")
+            s.noAudioProcessing = obj.getBoolean("no_audio_processing")
             s.connectTimeout = obj.getInt("connect_timeout")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
 
@@ -93,6 +95,7 @@ class Settings {
             obj.put("use_neighbor_table", s.useNeighborTable)
             obj.put("connect_timeout", s.connectTimeout)
             obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
+            obj.put("no_audio_processing", s.noAudioProcessing)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
             //obj.put("play_video", s.playVideo)
             //obj.put("play_audio", s.playAudio)

@@ -157,6 +157,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.noAudioProcessingSwitch).apply {
+            isChecked = settings.noAudioProcessing
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.noAudioProcessing = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
 /*
         setupSpinner(settings.videoCodec,
             R.id.spinnerVideoCodecs,

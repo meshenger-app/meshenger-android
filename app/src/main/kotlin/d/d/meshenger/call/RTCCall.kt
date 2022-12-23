@@ -196,6 +196,13 @@ class RTCCall : DataChannel.Observer {
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
+
+        if (binder.getSettings().noAudioProcessing) {
+            audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_ECHO_CANCELLATION_CONSTRAINT, "false"))
+            audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT, "false"))
+            audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_HIGH_PASS_FILTER_CONSTRAINT, "false"))
+            audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_NOISE_SUPPRESSION_CONSTRAINT, "false"))
+        }
     }
 
     private fun createOutgoingCall(contact: Contact, offer: String) {
@@ -980,6 +987,11 @@ class RTCCall : DataChannel.Observer {
     }
 
     companion object {
+        private const val AUDIO_ECHO_CANCELLATION_CONSTRAINT = "googEchoCancellation"
+        private const val AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT = "googAutoGainControl"
+        private const val AUDIO_HIGH_PASS_FILTER_CONSTRAINT = "googHighpassFilter"
+        private const val AUDIO_NOISE_SUPPRESSION_CONSTRAINT = "googNoiseSuppression"
+
         private const val STATE_CHANGE_MESSAGE = "StateChange"
         private const val CAMERA_DISABLE_MESSAGE = "CameraDisabled"
         private const val CAMERA_ENABLE_MESSAGE = "CameraEnabled"

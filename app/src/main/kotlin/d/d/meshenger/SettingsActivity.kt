@@ -350,27 +350,24 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun setupSpinner(
-        settingsMode: String?,
+        currentValue: String,
         spinnerId: Int,
-        entriesId: Int,
-        entryValuesId: Int,
+        arrayId: Int,
+        arrayValuesId: Int,
         callback: SpinnerItemSelected,
     ) {
+        val arrayValues = resources.getStringArray(arrayValuesId)
         val spinner = findViewById<Spinner>(spinnerId)
-        val spinnerAdapter: ArrayAdapter<*> =
-            ArrayAdapter.createFromResource(this, entriesId, R.layout.spinner_item_settings)
+        val spinnerAdapter = ArrayAdapter.createFromResource(this, arrayId, R.layout.spinner_item_settings)
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_settings)
+
         spinner.adapter = spinnerAdapter
-        spinner.setSelection(
-            (spinner.adapter as ArrayAdapter<CharSequence?>).getPosition(settingsMode)
-        )
+        spinner.setSelection(arrayValues.indexOf(currentValue))
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             var check = 0
             override fun onItemSelected(parent: AdapterView<*>?, view: View, pos: Int, id: Long) {
                 if (check++ > 0) {
-                    val selectedValues = resources.obtainTypedArray(entryValuesId)
-                    val settingsModeValue = selectedValues.getString(pos)
-                    callback.call(settingsModeValue)
+                    callback.call(arrayValues[pos])
                 }
             }
 

@@ -35,6 +35,10 @@ class CaptureQualityController(
         CaptureFormat(320, 240, 0, 30000), CaptureFormat(256, 144, 0, 30000)
     )
 
+    private val resolutionNames = mapOf(
+        3840 to "4K", 1920 to "Full HD", 1280 to "HD", 640 to "VGA", 320 to "QVGA"
+    )
+
     private var width = 0
     private var height = 0
     private var framerate = 0
@@ -82,6 +86,11 @@ class CaptureQualityController(
         captureFormatText.text = String.format(
             captureFormatText.context.getString(R.string.capture_format_description), width, height, framerate
         )
+
+        // Prepend resolution name
+        resolutionNames[width]?.let {
+            captureFormatText.text = "$it " + (captureFormatText.text as String)
+        }
     }
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {}

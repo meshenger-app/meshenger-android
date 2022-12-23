@@ -173,7 +173,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
             initCamera()
         } else {
             Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show()
-            finish()
+            // no finish() in case no camera access wanted but contact data pasted
         }
     }
 

@@ -98,6 +98,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                         binder!!.saveDatabase()
                         setDefaultNightMode(newValue)
                         applyNightMode()
+                        startActivity(Intent(this@SettingsActivity, SettingsActivity::class.java))
                         finish()
                     }
                 }

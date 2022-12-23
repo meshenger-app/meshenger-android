@@ -45,12 +45,12 @@
 
         <TextView
             android:id="@+id/callStats"
-            android:layout_width="150dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="5dp"
             android:layout_marginBottom="80dp"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:alpha="0.6"
             android:background="@color/colorBackgroundDark"
             android:textColor="@android:color/holo_green_light"

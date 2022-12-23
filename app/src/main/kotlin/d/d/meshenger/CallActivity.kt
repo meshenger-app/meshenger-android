@@ -13,10 +13,12 @@ import android.os.PowerManager.WakeLock
 import android.view.View
 import android.view.WindowManager.LayoutParams
 import android.widget.ImageButton
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import d.d.meshenger.call.CaptureQualityController
 import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCCall.CallState
 import d.d.meshenger.call.StatsReportUtil
@@ -56,6 +58,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var toggleMicButton: ImageButton
     private lateinit var toggleFrontCameraButton: ImageButton
     private lateinit var speakerModeButton: ImageButton
+    private lateinit var captureFormatSlider: SeekBar
+    private lateinit var captureFormatText: TextView
 
     // set by CallActivity
     private var debugOutputEnabled = false // small window for video/audio statistics and other debug data
@@ -208,6 +212,46 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
+    private fun updateCameraButtons() {
+        val cameraEnabled = currentCall.getCameraEnabled()
+
+        Log.d(this, "updateCameraButtons: cameraEnabled=$cameraEnabled")
+
+        if (cameraEnabled) {
+            toggleFrontCameraButton.visibility = View.VISIBLE
+            toggleCameraButton.setImageResource(R.drawable.ic_camera_off)
+        } else {
+            toggleFrontCameraButton.visibility = View.GONE
+            toggleCameraButton.setImageResource(R.drawable.ic_camera_on)
+        }
+    }
+
+    private fun updateDebugDisplay() {
+        val cameraEnabled = currentCall.getCameraEnabled()
+
+        Log.d(this, "updateDebugDisplay: cameraEnabled=$cameraEnabled")
+
+        if (debugOutputEnabled) {
+            currentCall.setStatsCollector(statsCollector)
+            callStats.visibility = View.VISIBLE
+            callAddress.visibility = View.VISIBLE
+        } else {
+            currentCall.setStatsCollector(null)
+            callStats.visibility = View.GONE
+            callAddress.visibility = View.GONE
+        }
+
+        if (debugOutputEnabled && cameraEnabled) {
+            captureFormatSlider.setOnSeekBarChangeListener(CaptureQualityController(captureFormatText, this))
+            captureFormatText.setVisibility(View.VISIBLE)
+            captureFormatSlider.setVisibility(View.VISIBLE)
+        } else {
+            captureFormatSlider.setOnSeekBarChangeListener(null)
+            captureFormatText.setVisibility(View.GONE)
+            captureFormatSlider.setVisibility(View.GONE)
+        }
+    }
+
     private fun setPipButtonEnabled(enable: Boolean) {
         if (enable) {
             Log.d(this, "show pip button")
@@ -241,6 +285,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     override fun onCameraEnabled() {
         runOnUiThread {
             updateCameraButtons()
+            updateDebugDisplay()
         }
     }
 
@@ -250,6 +295,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             isLocalVideoAvailable = enabled
             updateVideoDisplay()
             updateCameraButtons()
+            updateDebugDisplay()
         }
     }
 
@@ -314,8 +360,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         toggleMicButton = findViewById(R.id.toggleMicButton)
         acceptButton = findViewById(R.id.acceptButton)
         declineButton = findViewById(R.id.declineButton)
-        speakerModeButton = findViewById(R.id.speakerMode)
         toggleFrontCameraButton = findViewById(R.id.frontFacingSwitch)
+        speakerModeButton = findViewById(R.id.speakerMode)
+        captureFormatSlider = findViewById(R.id.captureFormatSlider)
+        captureFormatText = findViewById(R.id.captureFormatText)
+
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
         eglBase = EglBase.create()
@@ -567,15 +616,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         findViewById<ImageButton>(R.id.toggle_debug_output).setOnClickListener {
             debugOutputEnabled = !debugOutputEnabled
-            if (debugOutputEnabled) {
-                currentCall.setStatsCollector(statsCollector)
-                callStats.visibility = View.VISIBLE
-                callAddress.visibility = View.VISIBLE
-            } else {
-                currentCall.setStatsCollector(null)
-                callStats.visibility = View.GONE
-                callAddress.visibility = View.GONE
-            }
+            updateDebugDisplay()
         }
 
         toggleMicButton.setOnClickListener { switchMicEnabled() }
@@ -675,6 +716,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         ringtone.stop()
     }
 
+    fun onCaptureFormatChange(width: Int, height: Int, framerate: Int) {
+        currentCall?.changeCaptureFormat(width, height, framerate)
+    }
+
     private fun chooseVoiceMode() {
         val audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
 
@@ -741,16 +786,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             }
             // turn camera on
             currentCall.setCameraEnabled(true)
-        }
-    }
-
-    private fun updateCameraButtons() {
-        if (currentCall.getCameraEnabled()) {
-            toggleFrontCameraButton.visibility = View.VISIBLE
-            toggleCameraButton.setImageResource(R.drawable.ic_camera_off)
-        } else {
-            toggleFrontCameraButton.visibility = View.GONE
-            toggleCameraButton.setImageResource(R.drawable.ic_camera_on)
         }
     }
 

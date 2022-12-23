@@ -30,6 +30,8 @@ class RTCCall : DataChannel.Observer {
     private var localVideoSink: ProxyVideoSink? = null
 
     private var videoCapturer: VideoCapturer? = null
+    private var videoSource: VideoSource? = null
+
     private var contact: Contact
     private var callActivity: CallContext? = null
     private lateinit var eglBase: EglBase
@@ -108,6 +110,17 @@ class RTCCall : DataChannel.Observer {
             Log.d(this, "setCameraEnabled() executor end")
         }
     }
+
+    fun changeCaptureFormat(width: Int, height: Int, framerate: Int) {
+        execute {
+            if (!getCameraEnabled() || videoCapturer == null || videoSource == null) {
+                Log.e(this, "Failed to change capture format. Video: ${getCameraEnabled()}.")
+            } else {
+                Log.d(this, "changeCaptureFormat: ${width}x${height}@${framerate}")
+                videoSource?.adaptOutputFormat(width, height, framerate)
+            }
+        }
+  }
 
     private fun execute(r: Runnable) {
         try {
@@ -592,16 +605,19 @@ class RTCCall : DataChannel.Observer {
         }
 
         if (videoCapturer != null) {
-            val surfaceTextureHelper =
-                SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
-            val videoSource = factory.createVideoSource(videoCapturer!!.isScreencast)
-            videoCapturer!!.initialize(surfaceTextureHelper, callActivity!!.getContext(), videoSource.capturerObserver)
+            val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
+            val localVideoSource = factory.createVideoSource(videoCapturer!!.isScreencast)
+            videoCapturer!!.initialize(surfaceTextureHelper, callActivity!!.getContext(), localVideoSource.capturerObserver)
 
-            val localVideoTrack = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource)
+            val localVideoTrack = factory.createVideoTrack(VIDEO_TRACK_ID, localVideoSource)
             localVideoTrack.addSink(localVideoSink)
             localVideoTrack.setEnabled(true)
+
+            videoSource = localVideoSource
+
             return localVideoTrack
         }
+
         return null
     }
 

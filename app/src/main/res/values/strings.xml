@@ -142,4 +142,7 @@
     <string name="call_error_not_listening">Error: no app running</string>
     <string name="call_error_no_address">Error: no address</string>
     <string name="call_error_unresolved_hostname">Error: cannot resolve address</string>
+    <string name="capture_format_change_text">Slide to change capture format</string>
+    <string name="capture_format_description">%1$dx%2$d @ %3$d fps</string>
+    <string name="capture_format_muted">Muted</string>
 </resources>

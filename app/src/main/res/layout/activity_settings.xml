@@ -172,7 +172,7 @@
                         android:textSize="@dimen/title_text_size" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchBlockUnknown"
+                        android:id="@+id/blockUnknownSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -317,7 +317,7 @@
                         android:textSize="@dimen/title_text_size" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchPromptOutgoingCalls"
+                        android:id="@+id/promptOutgoingCallsSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -635,7 +635,7 @@
                         android:textSize="@dimen/title_text_size" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchUseNeighborTable"
+                        android:id="@+id/useNeighborTableSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"

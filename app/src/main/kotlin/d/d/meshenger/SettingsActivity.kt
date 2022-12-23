@@ -2,16 +2,13 @@ package d.d.meshenger
 
 import android.app.Dialog
 import android.content.*
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.PowerManager
-import android.provider.Settings
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
@@ -64,29 +61,26 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         val settings = binder!!.getSettings()
 
-        findViewById<View>(R.id.nameLayout).setOnClickListener { showChangeNameDialog() }
-        findViewById<View>(R.id.passwordLayout).setOnClickListener { showChangePasswordDialog() }
-        findViewById<View>(R.id.addressLayout).setOnClickListener {
-            val intent = Intent(this, AddressActivity::class.java)
-            startActivity(intent)
-        }
+        findViewById<TextView>(R.id.nameTv)
+            .text = settings.username.ifEmpty { getString(R.string.none) }
+        findViewById<View>(R.id.nameLayout)
+            .setOnClickListener { showChangeNameDialog() }
 
-        val username = settings.username
-        (findViewById<View>(R.id.nameTv) as TextView).text =
-            if (username.isEmpty()) getString(R.string.none) else username
-
-        val addresses = settings.addresses
-        (findViewById<View>(R.id.addressTv) as TextView).text =
-            if (addresses.size == 0) getString(R.string.none) else addresses.joinToString()
+        findViewById<TextView>(R.id.addressTv)
+            .text = if (settings.addresses.isEmpty()) getString(R.string.none) else settings.addresses.joinToString()
+        findViewById<View>(R.id.addressLayout)
+            .setOnClickListener {
+                startActivity(Intent(this@SettingsActivity, AddressActivity::class.java))
+            }
 
         val password = binder!!.getService().database_password
-        (findViewById<View>(R.id.passwordTv) as TextView).text =
-            if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
+        findViewById<TextView>(R.id.passwordTv)
+            .text = if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
+        findViewById<View>(R.id.passwordLayout)
+            .setOnClickListener { showChangePasswordDialog() }
 
-        val blockUnknown = settings.blockUnknown
-        val blockUnknownCB = findViewById<SwitchMaterial>(R.id.switchBlockUnknown)
-        blockUnknownCB.apply {
-            isChecked = blockUnknown
+        findViewById<SwitchMaterial>(R.id.blockUnknownSwitch).apply {
+            isChecked = settings.blockUnknown
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 settings.blockUnknown = isChecked
                 binder!!.saveDatabase()
@@ -109,13 +103,13 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 }
             })
 
-        findViewById<TextView>(R.id.connectTimeoutTv).text = "${settings.connectTimeout}"
-        findViewById<View>(R.id.connectTimeoutLayout).setOnClickListener { showChangeConnectTimeoutDialog() }
+        findViewById<TextView>(R.id.connectTimeoutTv)
+            .text = "${settings.connectTimeout}"
+        findViewById<View>(R.id.connectTimeoutLayout)
+            .setOnClickListener { showChangeConnectTimeoutDialog() }
 
-        val promptOutgoingCalls = settings.promptOutgoingCalls
-        val promptOutgoingCallsCB = findViewById<SwitchMaterial>(R.id.switchPromptOutgoingCalls)
-        promptOutgoingCallsCB.apply {
-            isChecked = promptOutgoingCalls
+        findViewById<SwitchMaterial>(R.id.promptOutgoingCallsSwitch).apply {
+            isChecked = settings.promptOutgoingCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 settings.promptOutgoingCalls = isChecked
                 binder!!.saveDatabase()
@@ -129,28 +123,26 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         applySettingsMode("basic")
 
         basicRadioButton.isChecked = true
-        basicRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+        basicRadioButton.setOnCheckedChangeListener { _, b ->
             if (b) {
                 applySettingsMode("basic")
             }
         }
 
-        advancedRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+        advancedRadioButton.setOnCheckedChangeListener { _, b ->
             if (b) {
                 applySettingsMode("advanced")
             }
         }
 
-        expertRadioButton.setOnCheckedChangeListener { compoundButton, b ->
+        expertRadioButton.setOnCheckedChangeListener { _, b ->
             if (b) {
                 applySettingsMode("expert")
             }
         }
 
-        val useNeighborTable = settings.useNeighborTable
-        val useNeighborTableCB = findViewById<SwitchMaterial>(R.id.switchUseNeighborTable)
-        useNeighborTableCB.apply {
-            isChecked = useNeighborTable
+        findViewById<SwitchMaterial>(R.id.useNeighborTableSwitch).apply {
+            isChecked = settings.useNeighborTable
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 settings.useNeighborTable = isChecked
                 binder!!.saveDatabase()
@@ -169,6 +161,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                     }
                 }
             })
+
         setupSpinner(settings.audioCodec,
             R.id.spinnerAudioCodecs,
             R.array.audioCodecs,
@@ -181,6 +174,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                     }
                 }
             })
+
         setupSpinner(settings.videoResolution,
             R.id.spinnerVideoResolutions,
             R.array.videoResolutions,
@@ -193,37 +187,38 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                     }
                 }
             })
-        val playAudio = settings.playAudio
-        val playAudioCB = findViewById<CheckBox>(R.id.checkBoxPlayAudio)
-        playAudioCB.isChecked = playAudio
-        playAudioCB.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            // save value
-            settings.playAudio = isChecked
-            binder!!.saveDatabase()
-        }
 
-        val playVideo = settings.playVideo
-        val playVideoCB = findViewById<CheckBox>(R.id.checkBoxPlayVideo)
-        playVideoCB.isChecked = playVideo
-        playVideoCB.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            // save value
-            settings.playVideo = isChecked
-            binder!!.saveDatabase()
-        }
-*/
-        val ignoreBatteryOptimizations = getIgnoreBatteryOptimizations()
-        val ignoreBatteryOptimizationsCB =
-            findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations)
-        ignoreBatteryOptimizationsCB.isChecked = ignoreBatteryOptimizations
-        ignoreBatteryOptimizationsCB.setOnCheckedChangeListener { _: CompoundButton?, _: Boolean ->
-            // Only required for Android 6 or later
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val intent =
-                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                intent.data = Uri.parse("package:" + this.packageName)
-                this.startActivity(intent)
+        findViewById<CheckBox>(R.id.checkBoxPlayAudio).apply {
+            isChecked = settings.playAudio
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                // save value
+                settings.playAudio = isChecked
+                binder!!.saveDatabase()
             }
         }
+
+        findViewById<CheckBox>(R.id.checkBoxPlayVideo).apply {
+            isChecked = settings.playVideo
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                // save value
+                settings.playVideo = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
+        findViewById<CheckBox>(R.id.checkBoxIgnoreBatteryOptimizations).apply {
+            isChecked = getIgnoreBatteryOptimizations()
+            setOnCheckedChangeListener { _: CompoundButton?, _: Boolean ->
+                // Only required for Android 6 or later
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val intent =
+                        Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                    intent.data = Uri.parse("package:" + this.packageName)
+                    this.startActivity(intent)
+                }
+            }
+        }
+*/
     }
 
     private fun showChangeNameDialog() {

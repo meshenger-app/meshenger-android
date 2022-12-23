@@ -203,7 +203,7 @@ class Database() {
             }
 
             if (new_from == "4.0.5") {
-                // nothing to do
+                settings.put("video_hardware_acceleration", false)
                 new_from = "4.1.0"
             }
 

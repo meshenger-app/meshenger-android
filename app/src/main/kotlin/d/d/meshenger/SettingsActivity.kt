@@ -148,6 +148,15 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 binder!!.saveDatabase()
             }
         }
+
+        findViewById<SwitchMaterial>(R.id.videoHardwareAccelerationSwitch).apply {
+            isChecked = settings.videoHardwareAcceleration
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.videoHardwareAcceleration = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
 /*
         setupSpinner(settings.videoCodec,
             R.id.spinnerVideoCodecs,

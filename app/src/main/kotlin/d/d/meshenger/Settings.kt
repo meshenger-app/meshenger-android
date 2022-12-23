@@ -29,6 +29,7 @@ class Settings {
     var blockUnknown = false
     var useNeighborTable = false
     var promptOutgoingCalls = false
+    var videoHardwareAcceleration = false
     var connectTimeout = 500
     var addresses = mutableListOf<String>()
 
@@ -50,6 +51,7 @@ class Settings {
             s.nightMode = obj.getString("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
+            s.videoHardwareAcceleration = obj.getBoolean("video_hardware_acceleration")
             s.connectTimeout = obj.getInt("connect_timeout")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
 
@@ -90,6 +92,7 @@ class Settings {
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
             obj.put("connect_timeout", s.connectTimeout)
+            obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
             //obj.put("play_video", s.playVideo)
             //obj.put("play_audio", s.playAudio)

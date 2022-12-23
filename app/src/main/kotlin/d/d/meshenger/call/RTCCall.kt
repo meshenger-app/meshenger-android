@@ -654,13 +654,16 @@ class RTCCall : DataChannel.Observer {
                 .createInitializationOptions()
         )
 
-        val videoCodecHwAcceleration = false
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
 
-        if (videoCodecHwAcceleration) {
-            encoderFactory = HWVideoEncoderFactory(eglBase.eglBaseContext, true, true)
-            decoderFactory = HWVideoDecoderFactory(eglBase.eglBaseContext)
+        Log.d(this, "video acceleration: ${binder.getSettings().videoHardwareAcceleration}")
+
+        if (binder.getSettings().videoHardwareAcceleration) {
+            val enableIntelVp8Encoder = true
+            val enableH264HighProfile = true
+            encoderFactory = DefaultVideoEncoderFactory(eglBase.eglBaseContext, enableIntelVp8Encoder, enableH264HighProfile)
+            decoderFactory = DefaultVideoDecoderFactory(eglBase.eglBaseContext)
         } else {
             encoderFactory = SoftwareVideoEncoderFactory()
             decoderFactory = SoftwareVideoDecoderFactory()

@@ -5,23 +5,6 @@ import org.json.JSONArray
 import java.util.*
 
 class Settings {
-    //var playVideo = false
-    //var playAudio = false
-
-    //var audioProcessing = false
-    //var videoCodec = "VP8"
-    //var audioCodec = "OPUS"
-
-    /*
-     * speakerphone:
-     *
-     *  "auto"  => enable/disable by proximity sensor (default)
-     *  "true"  => enable hands-free talking
-     *  "false" => disable hands-free talking
-     */
-    //var speakerphone = "true"
-    //var videoResolution = "Default"
-
     var username = ""
     var secretKey = byteArrayOf()
     var publicKey = byteArrayOf()
@@ -57,13 +40,6 @@ class Settings {
             s.connectTimeout = obj.getInt("connect_timeout")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
 
-            //s.playVideo = obj.getBoolean("play_video")
-            //s.playAudio = obj.getBoolean("play_audio")
-            //s.audioProcessing = obj.getBoolean("audio_processing")
-            //s.videoCodec = obj.getString("video_codec")
-            //s.audioCodec = obj.getString("audio_codec")
-            //s.speakerphone = obj.getString("speakerphone")
-
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
@@ -97,12 +73,6 @@ class Settings {
             obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
             obj.put("no_audio_processing", s.noAudioProcessing)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
-            //obj.put("play_video", s.playVideo)
-            //obj.put("play_audio", s.playAudio)
-            //obj.put("audio_processing", s.audioProcessing)
-            //obj.put("video_codec", s.videoCodec)
-            //obj.put("audio_codec", s.audioCodec)
-            //obj.put("speakerphone", s.speakerphone)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

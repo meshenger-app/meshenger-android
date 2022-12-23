@@ -50,16 +50,6 @@
     <string name="settings_connect_timeout">Connect Timeout (ms)</string>
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>
     <string name="settings_no_audio_processing">No Audio Processing</string>
-    <string name="settings_speakerphone">Speakerphone</string>
-    <string name="settings_video_resolutions">Video Resolutions</string>
-    <string name="settings_video_codecs">Video Codecs</string>
-    <string name="settings_audio_codecs">Audio Codecs</string>
-    <string name="settings_enable_microphone">Enable Microphone</string>
-    <string name="settings_enable_speaker">Enable Speaker</string>
-    <string name="settings_enable_camera">Enable Camera</string>
-    <string name="settings_enable_video">Enable Video</string>
-    <string name="settings_auto_accept_call">Accept Call Immediately</string>
-    <string name="settings_auto_connect_call">Start Calls Immediately</string>
     <string name="none">None</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>

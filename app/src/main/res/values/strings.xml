@@ -7,7 +7,7 @@
     <string name="name_prompt">What should be your name?</string>
     <string name="scan_invitation">Scan This QR-Code</string>
     <string name="scan_invited">QR-Code Scanning</string>
-    <string name="paste_invitation">Paste Data Here</string>
+    <string name="paste_invitation">Paste Contact Data Here</string>
     <string name="invalid_data">Invalid data</string>
     <string name="cancel">Cancel</string>
     <string name="next">next</string>

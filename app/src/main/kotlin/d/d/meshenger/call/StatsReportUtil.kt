@@ -66,13 +66,13 @@ class StatsReportUtil {
                         videoInHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
                     }
 
-                    val bytes = members["bytesReceived"] as BigInteger?
-                    videoInBytesDelta = (bytes!!.toLong() - lastBytesReceivedVideo.toLong()) * 8 / STATS_INTERVAL_MS
+                    val bytes = members["bytesReceived"] as BigInteger
+                    videoInBytesDelta = (bytes.toLong() - lastBytesReceivedVideo.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesReceivedVideo = bytes
 
-                    val framesDecoded = members["framesDecoded"] as Long?
+                    val framesDecoded = members["framesDecoded"] as Long
                     val lastFrame = lastFrameDecodedIn
-                    videoInFrameRate = ((framesDecoded!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
+                    videoInFrameRate = ((framesDecoded - lastFrame) * 1000L / STATS_INTERVAL_MS)
                     lastFrameDecodedIn = framesDecoded
                     videoInFound = true
                 }
@@ -89,8 +89,8 @@ class StatsReportUtil {
                         audioInCodec = (vmap.members["mimeType"] as String?) ?: audioInCodec
                     }
 
-                    val bytes = members["bytesReceived"] as BigInteger?
-                    audioInBytesDelta = (bytes!!.toLong() - lastBytesReceivedAudio.toLong()) * 8 / STATS_INTERVAL_MS
+                    val bytes = members["bytesReceived"] as BigInteger
+                    audioInBytesDelta = (bytes.toLong() - lastBytesReceivedAudio.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesReceivedAudio = bytes
                     audioInFound = true
                 }
@@ -118,13 +118,13 @@ class StatsReportUtil {
                         videoOutCodec = (vmap.members["mimeType"] as String?) ?: videoOutCodec
                     }
 
-                    val bytes = map["bytesSent"] as BigInteger?
-                    videoOutBytesDelta = (bytes!!.toLong() - lastBytesSentVideo.toLong()) * 8 / STATS_INTERVAL_MS
+                    val bytes = map["bytesSent"] as BigInteger
+                    videoOutBytesDelta = (bytes.toLong() - lastBytesSentVideo.toLong()) * 8 / STATS_INTERVAL_MS
                     lastBytesSentVideo = bytes
 
-                    val framesEncoded = map["framesEncoded"] as Long?
+                    val framesEncoded = map["framesEncoded"] as Long
                     val lastFrame = lastFrameDecodedOut
-                    videoOutFrameRate = ((framesEncoded!! - lastFrame) * 1000L / STATS_INTERVAL_MS)
+                    videoOutFrameRate = ((framesEncoded - lastFrame) * 1000L / STATS_INTERVAL_MS)
                     lastFrameDecodedOut = framesEncoded
                     videoOutFound = true
                 }
@@ -141,8 +141,8 @@ class StatsReportUtil {
                         audioOutCodec = (vmap.members["mimeType"] as String?) ?: audioOutCodec
                     }
 
-                    val bytes = map["bytesSent"] as BigInteger?
-                    audioOutBytesDelta = (bytes!!.toLong() - lastBytesSentAudio.toLong())  * 8 / STATS_INTERVAL_MS
+                    val bytes = map["bytesSent"] as BigInteger
+                    audioOutBytesDelta = (bytes.toLong() - lastBytesSentAudio.toLong())  * 8 / STATS_INTERVAL_MS
                     lastBytesSentAudio = bytes
                     audioOutFound = true
                 }

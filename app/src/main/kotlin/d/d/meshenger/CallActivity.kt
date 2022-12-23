@@ -34,7 +34,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var contact: Contact
     private lateinit var eglBase: EglBase
 
-    private var currentCallSet = false
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
     private lateinit var passiveWakeLock: WakeLock
@@ -367,7 +366,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 Log.d(this@CallActivity, "onServiceConnected")
                 binder = iBinder as MainService.MainBinder
                 currentCall = RTCCall(binder!!, contact)
-                currentCallSet = true
                 binder!!.setCurrentCall(currentCall)
 
                 updateVideoDisplay()
@@ -392,7 +390,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         val startCallListener = View.OnClickListener {
             Log.d(this, "start call...")
-            if (!currentCallSet) {
+            if (binder!!.getCurrentCall() == null) {
                 Log.d(this, "currentCall not set")
                 return@OnClickListener
             }
@@ -430,7 +428,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
                 Log.d(this@CallActivity, "onServiceConnected")
                 binder = iBinder as MainService.MainBinder
                 currentCall = binder!!.getCurrentCall()!!
-                currentCallSet = true
 
                 currentCall.setCallContext(this@CallActivity)
                 Thread {
@@ -479,7 +476,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         // accept call
         val acceptListener = View.OnClickListener {
             Log.d(this, "accept call...")
-            if (!currentCallSet) {
+            if (binder!!.getCurrentCall() == null) {
                 Log.d(this, "currentCall not set")
                 return@OnClickListener
             }

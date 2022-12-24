@@ -1,4 +1,8 @@
-* add video quality slider in debug mode
-* allow to enable hardware acceleration for video
-* allow to disable audio processing (e.g. echo cancellation)
+* remove ACCESS_FINE_LOCATION permission (e.g. would allow access to GPS)
+* allow use of QR scan site without camera permission (to paste contacts)
+* add video quality slider in debug view
+* show remote address in debug view
+* add setting to enable hardware acceleration for video
+* add setting to disable audio processing (e.g. echo cancellation)
 * fix select lists for settings (e.g. for night mode)
+* show public key in settings

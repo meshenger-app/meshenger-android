@@ -79,6 +79,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<View>(R.id.passwordLayout)
             .setOnClickListener { showChangePasswordDialog() }
 
+        findViewById<TextView>(R.id.publicKeyTv)
+            .text = Utils.byteArrayToHexString(settings.publicKey)
+        findViewById<View>(R.id.publicKeyLayout)
+            .setOnClickListener { Toast.makeText(this@SettingsActivity, R.string.read_only, Toast.LENGTH_SHORT).show() }
+
         findViewById<SwitchMaterial>(R.id.blockUnknownSwitch).apply {
             isChecked = settings.blockUnknown
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->

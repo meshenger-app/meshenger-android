@@ -327,6 +327,39 @@
 
                 </RelativeLayout>
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
+                    app:dividerColor="@color/light_grey" />
+
+                <LinearLayout
+                    android:id="@+id/publicKeyLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_public_key"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <TextView
+                        android:id="@+id/publicKeyTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_regular"
+                        android:textIsSelectable="true"
+                        android:text=""
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/options_text_size" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

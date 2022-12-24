@@ -205,7 +205,7 @@ class Database() {
             if (new_from == "4.0.5") {
                 settings.put("video_hardware_acceleration", false)
                 settings.put("no_audio_processing", false)
-                new_from = "4.1.0"
+                new_from = "4.0.6"
             }
 
             alignSettings(settings)

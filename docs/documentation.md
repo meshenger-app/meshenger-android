@@ -3,28 +3,23 @@ Meshenger Documentation
 
 ## Motivation
 
-Currently, the market of VoIP software is dominated by software owned by big companies and tied to central infrastructures in order to monetize the platform and control the data flow. Individuals and community networks often try to establish decentralized networks, which provide a community infrastructure to provide Internet to areas not yet covered and to connect people with local pathways.
-
-In short, Meshenger wants to put local and direct communication first.
+Currently, the market of VoIP software is dominated by software owned by big companies and it is tied to central infrastructure in order to monetize the platform and control the data flow. Various communities (e.g. [Freifunk](https://freifunk.net/), [Yggdrasil](https://yggdrasil-network.github.io/), ..) try to establish decentralized networks, to connect people with local pathways even if there is not Internet. Common VoIP software usually does not work there. That is where Meshenger can serve as a "killer" App.
 
 ## Finding Contacts
 
-Meshenger uses primarily IPv6 addresses (fc00::/7) to establish direct connections to contacts. As part of the QR-code exchange, the MAC address of the WiFi adapter is exchanged. Other addresses such as hostnames can be configured manually as well.
+Meshenger has no discovery mechanism by design. Contacts are shared via QR-Code or JSON text blob.
 
-From the contacts MAC address, IPv6 addresses are derived by looking at the own IPv6 addresses. If the own phone has addresses that contain the own MAC address, then these addresses are taken and the MAC substituded with the contacts MAC address. These generated addresses will be used to try to reach the contact.
+## How It Connects
 
-All IPv6 capable devices have these addresses in the form of IPv6 link local addresses: e.g. `fe80:1122:33ff:fe44:5566` when the MAC is `11:22:33:44:55:66`. (Also, a bit needs to be flipped, but we ignore that here for the sake of simplicity.)
-Other types of IPv6 addresses of the same scheme ([EUI-64](https://de.wikipedia.org/wiki/EUI-64)) might also be present.
-
-Instead of MAC addresses, IPv4/IPv6 addresses or DNS names (e.g. `hostname.local`) can also be used as well. The only limitation is that both phones need to have a reachable IP address.
+Connections are established via the addresses that are part of a contact. by default this is only the generated MAC address of the WiFi adapter. The MAC address will be used to generate IPv6 link local and other addresses depending on the current IPv6 prefixes. The addresses in the contact can also be list of IPv4/IPv6 addresses or even domain names. This can be configured manually in the settings.
 
 ## Randomised MAC Addresses
 
-Most Android version these days try to prevent identification of phones by changing the MAC address. The MAC address might be randomly initialised different for each WiFi network, change on every connect or after some timeout (IPv6 Privacy Extensions). This is a major drawback for Meshenger, since connections cannot be established anymore after the address changes. If this is an issue for you, then you need to try to disable MAC address randomisation for a paritcular network. The Adnroid Developer Settings let you disable it, but this might be not what you want.
+Most Android version these days try to prevent identification of phones by changing the MAC address. The MAC address might be randomly initialised different for each WiFi network, change on every connect or after some timeout (IPv6 Privacy Extensions). This can be a major drawback for Meshenger, since connections cannot be established anymore after the MAC/IP address changes and the contact needs to be updated. The Adnroid Developer Settings let you disable it, but this might be not what you want.
 
 ## WebRTC
 
-Meshenger uses [WebRTC](https://webrtc.org/), a well-build, tested and mostly documented standard for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger.
+Meshenger uses [WebRTC](https://webrtc.org/), a well-build, tested and mostly documented standard for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger, as there is no use.
 
 Resources:
 
@@ -36,7 +31,7 @@ Resources:
 
 ## Crypto
 
-[libsodium](https://github.com/jedisct1/libsodium) is used for the encryption and authentication of the initial connection. After that, WebRTC is used. WebRTC uses it's own encryption.
+[libsodium](https://github.com/jedisct1/libsodium) is used for the encryption and authentication of the initial TCP/IP connection. After that, WebRTC is establishing a UDP connection for Audio/Video data. WebRTC uses it's own encryption.
 
 ### Database
 
@@ -96,35 +91,4 @@ This phase was concluded with Meshenger 3.0.0.
 
 ### Fourth Phase
 
-This phase focuses on bug fixing, stabilization and adding support for multicast addresses to allow calls into different networks.
-
-## Source Code
-
-StartActivity.java (starts first)
- - show splash screen
- - start MainService
-   - runs in background
- - check if database is loaded, username set, key pair generated
- - start MainActivity
-   - shows contact list and event list
-
-MainActivity.java
- - displays ContactListFragment and EventListFragment
-
-MainService:
- - listen for incoming calles in a thread
- - ping contacts on request
- - holds database instance
- - provides MainBinder class to access database
-
- MainService:
- - listens for incoming connections (calls and pings) in thread
- - ping contacts on request
- - allows access to the database (settings and contact list) via class MainBinder
-
-Incoming call:
-1. MainService.handleClient() starts CallActivity Intent with Contact object as argument ("ACTION_INCOMING_CALL")
-
-Outgoing call:
-1. ContactListFragment or EventListFragment starts CallActivity Intent with Contact object as argument ("ACTION_OUTGOING_CALL")
-2. In CallActivity, RTCCall.startCall() is called
+This phase focuses on bug fixing, stabilization, usability improvements and some features.

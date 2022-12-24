@@ -743,6 +743,7 @@ class RTCCall : DataChannel.Observer {
 
         execute {
             Log.d(this, "initIncoming() executor start")
+            val remoteAddress = commSocket!!.remoteSocketAddress as InetSocketAddress
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
@@ -769,6 +770,7 @@ class RTCCall : DataChannel.Observer {
                             )
                             if (encrypted != null) {
                                 pw.writeMessage(encrypted)
+                                callActivity?.onRemoteAddressChange(remoteAddress, true)
                                 reportStateChange(CallState.CONNECTED)
                             } else {
                                 reportStateChange(CallState.ERROR_CRYPTOGRAPHY)

@@ -160,66 +160,66 @@ internal object AddressUtils
             || isDomain(address)
     }
 
-    fun stringToInetSocketAddress(addr: String?, default_port: Int): InetSocketAddress? {
-        if (addr == null || addr.isEmpty()) {
+    fun stringToInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {
+        if (address == null || address.isEmpty()) {
             return null
-        } else if (addr.startsWith("[")) {
-            val end = addr.lastIndexOf("]:")
+        } else if (address.startsWith("[")) {
+            val end = address.lastIndexOf("]:")
             if (end > 0) {
                 // [<address>]:<port>
-                val addr_part = addr.substring(1, end)
-                val port_part = addr.substring(end + 2)
-                val port = port_part.toUShortOrNull()?.toInt()
-                if (port != null && isIPAddress(addr_part)) {
-                    return InetSocketAddress(addr_part, port)
+                val addressPart = address.substring(1, end)
+                val portPart = address.substring(end + 2)
+                val port = portPart.toUShortOrNull()?.toInt()
+                if (port != null && isIPAddress(addressPart)) {
+                    return InetSocketAddress(addressPart, port)
                 }
             }
         } else {
-            if (addr.count { it == ':' } == 1) {
+            if (address.count { it == ':' } == 1) {
                 //<hostname>:<port>
                 //<ipv4-address>:<port>
-                val end = addr.indexOf(":")
-                val addr_part = addr.substring(0, end)
-                val port_part = addr.substring(end + 1)
-                val port = port_part.toUShortOrNull()?.toInt()
+                val end = address.indexOf(":")
+                val addressPart = address.substring(0, end)
+                val portPart = address.substring(end + 1)
+                val port = portPart.toUShortOrNull()?.toInt()
                 if (port != null) {
-                    if (isIPAddress(addr_part)) {
-                        return InetSocketAddress(addr_part, port)
+                    if (isIPAddress(addressPart)) {
+                        return InetSocketAddress(addressPart, port)
                     } else {
-                        return InetSocketAddress.createUnresolved(addr_part, port)
+                        return InetSocketAddress.createUnresolved(addressPart, port)
                     }
                 }
-            } else if (isIPAddress(addr)) {
+            } else if (isIPAddress(address)) {
                 //<ipv4-address>
-                return InetSocketAddress(addr, default_port)
-            } else if (isDomain(addr)) {
+                return InetSocketAddress(address, defaultPort)
+            } else if (isDomain(address)) {
                 //<hostname>
-                return InetSocketAddress.createUnresolved(addr, default_port)
+                return InetSocketAddress.createUnresolved(address, defaultPort)
             }
         }
         return null
     }
 
-    fun inetSocketAddressToString(saddr: InetSocketAddress?): String? {
-        if (saddr == null) {
+    fun inetSocketAddressToString(socketAddress: InetSocketAddress?): String? {
+        if (socketAddress == null) {
             return null
         }
-        val addr = saddr.address
-        val port = saddr.port
+        val address = socketAddress.address
+        val port = socketAddress.port
         if (port !in 0..65535) {
             return null
-        } else if (addr == null) {
-            val host = saddr.hostString.trimStart('/')
+        } else if (address == null) {
+            val host = socketAddress.hostString.trimStart('/')
             if (isAddress(host)) {
                 return "$host:$port"
             } else {
                 return null
             }
-        } else if (addr is Inet6Address) {
-            val str = addr.toString().trimStart('/')
+        } else if (address is Inet6Address) {
+            val str = address.toString().trimStart('/')
             return "[$str]:$port"
         } else {
-            val str = addr.toString().trimStart('/')
+            val str = address.toString().trimStart('/')
             return "$str:$port"
         }
     }

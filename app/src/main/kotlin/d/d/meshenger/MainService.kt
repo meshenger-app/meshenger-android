@@ -24,9 +24,9 @@ class MainService : Service(), Runnable {
     private val binder = MainBinder()
     private var serverSocket: ServerSocket? = null
     private var database: Database? = null
-    var first_start = false
-    private var database_path = ""
-    var database_password = ""
+    var firstStart = false
+    private var databasePath = ""
+    var databasePassword = ""
 
     @Volatile
     private var isServerSocketRunning = true
@@ -34,7 +34,7 @@ class MainService : Service(), Runnable {
 
     override fun onCreate() {
         super.onCreate()
-        database_path = this.filesDir.toString() + "/database.bin"
+        databasePath = this.filesDir.toString() + "/database.bin"
         // handle incoming connections
         Thread(this).start()
     }
@@ -87,29 +87,29 @@ class MainService : Service(), Runnable {
     }
 
     fun loadDatabase() {
-        if (File(database_path).exists()) {
+        if (File(databasePath).exists()) {
             // open existing database
-            val db = readInternalFile(database_path)
-            database = Database.fromData(db, database_password)
-            first_start = false
+            val db = readInternalFile(databasePath)
+            database = Database.fromData(db, databasePassword)
+            firstStart = false
         } else {
             // create new database
             database = Database()
-            first_start = true
+            firstStart = true
         }
     }
 
     fun mergeDatabase(new_db: Database) {
-        val old_database = database!!
+        val oldDatabase = database!!
 
-        old_database.settings = new_db.settings
+        oldDatabase.settings = new_db.settings
 
         for (contact in new_db.contacts.contactList) {
-            old_database.contacts.addContact(contact)
+            oldDatabase.contacts.addContact(contact)
         }
 
         for (event in new_db.events.eventList) {
-            old_database.events.addEvent(event)
+            oldDatabase.events.addEvent(event)
         }
     }
 
@@ -117,9 +117,9 @@ class MainService : Service(), Runnable {
         try {
             val db = database
             if (db != null) {
-                val dbData = Database.toData(db, database_password)
+                val dbData = Database.toData(db, databasePassword)
                 if (dbData != null) {
-                    writeInternalFile(database_path, dbData)
+                    writeInternalFile(databasePath, dbData)
                 }
             }
         } catch (e: Exception) {

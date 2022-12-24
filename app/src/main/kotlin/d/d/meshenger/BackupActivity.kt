@@ -131,12 +131,12 @@ class BackupActivity : BaseActivity(), ServiceConnection {
 
     private fun importDatabase(uri: Uri) {
         val binder = this.binder ?: return
-        val new_database : Database
+        val newDatabase : Database
 
         try {
             val password = passwordEditText.text.toString()
             val db = readExternalFile(this, uri)
-            new_database = Database.fromData(db, password)
+            newDatabase = Database.fromData(db, password)
         } catch (e: Database.WrongPasswordException) {
             Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
             return
@@ -145,14 +145,14 @@ class BackupActivity : BaseActivity(), ServiceConnection {
             return
         }
 
-        val contactCount = new_database.contacts.contactList.size
-        val eventCount = new_database.events.eventList.size
+        val contactCount = newDatabase.contacts.contactList.size
+        val eventCount = newDatabase.events.eventList.size
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.confirm)
         builder.setMessage(String.format(getString(R.string.import_dialog), contactCount, eventCount))
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
-            binder.getService().mergeDatabase(new_database)
+            binder.getService().mergeDatabase(newDatabase)
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }

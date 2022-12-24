@@ -13,7 +13,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import d.d.meshenger.MainService.MainBinder
 
 class QRShowActivity : BaseActivity(), ServiceConnection {
-    private var extra_contact: Contact? = null
+    private var extraContact: Contact? = null
     private var binder: MainBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
         setContentView(R.layout.activity_qrshow)
 
         if (intent.hasExtra("EXTRA_CONTACT")) {
-            extra_contact = intent.extras!!["EXTRA_CONTACT"] as Contact?
+            extraContact = intent.extras!!["EXTRA_CONTACT"] as Contact?
         }
 
         setTitle(getString(R.string.scan_invitation))
@@ -35,7 +35,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         findViewById<View>(R.id.fabShare).setOnClickListener {
             try {
-                val contact = extra_contact ?: binder!!.getSettings().getOwnContact()
+                val contact = extraContact ?: binder!!.getSettings().getOwnContact()
                 val data = Contact.toJSON(contact, false).toString()
                 val i = Intent(Intent.ACTION_SEND)
                 i.putExtra(Intent.EXTRA_TEXT, data)
@@ -56,8 +56,8 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun generateQR(contact: Contact) {
-        val name_tv = findViewById<TextView>(R.id.contact_name_tv)
-        name_tv.text = contact.name
+        findViewById<TextView>(R.id.contact_name_tv)
+            .text = contact.name
 
         val data = Contact.toJSON(contact, false).toString()
         val multiFormatWriter = MultiFormatWriter()
@@ -75,7 +75,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
         binder = iBinder as MainBinder
 
         try {
-            val contact = extra_contact ?: binder!!.getSettings().getOwnContact()
+            val contact = extraContact ?: binder!!.getSettings().getOwnContact()
             generateQR(contact)
         } catch (e: Exception) {
             e.printStackTrace()

@@ -51,29 +51,29 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
     private fun addContact(data: String) {
         val obj = JSONObject(data)
-        val new_contact = Contact.fromJSON(obj, false)
-        if (new_contact.addresses.isEmpty()) {
+        val newContact = Contact.fromJSON(obj, false)
+        if (newContact.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_LONG).show()
         }
 
         // lookup existing contacts by key and name
         val contacts = binder!!.getContacts()
-        val existing_pubkey_contact = contacts.getContactByPublicKey(new_contact.publicKey)
-        val existing_name_contact = contacts.getContactByName(new_contact.name)
-        if (existing_pubkey_contact != null) {
+        val existingContactByPublicKey = contacts.getContactByPublicKey(newContact.publicKey)
+        val existingContactByName = contacts.getContactByName(newContact.name)
+        if (existingContactByPublicKey != null) {
             // contact with that public key exists
-            showPubkeyConflictDialog(new_contact, existing_pubkey_contact)
-        } else if (existing_name_contact != null) {
+            showPubkeyConflictDialog(newContact, existingContactByPublicKey)
+        } else if (existingContactByName != null) {
             // contact with that name exists
-            showNameConflictDialog(new_contact, existing_name_contact)
+            showNameConflictDialog(newContact, existingContactByName)
         } else {
             // no conflict
-            binder!!.addContact(new_contact)
+            binder!!.addContact(newContact)
             finish()
         }
     }
 
-    private fun showPubkeyConflictDialog(new_contact: Contact, other_contact: Contact) {
+    private fun showPubkeyConflictDialog(newContact: Contact, other_contact: Contact) {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_add_contact_pubkey_conflict)
         val nameTextView =
@@ -83,7 +83,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         nameTextView.text = other_contact.name
         replaceButton.setOnClickListener {
             binder!!.deleteContact(other_contact.publicKey)
-            binder!!.addContact(new_contact)
+            binder!!.addContact(newContact)
 
             // done
             Toast.makeText(this@QRScanActivity, R.string.done, Toast.LENGTH_SHORT).show()
@@ -97,7 +97,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         dialog.show()
     }
 
-    private fun showNameConflictDialog(new_contact: Contact, other_contact: Contact) {
+    private fun showNameConflictDialog(newContact: Contact, other_contact: Contact) {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_add_contact_name_conflict)
         val nameEditText = dialog.findViewById<EditText>(R.id.conflict_contact_edit_textview)
@@ -107,7 +107,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         nameEditText.setText(other_contact.name)
         replaceButton.setOnClickListener {
             binder!!.deleteContact(other_contact.publicKey)
-            binder!!.addContact(new_contact)
+            binder!!.addContact(newContact)
 
             // done
             Toast.makeText(this@QRScanActivity, R.string.done, Toast.LENGTH_SHORT).show()
@@ -126,8 +126,8 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
             }
 
             // rename
-            new_contact.name = name
-            binder!!.addContact(new_contact)
+            newContact.name = name
+            binder!!.addContact(newContact)
 
             // done
             Toast.makeText(this@QRScanActivity, R.string.done, Toast.LENGTH_SHORT).show()

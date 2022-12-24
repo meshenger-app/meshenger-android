@@ -7,38 +7,38 @@ import java.util.*
 
 internal object Crypto {
     // for development / testing only
-    private val disable_crypto = false
+    private val disableCrypto = false
 
     // decrypt database using a password
     @JvmStatic
-    fun decryptDatabase(encrypted_message: ByteArray?, password: ByteArray?): ByteArray? {
-        if (encrypted_message == null || password == null) {
+    fun decryptDatabase(encryptedMessage: ByteArray?, password: ByteArray?): ByteArray? {
+        if (encryptedMessage == null || password == null) {
             return null
         }
 
-        if (encrypted_message.size <= 4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES) {
+        if (encryptedMessage.size <= 4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES) {
             return null
         }
 
-        if (disable_crypto) {
-            return encrypted_message
+        if (disableCrypto) {
+            return encryptedMessage
         }
 
         // separate salt, nonce and encrypted data
         val header = ByteArray(4)
         val salt = ByteArray(Sodium.crypto_pwhash_saltbytes())
         val nonce = ByteArray(SodiumConstants.NONCE_BYTES)
-        val encrypted_data =
-            ByteArray(encrypted_message.size - header.size - salt.size - nonce.size)
-        System.arraycopy(encrypted_message, 0, header, 0, header.size)
-        System.arraycopy(encrypted_message, header.size, salt, 0, salt.size)
-        System.arraycopy(encrypted_message, header.size + salt.size, nonce, 0, nonce.size)
+        val encryptedData =
+            ByteArray(encryptedMessage.size - header.size - salt.size - nonce.size)
+        System.arraycopy(encryptedMessage, 0, header, 0, header.size)
+        System.arraycopy(encryptedMessage, header.size, salt, 0, salt.size)
+        System.arraycopy(encryptedMessage, header.size + salt.size, nonce, 0, nonce.size)
         System.arraycopy(
-            encrypted_message,
+            encryptedMessage,
             header.size + salt.size + nonce.size,
-            encrypted_data,
+            encryptedData,
             0,
-            encrypted_data.size
+            encryptedData.size
         )
 
         // expect header to be 0
@@ -56,11 +56,11 @@ internal object Crypto {
         )
 
         // decrypt
-        val decrypted_data = ByteArray(encrypted_data.size - SodiumConstants.MAC_BYTES)
+        val decryptedData = ByteArray(encryptedData.size - SodiumConstants.MAC_BYTES)
         val rc2 = Sodium.crypto_secretbox_open_easy(
-            decrypted_data,
-            encrypted_data,
-            encrypted_data.size,
+            decryptedData,
+            encryptedData,
+            encryptedData.size,
             nonce,
             key
         )
@@ -70,11 +70,11 @@ internal object Crypto {
         Arrays.fill(salt, 0.toByte())
         Arrays.fill(key, 0.toByte())
         Arrays.fill(nonce, 0.toByte())
-        Arrays.fill(encrypted_data, 0.toByte())
+        Arrays.fill(encryptedData, 0.toByte())
         return if (rc1 == 0 && rc2 == 0) {
-            decrypted_data
+            decryptedData
         } else {
-            Arrays.fill(decrypted_data, 0.toByte())
+            Arrays.fill(decryptedData, 0.toByte())
             null
         }
     }
@@ -86,7 +86,7 @@ internal object Crypto {
             return null
         }
 
-        if (disable_crypto) {
+        if (disableCrypto) {
             return data
         }
 
@@ -113,21 +113,21 @@ internal object Crypto {
         Sodium.randombytes_buf(nonce, nonce.size)
 
         // encrypt
-        val encrypted_data = ByteArray(SodiumConstants.MAC_BYTES + data.size)
-        val rc2 = Sodium.crypto_secretbox_easy(encrypted_data, data, data.size, nonce, key)
+        val encryptedData = ByteArray(SodiumConstants.MAC_BYTES + data.size)
+        val rc2 = Sodium.crypto_secretbox_easy(encryptedData, data, data.size, nonce, key)
 
         // prepend header, salt and nonce
-        val encrypted_message =
-            ByteArray(header.size + salt.size + nonce.size + encrypted_data.size)
-        System.arraycopy(header, 0, encrypted_message, 0, header.size)
-        System.arraycopy(salt, 0, encrypted_message, header.size, salt.size)
-        System.arraycopy(nonce, 0, encrypted_message, header.size + salt.size, nonce.size)
+        val encryptedMessage =
+            ByteArray(header.size + salt.size + nonce.size + encryptedData.size)
+        System.arraycopy(header, 0, encryptedMessage, 0, header.size)
+        System.arraycopy(salt, 0, encryptedMessage, header.size, salt.size)
+        System.arraycopy(nonce, 0, encryptedMessage, header.size + salt.size, nonce.size)
         System.arraycopy(
-            encrypted_data,
+            encryptedData,
             0,
-            encrypted_message,
+            encryptedMessage,
             header.size + salt.size + nonce.size,
-            encrypted_data.size
+            encryptedData.size
         )
 
         // zero own memory
@@ -135,11 +135,11 @@ internal object Crypto {
         Arrays.fill(salt, 0.toByte())
         Arrays.fill(key, 0.toByte())
         Arrays.fill(nonce, 0.toByte())
-        Arrays.fill(encrypted_data, 0.toByte())
+        Arrays.fill(encryptedData, 0.toByte())
         return if (rc1 == 0 && rc2 == 0) {
-            encrypted_message
+            encryptedMessage
         } else {
-            Arrays.fill(encrypted_message, 0.toByte())
+            Arrays.fill(encryptedMessage, 0.toByte())
             null
         }
     }
@@ -151,12 +151,12 @@ internal object Crypto {
         ownPublicKey: ByteArray,
         ownSecretKey: ByteArray?
     ): ByteArray? {
-        if (disable_crypto) {
+        if (disableCrypto) {
             return message.toByteArray()
         }
 
-        val message_bytes = message.toByteArray()
-        val signed = sign(message_bytes, ownSecretKey) ?: return null
+        val messageBytes = message.toByteArray()
+        val signed = sign(messageBytes, ownSecretKey) ?: return null
         val data = ByteArray(ownPublicKey.size + signed.size)
         System.arraycopy(ownPublicKey, 0, data, 0, ownPublicKey.size)
         System.arraycopy(signed, 0, data, ownPublicKey.size, signed.size)
@@ -174,7 +174,7 @@ internal object Crypto {
             return null
         }
 
-        if (disable_crypto) {
+        if (disableCrypto) {
             return String((message)!!, Charset.forName("UTF-8"))
         }
 
@@ -208,55 +208,55 @@ internal object Crypto {
         if (secretKey == null || secretKey.size != Sodium.crypto_sign_secretkeybytes()) {
             return null
         }
-        val signed_message = ByteArray(Sodium.crypto_sign_bytes() + data.size)
+        val signedMessage = ByteArray(Sodium.crypto_sign_bytes() + data.size)
         val signed_message_len = IntArray(1)
-        val rc = Sodium.crypto_sign(signed_message, signed_message_len, data, data.size, secretKey)
-        return if (rc == 0 && signed_message.size == signed_message_len[0]) {
-            signed_message
+        val rc = Sodium.crypto_sign(signedMessage, signed_message_len, data, data.size, secretKey)
+        return if (rc == 0 && signedMessage.size == signed_message_len[0]) {
+            signedMessage
         } else {
             null
         }
     }
 
     // verify signed message
-    private fun unsign(signed_message: ByteArray?, publicKey: ByteArray?): ByteArray? {
-        if (signed_message == null || signed_message.size < Sodium.crypto_sign_bytes()) {
+    private fun unsign(signedMessage: ByteArray?, publicKey: ByteArray?): ByteArray? {
+        if (signedMessage == null || signedMessage.size < Sodium.crypto_sign_bytes()) {
             return null
         }
         if (publicKey == null || publicKey.size != Sodium.crypto_sign_publickeybytes()) {
             return null
         }
-        val unsigned_message = ByteArray(signed_message.size - Sodium.crypto_sign_bytes())
+        val unsignedMessage = ByteArray(signedMessage.size - Sodium.crypto_sign_bytes())
         val messageSize = IntArray(1)
         val rc = Sodium.crypto_sign_open(
-            unsigned_message,
+            unsignedMessage,
             messageSize,
-            signed_message,
-            signed_message.size,
+            signedMessage,
+            signedMessage.size,
             publicKey
         )
-        return if (rc == 0 && unsigned_message.size == messageSize[0]) {
-            unsigned_message
+        return if (rc == 0 && unsignedMessage.size == messageSize[0]) {
+            unsignedMessage
         } else {
             null
         }
     }
 
     // decrypt an anonymous message using the receivers public key
-    private fun encrypt(data: ByteArray?, pk_sign: ByteArray?): ByteArray? {
+    private fun encrypt(data: ByteArray?, publicKeySign: ByteArray?): ByteArray? {
         if (data == null) {
             return null
         }
-        if (pk_sign == null || pk_sign.size != Sodium.crypto_sign_publickeybytes()) {
+        if (publicKeySign == null || publicKeySign.size != Sodium.crypto_sign_publickeybytes()) {
             return null
         }
-        val pk_box = ByteArray(Sodium.crypto_box_publickeybytes())
-        val rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(pk_box, pk_sign)
-        if (rc1 != 0 || pk_box.size != Sodium.crypto_box_publickeybytes()) {
+        val publicKeyBox = ByteArray(Sodium.crypto_box_publickeybytes())
+        val rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(publicKeyBox, publicKeySign)
+        if (rc1 != 0 || publicKeyBox.size != Sodium.crypto_box_publickeybytes()) {
             return null
         }
         val ciphertext = ByteArray(SodiumConstants.SEAL_BYTES + data.size)
-        val rc = Sodium.crypto_box_seal(ciphertext, data, data.size, pk_box)
+        val rc = Sodium.crypto_box_seal(ciphertext, data, data.size, publicKeyBox)
         return if (rc == 0) {
             ciphertext
         } else {
@@ -267,29 +267,29 @@ internal object Crypto {
     // decrypt an anonymous message using the receivers public and secret key
     private fun decrypt(
         ciphertext: ByteArray?,
-        pk_sign: ByteArray?,
-        sk_sign: ByteArray?
+        publicKeySign: ByteArray?,
+        secretKeySign: ByteArray?
     ): ByteArray? {
         if (ciphertext == null || ciphertext.size < SodiumConstants.SEAL_BYTES) {
             return null
         }
-        if (pk_sign == null || pk_sign.size != Sodium.crypto_sign_publickeybytes()) {
+        if (publicKeySign == null || publicKeySign.size != Sodium.crypto_sign_publickeybytes()) {
             return null
         }
-        if (sk_sign == null || sk_sign.size != Sodium.crypto_sign_secretkeybytes()) {
+        if (secretKeySign == null || secretKeySign.size != Sodium.crypto_sign_secretkeybytes()) {
             return null
         }
 
         // convert signature keys to box keys
-        val pk_box = ByteArray(Sodium.crypto_box_publickeybytes())
-        val sk_box = ByteArray(Sodium.crypto_box_secretkeybytes())
-        val rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(pk_box, pk_sign)
-        val rc2 = Sodium.crypto_sign_ed25519_sk_to_curve25519(sk_box, sk_sign)
+        val publicKeyBox = ByteArray(Sodium.crypto_box_publickeybytes())
+        val secretKeyBox = ByteArray(Sodium.crypto_box_secretkeybytes())
+        val rc1 = Sodium.crypto_sign_ed25519_pk_to_curve25519(publicKeyBox, publicKeySign)
+        val rc2 = Sodium.crypto_sign_ed25519_sk_to_curve25519(secretKeyBox, secretKeySign)
         if (rc1 != 0 || rc2 != 0) {
             return null
         }
         val decrypted = ByteArray(ciphertext.size - SodiumConstants.SEAL_BYTES)
-        val rc = Sodium.crypto_box_seal_open(decrypted, ciphertext, ciphertext.size, pk_box, sk_box)
+        val rc = Sodium.crypto_box_seal_open(decrypted, ciphertext, ciphertext.size, publicKeyBox, secretKeyBox)
         return if (rc == 0) {
             decrypted
         } else {

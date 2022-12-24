@@ -73,7 +73,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 startActivity(Intent(this@SettingsActivity, AddressActivity::class.java))
             }
 
-        val password = binder!!.getService().database_password
+        val password = binder!!.getService().databasePassword
         findViewById<TextView>(R.id.passwordTv)
             .text = if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
         findViewById<View>(R.id.passwordLayout)
@@ -182,9 +182,9 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .setTitle(getString(R.string.settings_change_name))
             .setView(et)
             .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
-                val new_username = et.text.toString().trim { it <= ' ' }
-                if (Utils.isValidName(new_username)) {
-                    settings.username = new_username
+                val newUsername = et.text.toString().trim { it <= ' ' }
+                if (Utils.isValidName(newUsername)) {
+                    settings.username = newUsername
                     binder!!.saveDatabase()
                     initViews()
                 } else {
@@ -228,7 +228,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showChangePasswordDialog() {
-        val password = binder!!.getService().database_password
+        val password = binder!!.getService().databasePassword
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_database_password)
@@ -238,8 +238,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         passwordInput.setText(password)
         changeButton.setOnClickListener {
-            val new_password = passwordInput.text.toString()
-            binder!!.getService().database_password = new_password
+            val newPassword = passwordInput.text.toString()
+            binder!!.getService().databasePassword = newPassword
             binder!!.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()

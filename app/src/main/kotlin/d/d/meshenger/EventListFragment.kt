@@ -188,9 +188,9 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         val binder = (activity as MainActivity).binder ?: return
         val event = eventListAdapter.getItem(i)
 
-        val known_contact = binder.getContacts().getContactByPublicKey(event.publicKey)
-        val contact = if (known_contact != null) {
-            known_contact
+        val knownContact = binder.getContacts().getContactByPublicKey(event.publicKey)
+        val contact = if (knownContact != null) {
+            knownContact
         } else {
             event.createUnknownContact("")
         }

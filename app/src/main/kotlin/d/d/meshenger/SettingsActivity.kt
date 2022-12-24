@@ -183,11 +183,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                     binder!!.saveDatabase()
                     initViews()
                 } else {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.invalid_name),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton(resources.getText(R.string.cancel), null)

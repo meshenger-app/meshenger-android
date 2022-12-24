@@ -122,7 +122,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
                 writeExternalFile(this, uri, db_data)
                 Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, getString(R.string.failed_to_export_database), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.failed_to_export_database, Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             showMessage(getString(R.string.error), e.message ?: "unknown")
@@ -153,7 +153,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
             binder.getService().mergeDatabase(new_database)
-            Toast.makeText(this, getString(R.string.done), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }
 

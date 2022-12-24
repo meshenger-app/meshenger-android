@@ -132,7 +132,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         if (result.resultCode != Activity.RESULT_OK) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, getString(R.string.overlay_permission_missing), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_LONG).show()
                 }
             }
         }

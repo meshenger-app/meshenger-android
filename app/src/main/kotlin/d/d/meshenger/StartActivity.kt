@@ -55,7 +55,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
                     // ignore and continue with initialization
                 } catch (e: Exception) {
                     Log.e(this, "${e.message}")
-                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "${e.message}", Toast.LENGTH_SHORT).show()
                     finish()
                     return
                 }

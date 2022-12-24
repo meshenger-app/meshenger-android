@@ -101,36 +101,24 @@ internal object Utils {
         return NAME_PATTERN.matcher(name).matches()
     }
 
-    private val hexArray = "0123456789ABCDEF".toCharArray()
-
     fun byteArrayToHexString(bytes: ByteArray?): String {
         if (bytes == null) {
             return ""
         }
-        val hexChars = CharArray(bytes.size * 2)
-        var j = 0
-        while (j < bytes.size) {
-            val v: Int = bytes[j].toInt() and 0xFF
-            hexChars[j * 2] = hexArray[v ushr 4]
-            hexChars[j * 2 + 1] = hexArray[v and 0x0F]
-            j += 1
+
+        return bytes.joinToString(separator = "") {
+            eachByte -> "%02X".format(eachByte)
         }
-        return String(hexChars)
     }
 
     fun hexStringToByteArray(str: String?): ByteArray? {
-        if (str == null) {
+        if (str == null || (str.length % 2) != 0 || !str.all { it in '0'..'9' || it in 'A'..'F' }) {
             return null
         }
-        val len = str.length
-        val data = ByteArray(len / 2)
-        var i = 0
-        while (i < len) {
-            data[i / 2] = ((Character.digit(str[i], 16) shl 4)
-                    + Character.digit(str[i + 1], 16)).toByte()
-            i += 2
-        }
-        return data
+
+        return str.chunked(2)
+            .map { it.toInt(16).toByte() }
+            .toByteArray()
     }
 
     // write file to external storage

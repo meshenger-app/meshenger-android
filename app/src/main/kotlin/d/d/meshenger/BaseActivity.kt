@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatDelegate
 */
 open class BaseActivity : AppCompatActivity() {
     fun setDefaultNightMode(nightModeSetting: String) {
-        when (nightModeSetting) {
-            "on" -> nightMode = AppCompatDelegate.MODE_NIGHT_YES
-            "off" -> nightMode = AppCompatDelegate.MODE_NIGHT_NO
+        nightMode = when (nightModeSetting) {
+            "on" -> AppCompatDelegate.MODE_NIGHT_YES
+            "off" -> AppCompatDelegate.MODE_NIGHT_NO
             "auto" -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 } else {
@@ -19,6 +19,7 @@ open class BaseActivity : AppCompatActivity() {
                 }
             else -> {
                 Log.e(this, "invalid night mode setting: $nightModeSetting")
+                nightMode
             }
         }
     }

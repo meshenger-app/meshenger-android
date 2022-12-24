@@ -1085,8 +1085,8 @@ class RTCCall : DataChannel.Observer {
 
             Log.d(this, "request: $decrypted")
 
-            var contact = binder.getDatabase().contacts.getContactByPublicKey(otherPublicKey)
-            if (contact == null && binder.getDatabase().settings.blockUnknown) {
+            var contact = binder.getContacts().getContactByPublicKey(otherPublicKey)
+            if (contact == null && binder.getSettings().blockUnknown) {
                 Log.d(this, "block unknown contact => decline")
                 decline()
                 return

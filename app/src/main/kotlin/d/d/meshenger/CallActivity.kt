@@ -588,9 +588,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private fun continueCallSetup() {
         Log.d(this, "continueCallSetup")
 
-        Log.d(this, "has record audio permissions: " + Utils.hasRecordAudioPermission(this))
-        Log.d(this, "has record video permissions: " + Utils.hasCameraPermission(this))
-        Log.d(this, "init.action: ${intent.action}, state: ${this.lifecycle.currentState}")
+        Log.d(this, "continueCallSetup"
+            + " init.action: ${intent.action}"
+            + ", state: ${this.lifecycle.currentState}"
+            + ", audio permissions: ${Utils.hasRecordAudioPermission(this)}"
+            + ", video permissions: ${Utils.hasCameraPermission(this)}"
+        )
 
         // swap pip and fullscreen content
         pipRenderer.setOnClickListener {
@@ -636,19 +639,18 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         val settings = InitialSettings()
 
-        Log.d(this, "mic ${settings.micEnabled} ${currentCall.getMicrophoneEnabled()}")
+        Log.d(this, "initCall"
+            + " mic ${settings.micEnabled} => ${currentCall.getMicrophoneEnabled()}"
+            + ", cam ${settings.cameraEnabled} =>  ${currentCall.getCameraEnabled()}"
+            + ", front cam ${settings.frontCameraEnabled} => ${currentCall.getFrontCameraEnabled()}")
 
         if (settings.micEnabled != currentCall.getMicrophoneEnabled()) {
             switchMicEnabled()
         }
 
-        Log.d(this, "cam ${settings.cameraEnabled} ${currentCall.getCameraEnabled()}")
-
         if (settings.cameraEnabled != currentCall.getCameraEnabled()) {
             switchCameraEnabled()
         }
-
-        Log.d(this, "frontCameraEnabled ${settings.frontCameraEnabled} ${currentCall.getFrontCameraEnabled()}")
 
         if (settings.frontCameraEnabled != currentCall.getFrontCameraEnabled()) {
             currentCall.setFrontCameraEnabled(settings.frontCameraEnabled)

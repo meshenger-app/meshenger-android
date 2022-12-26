@@ -39,10 +39,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:backgroundTint="@color/black"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/divider_1"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
     <com.google.android.material.divider.MaterialDivider
@@ -54,8 +54,6 @@
         app:dividerColor="@color/light_grey"
         app:dividerInsetEnd="@dimen/padding_25"
         app:dividerInsetStart="@dimen/padding_25"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/AddressListView"
         app:layout_constraintBottom_toTopOf="@id/CustomAddressLayout" />
 
@@ -65,8 +63,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider_1"
         app:layout_constraintBottom_toTopOf="@+id/HelpTextView">
 
@@ -96,18 +92,14 @@
         android:id="@+id/HelpTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/padding_20"
-        android:layout_marginTop="@dimen/padding_20"
-        android:layout_marginEnd="@dimen/padding_20"
-        android:layout_marginBottom="@dimen/padding_20"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:fontFamily="@font/poppins_regular"
         android:text="@string/address_management_help_text"
         android:textAlignment="center"
         android:textColor="?android:textColorSecondary"
         android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@id/CommandLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/CustomAddressLayout" />
 
     <LinearLayout
@@ -117,8 +109,6 @@
         android:layout_margin="@dimen/padding_20"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/HelpTextView">
 

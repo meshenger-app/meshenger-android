@@ -22,8 +22,6 @@ class Database() {
     class WrongPasswordException() : Exception()
 
     companion object {
-        private const val TAG = "Database"
-
         fun fromData(db_data: ByteArray, password: String?): Database {
             // encrypt database
             val stringData = if (password != null && password.isNotEmpty()) {
@@ -58,8 +56,8 @@ class Database() {
                 Log.d(this, "Encrypt database")
                 dbdata = encryptDatabase(dbdata, password.toByteArray())
             }
-            Log.d(TAG, "Stored ${db.contacts.contactList.size} contacts")
-            Log.d(TAG, "Stored ${db.events.eventList.size} events")
+            Log.d(this, "Stored ${db.contacts.contactList.size} contacts")
+            Log.d(this, "Stored ${db.events.eventList.size} events")
 
             return dbdata
         }

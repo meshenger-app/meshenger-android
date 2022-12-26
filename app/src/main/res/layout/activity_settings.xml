@@ -254,7 +254,7 @@
                             android:checked="true"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/basic"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColorPrimary"
                             android:textSize="@dimen/options_text_size" />
 
                         <RadioButton
@@ -265,7 +265,7 @@
                             android:checked="false"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/advanced"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColorPrimary"
                             android:textSize="@dimen/options_text_size" />
 
                         <RadioButton
@@ -276,7 +276,7 @@
                             android:checked="false"
                             android:fontFamily="@font/lato_regular"
                             android:text="@string/expert"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColorPrimary"
                             android:textSize="@dimen/options_text_size" />
                     </RadioGroup>
 

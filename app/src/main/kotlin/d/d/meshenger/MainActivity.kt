@@ -150,9 +150,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
             }
         }.attach()
 
-        if (!address_warning_shown) {
+        if (!addressWarningShown) {
             showInvalidAddressSettingsWarning()
-            address_warning_shown = true
+            addressWarningShown = true
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
@@ -220,7 +220,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     companion object {
-        private var address_warning_shown = false
+        private var addressWarningShown = false
         var instance: MainActivity? = null
     }
 }

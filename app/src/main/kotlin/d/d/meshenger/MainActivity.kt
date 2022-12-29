@@ -12,6 +12,7 @@ import android.os.*
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
@@ -56,7 +57,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
         permissionToDrawOverlays()
 
         viewPager = findViewById(R.id.container)
-        viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         instance = this
 
@@ -142,26 +142,30 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onServiceConnected")
         binder = iBinder as MainBinder
 
-        val tabLayout = findViewById<TabLayout>(R.id.tabs)
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.title_contacts)
-                else -> getString(R.string.title_events)
+        runOnUiThread {
+            val disableCallHistory = binder!!.getSettings().disableCallHistory
+            val tabLayout = findViewById<TabLayout>(R.id.tabs)
+
+            tabLayout.visibility = if (disableCallHistory) View.GONE else View.VISIBLE
+            viewPager.adapter = ViewPagerFragmentAdapter(this, disableCallHistory)
+
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                tab.text = when (position) {
+                    0 -> getString(R.string.title_contacts)
+                    else -> getString(R.string.title_events)
+                }
+            }.attach()
+
+            if (!addressWarningShown) {
+                showInvalidAddressSettingsWarning()
+                addressWarningShown = true
             }
-        }.attach()
 
-        if (!addressWarningShown) {
-            showInvalidAddressSettingsWarning()
-            addressWarningShown = true
-        }
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
 
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
-
-        // call it here because EventListFragment.onResume is triggered twice
-        try {
+            // call it here because EventListFragment.onResume is triggered twice
             binder!!.pingContacts()
-        } catch (e: Exception) {
         }
     }
 
@@ -196,7 +200,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -205,16 +208,19 @@ class MainActivity : BaseActivity(), ServiceConnection {
         return true
     }
 
-    class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
+    class ViewPagerFragmentAdapter(fm: FragmentActivity, private val disableCallHistory: Boolean) : FragmentStateAdapter(fm) {
         override fun getItemCount(): Int {
-            return 2
+            if (disableCallHistory) {
+                return 1
+            } else {
+                return 2
+            }
         }
 
         override fun createFragment(position: Int): Fragment {
-            if (position == 0) {
-                return ContactListFragment()
-            } else {
-                return EventListFragment()
+            return when (position) {
+                0 -> ContactListFragment()
+                else -> EventListFragment()
             }
         }
     }

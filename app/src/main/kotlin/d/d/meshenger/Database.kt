@@ -207,7 +207,7 @@ class Database() {
             }
 
             if (newFrom == "4.0.6") {
-                // nothing to do
+                settings.put("disable_call_history", false)
                 newFrom = "4.0.7"
             }
 

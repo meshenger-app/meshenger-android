@@ -51,6 +51,7 @@
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>
     <string name="settings_no_audio_processing">No Audio Processing</string>
     <string name="settings_public_key">Public Key</string>
+    <string name="settings_disable_call_history">Disable Call History</string>
     <string name="read_only">Read Only</string>
     <string name="none">None</string>
     <string name="add">Add</string>

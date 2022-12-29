@@ -122,6 +122,17 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.disableCallHistorySwitch).apply {
+            isChecked = settings.disableCallHistory
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.disableCallHistory = isChecked
+                if (isChecked) {
+                    binder!!.clearEvents()
+                }
+                binder!!.saveDatabase()
+            }
+        }
+
         val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
         val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
         val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)

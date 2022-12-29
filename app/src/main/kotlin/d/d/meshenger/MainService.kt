@@ -349,9 +349,11 @@ class MainService : Service(), Runnable {
         }
 
         internal fun addEvent(contact: Contact, type: Event.Type) {
-            getEvents().addEvent(contact, type)
-            LocalBroadcastManager.getInstance(this@MainService)
-                .sendBroadcast(Intent("refresh_event_list"))
+            if (!getSettings().disableCallHistory) {
+                getEvents().addEvent(contact, type)
+                LocalBroadcastManager.getInstance(this@MainService)
+                    .sendBroadcast(Intent("refresh_event_list"))
+            }
         }
 
         fun clearEvents() {

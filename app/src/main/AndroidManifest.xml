@@ -29,15 +29,12 @@
         tools:replace="android:allowBackup">
 
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:name=".MainActivity" />
 
         <activity
-            android:name=".QRShowActivity"
-            android:screenOrientation="portrait" />
+            android:name=".QRShowActivity" />
         <activity
-            android:name=".QRScanActivity"
-            android:screenOrientation="portrait" />
+            android:name=".QRScanActivity" />
 
         <service
             android:name=".MainService"
@@ -45,8 +42,7 @@
 
         <activity
             android:name=".StartActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

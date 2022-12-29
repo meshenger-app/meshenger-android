@@ -28,55 +28,50 @@
                 android:fontFamily="@font/lato_bold"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="@dimen/headline_text_size"
-                android:text="@string/menu_backup"/>
+                android:text="@string/menu_backup" />
 
         </androidx.appcompat.widget.Toolbar>
 
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/import_export_buttons"
-        app:layout_constraintTop_toBottomOf="@+id/backup_appbar"
-        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
-        android:paddingTop="@dimen/padding_20"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintTop_toBottomOf="@+id/backup_appbar"
+        android:orientation="horizontal"
+                style="?android:attr/buttonBarStyle"
+        android:paddingTop="@dimen/padding_20"
         android:paddingStart="@dimen/padding_50"
         android:paddingEnd="@dimen/padding_50"
-        android:orientation="horizontal" >
+        >
 
         <Button
             android:id="@+id/ImportButton"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="@dimen/padding_50"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/padding_20"
+            android:layout_margin="@dimen/padding_20"
+            android:layout_weight="0.5"
             android:background="@drawable/next_button_background"
             android:fontFamily="@font/lato_bold"
             android:text="@string/button_import"
-            android:textAllCaps="false"
-            android:layout_toStartOf="@id/ExportButton"
             android:textColor="@color/white" />
 
         <Button
             android:id="@+id/ExportButton"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="@dimen/padding_50"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="@dimen/padding_20"
+            android:layout_margin="@dimen/padding_20"
+            android:layout_weight="0.5"
             android:background="@drawable/next_button_background"
             android:fontFamily="@font/lato_bold"
             android:text="@string/button_export"
-            android:textAllCaps="false"
             android:textColor="@color/white" />
 
-    </RelativeLayout>
-
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/password_root"
@@ -104,7 +99,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/selectedColor">
+            app:passwordToggleTint="@color/selectedColor"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/PasswordEditText"
@@ -117,8 +113,8 @@
                 android:scrollHorizontally="true"
                 android:paddingStart="@dimen/padding_10"
                 android:paddingEnd="@dimen/padding_10"
-                android:inputType="textPassword"
-                />
+                android:inputType="textPassword" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>

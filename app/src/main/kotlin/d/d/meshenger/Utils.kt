@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Looper
 import android.provider.OpenableColumns
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.*
 import java.util.regex.Pattern
@@ -54,48 +53,11 @@ internal object Utils {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestCameraPermission(activity: Activity, request_code: Int) {
-        ActivityCompat.requestPermissions(
-            activity, arrayOf(
-                Manifest.permission.CAMERA
-            ), request_code
-        )
-    }
-
-    fun requestReadPermission(activity: Activity, request_code: Int) {
-        ActivityCompat.requestPermissions(
-            activity, arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ), request_code
-        )
-    }
-
-    fun requestWritePermission(activity: Activity, request_code: Int) {
-        ActivityCompat.requestPermissions(
-            activity, arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ), request_code
-        )
-    }
-
-    fun allGranted(grantResults: IntArray): Boolean {
-        for (result in grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
-    }
-
-    fun split(str: String): List<String> {
-        return str.split("\\s*,\\s*")
-    }
-
     private val NAME_PATTERN = Pattern.compile("[\\w][\\w _-]{1,22}[\\w]")
 
     // check for a name that has no funny unicode characters to not let them look to much like other names
     fun isValidName(name: String?): Boolean {
-        if (name == null || name.length == 0) {
+        if (name == null || name.isEmpty()) {
             return false
         }
         return NAME_PATTERN.matcher(name).matches()

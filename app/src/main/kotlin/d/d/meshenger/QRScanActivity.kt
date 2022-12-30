@@ -1,5 +1,6 @@
 package d.d.meshenger
 
+import android.Manifest
 import android.content.ServiceConnection
 import android.os.Bundle
 import org.json.JSONObject
@@ -8,7 +9,6 @@ import android.widget.TextView
 import android.widget.EditText
 import android.content.Intent
 import android.content.DialogInterface
-import android.content.pm.PackageManager
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -21,6 +21,7 @@ import android.app.Dialog
 import android.os.IBinder
 import android.view.View
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import org.json.JSONException
 
 class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
@@ -35,9 +36,6 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         barcodeView = findViewById(R.id.barcodeScannerView)
 
         bindService(Intent(this, MainService::class.java), this, 0)
-        if (!Utils.hasCameraPermission(this)) {
-            Utils.requestCameraPermission(this, 1)
-        }
 
         // qr show button
         findViewById<View>(R.id.fabScan).setOnClickListener {
@@ -47,6 +45,19 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
         // manual input button
         findViewById<View>(R.id.fabManualInput).setOnClickListener { startManualInput() }
+
+        if (!Utils.hasCameraPermission(this)) {
+            enabledCameraForResult.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private val enabledCameraForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted -> if (isGranted) {
+            initCamera()
+        } else {
+            Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show()
+            // no finish() in case no camera access wanted but contact data pasted
+        }
     }
 
     private fun addContact(data: String) {
@@ -161,20 +172,6 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
             }
             .setView(et)
         b.show()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            initCamera()
-        } else {
-            Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show()
-            // no finish() in case no camera access wanted but contact data pasted
-        }
     }
 
     override fun barcodeResult(result: BarcodeResult) {

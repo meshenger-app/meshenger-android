@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/unknown_caller"
-                android:textColor="@android:color/black"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="30sp" />
 
             <TextView

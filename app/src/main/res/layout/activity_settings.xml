@@ -132,7 +132,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_nightmode"
+                        android:text="@string/settings_night_mode"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="@dimen/title_text_size" />
 

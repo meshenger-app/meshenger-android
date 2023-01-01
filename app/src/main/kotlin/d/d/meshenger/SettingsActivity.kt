@@ -94,8 +94,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         setupSpinner(settings.nightMode,
             R.id.spinnerNightModes,
-            R.array.nightModes,
-            R.array.nightModesValues,
+            R.array.nightModeLabels,
+            R.array.nightModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
                     newValue?.let {

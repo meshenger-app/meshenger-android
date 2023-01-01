@@ -6,10 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Typeface
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
@@ -31,6 +28,18 @@ class StartActivity : BaseActivity(), ServiceConnection {
     private var startState = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(this, "onCreate() Meshenger version ${BuildConfig.VERSION_NAME}")
+        Log.d(this, "Android SDK: ${Build.VERSION.SDK_INT}, "
+                    + "Release: ${Build.VERSION.RELEASE}, "
+                    + "Brand: ${Build.BRAND}, "
+                    + "Device: ${Build.DEVICE}, "
+                    + "Id: ${Build.ID}, "
+                    + "Hardware: ${Build.HARDWARE}, "
+                    + "Manufacturer: ${Build.MANUFACTURER}, "
+                    + "Model: ${Build.MODEL}, "
+                    + "Product: ${Build.PRODUCT}"
+        )
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 

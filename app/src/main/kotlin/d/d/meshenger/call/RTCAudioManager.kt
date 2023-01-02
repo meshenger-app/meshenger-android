@@ -219,9 +219,13 @@ class RTCAudioManager(context: Context, speakerphoneDefault: String = SPEAKERPHO
         selectedAudioDevice = AudioDevice.NONE
         audioDevices.clear()
 
+        // Initialize and start the Proximity sensor.
+        proximitySensor.start()
+
         // Initialize and start Bluetooth if a BT device is available or initiate
         // detection of new (enabled) BT devices.
-        bluetoothManager.start()
+        // TODO: enable when BT permissions are handled
+        //bluetoothManager.start()
 
         // Do initial selection of audio device. This setting can later be changed
         // either by adding/removing a BT or wired headset or by covering/uncovering

@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import d.d.meshenger.call.CaptureQualityController
+import d.d.meshenger.call.RTCAudioManager
 import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCCall.CallState
 import d.d.meshenger.call.StatsReportUtil
@@ -35,6 +36,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var currentCall: RTCCall
     private lateinit var contact: Contact
     private lateinit var eglBase: EglBase
+    private var rtcAudioManager: RTCAudioManager? = null
 
     private var powerManager: PowerManager? = null
     private var wakeLock: WakeLock? = null
@@ -656,6 +658,18 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             currentCall.setFrontCameraEnabled(settings.frontCameraEnabled)
         }
 
+        val speakerphoneMode = binder!!.getSettings().speakerphoneMode
+        Log.d(this@CallActivity, "speakerphoneMode: $speakerphoneMode")
+
+        rtcAudioManager = RTCAudioManager(applicationContext, speakerphoneMode)
+        rtcAudioManager!!.start(object : RTCAudioManager.AudioManagerEvents {
+            // This method will be called each time the number
+            // of available audio devices has changed.
+            override fun onAudioDeviceChanged(selectedAudioDevice: RTCAudioManager.AudioDevice, availableAudioDevices: Set<RTCAudioManager.AudioDevice>) {
+                Log.d(this@CallActivity, "onAudioDeviceChanged: selected: $selectedAudioDevice ($availableAudioDevices)")
+            }
+        })
+
         toggleMicButton.visibility = View.VISIBLE
         toggleCameraButton.visibility = View.VISIBLE
         toggleFrontCameraButton.visibility = View.GONE
@@ -818,6 +832,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         unbindService(connection)
 
         wakeLock?.release()
+
+        rtcAudioManager?.stop()
 
         remoteProxyVideoSink.setTarget(null)
         localProxyVideoSink.setTarget(null)

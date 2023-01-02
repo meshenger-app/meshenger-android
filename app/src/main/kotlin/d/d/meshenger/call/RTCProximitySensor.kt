@@ -34,15 +34,13 @@ class RTCProximitySensor(context: Context, sensorStateListener: Runnable) : Sens
     // (e.g. the main thread). We use `nonThreadSafe` to ensure that this is
     // the case. Only active when `DEBUG` is set to true.
     private val threadChecker: ThreadUtils.ThreadChecker = ThreadUtils.ThreadChecker()
-    private val onSensorStateListener: Runnable?
-    private val sensorManager: SensorManager
+    private val onSensorStateListener = sensorStateListener
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private var proximitySensor: Sensor? = null
     private var lastStateReportIsNear = false
 
     init {
         Log.d(this, "RTCProximitySensor ${Utils.getThreadInfo()}")
-        onSensorStateListener = sensorStateListener
-        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
     /**
@@ -100,7 +98,7 @@ class RTCProximitySensor(context: Context, sensorStateListener: Runnable) : Sens
 
         // Report about new state to listening client. Client can then call
         // sensorReportsNearState() to query the current state (NEAR or FAR).
-        onSensorStateListener?.run()
+        onSensorStateListener.run()
         Log.d(this, "onSensorChanged" + Utils.getThreadInfo() + ": "
             + "accuracy=${event.accuracy}, "
             + "timestamp=${event.timestamp}, "

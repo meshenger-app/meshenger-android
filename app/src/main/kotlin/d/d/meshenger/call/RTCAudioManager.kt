@@ -46,10 +46,10 @@ class RTCAudioManager(context: Context, speakerphoneDefault: String = SPEAKERPHO
         fun onAudioDeviceChanged(selectedAudioDevice: AudioDevice, availableAudioDevices: Set<AudioDevice>)
     }
 
-    private val apprtcContext: Context
-    private val audioManager: AudioManager
+    private val apprtcContext = context
+    private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var audioManagerEvents: AudioManagerEvents? = null
-    private var amState: AudioManagerState
+    private var amState = AudioManagerState.UNINITIALIZED
     private var savedAudioMode = AudioManager.MODE_INVALID
     private var savedIsSpeakerPhoneOn = false
     private var savedIsMicrophoneMute = false
@@ -57,7 +57,11 @@ class RTCAudioManager(context: Context, speakerphoneDefault: String = SPEAKERPHO
 
     // Default audio device; speaker phone for video calls or earpiece for audio
     // only calls.
-    private var defaultAudioDevice = AudioDevice.NONE
+    private var defaultAudioDevice = if (speakerphoneDefault == SPEAKERPHONE_FALSE) {
+        AudioDevice.EARPIECE
+    } else {
+        AudioDevice.SPEAKER_PHONE
+    }
 
     // Contains the currently selected audio device.
     // This device is changed automatically using a certain scheme where e.g.
@@ -79,17 +83,17 @@ class RTCAudioManager(context: Context, speakerphoneDefault: String = SPEAKERPHO
     // relative to the view screen of a device and can therefore be used to
     // assist device switching (close to ear <=> use headset earpiece if
     // available, far from ear <=> use speaker phone).
-    private var proximitySensor: RTCProximitySensor
+    private var proximitySensor = RTCProximitySensor(context) { onProximitySensorChangedState() }
 
     // Handles all tasks related to Bluetooth headset devices.
-    private val bluetoothManager: RTCBluetoothManager
+    private val bluetoothManager = RTCBluetoothManager(context, this)
 
     // Contains a list of available audio devices. A Set collection is used to
     // avoid duplicate elements.
     private var audioDevices = mutableSetOf<AudioDevice>() // HashSet()
 
     // Broadcast receiver for wired headset intent broadcasts.
-    private val wiredHeadsetReceiver: BroadcastReceiver
+    private val wiredHeadsetReceiver = WiredHeadsetReceiver()
 
     // Callback method for changes in audio focus.
     private var audioFocusChangeListener: AudioManager.OnAudioFocusChangeListener? = null
@@ -99,6 +103,7 @@ class RTCAudioManager(context: Context, speakerphoneDefault: String = SPEAKERPHO
      * e.g. from "NEAR to FAR" or from "FAR to NEAR".
      */
     private fun onProximitySensorChangedState() {
+        Log.d(this, "onProximitySensorChangedState")
         if (useSpeakerphone != SPEAKERPHONE_AUTO) {
             return
         }
@@ -146,24 +151,6 @@ class RTCAudioManager(context: Context, speakerphoneDefault: String = SPEAKERPHO
     init {
         Log.d(this, "ctor")
         Utils.checkIsOnMainThread()
-        apprtcContext = context
-        audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        bluetoothManager = RTCBluetoothManager(context, this)
-        wiredHeadsetReceiver = WiredHeadsetReceiver()
-        amState = AudioManagerState.UNINITIALIZED
-
-        Log.d(this, "useSpeakerphone: $useSpeakerphone")
-        defaultAudioDevice = if (useSpeakerphone == SPEAKERPHONE_FALSE) {
-            AudioDevice.EARPIECE
-        } else {
-            AudioDevice.SPEAKER_PHONE
-        }
-
-        // Create and initialize the proximity sensor.
-        // Tablet devices (e.g. Nexus 7) does not support proximity sensors.
-        // Note that, the sensor will not be active until start() has been called.
-        proximitySensor = RTCProximitySensor(context) { onProximitySensorChangedState() }
-        Log.d(this, "defaultAudioDevice: $defaultAudioDevice")
     }
 
     // TODO(henrika): audioManager.requestAudioFocus() is deprecated.

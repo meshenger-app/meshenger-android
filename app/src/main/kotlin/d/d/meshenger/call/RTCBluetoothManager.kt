@@ -50,17 +50,17 @@ open class RTCBluetoothManager(context: Context, audioManager: RTCAudioManager) 
         SCO_CONNECTED
     }
 
-    private val apprtcContext: Context
-    private val apprtcAudioManager: RTCAudioManager
-    private val audioManager: AudioManager
-    private val handler: Handler
+    private val apprtcContext = context
+    private val apprtcAudioManager = audioManager
+    private val audioManager = getAudioManager(context)
+    private val handler = Handler(Looper.getMainLooper())
     var scoConnectionAttempts = 0
-    private var bluetoothState: State
-    private val bluetoothServiceListener: BluetoothProfile.ServiceListener
+    private var bluetoothState = State.UNINITIALIZED
+    private val bluetoothServiceListener = BluetoothServiceListener()
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothHeadset: BluetoothHeadset? = null
     private var bluetoothDevice: BluetoothDevice? = null
-    private val bluetoothHeadsetReceiver: BroadcastReceiver
+    private val bluetoothHeadsetReceiver = BluetoothHeadsetBroadcastReceiver()
 
     // Runs when the Bluetooth timeout expires. We use that timeout after calling
     // startScoAudio() or stopScoAudio() because we're not guaranteed to get a
@@ -176,13 +176,6 @@ open class RTCBluetoothManager(context: Context, audioManager: RTCAudioManager) 
     init {
         Log.d(this, "ctor")
         Utils.checkIsOnMainThread()
-        apprtcContext = context
-        apprtcAudioManager = audioManager
-        this.audioManager = getAudioManager(context)
-        bluetoothState = State.UNINITIALIZED
-        bluetoothServiceListener = BluetoothServiceListener()
-        bluetoothHeadsetReceiver = BluetoothHeadsetBroadcastReceiver()
-        handler = Handler(Looper.getMainLooper())
     }
 
     /** Returns the internal state.  */

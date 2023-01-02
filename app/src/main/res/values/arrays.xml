@@ -24,7 +24,7 @@
         <item>off</item>
     </string-array>
 
-    <string-array name="settingsMode">
+    <string-array name="settingsModeLabels">
         <item>Basic</item>
         <item>Advanced</item>
         <item>Expert</item>
@@ -36,7 +36,7 @@
         <item>expert</item>
     </string-array>
 
-    <string-array name="videoResolutions">
+    <string-array name="videoResolutionsLabels">
         <item>Default</item>
         <item>4K (3840 x 2160)</item>
         <item>Full HD (1920 x 1080)</item>
@@ -54,7 +54,7 @@
         <item>320 x 240</item>
     </string-array>
 
-    <string-array name="cameraFps">
+    <string-array name="cameraFpsLabels">
         <item>Default</item>
         <item>30 fps</item>
         <item>15 fps</item>

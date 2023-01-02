@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_20"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -74,8 +74,9 @@
 
                     <TextView
                         android:id="@+id/nameTv"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="right"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -93,7 +94,7 @@
                     android:id="@+id/passwordLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -105,8 +106,9 @@
 
                     <TextView
                         android:id="@+id/passwordTv"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="right"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -142,8 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        app:thumbTint="@color/selectedColor"
-                        android:drawSelectorOnTop="true"
+                        android:drawSelectorOnTop="false"
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>
@@ -195,7 +196,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="visible"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -207,8 +208,9 @@
 
                     <TextView
                         android:id="@+id/addressTv"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="right"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />

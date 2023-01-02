@@ -10,7 +10,7 @@
     <dimen name="padding_40">40dp</dimen>
     <dimen name="padding_50">50dp</dimen>
 
-    <dimen name="options_text_size">14sp</dimen>
-    <dimen name="title_text_size">16sp</dimen>
+    <dimen name="options_text_size">18sp</dimen>
+    <dimen name="title_text_size">20sp</dimen>
     <dimen name="headline_text_size">18sp</dimen>
 </resources>

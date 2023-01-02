@@ -17,6 +17,12 @@ internal object Utils {
         return "@[name=${thread.name}, id=${thread.id}]"
     }
 
+    fun assertIsTrue(condition: Boolean) {
+        if (!condition) {
+            throw AssertionError("Expected condition to be true")
+        }
+    }
+
     fun checkIsOnMainThread() {
         if (Thread.currentThread() != Looper.getMainLooper().thread) {
             throw IllegalStateException("Code must run on the main thread!")

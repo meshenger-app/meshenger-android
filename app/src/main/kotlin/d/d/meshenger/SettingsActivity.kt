@@ -109,6 +109,19 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 }
             })
 
+        setupSpinner(settings.speakerphoneMode,
+            R.id.spinnerSpeakerphoneModes,
+            R.array.speakerphoneModeLabels,
+            R.array.speakerphoneModeValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        settings.speakerphoneMode = it
+                        binder!!.saveDatabase()
+                    }
+                }
+            })
+
         findViewById<TextView>(R.id.connectTimeoutTv)
             .text = "${settings.connectTimeout}"
         findViewById<View>(R.id.connectTimeoutLayout)

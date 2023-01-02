@@ -9,6 +9,7 @@ class Settings {
     var secretKey = byteArrayOf()
     var publicKey = byteArrayOf()
     var nightMode = "auto" // on, off, auto
+    var speakerphoneMode = "auto" // on, off, auto
     var blockUnknown = false
     var useNeighborTable = false
     var promptOutgoingCalls = false
@@ -34,6 +35,7 @@ class Settings {
             s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))!!
             s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
             s.nightMode = obj.getString("night_mode")
+            s.speakerphoneMode = obj.getString("speakerphone_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
             s.videoHardwareAcceleration = obj.getBoolean("video_hardware_acceleration")
@@ -69,6 +71,7 @@ class Settings {
             obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey))
             obj.put("public_key", Utils.byteArrayToHexString(s.publicKey))
             obj.put("night_mode", s.nightMode)
+            obj.put("speakerphone_mode", s.speakerphoneMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
             obj.put("connect_timeout", s.connectTimeout)

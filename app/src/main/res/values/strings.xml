@@ -43,6 +43,7 @@
     <string name="settings_change_password">Change Password</string>
     <string name="settings_use_neighbor_table">Use Neighbor Table (ARP/ND)</string>
     <string name="settings_night_mode">Night Mode</string>
+    <string name="settings_speakerphone_mode">Speakerphone</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_ignore_battery_optimizations">Ignore Battery Optimizations</string>
     <string name="settings_settings_mode">Settings Mode</string>

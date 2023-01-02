@@ -334,6 +334,41 @@
                     android:layout_marginBottom="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
+                <RelativeLayout
+                    android:id="@+id/speakerphoneModeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_speakerphone_mode"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <Spinner
+                        android:id="@+id/spinnerSpeakerphoneModes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        app:thumbTint="@color/selectedColor"
+                        android:drawSelectorOnTop="true"
+                        android:textSize="@dimen/options_text_size" />
+
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
+                    app:dividerColor="@color/light_grey" />
+
                 <LinearLayout
                     android:id="@+id/publicKeyLayout"
                     android:layout_width="match_parent"

@@ -3,7 +3,7 @@ Meshenger Documentation
 
 ## Motivation
 
-Currently, the market of VoIP software is dominated by software owned by big companies and it is tied to central infrastructure in order to monetize the platform and control the data flow. Various communities (e.g. [Freifunk](https://freifunk.net/), [Yggdrasil](https://yggdrasil-network.github.io/), ..) try to establish decentralized networks, to connect people with local pathways even if there is not Internet. Common VoIP software usually does not work there. That is where Meshenger can serve as a "killer" App.
+Currently, the market of VoIP software is dominated by software owned by big companies and it is tied to central infrastructure in order to monetize the platform and control the data flow. Various communities (e.g. [Freifunk](https://freifunk.net/), [Yggdrasil](https://yggdrasil-network.github.io/), ..) try to establish decentralized networks, to connect people with local pathways even if there is no Internet. Common VoIP software usually does not work there. That is where Meshenger can serve as a "killer" App.
 
 ## Finding Contacts
 
@@ -31,7 +31,7 @@ Resources:
 
 ## Crypto
 
-[libsodium](https://github.com/jedisct1/libsodium) is used for the encryption and authentication of the initial TCP/IP connection. After that, WebRTC is establishing a UDP connection for Audio/Video data. WebRTC uses it's own encryption.
+[libsodium](https://github.com/jedisct1/libsodium) is used for the encryption and authentication of the initial TCP/IP connection (called signalling). After that, WebRTC is establishing a UDP connection for Audio/Video data. WebRTC uses it's own encryption.
 
 ### Database
 

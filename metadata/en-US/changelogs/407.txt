@@ -1,0 +1,4 @@
+* add setting for speakerphone audio (auto with proximity, on and off)
+* add setting to disable the call history
+* some minor UI fixes
+* support landscape view

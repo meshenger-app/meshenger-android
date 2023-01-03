@@ -86,15 +86,16 @@ class RTCCall : DataChannel.Observer {
             Log.d(this, "setVideoEnabled: $enabled")
             try {
                 // send own camera state over data channel
-                val o = JSONObject()
+                val obj = JSONObject()
                 if (enabled) {
-                    o.put(STATE_CHANGE_MESSAGE, CAMERA_ENABLE_MESSAGE)
+                    obj.put(STATE_CHANGE_MESSAGE, CAMERA_ENABLE_MESSAGE)
                 } else {
-                    o.put(STATE_CHANGE_MESSAGE, CAMERA_DISABLE_MESSAGE)
+                    obj.put(STATE_CHANGE_MESSAGE, CAMERA_DISABLE_MESSAGE)
                 }
 
-                if (sendOnDataChannel(o)) {
+                if (sendOnDataChannel(obj.toString())) {
                     if (enabled) {
+                        // start with default settings
                         videoCapturer!!.startCapture(1280, 720, 25)
                         callActivity?.onLocalVideoEnabled(true)
                     } else {
@@ -131,8 +132,8 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
-    private fun sendOnDataChannel(obj: JSONObject): Boolean {
-        Log.d(this, "sendOnDataChannel")
+    private fun sendOnDataChannel(message: String): Boolean {
+        Log.d(this, "sendOnDataChannel: $message")
 
         val channel = dataChannel
         if (channel == null) {
@@ -149,7 +150,7 @@ class RTCCall : DataChannel.Observer {
             channel.send(
                 DataChannel.Buffer(
                     ByteBuffer.wrap(
-                        obj.toString().toByteArray()
+                        message.toByteArray()
                     ), false
                 )
             )
@@ -847,7 +848,7 @@ class RTCCall : DataChannel.Observer {
         val o = JSONObject()
         o.put(STATE_CHANGE_MESSAGE, HANGUP_MESSAGE)
 
-        if (sendOnDataChannel(o)) {
+        if (sendOnDataChannel(o.toString())) {
             reportStateChange(CallState.DISMISSED)
         } else {
             reportStateChange(CallState.ERROR_OTHER)

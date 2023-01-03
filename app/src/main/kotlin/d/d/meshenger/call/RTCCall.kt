@@ -132,6 +132,39 @@ class RTCCall : DataChannel.Observer {
         }
     }
 
+    private fun sendOnSocket(message: String): Boolean {
+        Log.d(this, "sendOnSocket: $message")
+
+        Utils.checkIsNotOnMainThread()
+
+        val socket = commSocket
+        if (socket == null || socket.isClosed) {
+            return false
+        }
+
+        //val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
+        val settings = binder.getSettings()
+        val ownSecretKey = settings.secretKey
+        val ownPublicKey = settings.publicKey
+
+        val encrypted = Crypto.encryptMessage(
+            message,
+            contact.publicKey,
+            ownPublicKey,
+            ownSecretKey
+        )
+
+        if (encrypted == null) {
+            reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+            return false
+        }
+
+        val pw = PacketWriter(socket)
+        pw.writeMessage(encrypted)
+
+        return true
+    }
+
     private fun sendOnDataChannel(message: String): Boolean {
         Log.d(this, "sendOnDataChannel: $message")
 

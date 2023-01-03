@@ -1045,9 +1045,9 @@ class RTCCall : DataChannel.Observer {
             }
         }
 
-        private fun closeSocket(socket: Socket) {
+        private fun closeSocket(socket: Socket?) {
             try {
-                socket.close()
+                socket?.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

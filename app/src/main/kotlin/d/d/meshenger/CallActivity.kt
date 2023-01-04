@@ -2,9 +2,6 @@ package d.d.meshenger
 
 import android.Manifest
 import android.content.*
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
@@ -17,16 +14,12 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatDelegate
-import d.d.meshenger.call.CaptureQualityController
-import d.d.meshenger.call.RTCAudioManager
-import d.d.meshenger.call.RTCCall
+import d.d.meshenger.call.*
 import d.d.meshenger.call.RTCCall.CallState
-import d.d.meshenger.call.StatsReportUtil
 import org.webrtc.*
 import java.net.InetSocketAddress
 
-class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
+class CallActivity : BaseActivity(), RTCCall.CallContext {
     private var binder: MainService.MainBinder? = null
     private lateinit var callStatus: TextView
     private lateinit var callStats: TextView
@@ -36,11 +29,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private lateinit var currentCall: RTCCall
     private lateinit var contact: Contact
     private lateinit var eglBase: EglBase
-    private var rtcAudioManager: RTCAudioManager? = null
+    private lateinit var proximitySensor: RTCProximitySensor
+    private lateinit var rtcAudioManager: RTCAudioManager
 
-    private var powerManager: PowerManager? = null
-    private var wakeLock: WakeLock? = null
-    private lateinit var passiveWakeLock: WakeLock
+    private var proximityScreenLock: WakeLock? = null
+    private var proximityCameraWasOn = false
 
     private var polledStartInit = true
     private var activityActive = true
@@ -72,15 +65,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     private var isLocalVideoAvailable = false // own camera is on/off
     private var isRemoteVideoAvailable = false // we receive a video feed
 
-    private var speakerEnabled = false
-
     class InitialSettings {
         var cameraEnabled = false
         var micEnabled = true
         var frontCameraEnabled = false
     }
 
-    private val statsCollector: RTCStatsCollectorCallback = object : RTCStatsCollectorCallback {
+    private val statsCollector = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
 
         override fun onStatsDelivered(rtcStatsReport: RTCStatsReport) {
@@ -370,6 +361,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
         eglBase = EglBase.create()
+        proximitySensor = RTCProximitySensor(applicationContext)
+        rtcAudioManager = RTCAudioManager(applicationContext)
 
         pipRenderer.init(eglBase.eglBaseContext, null)
         pipRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
@@ -465,36 +458,35 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         acceptButton.setOnClickListener(startCallListener)
         declineButton.setOnClickListener(declineListener)
-        startSensor()
     }
 
     private fun initIncomingCall() {
-        passiveWakeLock = (getSystemService(POWER_SERVICE) as PowerManager).newWakeLock(
-            PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.PARTIAL_WAKE_LOCK,
-            "meshenger:wakeup"
-        )
-        passiveWakeLock.acquire(10000)
         connection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 Log.d(this@CallActivity, "onServiceConnected")
                 binder = iBinder as MainService.MainBinder
                 currentCall = binder!!.getCurrentCall()!!
 
+                currentCall.setRemoteRenderer(remoteProxyVideoSink)
+                currentCall.setLocalRenderer(localProxyVideoSink)
                 currentCall.setCallContext(this@CallActivity)
+                currentCall.setEglBase(eglBase)
+
                 Thread {
                     currentCall.continueOnSocket()
                 }.start()
 
                 updateVideoDisplay()
+
+                startRinging()
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
                 binder = null
             }
         }
-        bindService(Intent(this, MainService::class.java), connection, 0)
 
-        startRinging()
+        bindService(Intent(this, MainService::class.java), connection, 0)
 
         // decline before call starts
         val declineListener = View.OnClickListener {
@@ -502,24 +494,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
             stopRinging()
             currentCall.decline()
-
-            if (passiveWakeLock.isHeld) {
-                passiveWakeLock.release()
-            }
-
-            finish()
-        }
-
-        // hangup active call
-        val hangupListener = View.OnClickListener {
-            Log.d(this, "hangup call...")
-
-            stopRinging()
-            currentCall.decline()
-
-            if (passiveWakeLock.isHeld) {
-                passiveWakeLock.release()
-            }
 
             finish()
         }
@@ -534,15 +508,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
             stopRinging()
 
-            currentCall.setRemoteRenderer(remoteProxyVideoSink)
-            currentCall.setLocalRenderer(localProxyVideoSink)
-            currentCall.setEglBase(eglBase)
-
-            if (passiveWakeLock.isHeld) {
-                passiveWakeLock.release()
-            }
-
-            declineButton.setOnClickListener(hangupListener)
             acceptButton.visibility = View.GONE
             declineButton.visibility = View.VISIBLE
 
@@ -550,8 +515,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
             currentCall.initIncoming()
 
             initCall()
-
-            startSensor()
         }
 
         acceptButton.setOnClickListener(acceptListener)
@@ -592,7 +555,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         Log.d(this, "continueCallSetup"
             + " init.action: ${intent.action}"
-            + ", state: ${this.lifecycle.currentState}"
+            + ", lifecycle.currentState: ${this.lifecycle.currentState}"
             + ", audio permissions: ${Utils.hasRecordAudioPermission(this)}"
             + ", video permissions: ${Utils.hasCameraPermission(this)}"
         )
@@ -626,7 +589,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         toggleMicButton.setOnClickListener { switchMicEnabled() }
         toggleCameraButton.setOnClickListener { switchCameraEnabled() }
-        speakerModeButton.setOnClickListener { chooseVoiceMode() }
+        speakerModeButton.setOnClickListener { switchSpeakerMode() }
 
         toggleFrontCameraButton.setOnClickListener {
             Log.d(this, "frontFacingSwitch: swappedVideoFeeds: $swappedVideoFeeds, frontCameraEnabled: ${currentCall.getFrontCameraEnabled()}}")
@@ -659,16 +622,20 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
 
         val speakerphoneMode = binder!!.getSettings().speakerphoneMode
-        Log.d(this@CallActivity, "speakerphoneMode: $speakerphoneMode")
+        rtcAudioManager.start(speakerphoneMode, object : RTCAudioManager.AudioManagerEvents {
+            // TODO: add onBluetoothPermissionRequired()?
 
-        rtcAudioManager = RTCAudioManager(applicationContext, speakerphoneMode)
-        rtcAudioManager!!.start(object : RTCAudioManager.AudioManagerEvents {
             // This method will be called each time the number
             // of available audio devices has changed.
             override fun onAudioDeviceChanged(selectedAudioDevice: RTCAudioManager.AudioDevice, availableAudioDevices: Set<RTCAudioManager.AudioDevice>) {
                 Log.d(this@CallActivity, "onAudioDeviceChanged: selected: $selectedAudioDevice ($availableAudioDevices)")
             }
         })
+
+        proximitySensor.addListener(rtcAudioManager::onProximitySensorChangedState)
+        proximitySensor.addListener(::onProximitySensorToggleScreen)
+        proximitySensor.addListener(::onProximitySensorToggleCamera)
+        proximitySensor.start()
 
         toggleMicButton.visibility = View.VISIBLE
         toggleCameraButton.visibility = View.VISIBLE
@@ -733,26 +700,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
     }
 
     fun onCaptureFormatChange(width: Int, height: Int, framerate: Int) {
-        currentCall?.changeCaptureFormat(width, height, framerate)
+        currentCall.changeCaptureFormat(width, height, framerate)
     }
 
-    private fun chooseVoiceMode() {
-        val audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
-
-        val button = speakerModeButton
-        speakerEnabled = !speakerEnabled
-        Log.d(this, "chooseVoiceMode: $speakerEnabled")
-
-        if (speakerEnabled) {
-            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-            audioManager.isSpeakerphoneOn = true
-            button.alpha = 1.0f
-        } else {
-            audioManager.mode = AudioManager.MODE_NORMAL
-            audioManager.isSpeakerphoneOn = false
-            audioManager.isBluetoothScoOn = false
-            button.alpha = 0.6f
-        }
+    private fun switchSpeakerMode() {
+        // not implemented yet
     }
 
     private val enabledMicrophoneForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -805,19 +757,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    private fun startSensor() {
-        powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager!!.newWakeLock(
-            PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
-            "meshenger:proximity"
-        )
-        wakeLock?.acquire()
-    }
-
     override fun onDestroy() {
         Log.d(this, "onDestroy")
 
         currentCall.setCallContext(null)
+
+        proximitySensor.stop()
 
         stopRinging()
 
@@ -831,7 +776,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
 
         unbindService(connection)
 
-        wakeLock?.release()
+        proximityScreenLock?.release()
 
         rtcAudioManager?.stop()
 
@@ -856,26 +801,42 @@ class CallActivity : BaseActivity(), RTCCall.CallContext, SensorEventListener {
         }
     }
 
-    override fun onSensorChanged(sensorEvent: SensorEvent) {
-        Log.d(this, "sensor changed: " + sensorEvent.values[0])
-        if (sensorEvent.values[0] == 0.0f) {
-            wakeLock = (getSystemService(POWER_SERVICE) as PowerManager)
-                .newWakeLock(
-                    PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                    "meshenger:tag"
-                )
-            wakeLock?.acquire()
+    // disable the camera while the proximity sensor is triggered
+    private fun onProximitySensorToggleCamera(isNear: Boolean) {
+        Log.d(this, "onProximitySensorToggleCamera: $isNear")
+
+        if (isNear) {
+            if (currentCall.getCameraEnabled() && !currentCall.getFrontCameraEnabled()) {
+                currentCall.setCameraEnabled(false)
+                proximityCameraWasOn = true
+            }
         } else {
-            wakeLock = (getSystemService(POWER_SERVICE) as PowerManager)
-                .newWakeLock(
-                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                    "meshenger:tag"
-                )
-            wakeLock?.acquire()
+            if (proximityCameraWasOn) {
+                currentCall.setCameraEnabled(true)
+                proximityCameraWasOn = false
+            }
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor, i: Int) {
-        // nothing to do
+    // disable the screen while the proximity sensor is triggered
+    private fun onProximitySensorToggleScreen(isNear: Boolean) {
+        Log.d(this, "onProximitySensorToggleScreen: $isNear")
+
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        if (isNear) {
+            // turn screen off
+            proximityScreenLock = powerManager.newWakeLock(
+                PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                "meshenger:tag"
+            )
+            proximityScreenLock?.acquire(10*60*1000L) // 10 minutes
+        } else {
+            // turn screen on
+            proximityScreenLock = powerManager.newWakeLock(
+                PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                "meshenger:tag"
+            )
+            proximityScreenLock?.acquire(10*60*1000L) // 10 minutes
+        }
     }
 }

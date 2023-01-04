@@ -21,26 +21,29 @@ import org.webrtc.ThreadUtils
 import java.lang.StringBuilder
 
 /**
- * RTCProximitySensor manages functions related to the proximity sensor in
- * the AppRTC demo.
+ * RTCProximitySensor manages functions related to the proximity sensor.
  * On most device, the proximity sensor is implemented as a boolean-sensor.
  * It returns just two values "NEAR" or "FAR". Thresholding is done on the LUX
  * value i.e. the LUX value of the light sensor is compared with a threshold.
  * A LUX-value more than the threshold means the proximity sensor returns "FAR".
- * Anything less than the threshold value and the sensor  returns "NEAR".
+ * Anything less than the threshold value and the sensor returns "NEAR".
  */
-class RTCProximitySensor(context: Context, sensorStateListener: Runnable) : SensorEventListener {
+class RTCProximitySensor(context: Context) : SensorEventListener {
     // This class should be created, started and stopped on one thread
     // (e.g. the main thread). We use `nonThreadSafe` to ensure that this is
     // the case. Only active when `DEBUG` is set to true.
     private val threadChecker: ThreadUtils.ThreadChecker = ThreadUtils.ThreadChecker()
-    private val onSensorStateListener = sensorStateListener
+    private var onSensorStateListeners = mutableSetOf<(Boolean) -> Unit>()
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private var proximitySensor: Sensor? = null
     private var lastStateReportIsNear = false
 
     init {
         Log.d(this, "RTCProximitySensor ${Utils.getThreadInfo()}")
+    }
+
+    fun addListener(listener: (Boolean) -> Unit) {
+        onSensorStateListeners.add(listener)
     }
 
     /**
@@ -51,21 +54,21 @@ class RTCProximitySensor(context: Context, sensorStateListener: Runnable) : Sens
         threadChecker.checkIsOnValidThread()
         Log.d(this, "start" + Utils.getThreadInfo())
         if (!initDefaultSensor()) {
-            // Proximity sensor is not supported on this device.
+            Log.w(this, "Proximity sensor is not supported on this device.")
             return false
+        } else {
+            sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL)
+            return true
         }
-        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL)
-        return true
     }
 
     /** Deactivate the proximity sensor.  */
     fun stop() {
         threadChecker.checkIsOnValidThread()
         Log.d(this, "stop" + Utils.getThreadInfo())
-        if (proximitySensor == null) {
-            return
+        if (proximitySensor != null) {
+            sensorManager.unregisterListener(this, proximitySensor)
         }
-        sensorManager.unregisterListener(this, proximitySensor)
     }
 
     /** Getter for last reported state. Set to true if "near" is reported.  */
@@ -96,14 +99,16 @@ class RTCProximitySensor(context: Context, sensorStateListener: Runnable) : Sens
             false
         }
 
-        // Report about new state to listening client. Client can then call
-        // sensorReportsNearState() to query the current state (NEAR or FAR).
-        onSensorStateListener.run()
-        Log.d(this, "onSensorChanged" + Utils.getThreadInfo() + ": "
+        Log.d(this, "onSensorChanged ${Utils.getThreadInfo()}: "
             + "accuracy=${event.accuracy}, "
             + "timestamp=${event.timestamp}, "
             + "distance=${event.values[0]}"
         )
+
+        // Report about new state to listening clients.
+        for (listener in onSensorStateListeners) {
+            listener(lastStateReportIsNear)
+        }
     }
 
     /**

@@ -1,4 +1,5 @@
-* add setting for speakerphone audio (auto with proximity, on and off)
+* add setting for speakerphone audio (on/off or via proximity)
 * add setting to disable the call history
+* turn of camera if proximity sensor is triggered
 * some minor UI fixes
 * support landscape view

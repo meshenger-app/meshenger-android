@@ -90,38 +90,6 @@
                     android:layout_marginBottom="@dimen/padding_10"
                     app:dividerColor="@color/light_grey" />
 
-                <LinearLayout
-                    android:id="@+id/passwordLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_password"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <TextView
-                        android:id="@+id/passwordTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_10"
-                    android:layout_marginBottom="@dimen/padding_10"
-                    app:dividerColor="@color/light_grey" />
-
                 <RelativeLayout
                     android:id="@+id/nightModeLayout"
                     android:layout_width="match_parent"
@@ -363,6 +331,38 @@
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_10"
+                    android:layout_marginBottom="@dimen/padding_10"
+                    app:dividerColor="@color/light_grey" />
+
+                <LinearLayout
+                    android:id="@+id/passwordLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_password"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <TextView
+                        android:id="@+id/passwordTv"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/options_text_size" />
+
+                </LinearLayout>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"

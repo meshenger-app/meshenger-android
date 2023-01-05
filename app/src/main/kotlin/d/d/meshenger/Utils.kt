@@ -120,13 +120,18 @@ internal object Utils {
         return buffer.toByteArray()
     }
 
-
    fun getExternalFileSize(ctx: Context, uri: Uri?): Long {
         val cursor = ctx.contentResolver.query(uri!!, null, null, null, null)
         cursor!!.moveToFirst()
-        val size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE))
-        cursor.close()
-        return size
+        val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+        if (index >= 0) {
+            val size = cursor.getLong(index)
+            cursor.close()
+            return size
+        } else {
+            cursor.close()
+            return -1
+        }
     }
 
     fun readExternalFile(ctx: Context, uri: Uri): ByteArray {

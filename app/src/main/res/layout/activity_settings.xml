@@ -193,64 +193,33 @@
                     android:visibility="visible"
                     app:dividerColor="@color/light_grey" />
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/settingsModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="visible">
+                    android:layout_marginTop="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_settings_mode"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="@dimen/title_text_size" />
 
-                    <RadioGroup
-                        android:id="@+id/settings_mode_radio_group"
-                        android:layout_width="match_parent"
+                    <Spinner
+                        android:id="@+id/spinnerSettingsModes"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:theme="@style/RadioButtonTheme"
-                        android:weightSum="3">
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        app:thumbTint="@color/selectedColor"
+                        android:drawSelectorOnTop="true"
+                        android:textSize="@dimen/options_text_size" />
 
-                        <RadioButton
-                            android:id="@+id/basic_radio_button"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:checked="true"
-                            android:fontFamily="@font/lato_regular"
-                            android:text="@string/basic"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/options_text_size" />
-
-                        <RadioButton
-                            android:id="@+id/advanced_radio_button"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:checked="false"
-                            android:fontFamily="@font/lato_regular"
-                            android:text="@string/advanced"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/options_text_size" />
-
-                        <RadioButton
-                            android:id="@+id/expert_radio_button"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:checked="false"
-                            android:fontFamily="@font/lato_regular"
-                            android:text="@string/expert"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/options_text_size" />
-                    </RadioGroup>
-
-                </LinearLayout>
+                </RelativeLayout>
 
             </LinearLayout>
 

@@ -146,30 +146,19 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        val basicRadioButton = findViewById<RadioButton>(R.id.basic_radio_button)
-        val advancedRadioButton = findViewById<RadioButton>(R.id.advanced_radio_button)
-        val expertRadioButton = findViewById<RadioButton>(R.id.expert_radio_button)
-
         applySettingsMode("basic")
 
-        basicRadioButton.isChecked = true
-        basicRadioButton.setOnCheckedChangeListener { _, b ->
-            if (b) {
-                applySettingsMode("basic")
-            }
-        }
-
-        advancedRadioButton.setOnCheckedChangeListener { _, b ->
-            if (b) {
-                applySettingsMode("advanced")
-            }
-        }
-
-        expertRadioButton.setOnCheckedChangeListener { _, b ->
-            if (b) {
-                applySettingsMode("expert")
-            }
-        }
+        setupSpinner("basic",
+            R.id.spinnerSettingsModes,
+            R.array.settingsModeLabels,
+            R.array.settingsModeValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        applySettingsMode(it)
+                    }
+                }
+            })
 
         findViewById<SwitchMaterial>(R.id.useNeighborTableSwitch).apply {
             isChecked = settings.useNeighborTable

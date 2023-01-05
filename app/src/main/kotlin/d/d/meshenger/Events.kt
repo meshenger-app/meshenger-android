@@ -30,11 +30,6 @@ class Events {
         }
     }
 
-    fun addEvent(contact: Contact, type: Event.Type) {
-        val lastWorking = contact.lastWorkingAddress
-        addEvent(Event(contact.publicKey, lastWorking, type, Date()))
-    }
-
     fun setEventsViewedDate() {
         eventsViewed = Date()
     }

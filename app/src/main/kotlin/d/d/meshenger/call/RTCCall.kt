@@ -275,7 +275,11 @@ class RTCCall : DataChannel.Observer {
             // remember latest working address
             val workingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
             val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
-            storedContact?.lastWorkingAddress = workingAddress
+            if (storedContact != null) {
+                storedContact.lastWorkingAddress = workingAddress
+            } else {
+                contact.lastWorkingAddress = workingAddress
+            }
         }
 
         val pr = PacketReader(socket)
@@ -1148,7 +1152,11 @@ class RTCCall : DataChannel.Observer {
                 // remember latest working address
                 val workingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
                 val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
-                storedContact?.lastWorkingAddress = workingAddress
+                if (storedContact != null) {
+                    storedContact.lastWorkingAddress = workingAddress
+                } else {
+                    contact.lastWorkingAddress = workingAddress
+                }
             }
 
             val obj = JSONObject(decrypted)

@@ -348,9 +348,9 @@ class MainService : Service(), Runnable {
             this@MainService.saveDatabase()
         }
 
-        internal fun addEvent(contact: Contact, type: Event.Type) {
+        internal fun addEvent(event: Event) {
             if (!getSettings().disableCallHistory) {
-                getEvents().addEvent(contact, type)
+                getEvents().addEvent(event)
                 LocalBroadcastManager.getInstance(this@MainService)
                     .sendBroadcast(Intent("refresh_event_list"))
             }

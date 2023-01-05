@@ -18,6 +18,7 @@ import d.d.meshenger.call.*
 import d.d.meshenger.call.RTCCall.CallState
 import org.webrtc.*
 import java.net.InetSocketAddress
+import java.util.*
 
 class CallActivity : BaseActivity(), RTCCall.CallContext {
     private var binder: MainService.MainBinder? = null
@@ -771,7 +772,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         currentCall.cleanup()
 
         if (callEventType != Event.Type.UNKNOWN) {
-            binder!!.addEvent(contact, callEventType)
+            val event = Event(contact.publicKey, contact.lastWorkingAddress, callEventType, Date())
+            binder!!.addEvent(event)
         }
 
         unbindService(connection)

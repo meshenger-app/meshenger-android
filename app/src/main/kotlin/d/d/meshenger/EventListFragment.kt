@@ -168,13 +168,16 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         }
 
         menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            val title = menuItem.title.toString()
-            if (title == add) {
-                showAddDialog(event)
-            } else if (title == block) {
-                setBlocked(event, true)
-            } else if (title == unblock) {
-                setBlocked(event, false)
+            when (menuItem.title.toString()) {
+                add -> {
+                    showAddDialog(event)
+                }
+                block -> {
+                    setBlocked(event, true)
+                }
+                unblock -> {
+                    setBlocked(event, false)
+                }
             }
             false
         }

@@ -116,10 +116,10 @@ class BackupActivity : BaseActivity(), ServiceConnection {
         val password = passwordEditText.text.toString()
         try {
             val database = binder!!.getDatabase()
-            val db_data = Database.toData(database, password)
+            val dbData = Database.toData(database, password)
 
-            if (db_data != null) {
-                writeExternalFile(this, uri, db_data)
+            if (dbData != null) {
+                writeExternalFile(this, uri, dbData)
                 Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, R.string.failed_to_export_database, Toast.LENGTH_SHORT).show()

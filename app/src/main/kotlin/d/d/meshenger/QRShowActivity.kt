@@ -24,7 +24,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
             extraContact = intent.extras!!["EXTRA_CONTACT"] as Contact?
         }
 
-        setTitle(getString(R.string.scan_invitation))
+        title = getString(R.string.scan_invitation)
 
         bindService(Intent(this, MainService::class.java), this, 0)
 

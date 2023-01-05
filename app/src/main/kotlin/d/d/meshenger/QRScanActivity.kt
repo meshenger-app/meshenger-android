@@ -31,7 +31,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrscan)
-        setTitle(getString(R.string.scan_invited))
+        title = getString(R.string.scan_invited)
 
         barcodeView = findViewById(R.id.barcodeScannerView)
 
@@ -210,7 +210,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
     private fun initCamera() {
         val formats = listOf(BarcodeFormat.QR_CODE)
-        barcodeView.getBarcodeView()?.decoderFactory = DefaultDecoderFactory(formats)
+        barcodeView.barcodeView?.decoderFactory = DefaultDecoderFactory(formats)
         barcodeView.decodeContinuous(this)
         barcodeView.resume()
     }

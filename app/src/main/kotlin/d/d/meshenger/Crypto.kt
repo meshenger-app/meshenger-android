@@ -7,7 +7,7 @@ import java.util.*
 
 internal object Crypto {
     // for development / testing only
-    private val disableCrypto = false
+    private const val disableCrypto = false
 
     // decrypt database using a password
     @JvmStatic
@@ -209,9 +209,9 @@ internal object Crypto {
             return null
         }
         val signedMessage = ByteArray(Sodium.crypto_sign_bytes() + data.size)
-        val signed_message_len = IntArray(1)
-        val rc = Sodium.crypto_sign(signedMessage, signed_message_len, data, data.size, secretKey)
-        return if (rc == 0 && signedMessage.size == signed_message_len[0]) {
+        val signedMessageLength = IntArray(1)
+        val rc = Sodium.crypto_sign(signedMessage, signedMessageLength, data, data.size, secretKey)
+        return if (rc == 0 && signedMessage.size == signedMessageLength[0]) {
             signedMessage
         } else {
             null

@@ -37,7 +37,7 @@ class Events {
     fun getMissedCalls(): List<Event> {
         val calls = mutableListOf<Event>()
         for (event in eventList) {
-            if (event.isMissedCall() && event.date.getTime() >= eventsViewed.time) {
+            if (event.isMissedCall() && event.date.time >= eventsViewed.time) {
                 calls.add(event)
             }
         }

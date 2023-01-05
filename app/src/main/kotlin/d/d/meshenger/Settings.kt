@@ -53,7 +53,7 @@ class Settings {
                 } else if (AddressUtils.isMACAddress(address)) {
                     address = address.uppercase(Locale.ROOT)
                 } else {
-                    Log.d("Settings", "invalid address ${address}")
+                    Log.d("Settings", "invalid address $address")
                     continue
                 }
                 if (address !in addresses) {

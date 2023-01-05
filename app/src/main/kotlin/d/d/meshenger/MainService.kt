@@ -366,8 +366,8 @@ class MainService : Service(), Runnable {
     internal inner class PingRunnable(
         var context: Context,
         val contacts: List<Contact>,
-        var ownPublicKey: ByteArray,
-        var ownSecretKey: ByteArray,
+        private var ownPublicKey: ByteArray,
+        private var ownSecretKey: ByteArray,
     ) : Runnable {
         private fun pingContact(contact: Contact) : Contact.State {
             val publicKey = contact.publicKey

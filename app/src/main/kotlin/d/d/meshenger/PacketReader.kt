@@ -4,9 +4,9 @@ import java.net.Socket
 
 /* Read the message size from the header and return the message of the correct size */
 internal class PacketReader(socket: Socket) {
-    val istream = socket.getInputStream()
-    val buffer  = ByteArray(16000)
-    var pos = 0
+    private val istream = socket.getInputStream()
+    private val buffer  = ByteArray(16000)
+    private var pos = 0
 
     fun readMessage(): ByteArray? {
         while (true) {

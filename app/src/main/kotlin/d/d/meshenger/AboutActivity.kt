@@ -9,7 +9,7 @@ class AboutActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-        setTitle(getString(R.string.menu_about))
+        title = getString(R.string.menu_about)
 
         val toolbar = findViewById<Toolbar>(R.id.about_toolbar)
         toolbar.apply {

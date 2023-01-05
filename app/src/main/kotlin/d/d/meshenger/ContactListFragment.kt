@@ -277,20 +277,17 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         menu.setOnMenuItemClickListener { menuItem: MenuItem ->
             val title = menuItem.title.toString()
             val publicKey = contact.publicKey
-            if (title == delete) {
-                showDeleteDialog(publicKey, contact.name)
-            } else if (title == rename) {
-                showRenameDialog(publicKey, contact.name)
-            } else if (title == share) {
-                shareContact(contact)
-            } else if (title == block) {
-                setBlocked(publicKey, true)
-            } else if (title == unblock) {
-                setBlocked(publicKey, false)
-            } else if (title == qrcode) {
-                val intent = Intent(activity, QRShowActivity::class.java)
-                intent.putExtra("EXTRA_CONTACT", contact)
-                startActivity(intent)
+            when (title) {
+                delete -> showDeleteDialog(publicKey, contact.name)
+                rename -> showRenameDialog(publicKey, contact.name)
+                share -> shareContact(contact)
+                block -> setBlocked(publicKey, true)
+                unblock -> setBlocked(publicKey, false)
+                qrcode -> {
+                    val intent = Intent(activity, QRShowActivity::class.java)
+                    intent.putExtra("EXTRA_CONTACT", contact)
+                    startActivity(intent)
+                }
             }
             false
         }

@@ -6,7 +6,7 @@ import org.json.JSONObject
 import org.json.JSONArray
 import java.nio.charset.Charset
 
-class Database() {
+class Database {
     var version = BuildConfig.VERSION_NAME
     var settings = Settings()
     var contacts = Contacts()
@@ -179,8 +179,7 @@ class Database() {
                 val eventsArray = eventsObject.getJSONArray("entries")
                 for (i in 0 until eventsArray.length()) {
                     val eventObject = eventsArray.getJSONObject(i)
-                    val oldType = eventObject.getString("type")
-                    val newType = when (oldType) {
+                    val newType = when (val oldType = eventObject.getString("type")) {
                         "OUTGOING_UNKNOWN" -> "UNKNOWN"
                         "INCOMING_UNKNOWN" -> "UNKNOWN"
                         "OUTGOING_DECLINED" -> "OUTGOING_ACCEPTED"

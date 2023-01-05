@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import java.lang.Math
 import java.text.DateFormat
+import kotlin.math.abs
 
 internal class EventListAdapter(
     ctx: Context,
@@ -56,7 +57,7 @@ internal class EventListAdapter(
         val dateTV = view.findViewById<TextView>(R.id.call_date)
 
         val now = System.currentTimeMillis()
-        if (Math.abs(now - event.date.time) < DateUtils.HOUR_IN_MILLIS) {
+        if (abs(now - event.date.time) < DateUtils.HOUR_IN_MILLIS) {
             dateTV.text = DateUtils.getRelativeTimeSpanString(event.date.time, now, DateUtils.MINUTE_IN_MILLIS)
         } else if (DateUtils.isToday(event.date.time)) {
             val tf = DateFormat.getTimeInstance(DateFormat.SHORT)

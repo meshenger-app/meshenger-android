@@ -4,8 +4,8 @@ import java.net.Socket
 
 /* Write the message header before the message is send */
 internal class PacketWriter(socket: Socket) {
-    val os = socket.getOutputStream()
-    val header = ByteArray(4)
+    private val os = socket.getOutputStream()
+    private val header = ByteArray(4)
 
     fun writeMessage(message: ByteArray) {
         writeMessageHeader(header, message.size)

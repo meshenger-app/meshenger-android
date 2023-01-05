@@ -1,6 +1,5 @@
 package d.d.meshenger.call
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.Lifecycle
@@ -267,13 +266,13 @@ class RTCCall : DataChannel.Observer {
         callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
         commSocket = socket
 
-        val remote_address = socket.remoteSocketAddress as InetSocketAddress
+        val remoteAddress = socket.remoteSocketAddress as InetSocketAddress
 
-        Log.d(this, "outgoing call from remote address: $remote_address")
+        Log.d(this, "outgoing call from remote address: $remoteAddress")
 
         run {
             // remember latest working address
-            val workingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+            val workingAddress = InetSocketAddress(remoteAddress.address, MainService.serverPort)
             val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
             if (storedContact != null) {
                 storedContact.lastWorkingAddress = workingAddress
@@ -461,7 +460,7 @@ class RTCCall : DataChannel.Observer {
                     }
                 }
 
-                override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+                override fun onConnectionChange(newState: PeerConnectionState) {
                     Log.d(this, "onConnectionChange: ${newState.name}")
                 }
 
@@ -829,7 +828,7 @@ class RTCCall : DataChannel.Observer {
                     }
                 }
 
-                override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+                override fun onConnectionChange(newState: PeerConnectionState) {
                     Log.d(this, "onConnectionChange: ${newState.name}")
                 }
 
@@ -878,8 +877,8 @@ class RTCCall : DataChannel.Observer {
     }
 
     // send over data channel
-    private fun hangup_internal() {
-        Log.d(this, "hangup_internal")
+    private fun hangupInternal() {
+        Log.d(this, "hangupInternal")
 
         // send hangup over WebRTC channel
         val o = JSONObject()
@@ -898,14 +897,14 @@ class RTCCall : DataChannel.Observer {
 
         execute {
             Log.d(this, "hangup() executor start")
-            hangup_internal()
+            hangupInternal()
             Log.d(this, "hangup() executor end")
         }
     }
 
     // send over initial socket
-    private fun decline_internal() {
-        Log.d(this, "decline_internal")
+    private fun declineInternal() {
+        Log.d(this, "declineInternal")
         // send decline over initial socket
         val socket = commSocket
         if (socket != null && !socket.isClosed) {
@@ -941,7 +940,7 @@ class RTCCall : DataChannel.Observer {
 
         execute {
             Log.d(this, "decline() executor start")
-            decline_internal()
+            declineInternal()
             Log.d(this, "decline() executor end")
         }
     }
@@ -1098,11 +1097,11 @@ class RTCCall : DataChannel.Observer {
                 }
             }
 
-            val remote_address = socket.remoteSocketAddress as InetSocketAddress
+            val remoteAddress = socket.remoteSocketAddress as InetSocketAddress
             val pw = PacketWriter(socket)
             val pr = PacketReader(socket)
 
-            Log.d(this, "incoming peerConnection from $remote_address")
+            Log.d(this, "incoming peerConnection from $remoteAddress")
 
             val request = pr.readMessage()
             if (request == null) {
@@ -1150,7 +1149,7 @@ class RTCCall : DataChannel.Observer {
 
             run {
                 // remember latest working address
-                val workingAddress = InetSocketAddress(remote_address.address, MainService.serverPort)
+                val workingAddress = InetSocketAddress(remoteAddress.address, MainService.serverPort)
                 val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
                 if (storedContact != null) {
                     storedContact.lastWorkingAddress = workingAddress

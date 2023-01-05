@@ -87,7 +87,7 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent) {
         threadChecker.checkIsOnValidThread()
-        Utils.assertIsTrue(event.sensor.getType() == Sensor.TYPE_PROXIMITY)
+        Utils.assertIsTrue(event.sensor.type == Sensor.TYPE_PROXIMITY)
         // As a best practice; do as little as possible within this method and
         // avoid blocking.
         val distanceInCentimeters: Float = event.values[0]

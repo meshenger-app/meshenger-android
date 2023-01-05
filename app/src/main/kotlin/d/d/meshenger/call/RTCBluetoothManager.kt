@@ -124,17 +124,22 @@ open class RTCBluetoothManager(context: Context, audioManager: RTCAudioManager) 
                             + "sb=$isInitialStickyBroadcast, "
                             + "BT state: $bluetoothState"
                 )
-                if (state == BluetoothHeadset.STATE_CONNECTED) {
-                    scoConnectionAttempts = 0
-                    updateAudioDeviceState()
-                } else if (state == BluetoothHeadset.STATE_CONNECTING) {
-                    // No action needed.
-                } else if (state == BluetoothHeadset.STATE_DISCONNECTING) {
-                    // No action needed.
-                } else if (state == BluetoothHeadset.STATE_DISCONNECTED) {
-                    // Bluetooth is probably powered off during the call.
-                    stopScoAudio()
-                    updateAudioDeviceState()
+                when (state) {
+                    BluetoothHeadset.STATE_CONNECTED -> {
+                        scoConnectionAttempts = 0
+                        updateAudioDeviceState()
+                    }
+                    BluetoothHeadset.STATE_CONNECTING -> {
+                        // No action needed.
+                    }
+                    BluetoothHeadset.STATE_DISCONNECTING -> {
+                        // No action needed.
+                    }
+                    BluetoothHeadset.STATE_DISCONNECTED -> {
+                        // Bluetooth is probably powered off during the call.
+                        stopScoAudio()
+                        updateAudioDeviceState()
+                    }
                 }
                 // Change in the audio (SCO) connection state of the Headset profile.
                 // Typically received after call to startScoAudio() has finalized.
@@ -350,7 +355,7 @@ open class RTCBluetoothManager(context: Context, audioManager: RTCAudioManager) 
         // Get connected devices for the headset profile. Returns the set of
         // devices which are in state STATE_CONNECTED. The BluetoothDevice class
         // is just a thin wrapper for a Bluetooth hardware address.
-        val devices: List<BluetoothDevice> = bluetoothHeadset!!.getConnectedDevices()
+        val devices: List<BluetoothDevice> = bluetoothHeadset!!.connectedDevices
         if (devices.isEmpty()) {
             bluetoothDevice = null
             bluetoothState = State.HEADSET_UNAVAILABLE
@@ -490,7 +495,7 @@ open class RTCBluetoothManager(context: Context, audioManager: RTCAudioManager) 
 
     /** Checks whether audio uses Bluetooth SCO.  */
     private val isScoOn: Boolean
-        private get() = audioManager.isBluetoothScoOn
+        get() = audioManager.isBluetoothScoOn
 
     /** Converts BluetoothAdapter states into local string representations.  */
     private fun stateToString(state: Int): String {

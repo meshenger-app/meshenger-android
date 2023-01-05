@@ -87,7 +87,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         return this.applicationContext
     }
 
-    var callWasStarted = false
+    private var callWasStarted = false
 
     override fun onStateChange(state: CallState) {
         runOnUiThread {
@@ -237,12 +237,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         if (debugOutputEnabled && cameraEnabled) {
             captureFormatSlider.setOnSeekBarChangeListener(CaptureQualityController(captureFormatText, this))
-            captureFormatText.setVisibility(View.VISIBLE)
-            captureFormatSlider.setVisibility(View.VISIBLE)
+            captureFormatText.visibility = View.VISIBLE
+            captureFormatSlider.visibility = View.VISIBLE
         } else {
             captureFormatSlider.setOnSeekBarChangeListener(null)
-            captureFormatText.setVisibility(View.GONE)
-            captureFormatSlider.setVisibility(View.GONE)
+            captureFormatText.visibility = View.GONE
+            captureFormatSlider.visibility = View.GONE
         }
     }
 

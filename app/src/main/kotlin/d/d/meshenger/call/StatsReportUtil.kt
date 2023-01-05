@@ -40,7 +40,7 @@ class StatsReportUtil {
         var videoOutHeight = 0L
         var videoOutFrameRate = 0L
 
-        var statsMap = report.statsMap
+        val statsMap = report.statsMap
         for (stats in statsMap.values) {
             if (stats.type == "inbound-rtp") {
                 val members = stats.members
@@ -170,15 +170,15 @@ class StatsReportUtil {
         return " Receiving\n" +
                "  Video Codec: $videoInCodec\n" +
                "   Quality: ${videoInWidth}x$videoInHeight @ $videoInFrameRate fps\n" +
-               "   Bitrate: ${videoInBytesDelta} kbps\n" +
+               "   Bitrate: $videoInBytesDelta kbps\n" +
                "  Audio Codec: $audioInCodec\n" +
-               "   Bitrate: ${audioInBytesDelta} kbps\n" +
+               "   Bitrate: $audioInBytesDelta kbps\n" +
                " Sending\n" +
                "  Video Codec: $videoOutCodec\n" +
                "   Quality: ${videoOutWidth}x$videoOutHeight @ $videoOutFrameRate fps\n" +
-               "   Bitrate: ${videoOutBytesDelta} kbps\n" +
+               "   Bitrate: $videoOutBytesDelta kbps\n" +
                "  Audio Codec: $audioOutCodec\n" +
-               "   Bitrate: ${audioOutBytesDelta} kbps\n"
+               "   Bitrate: $audioOutBytesDelta kbps\n"
     }
 
     companion object {

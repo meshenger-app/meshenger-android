@@ -54,7 +54,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         bindService(Intent(this, MainService::class.java), this, 0)
     }
 
-    fun initViews() {
+    private fun initViews() {
         if (binder == null) {
             return
         }
@@ -63,18 +63,18 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         val resetButton = findViewById<Button>(R.id.reset_button)
         val addButton = findViewById<View>(R.id.AddCustomAddressButton)
 
-        saveButton.setOnClickListener(View.OnClickListener {
+        saveButton.setOnClickListener {
             binder!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             binder!!.saveDatabase()
-        })
+        }
 
         addButton.setOnClickListener {
             var address = customAddressTextEdit.text?.toString() ?: return@setOnClickListener
-            if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
-                address = address.lowercase(Locale.ROOT)
+            address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+                address.lowercase(Locale.ROOT)
             } else if (AddressUtils.isMACAddress(address)) {
-                address = address.uppercase(Locale.ROOT)
+                address.uppercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, "Please enter a valid MAC/IP address or domain name", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -97,7 +97,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             customAddressTextEdit.setText("")
         }
 
-        resetButton.setOnClickListener(View.OnClickListener { initAddressList() })
+        resetButton.setOnClickListener { initAddressList() }
     }
 
     override fun onDestroy() {
@@ -175,7 +175,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                 } else {
                     val ae = allAddresses[position]
 
-                    val isCustom = !(ae in this.systemAddresses)
+                    val isCustom = ae !in this.systemAddresses
                     icon.isVisible = isCustom
                     if (isCustom) {
                         icon.setOnClickListener {
@@ -227,7 +227,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                     storedAddresses.add(entry)
                 }
 
-                if (!(entry in systemAddresses)) {
+                if (entry !in systemAddresses) {
                     allAddresses.remove(entry)
                 }
 

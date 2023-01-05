@@ -3,3 +3,4 @@
 * turn of camera if proximity sensor is triggered
 * some minor UI fixes
 * support landscape view
+* fix contact address in events

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -94,7 +93,7 @@
                     android:id="@+id/nightModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -128,7 +127,7 @@
                     android:id="@+id/blockUnknownLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -197,7 +196,7 @@
                     android:id="@+id/settingsModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -243,7 +242,7 @@
                     android:id="@+id/promptOutgoingCallsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -277,7 +276,7 @@
                     android:id="@+id/speakerphoneModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -377,7 +376,7 @@
                     android:id="@+id/disableCallHistoryLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -422,7 +421,7 @@
                     android:id="@+id/noAudioProcessingLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -456,7 +455,7 @@
                     android:id="@+id/videoHardwareAccelerationLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -490,7 +489,6 @@
                     android:id="@+id/connectTimeoutLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
                     android:orientation="horizontal">
 
                     <TextView
@@ -523,7 +521,7 @@
                     android:id="@+id/useNeighborTableLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"

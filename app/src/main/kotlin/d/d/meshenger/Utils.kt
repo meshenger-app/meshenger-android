@@ -1,7 +1,5 @@
 package d.d.meshenger
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -35,28 +33,8 @@ internal object Utils {
         }
     }
 
-    fun hasReadPermission(activity: Activity): Boolean {
-        return ContextCompat.checkSelfPermission(
-            activity, Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    fun hasWritePermission(activity: Activity): Boolean {
-        return ContextCompat.checkSelfPermission(
-            activity, Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    fun hasCameraPermission(activity: Activity): Boolean {
-        return ContextCompat.checkSelfPermission(
-            activity, Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    fun hasRecordAudioPermission(activity: Activity): Boolean {
-        return ContextCompat.checkSelfPermission(
-            activity, Manifest.permission.RECORD_AUDIO
-        ) == PackageManager.PERMISSION_GRANTED
+    fun hasPermission(context: Context, permission: String): Boolean {
+        return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
     }
 
     private val NAME_PATTERN = Pattern.compile("[\\w][\\w _-]{1,22}[\\w]")

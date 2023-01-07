@@ -46,7 +46,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         // manual input button
         findViewById<View>(R.id.fabManualInput).setOnClickListener { startManualInput() }
 
-        if (!Utils.hasCameraPermission(this)) {
+        if (!Utils.hasPermission(this, Manifest.permission.CAMERA)) {
             enabledCameraForResult.launch(Manifest.permission.CAMERA)
         }
     }
@@ -217,7 +217,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainService.MainBinder
-        if (Utils.hasCameraPermission(this)) {
+        if (Utils.hasPermission(this, Manifest.permission.CAMERA)) {
             initCamera()
         }
     }

@@ -557,8 +557,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         Log.d(this, "continueCallSetup"
             + " init.action: ${intent.action}"
             + ", lifecycle.currentState: ${this.lifecycle.currentState}"
-            + ", audio permissions: ${Utils.hasRecordAudioPermission(this)}"
-            + ", video permissions: ${Utils.hasCameraPermission(this)}"
+            + ", audio permissions: ${Utils.hasPermission(this, Manifest.permission.RECORD_AUDIO)}"
+            + ", video permissions: ${Utils.hasPermission(this, Manifest.permission.CAMERA)}"
         )
 
         // swap pip and fullscreen content
@@ -723,7 +723,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             currentCall.setMicrophoneEnabled(false)
         } else {
             // check permission
-            if (!Utils.hasRecordAudioPermission(this)) {
+            if (!Utils.hasPermission(this, Manifest.permission.RECORD_AUDIO)) {
                 enabledMicrophoneForResult.launch(Manifest.permission.RECORD_AUDIO)
                 return
             }
@@ -749,7 +749,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             currentCall.setCameraEnabled(false)
         } else {
             // check permission
-            if (!Utils.hasCameraPermission(this)) {
+            if (!Utils.hasPermission(this, Manifest.permission.CAMERA)) {
                 enabledCameraForResult.launch(Manifest.permission.CAMERA)
                 return
             }

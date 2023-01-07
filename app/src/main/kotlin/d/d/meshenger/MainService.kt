@@ -39,14 +39,14 @@ class MainService : Service(), Runnable {
         Thread(this).start()
     }
 
-    private fun updateNotification(text: String) {
-        val notification = getNotification(text)
+    private fun updateNotification() {
+        val notification = getNotification()
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         manager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun getNotification(text: String): Notification {
+    private fun getNotification(): Notification {
         val channelId = "meshenger_service"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val chan = NotificationChannel(
@@ -82,7 +82,7 @@ class MainService : Service(), Runnable {
     }
 
     private fun showNotification() {
-        val notification = getNotification(resources.getText(R.string.listen_for_incoming_calls).toString())
+        val notification = getNotification()
         startForeground(NOTIFICATION_ID, notification)
     }
 
@@ -220,7 +220,7 @@ class MainService : Service(), Runnable {
             Log.d(this, "Received invalid intent")
         } else if (intent.action == START_FOREGROUND_ACTION) {
             Log.d(this, "Received Start Foreground Intent")
-            val notification = getNotification(resources.getText(R.string.listen_for_incoming_calls).toString())
+            val notification = getNotification()
             startForeground(NOTIFICATION_ID, notification)
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "Received Stop Foreground Intent")

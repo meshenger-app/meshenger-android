@@ -165,7 +165,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
 
             // call it here because EventListFragment.onResume is triggered twice
-            binder!!.pingContacts()
+            binder!!.pingContacts(binder!!.getContacts().contactList)
         }
     }
 

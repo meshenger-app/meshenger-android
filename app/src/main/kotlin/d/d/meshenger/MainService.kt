@@ -310,6 +310,8 @@ class MainService : Service(), Runnable {
             getDatabase().contacts.addContact(contact)
             saveDatabase()
 
+            pingContacts(listOf(contact))
+
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_contact_list"))
             LocalBroadcastManager.getInstance(this@MainService)
@@ -330,10 +332,9 @@ class MainService : Service(), Runnable {
             this@MainService.stopSelf()
         }
 
-        fun pingContacts() {
+        fun pingContacts(contactList: List<Contact>) {
             Log.d(this, "pingContacts")
             val settings = getSettings()
-            val contactList = getContacts().contactList
             Thread(
                 PingRunnable(
                     this@MainService,

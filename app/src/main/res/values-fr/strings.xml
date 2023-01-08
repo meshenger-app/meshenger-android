@@ -14,7 +14,6 @@
     <string name="enter_password">Entrer le mot de passe</string>
     <string name="path_title">Chemin d’importation/exportation</string>
     <string name="password_title">Mot de passe</string>
-    <string name="camera_permission_request">La permission de la caméra est nécessaire pour scanner les codes QR</string>
     <string name="invalid_qr">Code QR invalide</string>
     <string name="network_connect_invitation">Aucune information disponible, veuillez vous connecter à un réseau</string>
     <string name="contact_has_no_address_warning">Attention : le contact n’a pas d’adresse</string>

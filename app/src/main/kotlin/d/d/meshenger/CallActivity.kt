@@ -779,7 +779,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             rtcAudioManager.updateAudioDeviceState()
         } else {
             // do not turn on microphone
-            showTextMessage(getString(R.string.missing_bluetooth_permissions))
+            showTextMessage(getString(R.string.missing_bluetooth_permission))
         }
     }
 
@@ -788,7 +788,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             switchMicEnabled()
         } else {
             // do not turn on microphone
-            showTextMessage(getString(R.string.missing_microphone_permissions))
+            showTextMessage(getString(R.string.missing_microphone_permission))
         }
     }
 
@@ -812,7 +812,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             switchCameraEnabled()
         } else {
             // do not turn on camera
-            showTextMessage(getString(R.string.missing_camera_permissions))
+            showTextMessage(getString(R.string.missing_camera_permission))
         }
     }
 

@@ -14,7 +14,6 @@
     <string name="path_title">导入/导出路径</string>
     <string name="import_dialog">导入新设置并添加 %1$d 位联系人和 %2$d 个事件？</string>
     <string name="password_title">密码</string>
-    <string name="camera_permission_request">需要相机权限才能扫描二维码</string>
     <string name="invalid_qr">无效的二维码</string>
     <string name="network_connect_invitation">无信息可用，请连接到一个网络</string>
     <string name="contact_has_no_address_warning">警告：联系人没有地址</string>

@@ -13,7 +13,6 @@
     <string name="enter_password">Introduce la contraseña</string>
     <string name="path_title">Importar/Exportar Ruta</string>
     <string name="password_title">Contraseña</string>
-    <string name="camera_permission_request">Se necesita permiso de la cámara para escanear códigos</string>
     <string name="invalid_qr">Código QR no válido</string>
     <string name="network_connect_invitation">No hay información disponible, conéctese a una red.</string>
     <string name="contact_has_no_address_warning">Advertencia: el contacto no tiene dirección</string>

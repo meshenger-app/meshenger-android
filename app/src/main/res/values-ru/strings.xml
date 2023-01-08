@@ -13,7 +13,6 @@
     <string name="enter_password">Введите пароль</string>
     <string name="path_title">Путь импорта/экспорта</string>
     <string name="password_title">Пароль</string>
-    <string name="camera_permission_request">Разрешение камеры, необходимое для сканирования кодов</string>
     <string name="invalid_qr">Неверный штрих-код</string>
     <string name="network_connect_invitation">Нет информации, пожалуйста, подключитесь к сети</string>
     <string name="contact_has_no_address_warning">Предупреждение: Контакт не имеет адреса</string>

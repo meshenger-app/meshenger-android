@@ -55,7 +55,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         isGranted -> if (isGranted) {
             initCamera()
         } else {
-            Toast.makeText(this, R.string.camera_permission_request, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.missing_camera_permission, Toast.LENGTH_LONG).show()
             // no finish() in case no camera access wanted but contact data pasted
         }
     }

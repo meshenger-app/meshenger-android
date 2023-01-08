@@ -14,9 +14,8 @@
     <string name="path_title">Importar/Exportar localização</string>
     <string name="import_dialog">Importar novas configurações e adicionar %1$d contatos e %2$d eventos?</string>
     <string name="password_title">Senha</string>
-    <string name="missing_camera_permissions">Permissão não concedida. Câmera desativada.</string>
-    <string name="missing_microphone_permissions">Permissão não concedida. Microfone desativado.</string>
-    <string name="camera_permission_request">Permissão da câmera é necessária para fazer leitura de códigos</string>
+    <string name="missing_camera_permission">Permissão não concedida. Câmera desativada.</string>
+    <string name="missing_microphone_permission">Permissão não concedida. Microfone desativado.</string>
     <string name="invalid_qr">Código QR inválido</string>
     <string name="network_connect_invitation">Nenhuma informação disponível, por favor conecte-se a uma rede</string>
     <string name="contact_has_no_address_warning">Aviso: O contato não tem endereço</string>

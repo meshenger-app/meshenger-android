@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:progress="50"
                 android:visibility="gone"
-                android:layout_margin="16dp "/>
+                android:layout_margin="16dp"/>
 
             <TextView
                 android:id="@+id/captureFormatText"

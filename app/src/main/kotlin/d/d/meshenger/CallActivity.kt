@@ -14,6 +14,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import d.d.meshenger.call.*
 import d.d.meshenger.call.RTCCall.CallState
 import org.webrtc.*
@@ -53,7 +54,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private lateinit var toggleCameraButton: ImageButton
     private lateinit var toggleMicButton: ImageButton
     private lateinit var toggleFrontCameraButton: ImageButton
-    private lateinit var speakerModeButton: ImageButton
+    private lateinit var audioSourceButton: ImageButton
     private lateinit var captureFormatSlider: SeekBar
     private lateinit var captureFormatText: TextView
 
@@ -355,7 +356,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         acceptButton = findViewById(R.id.acceptButton)
         declineButton = findViewById(R.id.declineButton)
         toggleFrontCameraButton = findViewById(R.id.frontFacingSwitch)
-        speakerModeButton = findViewById(R.id.speakerMode)
+        audioSourceButton = findViewById(R.id.audioSourceButton)
         captureFormatSlider = findViewById(R.id.captureFormatSlider)
         captureFormatText = findViewById(R.id.captureFormatText)
 
@@ -590,7 +591,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         toggleMicButton.setOnClickListener { switchMicEnabled() }
         toggleCameraButton.setOnClickListener { switchCameraEnabled() }
-        speakerModeButton.setOnClickListener { switchSpeakerMode() }
+        audioSourceButton.setOnClickListener { switchAudioSource() }
 
         toggleFrontCameraButton.setOnClickListener {
             Log.d(this, "frontFacingSwitch: swappedVideoFeeds: $swappedVideoFeeds, frontCameraEnabled: ${currentCall.getFrontCameraEnabled()}}")
@@ -622,17 +623,72 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             currentCall.setFrontCameraEnabled(settings.frontCameraEnabled)
         }
 
-        val speakerphoneMode = binder!!.getSettings().speakerphoneMode
-        rtcAudioManager.start(speakerphoneMode, object : RTCAudioManager.AudioManagerEvents {
-            // TODO: add onBluetoothPermissionRequired()?
+        rtcAudioManager.setEventListener(object : RTCAudioManager.AudioManagerEvents {
+            private fun getAudioDeviceIcon(device: RTCAudioManager.AudioDevice): Int {
+                return when (device) {
+                    RTCAudioManager.AudioDevice.AUTO -> R.drawable.ic_audio_device_phone // should never happen
+                    RTCAudioManager.AudioDevice.SPEAKER_PHONE -> R.drawable.ic_audio_device_speakerphone
+                    RTCAudioManager.AudioDevice.WIRED_HEADSET -> R.drawable.ic_audio_device_headset
+                    RTCAudioManager.AudioDevice.EARPIECE -> R.drawable.ic_audio_device_phone
+                    RTCAudioManager.AudioDevice.BLUETOOTH -> R.drawable.ic_audio_device_bluetooth
+                }
+            }
 
-            // This method will be called each time the number
-            // of available audio devices has changed.
-            override fun onAudioDeviceChanged(selectedAudioDevice: RTCAudioManager.AudioDevice, availableAudioDevices: Set<RTCAudioManager.AudioDevice>) {
-                Log.d(this@CallActivity, "onAudioDeviceChanged: selected: $selectedAudioDevice ($availableAudioDevices)")
+            private fun getAudioDeviceName(device: RTCAudioManager.AudioDevice): Int {
+                return when (device) {
+                    RTCAudioManager.AudioDevice.AUTO -> R.string.audio_device_auto
+                    RTCAudioManager.AudioDevice.SPEAKER_PHONE -> R.string.audio_device_speakerphone
+                    RTCAudioManager.AudioDevice.WIRED_HEADSET -> R.string.audio_device_wired_headset
+                    RTCAudioManager.AudioDevice.EARPIECE -> R.string.audio_device_earpiece
+                    RTCAudioManager.AudioDevice.BLUETOOTH -> R.string.audio_device_bluetooth
+                }
+            }
+
+            override fun onBluetoothConnectPermissionRequired() {
+                Log.d(this, "onBluetoothConnectPermissionRequired()")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    allowBluetoothConnectForResult.launch(Manifest.permission.BLUETOOTH_CONNECT)
+                } else {
+                    allowBluetoothConnectForResult.launch(Manifest.permission.BLUETOOTH)
+                }
+            }
+
+            override fun onAudioDeviceChanged(
+                    requested: RTCAudioManager.AudioDevice,
+                    selected: RTCAudioManager.AudioDevice,
+                    available: Set<RTCAudioManager.AudioDevice>) {
+                if (requested == RTCAudioManager.AudioDevice.AUTO || requested == selected) {
+                    // we got the requested audio device
+                    val selectedName = getAudioDeviceName(selected)
+                    val message = String.format(
+                        getString(R.string.audio_device_available),
+                        getString(selectedName)
+                    )
+                    showTextMessage(message)
+                } else {
+                    // we did not get the requested audio device
+                    val requestedName = getAudioDeviceName(requested)
+                    val selectedName = getAudioDeviceName(selected)
+                    val message = String.format(
+                        getString(R.string.audio_device_not_available),
+                        getString(requestedName),
+                        getString(selectedName)
+                    )
+                    showTextMessage(message)
+                }
+                audioSourceButton.setImageResource(getAudioDeviceIcon(selected))
             }
         })
 
+        val requestedAudioDevice = when (binder!!.getSettings().speakerphoneMode) {
+            "auto" -> RTCAudioManager.AudioDevice.AUTO
+            "on" -> RTCAudioManager.AudioDevice.SPEAKER_PHONE
+            "off" -> RTCAudioManager.AudioDevice.EARPIECE
+            else -> RTCAudioManager.AudioDevice.AUTO
+        }
+        rtcAudioManager.setRequestedAudioDevice(requestedAudioDevice)
+
+        rtcAudioManager.start()
         proximitySensor.addListener(rtcAudioManager::onProximitySensorChangedState)
         proximitySensor.addListener(::onProximitySensorToggleScreen)
         proximitySensor.addListener(::onProximitySensorToggleCamera)
@@ -704,8 +760,27 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         currentCall.changeCaptureFormat(width, height, framerate)
     }
 
-    private fun switchSpeakerMode() {
-        // not implemented yet
+    private fun switchAudioSource() {
+        // for testing
+        val requested = rtcAudioManager.getRequestedAudioDevice()
+        val selected = rtcAudioManager.getSelectedAudioDevice()
+
+        if (requested == RTCAudioManager.AudioDevice.AUTO) {
+            Log.d(this, "switchAudioSource() $selected => BLUETOOTH")
+            rtcAudioManager.setRequestedAudioDevice(RTCAudioManager.AudioDevice.BLUETOOTH)
+        } else {
+            Log.d(this, "switchAudioSource() $selected => AUTO")
+            rtcAudioManager.setRequestedAudioDevice(RTCAudioManager.AudioDevice.AUTO)
+        }
+    }
+
+    private val allowBluetoothConnectForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted -> if (isGranted) {
+            rtcAudioManager.updateAudioDeviceState()
+        } else {
+            // do not turn on microphone
+            showTextMessage(getString(R.string.missing_bluetooth_permissions))
+        }
     }
 
     private val enabledMicrophoneForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -803,7 +878,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
     }
 
-    // disable the camera while the proximity sensor is triggered
+    // turn off/on the camera while the proximity sensor is triggered
     private fun onProximitySensorToggleCamera(isNear: Boolean) {
         Log.d(this, "onProximitySensorToggleCamera: $isNear")
 
@@ -820,7 +895,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
     }
 
-    // disable the screen while the proximity sensor is triggered
+    // turn off/on the screen while the proximity sensor is triggered
     private fun onProximitySensorToggleScreen(isNear: Boolean) {
         Log.d(this, "onProximitySensorToggleScreen: $isNear")
 

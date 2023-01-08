@@ -52,7 +52,7 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
      */
     fun start(): Boolean {
         threadChecker.checkIsOnValidThread()
-        Log.d(this, "start" + Utils.getThreadInfo())
+        Log.d(this, "start ${Utils.getThreadInfo()}")
         if (!initDefaultSensor()) {
             Log.w(this, "Proximity sensor is not supported on this device.")
             return false
@@ -65,7 +65,7 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
     /** Deactivate the proximity sensor.  */
     fun stop() {
         threadChecker.checkIsOnValidThread()
-        Log.d(this, "stop" + Utils.getThreadInfo())
+        Log.d(this, "stop ${Utils.getThreadInfo()}")
         if (proximitySensor != null) {
             sensorManager.unregisterListener(this, proximitySensor)
         }

@@ -146,6 +146,17 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.disableProximitySensorSwitch).apply {
+            isChecked = settings.disableProximitySensor
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.disableProximitySensor = isChecked
+                if (isChecked) {
+                    binder!!.clearEvents()
+                }
+                binder!!.saveDatabase()
+            }
+        }
+
         applySettingsMode("basic")
 
         setupSpinner("basic",

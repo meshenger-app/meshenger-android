@@ -689,10 +689,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         rtcAudioManager.setRequestedAudioDevice(requestedAudioDevice)
 
         rtcAudioManager.start()
-        proximitySensor.addListener(rtcAudioManager::onProximitySensorChangedState)
-        proximitySensor.addListener(::onProximitySensorToggleScreen)
-        proximitySensor.addListener(::onProximitySensorToggleCamera)
-        proximitySensor.start()
+
+        if (!binder!!.getSettings().disableProximitySensor) {
+            proximitySensor.addListener(rtcAudioManager::onProximitySensorChangedState)
+            proximitySensor.addListener(::onProximitySensorToggleScreen)
+            proximitySensor.addListener(::onProximitySensorToggleCamera)
+            proximitySensor.start()
+        }
 
         toggleMicButton.visibility = View.VISIBLE
         toggleCameraButton.visibility = View.VISIBLE

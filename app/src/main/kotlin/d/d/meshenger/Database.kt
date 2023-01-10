@@ -212,7 +212,7 @@ class Database {
             }
 
             if (newFrom == "4.0.7") {
-                // nothing to do
+                settings.put("disable_proximity_sensor", false)
                 newFrom = "4.0.8"
             }
 

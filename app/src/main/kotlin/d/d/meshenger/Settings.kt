@@ -15,6 +15,7 @@ class Settings {
     var promptOutgoingCalls = false
     var videoHardwareAcceleration = false
     var disableCallHistory = false
+    var disableProximitySensor = false
     var noAudioProcessing = false
     var connectTimeout = 500
     var addresses = mutableListOf<String>()
@@ -42,6 +43,7 @@ class Settings {
             s.noAudioProcessing = obj.getBoolean("no_audio_processing")
             s.connectTimeout = obj.getInt("connect_timeout")
             s.disableCallHistory = obj.getBoolean("disable_call_history")
+            s.disableProximitySensor = obj.getBoolean("disable_proximity_sensor")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
 
             val array = obj.getJSONArray("addresses")
@@ -78,6 +80,7 @@ class Settings {
             obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
             obj.put("no_audio_processing", s.noAudioProcessing)
             obj.put("disable_call_history", s.disableCallHistory)
+            obj.put("disable_proximity_sensor", s.disableProximitySensor)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
 
             val addresses = JSONArray()

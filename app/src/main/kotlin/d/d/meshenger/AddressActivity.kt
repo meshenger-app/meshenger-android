@@ -5,12 +5,14 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import d.d.meshenger.MainService.MainBinder
 import java.util.*
@@ -20,8 +22,8 @@ class AddressActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null
     private lateinit var addressListView: ListView
     private lateinit var customAddressTextEdit: EditText
+    private lateinit var addressListViewAdapter: AddressListAdapter
     private var systemAddresses = mutableListOf<AddressEntry>()
-    private val addressListViewAdapter = AddressListAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             setDisplayShowTitleEnabled(false)
         }
 
+        addressListViewAdapter = AddressListAdapter(this)
         addressListView = findViewById(R.id.AddressListView)
 
         addressListView.adapter = addressListViewAdapter
@@ -128,6 +131,8 @@ class AddressActivity : BaseActivity(), ServiceConnection {
     }
 
     inner class AddressListAdapter(private val context: Activity) : BaseAdapter() {
+        // hack, we want android:textColorPrimary
+        private val defaultColor = Color.parseColor(if (isNightmodeEnabled(context)) "#DD0000" else "#000000")
         private val markColor = Color.parseColor("#39b300")
         var allAddresses = mutableListOf<AddressEntry>()
         private var systemAddresses = mutableListOf<AddressEntry>()
@@ -170,7 +175,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             label.let {
                 if (isEmpty) {
                     label.text = getString(R.string.empty_list_item)
-                    label.setTextColor(Color.BLACK)
+                    label.setTextColor(defaultColor)
                     icon.isVisible = false
                 } else {
                     val ae = allAddresses[position]
@@ -209,7 +214,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                     if (ae in storedAddresses) {
                         label.setTextColor(markColor)
                     } else {
-                        label.setTextColor(Color.BLACK)
+                        label.setTextColor(defaultColor)
                     }
                 }
             }

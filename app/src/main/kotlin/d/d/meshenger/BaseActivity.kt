@@ -1,5 +1,7 @@
 package d.d.meshenger
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -34,5 +36,10 @@ open class BaseActivity : AppCompatActivity() {
 
     companion object {
         private var nightMode = AppCompatDelegate.getDefaultNightMode()
+
+        fun isNightmodeEnabled(context: Context): Boolean {
+            val mode = context.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)
+            return (mode == Configuration.UI_MODE_NIGHT_YES)
+        }
     }
 }

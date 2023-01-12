@@ -142,31 +142,28 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onServiceConnected")
         binder = iBinder as MainBinder
 
-        runOnUiThread {
-            val disableCallHistory = binder!!.getSettings().disableCallHistory
-            val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        val disableCallHistory = binder!!.getSettings().disableCallHistory
+        val tabLayout = findViewById<TabLayout>(R.id.tabs)
 
-            tabLayout.visibility = if (disableCallHistory) View.GONE else View.VISIBLE
-            viewPager.adapter = ViewPagerFragmentAdapter(this, disableCallHistory)
+        viewPager.adapter = ViewPagerFragmentAdapter(this, disableCallHistory)
 
-            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = when (position) {
-                    0 -> getString(R.string.title_contacts)
-                    else -> getString(R.string.title_events)
-                }
-            }.attach()
-
-            if (!addressWarningShown) {
-                showInvalidAddressSettingsWarning()
-                addressWarningShown = true
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> getString(R.string.title_contacts)
+                else -> getString(R.string.title_events)
             }
+        }.attach()
 
-            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
-            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
-
-            // call it here because EventListFragment.onResume is triggered twice
-            binder!!.pingContacts(binder!!.getContacts().contactList)
+        if (!addressWarningShown) {
+            showInvalidAddressSettingsWarning()
+            addressWarningShown = true
         }
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
+        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
+
+        // call it here because EventListFragment.onResume is triggered twice
+        binder!!.pingContacts(binder!!.getContacts().contactList)
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

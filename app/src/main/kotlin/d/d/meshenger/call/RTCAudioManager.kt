@@ -211,6 +211,11 @@ class RTCAudioManager(contextArg: Context) {
 
         val oldAudioDevice = getAudioDevice()
 
+        if (!bluetoothManager.hasBluetoothPermissions()) {
+            // ask for BT permissions
+            audioManagerEvents?.onBluetoothConnectPermissionRequired()
+        }
+
         if (speakerphoneMode == SpeakerphoneMode.AUTO) {
             bluetoothManager.tryConnect()
         } else {

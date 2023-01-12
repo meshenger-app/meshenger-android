@@ -635,13 +635,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
             override fun onBluetoothConnectPermissionRequired() {
                 Log.d(this, "onBluetoothConnectPermissionRequired()")
-                /*
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     allowBluetoothConnectForResult.launch(Manifest.permission.BLUETOOTH_CONNECT)
                 } else {
                     allowBluetoothConnectForResult.launch(Manifest.permission.BLUETOOTH)
                 }
-                */
             }
 
             override fun onAudioDeviceChanged(
@@ -668,13 +666,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         // set initial speakerphone mode
         rtcAudioManager.setSpeakerphoneMode(speakerphoneMode)
         updateSpeakerphoneIcon()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            allowBluetoothConnectForResult.launch(Manifest.permission.BLUETOOTH_CONNECT)
-        } else {
-            allowBluetoothConnectForResult.launch(Manifest.permission.BLUETOOTH)
-        }
-
         rtcAudioManager.start()
 
         setProximitySensorEnabled(!binder!!.getSettings().disableProximitySensor)
@@ -790,8 +781,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     private val allowBluetoothConnectForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted -> if (isGranted) {
-            //rtcAudioManager.startBluetooth()
-            Log.w(this, "disabled bluetooth for testing")
+            rtcAudioManager.startBluetooth()
         } else {
             // do not turn on microphone
             showTextMessage(getString(R.string.missing_bluetooth_permission))

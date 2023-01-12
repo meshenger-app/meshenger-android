@@ -179,7 +179,7 @@ open class RTCBluetoothManager(contextArg: Context, audioManagerArg: RTCAudioMan
         }
     }
 
-    private fun hasBluetoothPermissions(): Boolean {
+    fun hasBluetoothPermissions(): Boolean {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Manifest.permission.BLUETOOTH_CONNECT
         } else {

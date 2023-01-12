@@ -62,6 +62,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private var debugOutputEnabled = false // small window for video/audio statistics and other debug data
     private var swappedVideoFeeds = false // swapped fullscreen and pip video content
     private var showPipEnabled = true // enable PIP window
+    private var callWasStarted = false
 
     // set by RTCall
     private var isLocalVideoAvailable = false // own camera is on/off
@@ -87,8 +88,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     override fun getContext(): Context {
         return this.applicationContext
     }
-
-    private var callWasStarted = false
 
     override fun onStateChange(state: CallState) {
         runOnUiThread {
@@ -818,7 +817,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 enabledMicrophoneForResult.launch(Manifest.permission.RECORD_AUDIO)
                 return
             }
-            // turn microphone on
+            // check and request permission
             currentCall.setMicrophoneEnabled(true)
         }
     }
@@ -839,7 +838,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             // turn camera off
             currentCall.setCameraEnabled(false)
         } else {
-            // check permission
+            // check and request permission
             if (!Utils.hasPermission(this, Manifest.permission.CAMERA)) {
                 enabledCameraForResult.launch(Manifest.permission.CAMERA)
                 return
@@ -912,11 +911,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     // turn off/on the screen while the proximity sensor is triggered
-    private fun onProximitySensorToggleScreen(isNear: Boolean) {
-        Log.d(this, "onProximitySensorToggleScreen: $isNear")
+    private fun onProximitySensorToggleScreen(isProximityNear: Boolean) {
+        Log.d(this, "onProximitySensorToggleScreen: $isProximityNear")
 
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        if (isNear) {
+        if (isProximityNear) {
             // turn screen off
             proximityScreenLock = powerManager.newWakeLock(
                 PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,

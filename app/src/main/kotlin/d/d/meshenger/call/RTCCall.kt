@@ -384,6 +384,7 @@ class RTCCall : DataChannel.Observer {
     // Continue listening for socket message.
     // Must run on separate thread!
     fun continueOnSocket() {
+        Log.d(this, "continueOnSocket()")
         val socket = commSocket
         if (socket == null) {
             throw IllegalStateException("commSocket expected not to be null")
@@ -419,7 +420,7 @@ class RTCCall : DataChannel.Observer {
                 "detach" -> {
                     // meant for future versions that do
                     // not need to keep the socket open
-                    Log.d(this, "outgoing call: dismissed")
+                    Log.d(this, "outgoing call: detach")
                     return
                 }
                 else -> {

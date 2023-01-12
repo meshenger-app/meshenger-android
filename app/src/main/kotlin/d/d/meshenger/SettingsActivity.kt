@@ -157,15 +157,16 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        applySettingsMode("basic")
+        applySettingsMode(settingsMode)
 
-        setupSpinner("basic",
+        setupSpinner(settingsMode,
             R.id.spinnerSettingsModes,
             R.array.settingsModeLabels,
             R.array.settingsModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
                     newValue?.let {
+                        settingsMode = it
                         applySettingsMode(it)
                     }
                 }
@@ -341,5 +342,10 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 // ignore
             }
         }
+    }
+
+    companion object {
+        // not stored in the database
+        private var settingsMode = "basic"
     }
 }

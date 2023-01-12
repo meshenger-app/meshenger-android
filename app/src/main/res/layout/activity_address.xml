@@ -49,8 +49,7 @@
             <ListView
                 android:id="@+id/AddressListView"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:backgroundTint="@color/black" />
+                android:layout_height="300dp" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider_1"
@@ -122,7 +121,6 @@
 
                 <Button
                     android:id="@+id/save_button"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/padding_50"
                     android:layout_marginEnd="@dimen/padding_20"
@@ -135,15 +133,14 @@
 
                 <Button
                     android:id="@+id/reset_button"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/padding_50"
                     android:layout_weight="1"
-                    android:background="@drawable/skip_button_background"
+                    android:background="@drawable/next_button_background"
                     android:fontFamily="@font/lato_bold"
                     android:text="@string/button_reset"
                     android:textAllCaps="false"
-                    android:textColor="?android:textColorPrimary" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/padding_20"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/curved_background"
+    android:background="?android:windowBackground"
     >
 
     <TextView
@@ -19,8 +19,7 @@
         android:layout_marginTop="10dp"
         android:textSize="11sp"
         android:fontFamily="@font/lato_bold"
-        android:text="@string/contact_key_conflict"
-        android:textColor="@color/black" />
+        android:text="@string/contact_key_conflict" />
 
     <TextView
         android:id="@+id/public_key_conflicting_contact_textview"
@@ -30,8 +29,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/padding_10"
         android:layout_marginTop="@dimen/padding_5"
-        android:gravity="center"
-        android:textColor="@color/dark_grey" />
+        android:gravity="center" />
 
     <Button
         android:id="@+id/public_key_conflict_abort_button"
@@ -40,11 +38,10 @@
         android:layout_below="@id/public_key_conflicting_contact_textview"
         android:layout_marginStart="@dimen/padding_10"
         android:layout_marginTop="@dimen/padding_20"
-        android:background="@drawable/skip_button_background"
+        android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:text="@string/button_abort"
-        android:textAllCaps="false"
-        android:textColor="@color/black" />
+        android:textAllCaps="false" />
 
     <Button
         android:id="@+id/public_key_conflict_replace_button"
@@ -55,10 +52,9 @@
         android:layout_marginTop="@dimen/padding_20"
         android:layout_toEndOf="@id/public_key_conflict_abort_button"
         android:background="@drawable/next_button_background"
+        android:textColor="@color/white"
         android:fontFamily="@font/lato_bold"
         android:text="@string/button_replace"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
-
+        android:textAllCaps="false" />
 
 </RelativeLayout>

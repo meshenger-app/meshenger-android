@@ -17,9 +17,7 @@
         android:layout_marginTop="10dp"
         android:textSize="11sp"
         android:fontFamily="@font/lato_bold"
-        android:textColor="@color/black"
-        android:text="@string/enter_contact_name"
-        />
+        android:text="@string/enter_contact_name" />
 
     <EditText
         android:id="@+id/NameEditText"
@@ -30,12 +28,12 @@
         android:layout_marginStart="@dimen/padding_10"
         android:layout_marginTop="@dimen/padding_5"
         android:background="@drawable/edit_text_background"
+        android:textColor="?android:textColorPrimary"
         android:inputType="text"
         android:maxLines="1"
         android:paddingStart="@dimen/padding_10"
         android:paddingEnd="@dimen/padding_10"
-        android:scrollHorizontally="true"
-        android:textColor="@color/black" />
+        android:scrollHorizontally="true" />
 
     <Button
         android:id="@+id/CancelButton"
@@ -44,11 +42,11 @@
         android:layout_below="@id/NameEditText"
         android:layout_marginStart="@dimen/padding_10"
         android:layout_marginTop="@dimen/padding_20"
-        android:background="@drawable/skip_button_background"
+        android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:text="@string/cancel"
         android:textAllCaps="false"
-        android:textColor="@color/black" />
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/OkButton"

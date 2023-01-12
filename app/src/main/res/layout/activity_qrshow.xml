@@ -21,8 +21,7 @@
             android:fontFamily="@font/lato_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:text="@string/scan_invitation"
-            android:textColor="@color/black" />
+            android:text="@string/scan_invitation" />
 
         <ImageView
             android:id="@+id/QRView"
@@ -39,8 +38,7 @@
             android:fontFamily="@font/lato_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:layout_below="@id/QRView"
-            android:textColor="@color/black" />
+            android:layout_below="@id/QRView" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabShare"

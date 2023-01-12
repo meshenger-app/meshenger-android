@@ -49,7 +49,6 @@
 
         <Button
             android:id="@+id/ImportButton"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/padding_50"
             android:layout_margin="@dimen/padding_20"
@@ -61,7 +60,6 @@
 
         <Button
             android:id="@+id/ExportButton"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/padding_50"
             android:layout_margin="@dimen/padding_20"
@@ -107,6 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
+                android:textColor="?android:textColorSecondary"
                 android:textAlignment="textStart"
                 android:maxLines="1"
                 android:textSize="16sp"

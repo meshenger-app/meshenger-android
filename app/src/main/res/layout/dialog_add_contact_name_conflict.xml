@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/curved_background"
+    android:background="?android:windowBackground"
     >
     <RelativeLayout
         app:layout_constraintTop_toTopOf="parent"
@@ -36,11 +36,11 @@
             android:layout_marginStart="@dimen/padding_10"
             android:layout_marginTop="@dimen/padding_5"
             android:background="@drawable/edit_text_background"
+            android:textColor="?android:textColorSecondary"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="@dimen/padding_10"
-            android:paddingEnd="@dimen/padding_10"
-            android:textColor="@color/black" />
+            android:paddingEnd="@dimen/padding_10" />
 
         <Button
             android:id="@+id/conflict_contact_abort_button"
@@ -49,11 +49,11 @@
             android:layout_below="@id/conflict_contact_edit_textview"
             android:layout_marginStart="@dimen/padding_10"
             android:layout_marginTop="@dimen/padding_20"
-            android:background="@drawable/skip_button_background"
+            android:background="@drawable/next_button_background"
             android:fontFamily="@font/lato_bold"
             android:text="@string/button_abort"
             android:textAllCaps="false"
-            android:textColor="@color/black" />
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/conflict_contact_replace_button"
@@ -63,11 +63,11 @@
             android:layout_marginStart="@dimen/padding_10"
             android:layout_marginTop="@dimen/padding_20"
             android:layout_toEndOf="@id/conflict_contact_abort_button"
-            android:background="@drawable/skip_button_background"
+            android:background="@drawable/next_button_background"
             android:fontFamily="@font/lato_bold"
             android:text="@string/replace"
             android:textAllCaps="false"
-            android:textColor="@color/black" />
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/conflict_contact_rename_button"
@@ -81,9 +81,7 @@
             android:fontFamily="@font/lato_bold"
             android:text="@string/rename"
             android:textAllCaps="false"
-
             android:textColor="@color/white" />
-
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

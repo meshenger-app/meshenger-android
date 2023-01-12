@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/label"
@@ -14,10 +13,9 @@
         android:layout_marginEnd="@dimen/padding_10"
         android:layout_marginBottom="@dimen/padding_10"
         android:layout_toLeftOf="@id/icon"
-        android:background="@color/white"
+        android:textColor="?android:textColorPrimary"
         android:fontFamily="@font/lato_regular"
         android:padding="5dp"
-        android:textColor="?android:textColorPrimary"
         android:textSize="20sp" />
     <ImageView
         android:id="@+id/icon"

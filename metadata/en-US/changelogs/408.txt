@@ -1,0 +1,5 @@
+* add support for Bluetooth earpieces
+* add speakerphone button to call UI
+* add setting to disable the proximity sensor
+* immediately ping a contact that has been added
+* some dark mode UI fixes

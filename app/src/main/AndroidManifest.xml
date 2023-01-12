@@ -16,9 +16,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- For audio over Bluetooth (BLUETOOTH only for SDK < 31) -->
+    <!-- For audio over Bluetooth (BLUETOOTH only for SDK <= 30) -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
     <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->

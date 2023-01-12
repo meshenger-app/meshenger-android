@@ -109,18 +109,19 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <com.google.android.flexbox.FlexboxLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="10dp" >
+            android:paddingBottom="10dp"
+            app:justifyContent="space_evenly">
 
             <ImageButton
                 android:id="@+id/acceptButton"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginEnd="30dp"
                 android:background="@drawable/ic_button_background"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
@@ -131,7 +132,6 @@
                 android:id="@+id/declineButton"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginEnd="30dp"
                 android:background="@drawable/ic_button_background"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
@@ -152,7 +152,6 @@
                 android:id="@+id/frontFacingSwitch"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginStart="30dp"
                 android:background="@drawable/ic_button_background"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
@@ -164,7 +163,6 @@
                 android:id="@+id/toggleMicButton"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginStart="30dp"
                 android:background="@drawable/ic_button_background"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
@@ -175,12 +173,12 @@
                 android:id="@+id/speakerphoneButton"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:layout_marginStart="30dp"
                 android:background="@drawable/ic_button_background"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_audio_device_speakerphone"
                 android:contentDescription="audio source selection" />
-        </LinearLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

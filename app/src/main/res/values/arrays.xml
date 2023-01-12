@@ -13,7 +13,7 @@
     </string-array>
 
     <string-array name="speakerphoneModeLabels">
-        <item>Auto (proximity)</item>
+        <item>Automatic</item>
         <item>Enabled</item>
         <item>Disabled</item>
     </string-array>

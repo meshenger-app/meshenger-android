@@ -172,7 +172,7 @@
                 android:contentDescription="switch microphone on/off" />
 
             <ImageButton
-                android:id="@+id/audioSourceButton"
+                android:id="@+id/speakerphoneButton"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:layout_marginStart="30dp"
@@ -180,7 +180,6 @@
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_audio_device_speakerphone"
-                android:visibility="gone"
                 android:contentDescription="audio source selection" />
         </LinearLayout>
     </RelativeLayout>

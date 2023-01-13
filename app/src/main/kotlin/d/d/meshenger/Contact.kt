@@ -15,14 +15,15 @@ class Contact(
     var blocked: Boolean = false
 ) : Serializable {
     enum class State {
-        ONLINE,
-        OFFLINE,
-        PENDING, // host is online, but Meshenger does not run
-        BROKEN, // something went wrong during communication
+        CONTACT_ONLINE,
+        CONTACT_OFFLINE,
+        APP_NOT_RUNNING, // host is online, but Meshenger does not run
+        AUTHENTICATION_FAILED, // authentication failed, key might have changed
+        UNKNOWN_ERROR, // something went wrong during communication
     }
 
     // contact state
-    var state = State.PENDING
+    var state = State.CONTACT_OFFLINE
 
     // last working address (use this address next connection and for unknown contact initialization)
     var lastWorkingAddress: InetSocketAddress? = null

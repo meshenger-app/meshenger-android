@@ -61,10 +61,11 @@
     <string name="settings_public_key">Public Key</string>
     <string name="settings_disable_call_history">Disable Call History</string>
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
-    <string name="status_online">online</string>
-    <string name="status_offline">offline</string>
-    <string name="status_pending">pending</string>
-    <string name="status_broken">broken</string>
+    <string name="state_contact_online">Contact is Online</string>
+    <string name="state_contact_offline">Contact is Offline</string>
+    <string name="state_app_not_running">App Not Running</string>
+    <string name="state_authentication_failed">Authentication Failed</string>
+    <string name="state_unknown_error">Unknown Error</string>
     <string name="read_only">Read Only</string>
     <string name="none">None</string>
     <string name="add">Add</string>

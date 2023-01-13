@@ -29,10 +29,11 @@ internal class ContactListAdapter(
         convertView.findViewById<TextView>(R.id.contact_name).text = contact.name
         convertView.findViewById<ImageView>(R.id.contact_state).setOnClickListener {
             val message = when (contact.state) {
-                Contact.State.ONLINE -> R.string.status_online
-                Contact.State.OFFLINE -> R.string.status_offline
-                Contact.State.PENDING -> R.string.status_pending
-                Contact.State.BROKEN -> R.string.status_broken
+                Contact.State.CONTACT_ONLINE -> R.string.state_contact_online
+                Contact.State.CONTACT_OFFLINE -> R.string.state_contact_offline
+                Contact.State.APP_NOT_RUNNING -> R.string.state_app_not_running
+                Contact.State.AUTHENTICATION_FAILED -> R.string.state_authentication_failed
+                Contact.State.UNKNOWN_ERROR -> R.string.state_unknown_error
             }
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
@@ -42,10 +43,11 @@ internal class ContactListAdapter(
         val canvas = Canvas(bitmap)
         val p = Paint()
         p.color = when (contact.state) {
-            Contact.State.ONLINE -> Color.parseColor("#00ff0a") // green
-            Contact.State.OFFLINE -> Color.parseColor("#ff0000") // red
-            Contact.State.PENDING -> Color.parseColor("#ff7000") // orange
-            Contact.State.BROKEN -> Color.parseColor("#612c00") // brown
+            Contact.State.CONTACT_ONLINE -> Color.parseColor("#00ff0a") // green
+            Contact.State.CONTACT_OFFLINE -> Color.parseColor("#ff0000") // red
+            Contact.State.APP_NOT_RUNNING -> Color.parseColor("#ff7000") // orange
+            Contact.State.AUTHENTICATION_FAILED -> Color.parseColor("#612c00") // brown
+            Contact.State.UNKNOWN_ERROR -> Color.parseColor("#ffffff") // black
         }
         canvas.drawCircle(100f, 100f, 100f, p)
         if (contact.blocked) {

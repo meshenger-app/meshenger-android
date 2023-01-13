@@ -174,7 +174,7 @@ class MainService : Service(), Runnable {
                 val ownSecretKey = database.settings.secretKey
                 val message = "{\"action\": \"status_change\", \"status\", \"offline\"}"
                 for (contact in database.contacts.contactList) {
-                    if (contact.state === Contact.State.OFFLINE) {
+                    if (contact.state != Contact.State.CONTACT_ONLINE) {
                         continue
                     }
                     val encrypted = Crypto.encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey) ?: continue
@@ -381,14 +381,14 @@ class MainService : Service(), Runnable {
                         break
                     } catch (e: ConnectException) {
                         // target online, but Meshenger not running
-                        return Contact.State.PENDING
+                        return Contact.State.APP_NOT_RUNNING
                     } catch (e: Exception) {
                         // ignore
                     }
                 }
 
                 if (!connected) {
-                    return Contact.State.OFFLINE
+                    return Contact.State.CONTACT_OFFLINE
                 }
 
                 val pw = PacketWriter(socket)
@@ -400,27 +400,27 @@ class MainService : Service(), Runnable {
                     publicKey,
                     ownPublicKey,
                     ownSecretKey
-                ) ?: return Contact.State.BROKEN
+                ) ?: return Contact.State.UNKNOWN_ERROR
 
                 pw.writeMessage(encrypted)
-                val request = pr.readMessage() ?: return Contact.State.BROKEN
+                val request = pr.readMessage() ?: return Contact.State.UNKNOWN_ERROR
                 val decrypted = Crypto.decryptMessage(
                     request,
                     publicKey,
                     ownPublicKey,
                     ownSecretKey
-                ) ?: return Contact.State.BROKEN
+                ) ?: return Contact.State.AUTHENTICATION_FAILED
 
                 val obj = JSONObject(decrypted)
                 val action = obj.optString("action", "")
                 if (action == "pong") {
                     Log.d(this, "got pong")
-                    return Contact.State.ONLINE
+                    return Contact.State.CONTACT_ONLINE
                 } else {
-                    return Contact.State.BROKEN
+                    return Contact.State.UNKNOWN_ERROR
                 }
             } catch (e: Exception) {
-                return Contact.State.BROKEN
+                return Contact.State.UNKNOWN_ERROR
             } finally {
                 try {
                     socket.close()
@@ -442,7 +442,6 @@ class MainService : Service(), Runnable {
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_contact_list"))
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_event_list"))
         }
-
     }
 
     override fun onBind(intent: Intent): IBinder {

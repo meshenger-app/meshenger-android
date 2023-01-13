@@ -1218,7 +1218,7 @@ class RTCCall : DataChannel.Observer {
                 "ping" -> {
                     Log.d(this, "ping...")
                     // someone wants to know if we are online
-                    contact.state = Contact.State.ONLINE
+                    contact.state = Contact.State.CONTACT_ONLINE
                     val encrypted = Crypto.encryptMessage(
                         "{\"action\":\"pong\"}",
                         contact.publicKey,
@@ -1236,7 +1236,7 @@ class RTCCall : DataChannel.Observer {
                 }
                 "status_change" -> {
                     if (obj.optString("status", "") == "offline") {
-                        contact.state = Contact.State.ONLINE
+                        contact.state = Contact.State.CONTACT_ONLINE
                     } else {
                         Log.d(this, "Received unknown status_change: ${obj.getString("status")}")
                     }

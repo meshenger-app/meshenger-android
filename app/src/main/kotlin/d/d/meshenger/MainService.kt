@@ -334,14 +334,8 @@ class MainService : Service(), Runnable {
 
         fun pingContacts(contactList: List<Contact>) {
             Log.d(this, "pingContacts")
-            val settings = getSettings()
             Thread(
-                PingRunnable(
-                    this@MainService,
-                    contactList,
-                    settings.publicKey,
-                    settings.secretKey
-                )
+                PingRunnable(this@MainService, contactList)
             ).start()
         }
 
@@ -366,15 +360,15 @@ class MainService : Service(), Runnable {
 
     internal inner class PingRunnable(
         var context: Context,
-        val contacts: List<Contact>,
-        private var ownPublicKey: ByteArray,
-        private var ownSecretKey: ByteArray,
+        val contacts: List<Contact>
     ) : Runnable {
         private fun pingContact(contact: Contact) : Contact.State {
             val publicKey = contact.publicKey
             val settings = binder.getSettings()
             val useNeighborTable = settings.useNeighborTable
             val connectTimeout = settings.connectTimeout
+            var ownPublicKey = settings.publicKey
+            val ownSecretKey = settings.secretKey
             var connected = false
             val socket = Socket()
 

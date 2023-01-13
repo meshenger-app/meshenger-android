@@ -15,14 +15,6 @@
         android:fontFamily="@font/poppins_regular"
         android:textColor="?android:textColorPrimary" />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:padding="6dp"
-        android:layout_centerVertical="true"
-        android:id="@+id/contact_waiting"/>
-
     <ImageView
         android:id="@+id/contact_state"
         android:layout_width="40dp"
@@ -32,6 +24,5 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:visibility="visible" />
+        android:layout_marginBottom="8dp" />
 </RelativeLayout>

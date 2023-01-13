@@ -27,9 +27,7 @@ internal class ContactListAdapter(
 
         convertView.findViewById<TextView>(R.id.contact_name).text = contact.name
 
-        convertView.findViewById<View>(R.id.contact_waiting).visibility = View.GONE
         val state = convertView.findViewById<ImageView>(R.id.contact_state)
-        state.visibility = View.VISIBLE
         val bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val p = Paint()

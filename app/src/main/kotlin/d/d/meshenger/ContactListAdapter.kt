@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 
 internal class ContactListAdapter(
     context: Context,
@@ -26,6 +27,15 @@ internal class ContactListAdapter(
         val contact = contacts[position]
 
         convertView.findViewById<TextView>(R.id.contact_name).text = contact.name
+        convertView.findViewById<ImageView>(R.id.contact_state).setOnClickListener {
+            val message = when (contact.state) {
+                Contact.State.ONLINE -> R.string.status_online
+                Contact.State.OFFLINE -> R.string.status_offline
+                Contact.State.PENDING -> R.string.status_pending
+                Contact.State.BROKEN -> R.string.status_broken
+            }
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
 
         val state = convertView.findViewById<ImageView>(R.id.contact_state)
         val bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)

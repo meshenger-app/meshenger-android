@@ -61,6 +61,10 @@
     <string name="settings_public_key">Public Key</string>
     <string name="settings_disable_call_history">Disable Call History</string>
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
+    <string name="status_online">online</string>
+    <string name="status_offline">offline</string>
+    <string name="status_pending">pending</string>
+    <string name="status_broken">broken</string>
     <string name="read_only">Read Only</string>
     <string name="none">None</string>
     <string name="add">Add</string>

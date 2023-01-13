@@ -1,1 +1,1 @@
-* ask for Bluetooth permission we potentially required
+* ask for Bluetooth permission when potentially required

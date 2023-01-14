@@ -16,6 +16,7 @@ import d.d.meshenger.Utils.readInternalFile
 import d.d.meshenger.Utils.writeInternalFile
 import d.d.meshenger.call.RTCCall
 import org.json.JSONObject
+import org.libsodium.jni.Sodium
 import java.io.File
 import java.io.IOException
 import java.net.*
@@ -363,11 +364,11 @@ class MainService : Service(), Runnable {
         val contacts: List<Contact>
     ) : Runnable {
         private fun pingContact(contact: Contact) : Contact.State {
-            val publicKey = contact.publicKey
+            val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
             val settings = binder.getSettings()
             val useNeighborTable = settings.useNeighborTable
             val connectTimeout = settings.connectTimeout
-            var ownPublicKey = settings.publicKey
+            val ownPublicKey = settings.publicKey
             val ownSecretKey = settings.secretKey
             var connected = false
             val socket = Socket()
@@ -397,7 +398,7 @@ class MainService : Service(), Runnable {
                 Log.d(this, "send ping to ${contact.name}")
                 val encrypted = Crypto.encryptMessage(
                     "{\"action\":\"ping\"}",
-                    publicKey,
+                    contact.publicKey,
                     ownPublicKey,
                     ownSecretKey
                 ) ?: return Contact.State.UNKNOWN_ERROR
@@ -406,10 +407,14 @@ class MainService : Service(), Runnable {
                 val request = pr.readMessage() ?: return Contact.State.UNKNOWN_ERROR
                 val decrypted = Crypto.decryptMessage(
                     request,
-                    publicKey,
+                    otherPublicKey,
                     ownPublicKey,
                     ownSecretKey
                 ) ?: return Contact.State.AUTHENTICATION_FAILED
+
+                if (!otherPublicKey.contentEquals(contact.publicKey)) {
+                    return Contact.State.AUTHENTICATION_FAILED
+                }
 
                 val obj = JSONObject(decrypted)
                 val action = obj.optString("action", "")

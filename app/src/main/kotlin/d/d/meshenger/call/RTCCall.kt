@@ -260,6 +260,7 @@ class RTCCall : DataChannel.Observer {
 
         val socket = createCommSocket(contact)
         if (socket == null) {
+            contact.state = Contact.State.CONTACT_OFFLINE
             return
         }
 
@@ -269,17 +270,6 @@ class RTCCall : DataChannel.Observer {
         val remoteAddress = socket.remoteSocketAddress as InetSocketAddress
 
         Log.d(this, "outgoing call from remote address: $remoteAddress")
-
-        run {
-            // remember latest working address
-            val workingAddress = InetSocketAddress(remoteAddress.address, MainService.serverPort)
-            val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
-            if (storedContact != null) {
-                storedContact.lastWorkingAddress = workingAddress
-            } else {
-                contact.lastWorkingAddress = workingAddress
-            }
-        }
 
         val pr = PacketReader(socket)
         reportStateChange(CallState.CONNECTING)
@@ -336,6 +326,20 @@ class RTCCall : DataChannel.Observer {
             }
             reportStateChange(CallState.RINGING)
         }
+
+        run {
+            // remember latest working address and set state
+            val workingAddress = InetSocketAddress(remoteAddress.address, MainService.serverPort)
+            val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
+            if (storedContact != null) {
+                storedContact.lastWorkingAddress = workingAddress
+                storedContact.state = Contact.State.CONTACT_ONLINE
+            } else {
+                contact.lastWorkingAddress = workingAddress
+                contact.state = Contact.State.CONTACT_ONLINE
+            }
+        }
+
         run {
             Log.d(this, "outgoing call: expect connected/dismissed")
             val response = pr.readMessage()
@@ -1149,13 +1153,15 @@ class RTCCall : DataChannel.Observer {
             }
 
             run {
-                // remember latest working address
+                // remember latest working address and set state
                 val workingAddress = InetSocketAddress(remoteAddress.address, MainService.serverPort)
                 val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
                 if (storedContact != null) {
                     storedContact.lastWorkingAddress = workingAddress
+                    storedContact.state = Contact.State.CONTACT_ONLINE
                 } else {
                     contact.lastWorkingAddress = workingAddress
+                    contact.state = Contact.State.CONTACT_ONLINE
                 }
             }
 

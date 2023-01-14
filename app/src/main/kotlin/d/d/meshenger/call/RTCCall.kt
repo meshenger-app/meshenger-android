@@ -1077,6 +1077,7 @@ class RTCCall : DataChannel.Observer {
 
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
             val settings = binder.getSettings()
+            val blockUnknown = settings.blockUnknown
             val ownSecretKey = settings.secretKey
             val ownPublicKey = settings.publicKey
 
@@ -1128,7 +1129,7 @@ class RTCCall : DataChannel.Observer {
             Log.d(this, "request: $decrypted")
 
             var contact = binder.getContacts().getContactByPublicKey(otherPublicKey)
-            if (contact == null && binder.getSettings().blockUnknown) {
+            if (contact == null && blockUnknown) {
                 Log.d(this, "block unknown contact => decline")
                 decline()
                 return

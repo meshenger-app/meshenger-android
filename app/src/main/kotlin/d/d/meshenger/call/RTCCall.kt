@@ -315,6 +315,7 @@ class RTCCall : DataChannel.Observer {
 
             if (!contact.publicKey.contentEquals(otherPublicKey)) {
                 reportStateChange(CallState.ERROR_AUTHENTICATION)
+                contact.state = Contact.State.AUTHENTICATION_FAILED
                 return
             }
 
@@ -322,6 +323,7 @@ class RTCCall : DataChannel.Observer {
             if (obj.optString("action", "") != "ringing") {
                 Log.d(this, "action not equals ringing")
                 reportStateChange(CallState.ERROR_OTHER)
+                contact.state = Contact.State.UNKNOWN_ERROR
                 return
             }
             reportStateChange(CallState.RINGING)

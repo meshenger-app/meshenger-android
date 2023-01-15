@@ -9,7 +9,6 @@
     <string name="cancel">Cancelar</string>
     <string name="next">Siguiente</string>
     <string name="setup_address_title">Configurar dirección de red</string>
-    <string name="setup_address_message">No se encontró la tarjeta WiFi. Habilite el WiFi ahora (no se necesita Internet) u omitalo para configurarlo más tarde.</string>
     <string name="enter_password">Introduce la contraseña</string>
     <string name="path_title">Importar/Exportar Ruta</string>
     <string name="password_title">Contraseña</string>

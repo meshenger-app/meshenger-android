@@ -10,7 +10,6 @@
     <string name="cancel">annuler</string>
     <string name="next">suivante</string>
     <string name="setup_address_title">Configurer l\'adresse réseau</string>
-    <string name="setup_address_message">Aucune carte WiFi trouvée. Activer le WiFi maintenant (pas besoin d’Internet) ou ignorer pour configurer plus tard.</string>
     <string name="enter_password">Entrer le mot de passe</string>
     <string name="path_title">Chemin d’importation/exportation</string>
     <string name="password_title">Mot de passe</string>

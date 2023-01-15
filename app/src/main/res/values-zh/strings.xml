@@ -9,7 +9,6 @@
     <string name="cancel">取消</string>
     <string name="next">下一步</string>
     <string name="setup_address_title">设置网络地址</string>
-    <string name="setup_address_message">未找到无线网卡。立即启用 WiFi （无需互联网） 或跳过此步以后再做配置</string>
     <string name="enter_password">输入密码</string>
     <string name="path_title">导入/导出路径</string>
     <string name="import_dialog">导入新设置并添加 %1$d 位联系人和 %2$d 个事件？</string>

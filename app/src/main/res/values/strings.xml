@@ -12,7 +12,6 @@
     <string name="cancel">Cancel</string>
     <string name="next">next</string>
     <string name="setup_address_title">Setup Network Address</string>
-    <string name="setup_address_message">No WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.</string>
     <string name="enter_password">Enter password</string>
     <string name="path_title">Import/Export Path</string>
     <string name="audio_device_available">Use %1$s</string>

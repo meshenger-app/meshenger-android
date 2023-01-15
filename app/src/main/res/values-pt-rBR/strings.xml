@@ -9,7 +9,6 @@
     <string name="cancel">Cancelar</string>
     <string name="next">próximo</string>
     <string name="setup_address_title">Configure endereço da rede</string>
-    <string name="setup_address_message">Não foi encontrado nenhum dispositivo WiFi. Ative o WiFi agora (não requer conexão à internet) ou pode pular e configurar mais tarde.</string>
     <string name="enter_password">Digite senha</string>
     <string name="path_title">Importar/Exportar localização</string>
     <string name="import_dialog">Importar novas configurações e adicionar %1$d contatos e %2$d eventos?</string>

@@ -548,8 +548,10 @@ class RTCCall : DataChannel.Observer {
             reportStateChange(CallState.ERROR_OTHER)
         } else if (socketTimeoutException) {
             reportStateChange(CallState.ERROR_NO_CONNECTION)
-        } else {
+        } else if (contact.addresses.isEmpty()) {
             reportStateChange(CallState.ERROR_NO_ADDRESSES)
+        } else {
+            reportStateChange(CallState.ERROR_NO_NETWORK)
         }
 
         return null
@@ -994,7 +996,8 @@ class RTCCall : DataChannel.Observer {
         ERROR_UNKNOWN_HOST,
         ERROR_OTHER,
         ERROR_NO_CONNECTION,
-        ERROR_NO_ADDRESSES
+        ERROR_NO_ADDRESSES,
+        ERROR_NO_NETWORK
     }
 
     interface CallContext {

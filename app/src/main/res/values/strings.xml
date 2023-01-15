@@ -97,6 +97,7 @@
     <string name="call_authentication_failed">Authentication Failed</string>
     <string name="call_ended">Call Ended</string>
     <string name="call_error">Error</string>
+    <string name="call_no_network">No network - enable WiFi?</string>
     <string name="call_start_or_abort">Start or Abort Call</string>
     <string name="button_select">Select</string>
     <string name="button_import">Import</string>

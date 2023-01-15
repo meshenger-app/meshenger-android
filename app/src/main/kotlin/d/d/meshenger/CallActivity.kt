@@ -169,6 +169,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 CallState.ERROR_OTHER -> {
                     handleError(R.string.call_error)
                 }
+                CallState.ERROR_NO_NETWORK -> {
+                    handleError(R.string.call_no_network)
+                }
             }
         }
     }

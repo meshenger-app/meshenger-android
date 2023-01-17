@@ -14,9 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import d.d.meshenger.Utils.readInternalFile
 import d.d.meshenger.Utils.writeInternalFile
+import d.d.meshenger.call.PacketWriter
+import d.d.meshenger.call.Pinger
 import d.d.meshenger.call.RTCCall
-import org.json.JSONObject
-import org.libsodium.jni.Sodium
 import java.io.File
 import java.io.IOException
 import java.net.*
@@ -336,7 +336,7 @@ class MainService : Service(), Runnable {
         fun pingContacts(contactList: List<Contact>) {
             Log.d(this, "pingContacts")
             Thread(
-                PingRunnable(this@MainService, contactList)
+                Pinger(binder, contactList)
             ).start()
         }
 
@@ -356,96 +356,6 @@ class MainService : Service(), Runnable {
             getEvents().clearEvents()
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_event_list"))
-        }
-    }
-
-    internal inner class PingRunnable(
-        var context: Context,
-        val contacts: List<Contact>
-    ) : Runnable {
-        private fun pingContact(contact: Contact) : Contact.State {
-            val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-            val settings = binder.getSettings()
-            val useNeighborTable = settings.useNeighborTable
-            val connectTimeout = settings.connectTimeout
-            val ownPublicKey = settings.publicKey
-            val ownSecretKey = settings.secretKey
-            var connected = false
-            val socket = Socket()
-
-            try {
-                // try to connect
-                for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
-                    try {
-                        socket.connect(address, connectTimeout)
-                        connected = true
-                        break
-                    } catch (e: ConnectException) {
-                        // target online, but Meshenger not running
-                        return Contact.State.APP_NOT_RUNNING
-                    } catch (e: Exception) {
-                        // ignore
-                    }
-                }
-
-                if (!connected) {
-                    return Contact.State.CONTACT_OFFLINE
-                }
-
-                val pw = PacketWriter(socket)
-                val pr = PacketReader(socket)
-
-                Log.d(this, "send ping to ${contact.name}")
-                val encrypted = Crypto.encryptMessage(
-                    "{\"action\":\"ping\"}",
-                    contact.publicKey,
-                    ownPublicKey,
-                    ownSecretKey
-                ) ?: return Contact.State.UNKNOWN_ERROR
-
-                pw.writeMessage(encrypted)
-                val request = pr.readMessage() ?: return Contact.State.UNKNOWN_ERROR
-                val decrypted = Crypto.decryptMessage(
-                    request,
-                    otherPublicKey,
-                    ownPublicKey,
-                    ownSecretKey
-                ) ?: return Contact.State.AUTHENTICATION_FAILED
-
-                if (!otherPublicKey.contentEquals(contact.publicKey)) {
-                    return Contact.State.AUTHENTICATION_FAILED
-                }
-
-                val obj = JSONObject(decrypted)
-                val action = obj.optString("action", "")
-                if (action == "pong") {
-                    Log.d(this, "got pong")
-                    return Contact.State.CONTACT_ONLINE
-                } else {
-                    return Contact.State.UNKNOWN_ERROR
-                }
-            } catch (e: Exception) {
-                return Contact.State.UNKNOWN_ERROR
-            } finally {
-                try {
-                    socket.close()
-                } catch (_: Exception) {
-                    // ignore
-                }
-            }
-        }
-
-        override fun run() {
-            for (contact in contacts) {
-                val state = pingContact(contact)
-                // set contact state
-                binder.getContacts()
-                    .getContactByPublicKey(contact.publicKey)
-                    ?.state = state
-            }
-
-            LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_contact_list"))
-            LocalBroadcastManager.getInstance(context).sendBroadcast(Intent("refresh_event_list"))
         }
     }
 

@@ -32,6 +32,9 @@ class Database {
                 }
                 encrypted
             } else {
+                if (db_data.isNotEmpty() && db_data[0] != '{'.code.toByte()) {
+                    throw WrongPasswordException()
+                }
                 db_data
             }
 

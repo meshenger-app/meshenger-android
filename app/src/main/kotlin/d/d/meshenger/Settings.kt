@@ -17,6 +17,7 @@ class Settings {
     var disableCallHistory = false
     var disableProximitySensor = false
     var noAudioProcessing = false
+    var startOnBootup = false
     var connectTimeout = 500
     var addresses = mutableListOf<String>()
 
@@ -45,6 +46,7 @@ class Settings {
             s.disableCallHistory = obj.getBoolean("disable_call_history")
             s.disableProximitySensor = obj.getBoolean("disable_proximity_sensor")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
+            s.startOnBootup = obj.getBoolean("start_on_bootup")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -82,6 +84,7 @@ class Settings {
             obj.put("disable_call_history", s.disableCallHistory)
             obj.put("disable_proximity_sensor", s.disableProximitySensor)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
+            obj.put("start_on_bootup", s.startOnBootup)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

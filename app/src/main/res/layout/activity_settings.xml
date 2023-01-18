@@ -193,6 +193,41 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
+                    android:id="@+id/startOnBootupLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_start_on_bootup"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/startOnBootupSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="5dp"
+                        app:thumbTint="@color/selectedColor" />
+
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_20"
+                    android:layout_marginBottom="@dimen/padding_20"
+                    android:visibility="visible"
+                    app:dividerColor="@color/light_grey" />
+
+                <RelativeLayout
                     android:id="@+id/settingsModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

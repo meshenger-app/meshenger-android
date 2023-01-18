@@ -222,7 +222,7 @@ class Database {
             }
 
             if (newFrom == "4.0.9") {
-                // nothing to do
+                settings.put("start_on_bootup", false)
                 newFrom = "4.1.0"
             }
 

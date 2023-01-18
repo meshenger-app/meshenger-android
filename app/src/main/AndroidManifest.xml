@@ -26,6 +26,9 @@
     <!-- Allow to start activity from background -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <!-- Allow the app to start on device bootup -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/logo"
@@ -79,6 +82,14 @@
         <activity
             android:name=".LicenseActivity"
             android:parentActivityName=".AboutActivity" />
+        <receiver
+            android:name=".BootUpReceiver"
+            android:enabled="false"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
-
 </manifest>

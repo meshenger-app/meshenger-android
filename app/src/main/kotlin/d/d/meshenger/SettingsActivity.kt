@@ -146,6 +146,18 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.startOnBootupSwitch).apply {
+            isChecked = settings.startOnBootup
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.startOnBootup = isChecked
+                BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
+                if (isChecked) {
+                    binder!!.clearEvents()
+                }
+                binder!!.saveDatabase()
+            }
+        }
+
         findViewById<SwitchMaterial>(R.id.disableProximitySensorSwitch).apply {
             isChecked = settings.disableProximitySensor
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->

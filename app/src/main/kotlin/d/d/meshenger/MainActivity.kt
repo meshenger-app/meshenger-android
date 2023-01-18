@@ -145,7 +145,13 @@ class MainActivity : BaseActivity(), ServiceConnection {
         val disableCallHistory = binder!!.getSettings().disableCallHistory
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
 
-        viewPager.adapter = ViewPagerFragmentAdapter(this, disableCallHistory)
+        viewPager.adapter = ViewPagerFragmentAdapter(this)
+
+        if (disableCallHistory) {
+            tabLayout.visibility = View.GONE
+        } else {
+            tabLayout.visibility = View.VISIBLE
+        }
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
@@ -205,13 +211,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
         return true
     }
 
-    class ViewPagerFragmentAdapter(fm: FragmentActivity, private val disableCallHistory: Boolean) : FragmentStateAdapter(fm) {
+    class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
         override fun getItemCount(): Int {
-            if (disableCallHistory) {
-                return 1
-            } else {
-                return 2
-            }
+            return 2
         }
 
         override fun createFragment(position: Int): Fragment {

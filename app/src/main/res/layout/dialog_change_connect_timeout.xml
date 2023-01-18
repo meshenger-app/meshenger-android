@@ -6,70 +6,68 @@
     android:background="?android:windowBackground"
     >
 
-    <RelativeLayout
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <TextView
+        android:id="@+id/connect_timeout_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_20"
-        >
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="23sp"
+        android:fontFamily="@font/lato_bold"
+        android:text="@string/settings_connect_timeout"
+        android:textColor="@color/black" />
 
-        <TextView
-            android:id="@+id/connect_timeout_textview"
-            android:layout_width="263dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/lato_bold"
-            android:textSize="11sp"
-            android:text="@string/settings_connect_timeout" />
+    <EditText
+        android:id="@+id/connectTimeoutEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/connect_timeout_textview"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/padding_20"
+        android:layout_marginEnd="@dimen/padding_20"
+        android:background="@drawable/edit_text_background"
+        android:textColor="?android:textColorSecondary"
+        android:inputType="text"
+        android:maxLines="1"
+        android:scrollHorizontally="true" />
 
-        <EditText
-            android:id="@+id/connectTimeoutEditText"
-            android:layout_width="263dp"
-            android:layout_height="50dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/edit_text_background"
-            android:textColor="?android:textColorSecondary"
-            android:inputType="text"
-            android:maxLines="1"
-            android:paddingStart="@dimen/padding_10"
-            android:paddingEnd="@dimen/padding_10"
-            android:scrollHorizontally="true" />
+    <Button
+        android:id="@+id/AbortButton"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginStart="@dimen/padding_10"
+        android:layout_marginTop="@dimen/padding_20"
+        app:layout_constraintTop_toBottomOf="@+id/connectTimeoutEditText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/SaveButton"
+        android:background="@drawable/next_button_background"
+        android:fontFamily="@font/lato_bold"
+        android:textSize="18sp"
+        android:text="@string/button_abort"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/AbortButton"
-            android:layout_width="125dp"
-            android:layout_height="@dimen/padding_50"
-            android:layout_below="@id/connectTimeoutEditText"
-            android:layout_marginStart="@dimen/padding_10"
-            android:layout_marginTop="@dimen/padding_20"
-            android:background="@drawable/next_button_background"
-            android:fontFamily="@font/lato_bold"
-            android:text="@string/button_abort"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
+    <Button
+        android:id="@+id/SaveButton"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="@dimen/padding_10"
+        android:layout_marginTop="@dimen/padding_20"
+        app:layout_constraintTop_toBottomOf="@+id/connectTimeoutEditText"
+        app:layout_constraintStart_toEndOf="@+id/AbortButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/next_button_background"
+        android:fontFamily="@font/lato_bold"
+        android:textSize="18sp"
+        android:text="@string/button_save"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/SaveButton"
-            android:layout_width="125dp"
-            android:layout_height="@dimen/padding_50"
-            android:layout_below="@id/connectTimeoutEditText"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="@dimen/padding_20"
-            android:layout_toEndOf="@id/AbortButton"
-            android:background="@drawable/next_button_background"
-            android:fontFamily="@font/lato_bold"
-            android:text="@string/button_save"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
-
-    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

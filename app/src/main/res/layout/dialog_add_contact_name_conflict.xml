@@ -1,87 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:windowBackground"
     >
-    <RelativeLayout
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+
+    <TextView
+        android:id="@+id/conflict_contact_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_20"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/conflict_contact_edit_textview"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="23sp"
+        android:fontFamily="@font/lato_bold"
+        android:text="@string/contact_name_conflict"
+        android:textColor="@color/black" />
 
-        <TextView
-            android:id="@+id/conflict_contact_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:textSize="11sp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/lato_bold"
-            android:text="@string/contact_name_conflict"
-            android:textColor="@color/black" />
+    <EditText
+        android:id="@+id/conflict_contact_edit_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/conflict_contact_textview"
+        app:layout_constraintBottom_toTopOf="@+id/conflict_contact_replace_button"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/padding_20"
+        android:layout_marginEnd="@dimen/padding_20"
+        android:textSize="23sp"
+        android:background="@drawable/edit_text_background"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/conflict_contact_edit_textview"
-            android:layout_width="254dp"
-            android:layout_height="50dp"
-            android:layout_below="@id/conflict_contact_textview"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="@dimen/padding_10"
-            android:layout_marginTop="@dimen/padding_5"
-            android:background="@drawable/edit_text_background"
-            android:textColor="?android:textColorSecondary"
-            android:inputType="text"
-            android:maxLines="1"
-            android:paddingStart="@dimen/padding_10"
-            android:paddingEnd="@dimen/padding_10" />
+    <Button
+        android:id="@+id/conflict_contact_abort_button"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginStart="@dimen/padding_10"
+        android:layout_marginTop="@dimen/padding_20"
+        app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/SaveButton"
+        android:background="@drawable/next_button_background"
+        android:fontFamily="@font/lato_bold"
+        android:textSize="18sp"
+        android:text="@string/button_abort"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/conflict_contact_abort_button"
-            android:layout_width="78dp"
-            android:layout_height="@dimen/padding_50"
-            android:layout_below="@id/conflict_contact_edit_textview"
-            android:layout_marginStart="@dimen/padding_10"
-            android:layout_marginTop="@dimen/padding_20"
-            android:background="@drawable/next_button_background"
-            android:fontFamily="@font/lato_bold"
-            android:text="@string/button_abort"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
+    <Button
+        android:id="@+id/conflict_contact_replace_button"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginStart="@dimen/padding_10"
+        android:layout_marginTop="@dimen/padding_20"
+        app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
+        app:layout_constraintStart_toEndOf="@+id/conflict_contact_abort_button"
+        app:layout_constraintEnd_toStartOf="@+id/conflict_contact_rename_button"
+        android:background="@drawable/next_button_background"
+        android:fontFamily="@font/lato_bold"
+        android:textSize="18sp"
+        android:text="@string/replace"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/conflict_contact_replace_button"
-            android:layout_width="78dp"
-            android:layout_height="@dimen/padding_50"
-            android:layout_below="@id/conflict_contact_edit_textview"
-            android:layout_marginStart="@dimen/padding_10"
-            android:layout_marginTop="@dimen/padding_20"
-            android:layout_toEndOf="@id/conflict_contact_abort_button"
-            android:background="@drawable/next_button_background"
-            android:fontFamily="@font/lato_bold"
-            android:text="@string/replace"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
+    <Button
+        android:id="@+id/conflict_contact_rename_button"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginStart="@dimen/padding_10"
+        android:layout_marginTop="@dimen/padding_20"
+        app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
+        app:layout_constraintStart_toEndOf="@+id/conflict_contact_replace_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/next_button_background"
+        android:fontFamily="@font/lato_bold"
+        android:textSize="18sp"
+        android:text="@string/rename"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/conflict_contact_rename_button"
-            android:layout_width="78dp"
-            android:layout_height="@dimen/padding_50"
-            android:layout_below="@id/conflict_contact_edit_textview"
-            android:layout_marginStart="@dimen/padding_10"
-            android:layout_marginTop="@dimen/padding_20"
-            android:layout_toEndOf="@id/conflict_contact_replace_button"
-            android:background="@drawable/next_button_background"
-            android:fontFamily="@font/lato_bold"
-            android:text="@string/rename"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
-
-    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

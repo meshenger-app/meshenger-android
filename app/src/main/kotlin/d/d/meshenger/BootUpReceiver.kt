@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.widget.Toast
 
 /*
  * Start App on Android bootup. StartActivity is started to check
@@ -31,10 +32,14 @@ class BootUpReceiver : BroadcastReceiver() {
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED
             }
 
-            context.packageManager
-                .setComponentEnabledSetting(
-                    ComponentName(context, BootUpReceiver::class.java),
-                    newState, PackageManager.DONT_KILL_APP)
+            try {
+                context.packageManager
+                    .setComponentEnabledSetting(
+                        ComponentName(context, BootUpReceiver::class.java),
+                        newState, PackageManager.DONT_KILL_APP)
+            } catch (e: Exception) {
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

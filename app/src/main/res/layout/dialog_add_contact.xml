@@ -47,7 +47,7 @@
         android:layout_marginTop="@dimen/padding_20"
         app:layout_constraintTop_toBottomOf="@+id/NameEditText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/SaveButton"
+        app:layout_constraintEnd_toStartOf="@+id/OkButton"
         android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"

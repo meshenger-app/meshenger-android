@@ -46,7 +46,7 @@
         android:layout_marginTop="@dimen/padding_20"
         app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/SaveButton"
+        app:layout_constraintEnd_toStartOf="@+id/conflict_contact_replace_button"
         android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"

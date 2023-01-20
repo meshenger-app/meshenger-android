@@ -120,7 +120,7 @@ class RTCAudioManager(contextArg: Context) {
         Log.d(this, "start()")
         Utils.checkIsOnMainThread()
         if (audioManagerInitialized) {
-            Log.e(this, "start() already active")
+            Log.w(this, "start() already active")
             return
         }
 
@@ -179,7 +179,7 @@ class RTCAudioManager(contextArg: Context) {
         Log.d(this, "stop()")
         Utils.checkIsOnMainThread()
         if (!audioManagerInitialized) {
-            Log.e(this, "stop() Was not initialized.")
+            Log.w(this, "stop() Was not initialized.")
             return
         }
         audioManagerInitialized = false
@@ -202,18 +202,21 @@ class RTCAudioManager(contextArg: Context) {
 
     fun updateAudioDeviceState() {
         Utils.checkIsOnMainThread()
-        Log.w(this, "updateAudioDeviceState()")
+        Log.d(this, "updateAudioDeviceState()")
 
         if (!audioManagerInitialized) {
-            Log.w(this, "updateAudioDeviceState() RTCAudioManager not running")
+            Log.d(this, "updateAudioDeviceState() RTCAudioManager not running")
             return
         }
 
         val oldAudioDevice = getAudioDevice()
 
         if (!bluetoothManager.hasBluetoothPermissions()) {
+            Log.d(this, "updateAudioDeviceState() BT permissions missing")
             // ask for BT permissions
             audioManagerEvents?.onBluetoothConnectPermissionRequired()
+        } else {
+            Log.d(this, "updateAudioDeviceState() BT permissions granted")
         }
 
         if (speakerphoneMode == SpeakerphoneMode.AUTO) {

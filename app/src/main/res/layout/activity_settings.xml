@@ -487,7 +487,7 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/noAudioProcessingLayout"
+                    android:id="@+id/disableAudioProcessingLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -498,12 +498,12 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_no_audio_processing"
+                        android:text="@string/settings_disable_audio_processing"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="@dimen/title_text_size" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/noAudioProcessingSwitch"
+                        android:id="@+id/disableAudioProcessingSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"

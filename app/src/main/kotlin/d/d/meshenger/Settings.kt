@@ -16,7 +16,7 @@ class Settings {
     var videoHardwareAcceleration = false
     var disableCallHistory = false
     var disableProximitySensor = false
-    var noAudioProcessing = false
+    var disableAudioProcessing = false
     var startOnBootup = false
     var connectTimeout = 500
     var addresses = mutableListOf<String>()
@@ -41,7 +41,7 @@ class Settings {
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
             s.videoHardwareAcceleration = obj.getBoolean("video_hardware_acceleration")
-            s.noAudioProcessing = obj.getBoolean("no_audio_processing")
+            s.disableAudioProcessing = obj.getBoolean("disable_audio_processing")
             s.connectTimeout = obj.getInt("connect_timeout")
             s.disableCallHistory = obj.getBoolean("disable_call_history")
             s.disableProximitySensor = obj.getBoolean("disable_proximity_sensor")
@@ -80,7 +80,7 @@ class Settings {
             obj.put("use_neighbor_table", s.useNeighborTable)
             obj.put("connect_timeout", s.connectTimeout)
             obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
-            obj.put("no_audio_processing", s.noAudioProcessing)
+            obj.put("disable_audio_processing", s.disableAudioProcessing)
             obj.put("disable_call_history", s.disableCallHistory)
             obj.put("disable_proximity_sensor", s.disableProximitySensor)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)

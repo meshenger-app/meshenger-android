@@ -200,10 +200,10 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        findViewById<SwitchMaterial>(R.id.noAudioProcessingSwitch).apply {
-            isChecked = settings.noAudioProcessing
+        findViewById<SwitchMaterial>(R.id.disableAudioProcessingSwitch).apply {
+            isChecked = settings.disableAudioProcessing
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.noAudioProcessing = isChecked
+                settings.disableAudioProcessing = isChecked
                 binder!!.saveDatabase()
             }
         }

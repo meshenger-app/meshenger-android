@@ -50,10 +50,10 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                 contact.publicKey,
                 ownPublicKey,
                 ownSecretKey
-            ) ?: return Contact.State.UNKNOWN_ERROR
+            ) ?: return Contact.State.COMMUNICATION_FAILED
 
             pw.writeMessage(encrypted)
-            val request = pr.readMessage() ?: return Contact.State.UNKNOWN_ERROR
+            val request = pr.readMessage() ?: return Contact.State.COMMUNICATION_FAILED
             val decrypted = Crypto.decryptMessage(
                 request,
                 otherPublicKey,
@@ -71,10 +71,10 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                 Log.d(this, "got pong")
                 return Contact.State.CONTACT_ONLINE
             } else {
-                return Contact.State.UNKNOWN_ERROR
+                return Contact.State.COMMUNICATION_FAILED
             }
         } catch (e: Exception) {
-            return Contact.State.UNKNOWN_ERROR
+            return Contact.State.COMMUNICATION_FAILED
         } finally {
             try {
                 socket.close()

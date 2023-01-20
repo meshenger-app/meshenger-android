@@ -65,7 +65,7 @@
     <string name="state_contact_offline">Contact is Offline</string>
     <string name="state_app_not_running">App Not Running</string>
     <string name="state_authentication_failed">Authentication Failed</string>
-    <string name="state_unknown_error">Unknown Error</string>
+    <string name="state_communication_failed">Communication Failed</string>
     <string name="read_only">Read Only</string>
     <string name="none">None</string>
     <string name="add">Add</string>
@@ -129,7 +129,7 @@
     <string name="invalid_timeout">Invalid Timeout</string>
     <string name="no_file_name">No file name</string>
     <string name="contact_already_exists">Contact already exists</string>
-    <string name="enter_contact_name">Enter contact name.</string>
+    <string name="enter_contact_name">Enter contact name:</string>
     <string name="wrong_password">Wrong password</string>
     <string name="contact_name_conflict">A contact with the same name exists:</string>
     <string name="contact_key_conflict">A contact with the same key exists:</string>

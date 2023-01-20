@@ -52,11 +52,12 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
      */
     fun start(): Boolean {
         threadChecker.checkIsOnValidThread()
-        Log.d(this, "start ${Utils.getThreadInfo()}")
+        Log.d(this, "start() ${Utils.getThreadInfo()}")
         if (!initDefaultSensor()) {
-            Log.w(this, "Proximity sensor is not supported on this device.")
+            Log.w(this, "start()  Proximity sensor is not supported on this device.")
             return false
         } else {
+            Log.d(this, "start() unregisterListener")
             sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL)
             return true
         }
@@ -65,8 +66,9 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
     /** Deactivate the proximity sensor.  */
     fun stop() {
         threadChecker.checkIsOnValidThread()
-        Log.d(this, "stop ${Utils.getThreadInfo()}")
+        Log.d(this, "stop() ${Utils.getThreadInfo()}")
         if (proximitySensor != null) {
+            Log.d(this, "stop() unregisterListener")
             sensorManager.unregisterListener(this, proximitySensor)
         }
     }
@@ -92,14 +94,14 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
         // avoid blocking.
         val distanceInCentimeters: Float = event.values[0]
         lastStateReportIsNear = if (distanceInCentimeters < proximitySensor!!.maximumRange) {
-            Log.d(this, "Proximity sensor => NEAR state")
+            Log.d(this, "onSensorChanged() Proximity sensor => NEAR state")
             true
         } else {
-            Log.d(this, "Proximity sensor => FAR state")
+            Log.d(this, "onSensorChanged() Proximity sensor => FAR state")
             false
         }
 
-        Log.d(this, "onSensorChanged ${Utils.getThreadInfo()}: "
+        Log.d(this, "onSensorChanged() ${Utils.getThreadInfo()}: "
             + "accuracy=${event.accuracy}, "
             + "timestamp=${event.timestamp}, "
             + "distance=${event.values[0]}"

@@ -19,7 +19,7 @@ class Contact(
         CONTACT_OFFLINE,
         APP_NOT_RUNNING, // host is online, but Meshenger does not run
         AUTHENTICATION_FAILED, // authentication failed, key might have changed
-        UNKNOWN_ERROR, // something went wrong during communication
+        COMMUNICATION_FAILED, // something went wrong during communication
     }
 
     // contact state

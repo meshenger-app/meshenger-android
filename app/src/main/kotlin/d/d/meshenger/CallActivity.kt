@@ -122,6 +122,20 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 finishDelayed()
             }
 
+            val setContactState = { state: Contact.State ->
+                val b = binder
+                if (b != null) {
+                    val storedContact = b.getContacts().getContactByPublicKey(contact.publicKey)
+                    if (storedContact != null) {
+                        storedContact.state = state
+                    } else {
+                        contact.state = state
+                    }
+                } else {
+                    Log.w(this, "setContactState() binder is null")
+                }
+            }
+
             when (state) {
                 CallState.WAITING -> {
                     callStatus.text = getString(R.string.call_waiting)
@@ -131,6 +145,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 }
                 CallState.RINGING -> {
                     callStatus.text = getString(R.string.call_ringing)
+                    setContactState(Contact.State.CONTACT_ONLINE)
                 }
                 CallState.CONNECTED -> {
                     // call started
@@ -139,38 +154,48 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                     callStatus.text = getString(R.string.call_connected)
                     updateCameraButtons()
                     callWasStarted = true
+                    setContactState(Contact.State.CONTACT_ONLINE)
                 }
                 CallState.DISMISSED -> {
                     // call did not start
                     handleExit(R.string.call_denied)
+                    setContactState(Contact.State.CONTACT_ONLINE)
                 }
                 CallState.ENDED -> {
                     // normal call end
                     handleExit(R.string.call_ended)
+                    setContactState(Contact.State.CONTACT_ONLINE)
                 }
                 CallState.ERROR_NO_CONNECTION -> {
                     handleError(R.string.call_connection_failed)
+                    setContactState(Contact.State.CONTACT_OFFLINE)
                 }
                 CallState.ERROR_AUTHENTICATION -> {
                     handleError(R.string.call_authentication_failed)
+                    setContactState(Contact.State.AUTHENTICATION_FAILED)
                 }
-                CallState.ERROR_CRYPTOGRAPHY -> {
+                CallState.ERROR_DECRYPTION -> {
                     handleError(R.string.call_error)
                 }
                 CallState.ERROR_CONNECT_PORT -> {
                     handleError(R.string.call_error_not_listening)
+                    setContactState(Contact.State.APP_NOT_RUNNING)
                 }
                 CallState.ERROR_NO_ADDRESSES -> {
                     handleError(R.string.call_error_no_address)
+                    setContactState(Contact.State.CONTACT_OFFLINE)
                 }
                 CallState.ERROR_UNKNOWN_HOST -> {
                     handleError(R.string.call_error_unresolved_hostname)
+                    setContactState(Contact.State.CONTACT_OFFLINE)
                 }
-                CallState.ERROR_OTHER -> {
+                CallState.ERROR_COMMUNICATION -> {
                     handleError(R.string.call_error)
+                    setContactState(Contact.State.COMMUNICATION_FAILED)
                 }
                 CallState.ERROR_NO_NETWORK -> {
                     handleError(R.string.call_no_network)
+                    setContactState(Contact.State.CONTACT_OFFLINE)
                 }
             }
         }
@@ -477,7 +502,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 currentCall.setEglBase(eglBase)
 
                 Thread {
-                    currentCall.continueOnSocket()
+                    currentCall.continueOnIncomingSocket()
                 }.start()
 
                 updateVideoDisplay()
@@ -863,7 +888,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         proximityScreenLock?.release()
 
-        rtcAudioManager?.stop()
+        rtcAudioManager.stop()
 
         remoteProxyVideoSink.setTarget(null)
         localProxyVideoSink.setTarget(null)

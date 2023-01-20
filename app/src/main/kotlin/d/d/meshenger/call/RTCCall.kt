@@ -13,9 +13,7 @@ import java.io.IOException
 import java.net.*
 import java.nio.ByteBuffer
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.RejectedExecutionException
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class RTCCall : DataChannel.Observer {
     var state = CallState.WAITING
@@ -57,32 +55,32 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun setCameraEnabled(enabled: Boolean) {
-        Log.d(this, "setCameraEnabled")
+        Log.d(this, "setCameraEnabled()")
         Utils.checkIsOnMainThread()
 
         execute {
             Log.d(this, "setCameraEnabled() executor start")
             if (videoCapturer == null) {
-                Log.w(this, "setCameraEnabled no ready to be called => ignore")
+                Log.w(this, "setCameraEnabled() no ready to be called => ignore")
                 return@execute
             }
 
             if (this.isCameraEnabled == enabled) {
-                Log.w(this, "setCameraEnabled already $enabled => ignore")
+                Log.w(this, "setCameraEnabled() already $enabled => ignore")
                 return@execute
             }
 
             if (dataChannel == null) {
-                Log.w(this, "setCameraEnabled dataChannel not set => ignore")
+                Log.w(this, "setCameraEnabled() dataChannel not set => ignore")
                 return@execute
             }
 
             if (dataChannel!!.state() != DataChannel.State.OPEN) {
-                Log.w(this, "setCameraEnabled dataChannel not ready => ignore")
+                Log.w(this, "setCameraEnabled() dataChannel not ready => ignore")
                 return@execute
             }
 
-            Log.d(this, "setVideoEnabled: $enabled")
+            Log.d(this, "setVideoEnabled() enabled=$enabled")
             try {
                 // send own camera state over data channel
                 val obj = JSONObject()
@@ -114,9 +112,9 @@ class RTCCall : DataChannel.Observer {
     fun changeCaptureFormat(width: Int, height: Int, framerate: Int) {
         execute {
             if (!getCameraEnabled() || videoCapturer == null || videoSource == null) {
-                Log.e(this, "Failed to change capture format. Video: ${getCameraEnabled()}.")
+                Log.e(this, "changeCaptureFormat() Failed to change capture format. Video: ${getCameraEnabled()}.")
             } else {
-                Log.d(this, "changeCaptureFormat: ${width}x${height}@${framerate}")
+                Log.d(this, "changeCaptureFormat() ${width}x${height}@${framerate}")
                 videoSource?.adaptOutputFormat(width, height, framerate)
             }
         }
@@ -127,12 +125,12 @@ class RTCCall : DataChannel.Observer {
             executor.execute(r)
         } catch (e: RejectedExecutionException) {
             // can happen when the executor has shut down
-            Log.w(this, "got RejectedExecutionException")
+            Log.w(this, "execute() catched RejectedExecutionException")
         }
     }
 
     private fun sendOnSocket(message: String): Boolean {
-        Log.d(this, "sendOnSocket: $message")
+        Log.d(this, "sendOnSocket() message=$message")
 
         Utils.checkIsNotOnMainThread()
 
@@ -154,7 +152,7 @@ class RTCCall : DataChannel.Observer {
         )
 
         if (encrypted == null) {
-            reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+            reportStateChange(CallState.ERROR_COMMUNICATION)
             return false
         }
 
@@ -165,16 +163,16 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun sendOnDataChannel(message: String): Boolean {
-        Log.d(this, "sendOnDataChannel: $message")
+        Log.d(this, "sendOnDataChannel() message=$message")
 
         val channel = dataChannel
         if (channel == null) {
-            Log.w(this, "setCameraEnabled dataChannel not set => ignore")
+            Log.w(this, "setCameraEnabled() dataChannel not set => ignore")
             return false
         }
 
         if (channel.state() != DataChannel.State.OPEN) {
-            Log.w(this, "setCameraEnabled dataChannel not ready => ignore")
+            Log.w(this, "setCameraEnabled() dataChannel not ready => ignore")
             return false
         }
 
@@ -199,9 +197,9 @@ class RTCCall : DataChannel.Observer {
         binder: MainService.MainBinder,
         contact: Contact,
         commSocket: Socket,
-        offer: String?
+        offer: String
     ) {
-        Log.d(this, "RTCCall created for incoming calls")
+        Log.d(this, "RTCCall() created for incoming calls")
 
         this.contact = contact
         this.commSocket = commSocket
@@ -216,7 +214,7 @@ class RTCCall : DataChannel.Observer {
         binder: MainService.MainBinder,
         contact: Contact
     ) {
-        Log.d(this, "RTCCall created for outgoing calls")
+        Log.d(this, "RTCCall() created for outgoing calls")
 
         this.contact = contact
         this.commSocket = null
@@ -239,19 +237,19 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun createOutgoingCall(contact: Contact, offer: String) {
-        Log.d(this, "createOutgoingCall")
+        Log.d(this, "createOutgoingCall()")
         Thread {
             try {
                 createOutgoingCallInternal(contact, offer)
             } catch (e: Exception) {
                 e.printStackTrace()
-                reportStateChange(CallState.ERROR_OTHER)
+                reportStateChange(CallState.ERROR_COMMUNICATION)
             }
         }.start()
     }
 
     private fun createOutgoingCallInternal(contact: Contact, offer: String) {
-        Log.d(this, "createOutgoingCallInternal")
+        Log.d(this, "createOutgoingCallInternal()")
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val settings = binder.getSettings()
@@ -260,7 +258,6 @@ class RTCCall : DataChannel.Observer {
 
         val socket = createCommSocket(contact)
         if (socket == null) {
-            contact.state = Contact.State.CONTACT_OFFLINE
             return
         }
 
@@ -269,12 +266,12 @@ class RTCCall : DataChannel.Observer {
 
         val remoteAddress = socket.remoteSocketAddress as InetSocketAddress
 
-        Log.d(this, "outgoing call from remote address: $remoteAddress")
+        Log.d(this, "createOutgoingCallInternal() outgoing call from remote address: $remoteAddress")
 
         val pr = PacketReader(socket)
         reportStateChange(CallState.CONNECTING)
         run {
-            Log.d(this, "outgoing call: send call")
+            Log.d(this, "createOutgoingCallInternal() outgoing call: send call")
             val obj = JSONObject()
             obj.put("action", "call")
             obj.put("offer", offer) // WebRTC offer!
@@ -286,7 +283,7 @@ class RTCCall : DataChannel.Observer {
             )
 
             if (encrypted == null) {
-                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                reportStateChange(CallState.ERROR_COMMUNICATION)
                 return
             }
 
@@ -294,10 +291,10 @@ class RTCCall : DataChannel.Observer {
             pw.writeMessage(encrypted)
         }
         run {
-            Log.d(this, "outgoing call: expect ringing")
+            Log.d(this, "createOutgoingCallInternal() outgoing call: expect ringing")
             val response = pr.readMessage()
             if (response == null) {
-                reportStateChange(CallState.ERROR_OTHER)
+                reportStateChange(CallState.ERROR_COMMUNICATION)
                 return
             }
 
@@ -309,24 +306,29 @@ class RTCCall : DataChannel.Observer {
             )
 
             if (decrypted == null) {
-                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                reportStateChange(CallState.ERROR_DECRYPTION)
                 return
             }
 
             if (!contact.publicKey.contentEquals(otherPublicKey)) {
                 reportStateChange(CallState.ERROR_AUTHENTICATION)
-                contact.state = Contact.State.AUTHENTICATION_FAILED
                 return
             }
 
             val obj = JSONObject(decrypted)
-            if (obj.optString("action", "") != "ringing") {
-                Log.d(this, "action not equals ringing")
-                reportStateChange(CallState.ERROR_OTHER)
-                contact.state = Contact.State.UNKNOWN_ERROR
+            val action = obj.optString("action")
+            if (action == "ringing") {
+                Log.d(this, "createOutgoingCallInternal() got ringing")
+                reportStateChange(CallState.RINGING)
+            } else if (action == "dismissed") {
+                Log.d(this, "createOutgoingCallInternal() got dismissed")
+                reportStateChange(CallState.DISMISSED)
+                return
+            } else {
+                Log.d(this, "createOutgoingCallInternal() unexpected action: $action")
+                reportStateChange(CallState.ERROR_COMMUNICATION)
                 return
             }
-            reportStateChange(CallState.RINGING)
         }
 
         run {
@@ -335,18 +337,52 @@ class RTCCall : DataChannel.Observer {
             val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
             if (storedContact != null) {
                 storedContact.lastWorkingAddress = workingAddress
-                storedContact.state = Contact.State.CONTACT_ONLINE
             } else {
                 contact.lastWorkingAddress = workingAddress
-                contact.state = Contact.State.CONTACT_ONLINE
             }
         }
 
-        run {
-            Log.d(this, "outgoing call: expect connected/dismissed")
+        var lastKeepAlive = System.currentTimeMillis()
+
+        // send keep alive to detect a broken connection
+        val writeExecutor = Executors.newSingleThreadExecutor()
+        writeExecutor?.execute {
+            val pw = PacketWriter(socket)
+
+            Log.d(this, "createOutgoingCallInternal() start to send keep_alive")
+            while (!socket.isClosed) {
+                try {
+                    val obj = JSONObject()
+                    obj.put("action", "keep_alive")
+                    val encrypted = Crypto.encryptMessage(
+                        obj.toString(),
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    ) ?: break
+                    pw.writeMessage(encrypted)
+                    Thread.sleep(SOCKET_TIMEOUT_MS / 2)
+                    if ((System.currentTimeMillis() - lastKeepAlive) > SOCKET_TIMEOUT_MS) {
+                        Log.w(this, "createOutgoingCallInternal() keep_alive timeout => close socket")
+                        closeSocket(socket)
+                    }
+
+                } catch (e: Exception) {
+                    Log.w(this, "createOutgoingCallInternal() got $e => close socket")
+                    closeSocket(socket)
+                    break
+                }
+            }
+            Log.d(this, "createOutgoingCallInternal() stop to send keep_alive")
+        }
+
+        while (!socket.isClosed) {
+            Log.d(this, "createOutgoingCallInternal() expect connected/dismissed")
             val response = pr.readMessage()
             if (response == null) {
-                return
+                Thread.sleep(SOCKET_TIMEOUT_MS / 10)
+                Log.d(this, "createOutgoingCallInternal() response is null")
+                continue
             }
 
             val decrypted = Crypto.decryptMessage(
@@ -357,7 +393,7 @@ class RTCCall : DataChannel.Observer {
             )
 
             if (decrypted == null) {
-                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                reportStateChange(CallState.ERROR_DECRYPTION)
                 return
             }
 
@@ -367,33 +403,57 @@ class RTCCall : DataChannel.Observer {
             }
 
             val obj = JSONObject(decrypted)
-            when (val action = obj.getString("action")) {
-                "connected" -> {
-                    Log.d(this, "outgoing call: connected")
-                    reportStateChange(CallState.CONNECTED)
-                    handleAnswer(obj.getString("answer"))
+            val action = obj.getString("action")
+            if (action == "connected") {
+                Log.d(this, "createOutgoingCallInternal() connected")
+                reportStateChange(CallState.CONNECTED)
+                val answer = obj.getString("answer")
+                if (answer != null) {
+                    handleAnswer(answer)
+                } else {
+                    reportStateChange(CallState.ERROR_COMMUNICATION)
                 }
-                "dismissed" -> {
-                    Log.d(this, "outgoing call: dismissed")
-                    reportStateChange(CallState.DISMISSED)
-                }
-                else -> {
-                    Log.d(this, "outgoing call: unknown action reply $action")
-                    reportStateChange(CallState.ERROR_OTHER)
-                }
+                break
+            } else if (action == "dismissed") {
+                Log.d(this, "createOutgoingCallInternal() dismissed")
+                reportStateChange(CallState.DISMISSED)
+                break
+            } else if (action == "keep_alive") {
+                Log.d(this, "createOutgoingCallInternal() keep_alive")
+                lastKeepAlive = System.currentTimeMillis()
+                continue
+            } else {
+                Log.d(this, "createOutgoingCallInternal() unknown action reply $action")
+                reportStateChange(CallState.ERROR_COMMUNICATION)
+                break
             }
         }
 
-        continueOnSocket()
+        Log.d(this, "createOutgoingCallInternal() close socket")
+        closeSocket(socket)
+        Log.d(this, "createOutgoingCallInternal() dataChannel is null: ${dataChannel == null}")
+
+        Log.d(this, "createOutgoingCallInternal() wait for writeExecutor")
+        writeExecutor.shutdown()
+        writeExecutor.awaitTermination(100, TimeUnit.MILLISECONDS)
+
+        if (isCallInit(state) && socket.isClosed) {
+            Log.d(this, "createOutgoingCallInternal() call (state=$state) is not connected and socket is closed")
+            reportStateChange(CallState.ERROR_COMMUNICATION)
+        }
+
+        Log.d(this, "createOutgoingCallInternal() finished")
     }
 
     // Continue listening for socket message.
     // Must run on separate thread!
-    fun continueOnSocket() {
-        Log.d(this, "continueOnSocket()")
+    fun continueOnIncomingSocket() {
+        Log.d(this, "continueOnIncomingSocket()")
+        Utils.checkIsNotOnMainThread()
+
         val socket = commSocket
         if (socket == null) {
-            throw IllegalStateException("commSocket expected not to be null")
+            throw IllegalStateException("commSocket not expected to be null")
         }
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
@@ -402,8 +462,47 @@ class RTCCall : DataChannel.Observer {
         val ownSecretKey = settings.secretKey
         val pr = PacketReader(socket)
 
+        Log.d(this, "continueOnIncomingSocket() expected dismissed/keep_alive")
+
+        var lastKeepAlive = System.currentTimeMillis()
+
+        // send keep alive to detect a broken connection
+        val writeExecutor = Executors.newSingleThreadExecutor()
+        writeExecutor?.execute {
+            val pw = PacketWriter(socket)
+
+            Log.d(this, "continueOnIncomingSocket() start to send keep_alive")
+            while (!socket.isClosed) {
+                try {
+                    val obj = JSONObject()
+                    obj.put("action", "keep_alive")
+                    val encrypted = Crypto.encryptMessage(
+                        obj.toString(),
+                        contact.publicKey,
+                        ownPublicKey,
+                        ownSecretKey
+                    ) ?: break
+                    pw.writeMessage(encrypted)
+                    Thread.sleep(SOCKET_TIMEOUT_MS / 2)
+                    if ((System.currentTimeMillis() - lastKeepAlive) > SOCKET_TIMEOUT_MS) {
+                        Log.w(this, "continueOnIncomingSocket() keep_alive timeout => close socket")
+                        closeSocket(socket)
+                    }
+                } catch (e: Exception) {
+                    Log.w(this, "continueOnIncomingSocket() got $e => close socket")
+                    closeSocket(socket)
+                    break
+                }
+            }
+        }
+
         while (!socket.isClosed) {
-            val response = pr.readMessage() ?: continue
+            val response = pr.readMessage()
+            if (response == null) {
+                Thread.sleep(SOCKET_TIMEOUT_MS / 10)
+                Log.d(this, "continueOnIncomingSocket() response is null")
+                continue
+            }
 
             val decrypted = Crypto.decryptMessage(
                 response,
@@ -413,34 +512,43 @@ class RTCCall : DataChannel.Observer {
             )
 
             if (decrypted == null) {
-                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                reportStateChange(CallState.ERROR_DECRYPTION)
                 break
             }
 
             val obj = JSONObject(decrypted)
-            when (val action = obj.getString("action")) {
-                "dismissed" -> {
-                    Log.d(this, "outgoing call: dismissed")
-                    reportStateChange(CallState.DISMISSED)
-                }
-                "detach" -> {
-                    // meant for future versions that do
-                    // not need to keep the socket open
-                    Log.d(this, "outgoing call: detach")
-                    return
-                }
-                else -> {
-                    Log.d(this, "outgoing call: unknown action reply $action")
-                    reportStateChange(CallState.ERROR_OTHER)
-                }
+            val action = obj.getString("action")
+            if (action == "dismissed") {
+                Log.d(this, "continueOnIncomingSocket() received dismissed")
+                reportStateChange(CallState.DISMISSED)
+                break
+            } else if (action == "keep_alive") {
+                // ignore, keeps the socket alive
+                lastKeepAlive = System.currentTimeMillis()
+            } else {
+                Log.d(this, "continueOnIncomingSocket() received unknown action reply: $action")
+                reportStateChange(CallState.ERROR_COMMUNICATION)
+                break
             }
         }
 
-        reportStateChange(CallState.DISMISSED)
+        Log.d(this, "continueOnIncomingSocket() wait for writeExecutor")
+        writeExecutor.shutdown()
+        writeExecutor.awaitTermination(100L, TimeUnit.MILLISECONDS)
+
+        Log.d(this, "continueOnIncomingSocket() dataChannel is null: ${dataChannel == null}")
+        closeSocket(socket)
+
+        if (isCallInit(state) && socket.isClosed) {
+            Log.d(this, "continueOnIncomingSocket() call (state=$state) is not connected and socket is closed")
+            reportStateChange(CallState.ERROR_COMMUNICATION)
+        }
+
+        Log.d(this, "continueOnIncomingSocket() finished")
     }
 
     fun initOutgoing() {
-        Log.d(this, "initOutgoing")
+        Log.d(this, "initOutgoing()")
         Utils.checkIsOnMainThread()
 
         execute {
@@ -450,25 +558,29 @@ class RTCCall : DataChannel.Observer {
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
 
             peerConnection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
-
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
+                    Log.d(this, "onIceGatheringChange() state=$iceGatheringState")
                     super.onIceGatheringChange(iceGatheringState)
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
-                        Log.d(this, "outgoing call: send offer")
+                        Log.d(this, "initOutgoing() outgoing call: send offer")
                         createOutgoingCall(contact, peerConnection!!.localDescription.description)
                     }
                 }
 
                 override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {
-                    Log.d(this, "onIceConnectionChange ${iceConnectionState.name}")
+                    Log.d(this, "onIceConnectionChange() state=$iceConnectionState")
                     super.onIceConnectionChange(iceConnectionState)
-                    if (iceConnectionState == IceConnectionState.DISCONNECTED) {
-                        reportStateChange(CallState.ENDED)
+                    when (iceConnectionState) {
+                        IceConnectionState.DISCONNECTED -> reportStateChange(CallState.ENDED)
+                        IceConnectionState.FAILED -> reportStateChange(CallState.ERROR_COMMUNICATION)
+                        IceConnectionState.CONNECTED -> reportStateChange(CallState.CONNECTED)
+                        else -> return
                     }
+                    closeSocket(commSocket!!)
                 }
 
-                override fun onConnectionChange(newState: PeerConnectionState) {
-                    Log.d(this, "onConnectionChange: ${newState.name}")
+                override fun onConnectionChange(state: PeerConnectionState) {
+                    Log.d(this, "onConnectionChange() state=$state")
                 }
 
                 override fun onAddStream(mediaStream: MediaStream) {
@@ -499,7 +611,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun createCommSocket(contact: Contact): Socket? {
-        Log.d(this, "createCommSocket")
+        Log.d(this, "createCommSocket()")
 
         Utils.checkIsNotOnMainThread()
 
@@ -511,6 +623,8 @@ class RTCCall : DataChannel.Observer {
         var connectException = false
         var socketTimeoutException = false
         var exception = false
+
+        Log.d(this, "createCommSocket() contact.addresses: ${contact.addresses}")
 
         for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
             callActivity?.onRemoteAddressChange(address, false)
@@ -524,18 +638,18 @@ class RTCCall : DataChannel.Observer {
                 return socket
             } catch (e: SocketTimeoutException) {
                 // no connection
-                Log.d(this, "socket has thrown SocketTimeoutException")
+                Log.d(this, "createCommSocket() socket has thrown SocketTimeoutException")
                 socketTimeoutException = true
             } catch (e: ConnectException) {
                 // device is online, but does not listen on the given port
-                Log.d(this, "socket has thrown ConnectException")
+                Log.d(this, "createCommSocket() socket has thrown ConnectException")
                 connectException = true
             } catch (e: UnknownHostException) {
                 // hostname did not resolve
-                Log.d(this, "socket has thrown UnknownHostException")
+                Log.d(this, "createCommSocket() socket has thrown UnknownHostException")
                 unknownHostException = true
             } catch (e: Exception) {
-                Log.d(this, "socket has thrown Exception")
+                Log.d(this, "createCommSocket() socket has thrown Exception")
                 exception = true
             }
 
@@ -547,12 +661,15 @@ class RTCCall : DataChannel.Observer {
         } else if (unknownHostException) {
             reportStateChange(CallState.ERROR_UNKNOWN_HOST)
         } else if (exception) {
-            reportStateChange(CallState.ERROR_OTHER)
+            reportStateChange(CallState.ERROR_COMMUNICATION)
         } else if (socketTimeoutException) {
             reportStateChange(CallState.ERROR_NO_CONNECTION)
         } else if (contact.addresses.isEmpty()) {
             reportStateChange(CallState.ERROR_NO_ADDRESSES)
         } else {
+            // No addresses were generated.
+            // This happens if MAC addresses were
+            // used and no network is available.
             reportStateChange(CallState.ERROR_NO_NETWORK)
         }
 
@@ -580,7 +697,7 @@ class RTCCall : DataChannel.Observer {
         buffer.data.get(data)
         val s = String(data)
         try {
-            Log.d(this, "onMessage: $s")
+            Log.d(this, "onMessage() s=$s")
             val o = JSONObject(s)
             if (o.has(STATE_CHANGE_MESSAGE)) {
                 when (o.getString(STATE_CHANGE_MESSAGE)) {
@@ -590,7 +707,7 @@ class RTCCall : DataChannel.Observer {
                     else -> {}
                 }
             } else {
-                Log.d(this, "unknown message: $s")
+                Log.d(this, "onMessage() unknown message: $s")
             }
 
         } catch (e: JSONException) {
@@ -599,7 +716,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun releaseCamera() {
-        Log.d(this, "releaseCamera")
+        Log.d(this, "releaseCamera()")
         Utils.checkIsOnMainThread()
 
         try {
@@ -610,7 +727,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun handleMediaStream(stream: MediaStream) {
-        Log.d(this, "handleMediaStream")
+        Log.d(this, "handleMediaStream()")
 
         execute {
             Log.d(this, "handleMediaStream() executor start")
@@ -636,7 +753,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun setFrontCameraEnabled(enabled: Boolean) {
-        Log.d(this, "setFrontCameraEnabled: $enabled")
+        Log.d(this, "setFrontCameraEnabled() enabled=$enabled")
         Utils.checkIsOnMainThread()
         if (videoCapturer != null) {
             if (enabled != useFrontFacingCamera) {
@@ -675,7 +792,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun createAudioTrack(): AudioTrack? {
-        Log.d(this, "createAudioTrack")
+        Log.d(this, "createAudioTrack()")
         audioSource = factory.createAudioSource(audioConstraints)
         localAudioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, audioSource)
         localAudioTrack?.setEnabled(isMicrophoneEnabled)
@@ -683,7 +800,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun setMicrophoneEnabled(enabled: Boolean) {
-        Log.d(this, "setMicrophoneEnabled: $enabled")
+        Log.d(this, "setMicrophoneEnabled() enabled=$enabled")
         Utils.checkIsOnMainThread()
 
         execute {
@@ -696,7 +813,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun initVideo() {
-        Log.d(this, "initVideo")
+        Log.d(this, "initVideo()")
         Utils.checkIsOnMainThread()
         reportStateChange(CallState.WAITING)
 
@@ -710,7 +827,7 @@ class RTCCall : DataChannel.Observer {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
 
-        Log.d(this, "video acceleration: ${binder.getSettings().videoHardwareAcceleration}")
+        Log.d(this, "initVideo() video acceleration: ${binder.getSettings().videoHardwareAcceleration}")
 
         if (binder.getSettings().videoHardwareAcceleration) {
             val enableIntelVp8Encoder = true
@@ -734,12 +851,12 @@ class RTCCall : DataChannel.Observer {
             peerConnection!!.setRemoteDescription(object : DefaultSdpObserver() {
                 override fun onSetSuccess() {
                     super.onSetSuccess()
-                    Log.d(this, "onSetSuccess")
+                    Log.d(this, "onSetSuccess()")
                 }
 
                 override fun onSetFailure(s: String) {
                     super.onSetFailure(s)
-                    Log.d(this, "onSetFailure: $s")
+                    Log.d(this, "onSetFailure() s=$s")
                 }
             }, SessionDescription(SessionDescription.Type.ANSWER, remoteDesc))
             Log.d(this, "handleAnswer() executor end")
@@ -747,17 +864,20 @@ class RTCCall : DataChannel.Observer {
     }
 
     private fun reportStateChange(state: CallState) {
-        Log.d(this, "reportStateChange: $state")
+        Log.d(this, "reportStateChange() $state")
 
         this.state = state
         callActivity?.onStateChange(state)
     }
 
     fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {
+        Log.d(this, "setStatsCollector()")
         if (statsCollector == null) {
+            Log.d(this, "setStatsCollector() stop")
             statsTimer.cancel()
             statsTimer.purge()
         } else {
+            Log.d(this, "setStatsCollector() start")
             statsTimer = Timer()
             statsTimer.schedule(object : TimerTask() {
                 override fun run() {
@@ -783,8 +903,9 @@ class RTCCall : DataChannel.Observer {
         this.callActivity = activity
     }
 
+    // called when call accepted
     fun initIncoming() {
-        Log.d(this, "initIncoming")
+        Log.d(this, "initIncoming()")
         Utils.checkIsOnMainThread()
 
         execute {
@@ -796,10 +917,10 @@ class RTCCall : DataChannel.Observer {
 
             peerConnection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
+                    Log.d(this, "onIceGatheringChange() $iceGatheringState")
                     super.onIceGatheringChange(iceGatheringState)
 
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
-                        Log.d(this, "onIceGatheringChange")
                         try {
                             val settings = binder.getSettings()
                             val ownPublicKey = settings.publicKey
@@ -815,40 +936,46 @@ class RTCCall : DataChannel.Observer {
                                 ownSecretKey
                             )
                             if (encrypted != null) {
+                                Log.d(this, "onIceGatheringChange() send connected")
                                 pw.writeMessage(encrypted)
                                 callActivity?.onRemoteAddressChange(remoteAddress, true)
                                 reportStateChange(CallState.CONNECTED)
                             } else {
-                                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                                Log.d(this, "onIceGatheringChange() encryption failed")
+                                reportStateChange(CallState.ERROR_COMMUNICATION)
                             }
-                            //new Thread(new SpeakerRunnable(commSocket)).start()
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            reportStateChange(CallState.ERROR_OTHER)
+                            reportStateChange(CallState.ERROR_COMMUNICATION)
                         }
+                        closeSocket(commSocket!!)
                     }
                 }
 
                 override fun onIceConnectionChange(iceConnectionState: IceConnectionState) {
-                    Log.d(this, "onIceConnectionChange: ${iceConnectionState.name}")
+                    Log.d(this, "onIceConnectionChange() $iceConnectionState")
                     super.onIceConnectionChange(iceConnectionState)
-                    if (iceConnectionState == IceConnectionState.DISCONNECTED) {
-                        reportStateChange(CallState.ENDED)
+                    when (iceConnectionState) {
+                        IceConnectionState.DISCONNECTED -> reportStateChange(CallState.ENDED)
+                        IceConnectionState.FAILED -> reportStateChange(CallState.ERROR_COMMUNICATION)
+                        IceConnectionState.CONNECTED -> reportStateChange(CallState.CONNECTED)
+                        else -> return
                     }
+                    closeSocket(commSocket!!)
                 }
 
-                override fun onConnectionChange(newState: PeerConnectionState) {
-                    Log.d(this, "onConnectionChange: ${newState.name}")
+                override fun onConnectionChange(state: PeerConnectionState) {
+                    Log.d(this, "onConnectionChange() state=$state")
                 }
 
                 override fun onAddStream(mediaStream: MediaStream) {
-                    Log.d(this, "onAddStream")
+                    Log.d(this, "onAddStream()")
                     super.onAddStream(mediaStream)
                     handleMediaStream(mediaStream)
                 }
 
                 override fun onDataChannel(dataChannel: DataChannel) {
-                    Log.d(this, "onDataChannel")
+                    Log.d(this, "onDataChannel()")
                     super.onDataChannel(dataChannel)
                     this@RTCCall.dataChannel = dataChannel
                     this@RTCCall.dataChannel!!.registerObserver(this@RTCCall)
@@ -896,7 +1023,7 @@ class RTCCall : DataChannel.Observer {
         if (sendOnDataChannel(o.toString())) {
             reportStateChange(CallState.DISMISSED)
         } else {
-            reportStateChange(CallState.ERROR_OTHER)
+            reportStateChange(CallState.ERROR_COMMUNICATION)
         }
     }
 
@@ -913,7 +1040,7 @@ class RTCCall : DataChannel.Observer {
 
     // send over initial socket
     private fun declineInternal() {
-        Log.d(this, "declineInternal")
+        Log.d(this, "declineInternal()")
         // send decline over initial socket
         val socket = commSocket
         if (socket != null && !socket.isClosed) {
@@ -931,20 +1058,20 @@ class RTCCall : DataChannel.Observer {
 
             if (encrypted != null) {
                 try {
-                    Log.d(this, "write dismissed message to socket")
+                    Log.d(this, "declineInternal() write dismissed message to socket")
                     pw.writeMessage(encrypted)
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
                 reportStateChange(CallState.DISMISSED)
             } else {
-                reportStateChange(CallState.ERROR_CRYPTOGRAPHY)
+                reportStateChange(CallState.ERROR_COMMUNICATION)
             }
         }
     }
 
     fun decline() {
-        Log.d(this, "decline")
+        Log.d(this, "decline()")
         Utils.checkIsOnMainThread()
 
         execute {
@@ -955,7 +1082,7 @@ class RTCCall : DataChannel.Observer {
     }
 
     fun cleanup() {
-        Log.d(this, "cleanup")
+        Log.d(this, "cleanup()")
         Utils.checkIsOnMainThread()
 
         execute {
@@ -964,7 +1091,7 @@ class RTCCall : DataChannel.Observer {
             setStatsCollector(null)
 
             try {
-                Log.d(this, "close socket")
+                Log.d(this, "cleanup() close socket")
                 commSocket?.close()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -982,7 +1109,7 @@ class RTCCall : DataChannel.Observer {
         // wait for tasks to finish
         executor.shutdown()
         executor.awaitTermination(4L, TimeUnit.SECONDS)
-        Log.d(this, "cleanup done")
+        Log.d(this, "cleanup() done")
     }
 
     enum class CallState {
@@ -993,13 +1120,23 @@ class RTCCall : DataChannel.Observer {
         DISMISSED,
         ENDED,
         ERROR_AUTHENTICATION,
-        ERROR_CRYPTOGRAPHY,
+        ERROR_DECRYPTION,
         ERROR_CONNECT_PORT,
         ERROR_UNKNOWN_HOST,
-        ERROR_OTHER,
+        ERROR_COMMUNICATION,
         ERROR_NO_CONNECTION,
         ERROR_NO_ADDRESSES,
         ERROR_NO_NETWORK
+    }
+
+    // Not an error but also not established (CONNECTED)
+    private fun isCallInit(state: CallState): Boolean {
+        return when (state) {
+            CallState.WAITING,
+            CallState.CONNECTING,
+            CallState.RINGING -> true
+            else -> false
+        }
     }
 
     interface CallContext {
@@ -1048,6 +1185,8 @@ class RTCCall : DataChannel.Observer {
         private const val AUDIO_TRACK_ID = "audio1"
         private const val VIDEO_TRACK_ID = "video1"
 
+        private const val SOCKET_TIMEOUT_MS = 3000L
+
         private fun ByteArray.toHex(): String = joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
 
         private fun debugPacket(label: String, msg: ByteArray?) {
@@ -1078,7 +1217,7 @@ class RTCCall : DataChannel.Observer {
         }
 
         private fun createIncomingCallInternal(binder: MainService.MainBinder, socket: Socket) {
-            Log.d(this, "createIncomingCallInternal")
+            Log.d(this, "createIncomingCallInternal()")
 
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
             val settings = binder.getSettings()
@@ -1087,7 +1226,7 @@ class RTCCall : DataChannel.Observer {
             val ownPublicKey = settings.publicKey
 
             val decline = {
-                Log.d(this, "declining...")
+                Log.d(this, "createIncomingCallInternal() declining...")
 
                 try {
                     val encrypted = Crypto.encryptMessage(
@@ -1112,11 +1251,11 @@ class RTCCall : DataChannel.Observer {
             val pw = PacketWriter(socket)
             val pr = PacketReader(socket)
 
-            Log.d(this, "incoming peerConnection from $remoteAddress")
+            Log.d(this, "createIncomingCallInternal() incoming peerConnection from $remoteAddress")
 
             val request = pr.readMessage()
             if (request == null) {
-                Log.d(this, "connection closed")
+                Log.d(this, "createIncomingCallInternal() connection closed")
                 socket.close()
                 return
             }
@@ -1125,23 +1264,23 @@ class RTCCall : DataChannel.Observer {
 
             val decrypted = Crypto.decryptMessage(request, otherPublicKey, ownPublicKey, ownSecretKey)
             if (decrypted == null) {
-                Log.d(this, "decryption failed")
+                Log.d(this, "createIncomingCallInternal() decryption failed")
                 // cause: the caller might use the wrong key
                 socket.close()
                 return
             }
 
-            Log.d(this, "request: $decrypted")
+            Log.d(this, "createIncomingCallInternal() request: $decrypted")
 
             var contact = binder.getContacts().getContactByPublicKey(otherPublicKey)
             if (contact == null && blockUnknown) {
-                Log.d(this, "block unknown contact => decline")
+                Log.d(this, "createIncomingCallInternal() block unknown contact => decline")
                 decline()
                 return
             }
 
             if (contact != null && contact.blocked) {
-                Log.d(this, "blocked contact => decline")
+                Log.d(this, "createIncomingCallInternal() blocked contact => decline")
                 decline()
                 return
             }
@@ -1153,7 +1292,7 @@ class RTCCall : DataChannel.Observer {
 
             // suspicious change of identity in during peerConnection...
             if (!contact.publicKey.contentEquals(otherPublicKey)) {
-                Log.d(this, "suspicious change of key")
+                Log.d(this, "createIncomingCallInternal() suspicious change of key")
                 decline()
                 return
             }
@@ -1164,26 +1303,31 @@ class RTCCall : DataChannel.Observer {
                 val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
                 if (storedContact != null) {
                     storedContact.lastWorkingAddress = workingAddress
-                    storedContact.state = Contact.State.CONTACT_ONLINE
                 } else {
                     contact.lastWorkingAddress = workingAddress
-                    contact.state = Contact.State.CONTACT_ONLINE
                 }
             }
 
             val obj = JSONObject(decrypted)
             val action = obj.optString("action", "")
-            Log.d(this, "action: $action")
+            Log.d(this, "createIncomingCallInternal() action: $action")
             when (action) {
                 "call" -> {
                     if (binder.getCurrentCall() != null) {
-                        Log.d(this, "call in progress => decline")
+                        Log.d(this, "createIncomingCallInternal() call in progress => decline")
                         decline() // TODO: send busy
                         return
                     }
 
+                    Log.d(this, "createIncomingCallInternal() got WebRTC offer")
+
                     // someone calls us
                     val offer = obj.getString("offer")
+                    if (offer == null) {
+                        Log.d(this, "createIncomingCallInternal() missing offer")
+                        decline()
+                        return
+                    }
 
                     // respond that we accept the call (our phone is ringing)
                     val encrypted = Crypto.encryptMessage(
@@ -1194,12 +1338,12 @@ class RTCCall : DataChannel.Observer {
                     )
 
                     if (encrypted == null) {
-                        Log.d(this, "encryption failed")
+                        Log.d(this, "createIncomingCallInternal() encryption failed")
                         decline()
                         return
                     }
 
-                    debugPacket("send ringing message:", encrypted)
+                    debugPacket("createIncomingCallInternal() send ringing message: ", encrypted)
                     pw.writeMessage(encrypted)
 
                     val currentCall = RTCCall(binder, contact, socket, offer)
@@ -1207,13 +1351,13 @@ class RTCCall : DataChannel.Observer {
                     try {
                         val activity = MainActivity.instance
                         if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                            Log.d(this, "start incoming call from stored MainActivity")
+                            Log.d(this, "createIncomingCallInternal() start incoming call from stored MainActivity")
                             val intent = Intent(activity, CallActivity::class.java)
                             intent.action = "ACTION_INCOMING_CALL"
                             intent.putExtra("EXTRA_CONTACT", contact)
                             activity.startActivity(intent)
                         } else {
-                            Log.d(this, "start incoming call from Service")
+                            Log.d(this, "createIncomingCallInternal() start incoming call from Service")
                             val service = binder.getService()
                             val intent = Intent(service, CallActivity::class.java)
                             intent.action = "ACTION_INCOMING_CALL"
@@ -1228,7 +1372,7 @@ class RTCCall : DataChannel.Observer {
                     }
                 }
                 "ping" -> {
-                    Log.d(this, "ping...")
+                    Log.d(this, "createIncomingCallInternal() ping...")
                     // someone wants to know if we are online
                     contact.state = Contact.State.CONTACT_ONLINE
                     val encrypted = Crypto.encryptMessage(
@@ -1239,7 +1383,7 @@ class RTCCall : DataChannel.Observer {
                     )
 
                     if (encrypted == null) {
-                        Log.d(this, "encryption failed")
+                        Log.d(this, "createIncomingCallInternal() encryption failed")
                         decline()
                         return
                     }
@@ -1250,7 +1394,7 @@ class RTCCall : DataChannel.Observer {
                     if (obj.optString("status", "") == "offline") {
                         contact.state = Contact.State.CONTACT_ONLINE
                     } else {
-                        Log.d(this, "Received unknown status_change: ${obj.getString("status")}")
+                        Log.d(this, "createIncomingCallInternal() received unknown status_change: ${obj.getString("status")}")
                     }
                 }
             }

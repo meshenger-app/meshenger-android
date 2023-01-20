@@ -33,7 +33,7 @@ internal class ContactListAdapter(
                 Contact.State.CONTACT_OFFLINE -> R.string.state_contact_offline
                 Contact.State.APP_NOT_RUNNING -> R.string.state_app_not_running
                 Contact.State.AUTHENTICATION_FAILED -> R.string.state_authentication_failed
-                Contact.State.UNKNOWN_ERROR -> R.string.state_unknown_error
+                Contact.State.COMMUNICATION_FAILED -> R.string.state_communication_failed
             }
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
@@ -47,7 +47,7 @@ internal class ContactListAdapter(
             Contact.State.CONTACT_OFFLINE -> Color.parseColor("#ff0000") // red
             Contact.State.APP_NOT_RUNNING -> Color.parseColor("#ff7000") // orange
             Contact.State.AUTHENTICATION_FAILED -> Color.parseColor("#612c00") // brown
-            Contact.State.UNKNOWN_ERROR -> Color.parseColor("#ffffff") // black
+            Contact.State.COMMUNICATION_FAILED -> Color.parseColor("#808080") // grey
         }
         canvas.drawCircle(100f, 100f, 100f, p)
         if (contact.blocked) {

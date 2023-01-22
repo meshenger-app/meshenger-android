@@ -85,8 +85,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -119,8 +119,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -153,8 +153,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     android:visibility="visible"
                     app:dividerColor="@color/light_grey" />
 
@@ -187,8 +187,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     android:visibility="visible"
                     app:dividerColor="@color/light_grey" />
 
@@ -222,8 +222,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     android:visibility="visible"
                     app:dividerColor="@color/light_grey" />
 
@@ -269,8 +269,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -303,8 +303,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -338,8 +338,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -370,8 +370,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -392,6 +392,7 @@
                         android:id="@+id/publicKeyTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
                         android:fontFamily="@font/lato_regular"
                         android:textIsSelectable="true"
                         android:text=""
@@ -403,8 +404,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -437,8 +438,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -482,8 +483,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -516,8 +517,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
@@ -550,8 +551,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
@@ -582,8 +583,8 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:layout_marginBottom="@dimen/padding_20"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout

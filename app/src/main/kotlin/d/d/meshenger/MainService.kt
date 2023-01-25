@@ -17,6 +17,7 @@ import d.d.meshenger.Utils.writeInternalFile
 import d.d.meshenger.call.PacketWriter
 import d.d.meshenger.call.Pinger
 import d.d.meshenger.call.RTCCall
+import d.d.meshenger.call.RTCPeerConnection
 import java.io.File
 import java.io.IOException
 import java.net.*
@@ -246,7 +247,7 @@ class MainService : Service(), Runnable {
                 try {
                     val socket = serverSocket!!.accept()
                     Log.d(this, "new incoming connection")
-                    RTCCall.createIncomingCall(binder, socket)
+                    RTCPeerConnection.createIncomingCall(binder, socket)
                 } catch (e: IOException) {
                     // ignore
                 }

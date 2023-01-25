@@ -16,7 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import d.d.meshenger.call.*
-import d.d.meshenger.call.RTCCall.CallState
+import d.d.meshenger.call.RTCPeerConnection.CallState
 import org.webrtc.*
 import java.net.InetSocketAddress
 import java.util.*

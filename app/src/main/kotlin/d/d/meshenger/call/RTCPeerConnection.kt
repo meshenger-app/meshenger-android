@@ -393,6 +393,9 @@ abstract class RTCPeerConnection(
         } catch (e: RejectedExecutionException) {
             // can happen when the executor has shut down
             Log.w(this, "execute() catched RejectedExecutionException")
+        } catch (e: Exception) {
+            Log.w(this, "execute() catched $e")
+            reportStateChange(CallState.ERROR_COMMUNICATION)
         }
     }
 

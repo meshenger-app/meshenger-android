@@ -742,10 +742,11 @@ abstract class RTCPeerConnection(
                     pw.writeMessage(encrypted)
                 }
                 "status_change" -> {
-                    if (obj.optString("status", "") == "offline") {
+                    val status = obj.getString("status")
+                    if (status == "offline") {
                         contact.state = Contact.State.CONTACT_ONLINE
                     } else {
-                        Log.d(this, "createIncomingCallInternal() received unknown status_change: ${obj.getString("status")}")
+                        Log.d(this, "createIncomingCallInternal() received unknown status_change: $status")
                     }
                 }
             }

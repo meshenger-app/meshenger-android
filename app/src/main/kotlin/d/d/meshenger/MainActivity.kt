@@ -201,6 +201,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onResume")
         super.onResume()
 
+        // clear notification of any missed calls
+        binder?.showDefaultNotification()
+
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
     }

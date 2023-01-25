@@ -226,6 +226,8 @@ class Database {
 
             if (newFrom == "4.0.9") {
                 settings.put("start_on_bootup", false)
+                settings.put("disable_audio_processing", settings.getBoolean("no_audio_processing"))
+                settings.remove("no_audio_processing")
                 newFrom = "4.1.0"
             }
 

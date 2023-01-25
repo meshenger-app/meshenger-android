@@ -21,6 +21,7 @@ import d.d.meshenger.call.RTCPeerConnection
 import java.io.File
 import java.io.IOException
 import java.net.*
+import java.util.*
 
 class MainService : Service(), Runnable {
     private val binder = MainBinder()
@@ -41,14 +42,21 @@ class MainService : Service(), Runnable {
         Thread(this).start()
     }
 
-    private fun updateNotification() {
-        val notification = getNotification()
+    private fun showDefaultNotification() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
+        val message = resources.getText(R.string.listen_for_incoming_calls).toString()
+        val notification = createNotification(message, false)
         manager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun getNotification(): Notification {
+    private fun showNotificationMessage(message: String) {
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notification = createNotification(message, true)
+        manager.notify(NOTIFICATION_ID, notification)
+    }
+
+    private fun createNotification(text: String, showSinceWhen: Boolean): Notification {
+        Log.d(this, "createNotification() text=$text, setShowWhen=$showSinceWhen")
         val channelId = "meshenger_service"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val chan = NotificationChannel(
@@ -74,18 +82,14 @@ class MainService : Service(), Runnable {
         return NotificationCompat.Builder(applicationContext, channelId)
             .setSilent(true)
             .setOngoing(true)
-            .setShowWhen(false)
+            .setShowWhen(showSinceWhen)
+            .setUsesChronometer(showSinceWhen)
             .setSmallIcon(R.drawable.ic_logo)
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
-            .setContentText(resources.getText(R.string.listen_for_incoming_calls))
+            .setContentText(text)
             .setContentIntent(pendingNotificationIntent)
             .build()
-    }
-
-    private fun showNotification() {
-        val notification = getNotification()
-        startForeground(NOTIFICATION_ID, notification)
     }
 
     fun loadDatabase() {
@@ -222,7 +226,8 @@ class MainService : Service(), Runnable {
             Log.d(this, "Received invalid intent")
         } else if (intent.action == START_FOREGROUND_ACTION) {
             Log.d(this, "Received Start Foreground Intent")
-            val notification = getNotification()
+            val message = resources.getText(R.string.listen_for_incoming_calls).toString()
+            val notification = createNotification(message, false)
             startForeground(NOTIFICATION_ID, notification)
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "Received Stop Foreground Intent")
@@ -259,6 +264,12 @@ class MainService : Service(), Runnable {
             stopSelf()
             return
         }
+    }
+
+    private fun showMissedCallFrom(publicKey: ByteArray) {
+        val contact = database?.contacts?.getContactByPublicKey(publicKey)
+        val name = contact?.name ?: getString(R.string.unknown_caller)
+        showNotificationMessage(String.format(getString(R.string.missed_call_from), name))
     }
 
     /*
@@ -308,6 +319,11 @@ class MainService : Service(), Runnable {
             currentCall = call
         }
 
+        fun showDefaultNotification() {
+            Log.d(this, "showDefaultNotification()")
+            this@MainService.showDefaultNotification()
+        }
+
         fun addContact(contact: Contact) {
             getDatabase().contacts.addContact(contact)
             saveDatabase()
@@ -345,7 +361,12 @@ class MainService : Service(), Runnable {
             this@MainService.saveDatabase()
         }
 
-        internal fun addEvent(event: Event) {
+        fun addEvent(event: Event) {
+            // update notification
+            if (event.type == Event.Type.INCOMING_MISSED) {
+                showMissedCallFrom(event.publicKey)
+            }
+
             if (!getSettings().disableCallHistory) {
                 getEvents().addEvent(event)
                 LocalBroadcastManager.getInstance(this@MainService)

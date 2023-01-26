@@ -744,7 +744,7 @@ abstract class RTCPeerConnection(
                 "status_change" -> {
                     val status = obj.getString("status")
                     if (status == "offline") {
-                        contact.state = Contact.State.CONTACT_ONLINE
+                        contact.state = Contact.State.CONTACT_OFFLINE
                     } else {
                         Log.d(this, "createIncomingCallInternal() received unknown status_change: $status")
                     }

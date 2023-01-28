@@ -1,0 +1,4 @@
+* show last missed call in app notification
+* add setting to show username instead of logo
+* very minor UI changes
+* internal refactoring

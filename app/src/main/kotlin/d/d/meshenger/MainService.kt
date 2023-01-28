@@ -144,7 +144,6 @@ class MainService : Service(), Runnable {
 
             try {
                 socket.connect(address, connectTimeout)
-                //socket.soTimeout = socketTimeout
                 return socket
             } catch (e: SocketTimeoutException) {
                 Log.d(this, "SocketTimeoutException: $address")

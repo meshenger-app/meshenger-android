@@ -37,7 +37,7 @@ internal class PacketReader(socket: Socket) {
             val request = ByteArray(len)
             System.arraycopy(buffer, 4, request, 0, request.size)
 
-            // move data of next messgae to the front of the buffer
+            // move data of next message to the front of the buffer
             System.arraycopy(buffer, 4 + len, buffer, 0, pos - request.size)
             pos = 0
             return request

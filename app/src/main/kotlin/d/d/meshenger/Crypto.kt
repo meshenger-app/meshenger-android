@@ -16,7 +16,7 @@ internal object Crypto {
             return null
         }
 
-        if (encryptedMessage.size <= 4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES) {
+        if (encryptedMessage.size <= (4 + Sodium.crypto_pwhash_saltbytes() + SodiumConstants.NONCE_BYTES + SodiumConstants.MAC_BYTES)) {
             return null
         }
 

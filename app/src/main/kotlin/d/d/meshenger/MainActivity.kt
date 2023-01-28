@@ -176,6 +176,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }.attach()
 
         if (!addressWarningShown) {
+            // onyl show once since app start
             showInvalidAddressSettingsWarning()
             addressWarningShown = true
         }

@@ -17,7 +17,7 @@ class BootUpReceiver : BroadcastReceiver() {
         if (intent != null && intent.action == Intent.ACTION_BOOT_COMPLETED) {
             val i = Intent(context, StartActivity::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            i.putExtra(START_MAIN_ACTIVITY, false)
+            i.putExtra(START_MAIN_ACTIVITY, false) // start MainService only, not MainActivity
             context.startActivity(i)
         }
     }

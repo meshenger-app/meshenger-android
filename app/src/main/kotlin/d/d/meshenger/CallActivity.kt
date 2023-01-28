@@ -814,6 +814,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             // do not turn on microphone
             showTextMessage(getString(R.string.missing_bluetooth_permission))
         }
+        Log.d(this, "allowBluetoothConnectForResult() isGranted=$isGranted")
     }
 
     private val enabledMicrophoneForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {

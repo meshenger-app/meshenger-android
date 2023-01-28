@@ -498,7 +498,6 @@ open class RTCBluetoothManager(contextArg: Context, audioManagerArg: RTCAudioMan
         } else {
             Log.d(this, "bluetoothTimeout() SCO is not connected with ${bluetoothDevice.name}")
         }
-        //this.bluetoothDevice = bluetoothDevice
 
         if (scoConnected) {
             // We thought BT had timed out, but it's actually on; updating state.

@@ -61,7 +61,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 try {
                     binder!!.getService().loadDatabase()
                 } catch (e: Database.WrongPasswordException) {
-                    // ignore and continue with initialization
+                    // ignore and continue with initialization,
+                    // the password dialog comes on the next startState
                 } catch (e: Exception) {
                     Log.e(this, "${e.message}")
                     Toast.makeText(this, "${e.message}", Toast.LENGTH_SHORT).show()

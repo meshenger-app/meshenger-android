@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:paddingBottom="80dp"
         android:scrollbarThumbVertical="@color/call_red"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,8 +52,8 @@
                 android:id="@+id/basicSettingsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/padding_25"
-                android:layout_marginRight="@dimen/padding_25"
+                android:layout_marginLeft="@dimen/padding_20"
+                android:layout_marginRight="@dimen/padding_20"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -76,6 +76,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="right"
+                        android:paddingRight="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -178,6 +179,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="right"
+                        android:paddingRight="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -261,8 +263,8 @@
                 android:id="@+id/advancedSettingsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/padding_25"
-                android:layout_marginRight="@dimen/padding_25"
+                android:layout_marginLeft="@dimen/padding_20"
+                android:layout_marginRight="@dimen/padding_20"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -361,6 +363,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="right"
+                        android:paddingRight="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -393,6 +396,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
+                        android:paddingRight="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textIsSelectable="true"
                         android:text=""
@@ -475,8 +479,8 @@
                 android:id="@+id/expertSettingsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/padding_25"
-                android:layout_marginRight="@dimen/padding_25"
+                android:layout_marginLeft="@dimen/padding_20"
+                android:layout_marginRight="@dimen/padding_20"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -574,6 +578,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="right"
+                        android:paddingRight="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />

@@ -232,7 +232,7 @@ class Database {
             }
 
             if (newFrom == "4.1.0") {
-                // nothing to do
+                settings.put("show_username_as_logo", false)
                 newFrom = "4.1.1"
             }
 

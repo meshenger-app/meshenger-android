@@ -13,6 +13,8 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
@@ -142,15 +144,28 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onServiceConnected")
         binder = iBinder as MainBinder
 
-        val disableCallHistory = binder!!.getSettings().disableCallHistory
-        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        val settings = binder!!.getSettings()
 
         viewPager.adapter = ViewPagerFragmentAdapter(this)
 
-        if (disableCallHistory) {
+        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        if (settings.disableCallHistory) {
             tabLayout.visibility = View.GONE
         } else {
+            // default
             tabLayout.visibility = View.VISIBLE
+        }
+
+        val toolbarLogo = findViewById<ImageView>(R.id.toolbar_logo)
+        val toolbarLabel = findViewById<TextView>(R.id.toolbar_label)
+        if (settings.showUsernameAsLogo) {
+            toolbarLogo.visibility = View.GONE
+            toolbarLabel.visibility = View.VISIBLE
+            toolbarLabel.text = settings.username
+        } else {
+            // default
+            toolbarLogo.visibility = View.VISIBLE
+            toolbarLabel.visibility = View.GONE
         }
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->

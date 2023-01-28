@@ -24,10 +24,21 @@
             >
 
             <ImageView
+                android:id="@+id/toolbar_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/meshenger_logo"
+                android:visibility="visible"
                 android:contentDescription="logo" />
+
+            <TextView
+                android:id="@+id/toolbar_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="@dimen/title_text_size"
+                android:visibility="gone"
+                android:contentDescription="username" />
 
         </androidx.appcompat.widget.Toolbar>
 

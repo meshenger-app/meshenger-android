@@ -207,6 +207,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 binder!!.saveDatabase()
             }
         }
+
+        findViewById<SwitchMaterial>(R.id.showUsernameAsLogoSwitch).apply {
+            isChecked = settings.showUsernameAsLogo
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.showUsernameAsLogo = isChecked
+                binder!!.saveDatabase()
+            }
+        }
     }
 
     private fun showChangeNameDialog() {

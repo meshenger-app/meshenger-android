@@ -6,32 +6,43 @@ import d.d.meshenger.*
 import d.d.meshenger.AddressUtils
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
+import java.lang.Integer.max
+import java.lang.Integer.min
 import java.net.ConnectException
 import java.net.Socket
 
 class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : Runnable {
     private fun pingContact(contact: Contact) : Contact.State {
+        Log.d(this, "pingContact() contact: ${contact.name}")
+
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val settings = binder.getSettings()
         val useNeighborTable = settings.useNeighborTable
         val connectTimeout = settings.connectTimeout
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
+        val connectRetries = settings.connectRetries
         var connected = false
         val socket = Socket()
 
         try {
+            val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
+            Log.d(this, "pingContact() contact.addresses: ${contact.addresses}, allGeneratedAddresses: $allGeneratedAddresses")
+
             // try to connect
-            for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
-                try {
-                    socket.connect(address, connectTimeout)
-                    connected = true
-                    break
-                } catch (e: ConnectException) {
-                    // target online, but Meshenger not running
-                    return Contact.State.APP_NOT_RUNNING
-                } catch (e: Exception) {
-                    // ignore
+            for (iteration in 0..max(0, min(connectRetries, 4))) {
+                Log.d(this, "pingContact() loop number $iteration")
+                for (address in allGeneratedAddresses) {
+                    try {
+                        socket.connect(address, connectTimeout)
+                        connected = true
+                        break
+                    } catch (e: ConnectException) {
+                        // target online, but Meshenger not running
+                        return Contact.State.APP_NOT_RUNNING
+                    } catch (e: Exception) {
+                        // ignore
+                    }
                 }
             }
 

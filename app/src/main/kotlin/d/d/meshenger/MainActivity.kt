@@ -171,7 +171,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.title_contacts)
-                else -> getString(R.string.title_events)
+                else -> getString(R.string.title_calls)
             }
         }.attach()
 

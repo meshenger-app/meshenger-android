@@ -92,3 +92,5 @@ This phase was concluded with Meshenger 3.0.0.
 ### Fourth Phase
 
 This phase focuses on bug fixing, stabilization, usability improvements and some features.
+
+This phase is concluded with the Meshenger 4.0.0 and further releases. Now an app with the intented features exists, which we hope serves as a use case for mesh networks without Internet and will help those in need.

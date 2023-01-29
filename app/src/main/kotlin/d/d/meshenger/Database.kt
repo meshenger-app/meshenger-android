@@ -233,6 +233,7 @@ class Database {
 
             if (newFrom == "4.1.0") {
                 settings.put("show_username_as_logo", false)
+                settings.put("connect_retries", 1)
                 newFrom = "4.1.1"
             }
 

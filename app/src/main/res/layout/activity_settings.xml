@@ -626,6 +626,39 @@
                     android:layout_marginBottom="15dp"
                     app:dividerColor="@color/light_grey" />
 
+                <LinearLayout
+                    android:id="@+id/connectRetriesLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_connect_retries"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <TextView
+                        android:id="@+id/connectRetriesTv"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:paddingRight="10dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/options_text_size" />
+
+                </LinearLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    app:dividerColor="@color/light_grey" />
+
                 <RelativeLayout
                     android:id="@+id/useNeighborTableLayout"
                     android:layout_width="match_parent"

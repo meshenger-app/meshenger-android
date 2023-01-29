@@ -122,6 +122,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 }
             })
 
+        findViewById<TextView>(R.id.connectRetriesTv)
+            .text = "${settings.connectRetries}"
+        findViewById<View>(R.id.connectRetriesLayout)
+            .setOnClickListener { showChangeConnectRetriesDialog() }
+
         findViewById<TextView>(R.id.connectTimeoutTv)
             .text = "${settings.connectTimeout}"
         findViewById<View>(R.id.connectTimeoutLayout)
@@ -238,6 +243,39 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
             .setNegativeButton(resources.getText(R.string.cancel), null)
             .show()
+    }
+
+
+    private fun showChangeConnectRetriesDialog() {
+        val settings = binder!!.getSettings()
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_connect_retries)
+        val connectRetriesEditText = dialog.findViewById<TextView>(R.id.connectRetriesEditText)
+        val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
+        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
+        connectRetriesEditText.text = "${settings.connectRetries}"
+        saveButton.setOnClickListener {
+            var connectRetries = -1
+            val text = connectRetriesEditText.text.toString()
+            try {
+                connectRetries = parseInt(text)
+            } catch (e: Exception) {
+                // ignore
+            }
+
+            if (connectRetries in 0..4) {
+                settings.connectRetries = connectRetries
+                binder!!.saveDatabase()
+                initViews()
+                Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@SettingsActivity, R.string.invalid_value, Toast.LENGTH_SHORT).show()
+            }
+
+            dialog.cancel()
+        }
+        abortButton.setOnClickListener { dialog.cancel() }
+        dialog.show()
     }
 
     private fun showChangeConnectTimeoutDialog() {

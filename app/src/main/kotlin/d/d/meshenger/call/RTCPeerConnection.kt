@@ -6,6 +6,8 @@ import d.d.meshenger.*
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import java.io.IOException
+import java.lang.Integer.max
+import java.lang.Integer.min
 import java.net.*
 import java.util.*
 import java.util.concurrent.*
@@ -450,42 +452,48 @@ abstract class RTCPeerConnection(
         val settings = binder.getSettings()
         val useNeighborTable = settings.useNeighborTable
         val connectTimeout = settings.connectTimeout
+        val connectRetries = settings.connectRetries
 
         var unknownHostException = false
         var connectException = false
         var socketTimeoutException = false
         var exception = false
 
-        Log.d(this, "createCommSocket() contact.addresses: ${contact.addresses}")
+        val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
+        Log.d(this, "createCommSocket() contact.addresses: ${contact.addresses}, allGeneratedAddresses: $allGeneratedAddresses")
 
-        for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
-            callActivity?.onRemoteAddressChange(address, false)
-            Log.d(this, "try address: $address")
+        for (iteration in 0..max(0, min(connectRetries, 4))) {
+            Log.d(this, "createCommSocket() loop number $iteration")
 
-            val socket = Socket()
+            for (address in allGeneratedAddresses) {
+                callActivity?.onRemoteAddressChange(address, false)
+                Log.d(this, "try address: $address")
 
-            try {
-                socket.connect(address, connectTimeout)
-                reportStateChange(CallState.CONNECTING)
-                return socket
-            } catch (e: SocketTimeoutException) {
-                // no connection
-                Log.d(this, "createCommSocket() socket has thrown SocketTimeoutException")
-                socketTimeoutException = true
-            } catch (e: ConnectException) {
-                // device is online, but does not listen on the given port
-                Log.d(this, "createCommSocket() socket has thrown ConnectException")
-                connectException = true
-            } catch (e: UnknownHostException) {
-                // hostname did not resolve
-                Log.d(this, "createCommSocket() socket has thrown UnknownHostException")
-                unknownHostException = true
-            } catch (e: Exception) {
-                Log.d(this, "createCommSocket() socket has thrown Exception")
-                exception = true
+                val socket = Socket()
+
+                try {
+                    socket.connect(address, connectTimeout)
+                    reportStateChange(CallState.CONNECTING)
+                    return socket
+                } catch (e: SocketTimeoutException) {
+                    // no connection
+                    Log.d(this, "createCommSocket() socket has thrown SocketTimeoutException")
+                    socketTimeoutException = true
+                } catch (e: ConnectException) {
+                    // device is online, but does not listen on the given port
+                    Log.d(this, "createCommSocket() socket has thrown ConnectException")
+                    connectException = true
+                } catch (e: UnknownHostException) {
+                    // hostname did not resolve
+                    Log.d(this, "createCommSocket() socket has thrown UnknownHostException")
+                    unknownHostException = true
+                } catch (e: Exception) {
+                    Log.d(this, "createCommSocket() socket has thrown Exception")
+                    exception = true
+                }
+
+                closeSocket(socket)
             }
-
-            closeSocket(socket)
         }
 
         if (connectException) {

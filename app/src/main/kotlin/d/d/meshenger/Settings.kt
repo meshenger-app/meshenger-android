@@ -19,6 +19,7 @@ class Settings {
     var disableAudioProcessing = false
     var showUsernameAsLogo = false
     var startOnBootup = false
+    var connectRetries = 1
     var connectTimeout = 500
     var addresses = mutableListOf<String>()
 
@@ -49,6 +50,7 @@ class Settings {
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
             s.showUsernameAsLogo = obj.getBoolean("show_username_as_logo")
             s.startOnBootup = obj.getBoolean("start_on_bootup")
+            s.connectRetries = obj.getInt("connect_retries")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -88,6 +90,7 @@ class Settings {
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
             obj.put("show_username_as_logo", s.showUsernameAsLogo)
             obj.put("start_on_bootup", s.startOnBootup)
+            obj.put("connect_retries", s.connectRetries)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

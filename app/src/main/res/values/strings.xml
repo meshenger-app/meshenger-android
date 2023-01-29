@@ -53,6 +53,7 @@
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
     <string name="settings_start_on_bootup">Start On Bootup</string>
     <string name="settings_show_username_as_logo">Show Username As Logo</string>
+    <string name="settings_connect_retries">Connect Retries</string>
     <string name="state_contact_online">Contact is Online</string>
     <string name="state_contact_offline">Contact is Offline</string>
     <string name="state_app_not_running">App Not Running</string>
@@ -103,6 +104,7 @@
     <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="invalid_name">Invalid Name</string>
     <string name="invalid_timeout">Invalid Timeout</string>
+    <string name="invalid_value">Invalid Value</string>
     <string name="enter_contact_name">Enter contact name:</string>
     <string name="wrong_password">Wrong password</string>
     <string name="contact_name_conflict">A contact with the same name exists:</string>

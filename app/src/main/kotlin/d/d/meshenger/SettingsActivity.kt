@@ -255,6 +255,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         connectRetriesEditText.text = "${settings.connectRetries}"
         saveButton.setOnClickListener {
+            val minValue = 0
+            val maxValue = 4
             var connectRetries = -1
             val text = connectRetriesEditText.text.toString()
             try {
@@ -263,13 +265,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 // ignore
             }
 
-            if (connectRetries in 0..4) {
+            if (connectRetries in minValue..maxValue) {
                 settings.connectRetries = connectRetries
                 binder!!.saveDatabase()
                 initViews()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this@SettingsActivity, R.string.invalid_value, Toast.LENGTH_SHORT).show()
+                val message = String.format(getString(R.string.invalid_number_value), minValue, maxValue)
+                Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
             }
 
             dialog.cancel()
@@ -287,6 +290,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
         connectTimeoutEditText.text = "${settings.connectTimeout}"
         saveButton.setOnClickListener {
+            val minValue = 20
+            val maxValue = 4000
             var connectTimeout = -1
             val text = connectTimeoutEditText.text.toString()
             try {
@@ -295,13 +300,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 // ignore
             }
 
-            if (connectTimeout in 20..4000) {
+            if (connectTimeout in minValue..maxValue) {
                 settings.connectTimeout = connectTimeout
                 binder!!.saveDatabase()
                 initViews()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this@SettingsActivity, R.string.invalid_timeout, Toast.LENGTH_SHORT).show()
+                val message = String.format(getString(R.string.invalid_number_value), minValue, maxValue)
+                Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
             }
 
             dialog.cancel()

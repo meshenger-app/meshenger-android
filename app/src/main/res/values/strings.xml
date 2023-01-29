@@ -103,8 +103,7 @@
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your WiFi.</string>
     <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="invalid_name">Invalid Name</string>
-    <string name="invalid_timeout">Invalid Timeout</string>
-    <string name="invalid_value">Invalid Value</string>
+    <string name="invalid_number_value">Invalid Value (must be %1$d..%2$d)</string>
     <string name="enter_contact_name">Enter contact name:</string>
     <string name="wrong_password">Wrong password</string>
     <string name="contact_name_conflict">A contact with the same name exists:</string>

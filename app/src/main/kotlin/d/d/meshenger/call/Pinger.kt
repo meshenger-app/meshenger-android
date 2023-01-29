@@ -36,13 +36,16 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                     try {
                         socket.connect(address, connectTimeout)
                         connected = true
-                        break
                     } catch (e: ConnectException) {
                         // target online, but Meshenger not running
                         return Contact.State.APP_NOT_RUNNING
                     } catch (e: Exception) {
                         // ignore
                     }
+                }
+
+                if (connected) {
+                    break
                 }
             }
 

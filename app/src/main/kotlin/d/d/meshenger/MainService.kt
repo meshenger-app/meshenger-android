@@ -27,6 +27,7 @@ class MainService : Service(), Runnable {
     private val binder = MainBinder()
     private var serverSocket: ServerSocket? = null
     private var database: Database? = null
+    private var missedCallCounter = 0
     var firstStart = false
     private var databasePath = ""
     var databasePassword = ""
@@ -266,9 +267,10 @@ class MainService : Service(), Runnable {
     }
 
     private fun showMissedCallFrom(publicKey: ByteArray) {
+        missedCallCounter += 1
         val contact = database?.contacts?.getContactByPublicKey(publicKey)
         val name = contact?.name ?: getString(R.string.unknown_caller)
-        showNotificationMessage(String.format(getString(R.string.missed_call_from), name))
+        showNotificationMessage(String.format(getString(R.string.missed_call_from), name, missedCallCounter))
     }
 
     /*
@@ -319,6 +321,7 @@ class MainService : Service(), Runnable {
         }
 
         fun showDefaultNotification() {
+            this@MainService.missedCallCounter = 0
             Log.d(this, "showDefaultNotification()")
             this@MainService.showDefaultNotification()
         }

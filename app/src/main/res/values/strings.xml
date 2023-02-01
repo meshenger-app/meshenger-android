@@ -125,5 +125,5 @@
     <string name="capture_format_change_text">Slide to change capture format</string>
     <string name="capture_format_description">%1$dx%2$d @ %3$d fps</string>
     <string name="capture_format_muted">Muted</string>
-    <string name="missed_call_from">Missed call from %1$s</string>
+    <string name="missed_call_from">Missed call from %1$s (%2$d)</string>
 </resources>

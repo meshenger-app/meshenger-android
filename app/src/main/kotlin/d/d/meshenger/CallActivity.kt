@@ -934,6 +934,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         Log.d(this, "onProximitySensorToggleScreen: $isProximityNear")
 
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+
+        proximityScreenLock?.release()
+
         if (isProximityNear) {
             // turn screen off
             proximityScreenLock = powerManager.newWakeLock(

@@ -184,6 +184,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
         LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
 
+        // clear notification of any missed calls
+        binder?.showDefaultNotification()
+
         // call it here because EventListFragment.onResume is triggered twice
         binder!!.pingContacts(binder!!.getContacts().contactList)
     }

@@ -101,6 +101,10 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         if (contact != null) {
             contact.blocked = blocked
             binder.saveDatabase()
+            LocalBroadcastManager.getInstance(requireContext())
+                .sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(requireContext())
+                .sendBroadcast(Intent("refresh_event_list"))
         } else {
             // ignore - not expected to happen
         }

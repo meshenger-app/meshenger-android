@@ -59,6 +59,7 @@
     <string name="state_app_not_running">App Not Running</string>
     <string name="state_authentication_failed">Authentication Failed</string>
     <string name="state_communication_failed">Communication Failed</string>
+    <string name="contact_blocked">Blocked</string>
     <string name="read_only">Read Only</string>
     <string name="none">None</string>
     <string name="add">Add</string>

@@ -178,7 +178,10 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         if (contact != null) {
             contact.blocked = blocked
             binder.saveDatabase()
-            refreshContactListBroadcast()
+            LocalBroadcastManager.getInstance(requireContext())
+                .sendBroadcast(Intent("refresh_contact_list"))
+            LocalBroadcastManager.getInstance(requireContext())
+                .sendBroadcast(Intent("refresh_event_list"))
         }
     }
 

@@ -28,14 +28,19 @@ internal class ContactListAdapter(
 
         convertView.findViewById<TextView>(R.id.contact_name).text = contact.name
         convertView.findViewById<ImageView>(R.id.contact_state).setOnClickListener {
-            val message = when (contact.state) {
+            val state = when (contact.state) {
                 Contact.State.CONTACT_ONLINE -> R.string.state_contact_online
                 Contact.State.CONTACT_OFFLINE -> R.string.state_contact_offline
                 Contact.State.APP_NOT_RUNNING -> R.string.state_app_not_running
                 Contact.State.AUTHENTICATION_FAILED -> R.string.state_authentication_failed
                 Contact.State.COMMUNICATION_FAILED -> R.string.state_communication_failed
             }
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            if (contact.blocked) {
+                val message = context.getString(state) + " / " + context.getString(R.string.contact_blocked)
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, state, Toast.LENGTH_SHORT).show()
+            }
         }
 
         val state = convertView.findViewById<ImageView>(R.id.contact_state)

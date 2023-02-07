@@ -457,8 +457,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         val declineListener = View.OnClickListener {
             Log.d(this, "decline call...")
+
+            // only one will work
             currentCall.decline()
-            finish()
+            currentCall.hangup()
         }
 
         val startCallListener = View.OnClickListener {
@@ -519,12 +521,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         // decline before call starts
         val declineListener = View.OnClickListener {
-            Log.d(this, "declining call...")
-
+            Log.d(this, "decline call...")
             stopRinging()
-            currentCall.decline()
 
-            finish()
+            // only one will work
+            currentCall.decline()
+            currentCall.hangup()
         }
 
         // accept call

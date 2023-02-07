@@ -34,7 +34,7 @@
         android:layout_marginEnd="@dimen/padding_20"
         android:textSize="23sp"
         android:inputType="text"
-        android:text="TestName"
+        android:text=""
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:textColor="@color/black" />

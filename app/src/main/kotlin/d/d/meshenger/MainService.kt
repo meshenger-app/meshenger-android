@@ -267,6 +267,7 @@ class MainService : Service(), Runnable {
     }
 
     private fun showMissedCallFrom(publicKey: ByteArray) {
+        Log.d(this, "showMissedCallFrom()")
         missedCallCounter += 1
         val contact = database?.contacts?.getContactByPublicKey(publicKey)
         val name = contact?.name ?: getString(R.string.unknown_caller)
@@ -364,6 +365,7 @@ class MainService : Service(), Runnable {
         }
 
         fun addEvent(event: Event) {
+            Log.d(this, "addEvent() event.type=${event.type}")
             // update notification
             if (event.type == Event.Type.INCOMING_MISSED) {
                 showMissedCallFrom(event.publicKey)

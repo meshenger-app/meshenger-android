@@ -214,6 +214,7 @@ class MainService : Service(), Runnable {
             // ignore
         }
 
+        saveDatabase()
         database?.destroy()
 
         super.onDestroy()
@@ -372,6 +373,7 @@ class MainService : Service(), Runnable {
             }
 
             if (!getSettings().disableCallHistory) {
+                saveDatabase()
                 getEvents().addEvent(event)
                 LocalBroadcastManager.getInstance(this@MainService)
                     .sendBroadcast(Intent("refresh_event_list"))

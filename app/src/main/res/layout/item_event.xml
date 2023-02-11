@@ -26,13 +26,20 @@
                 android:layout_height="wrap_content"
                 android:textSize="26sp" />
 
-            <ImageView
-                android:id="@+id/call_type"
-                android:layout_width="24dp"
+            <LinearLayout
+                android:id="@+id/call_icons"
+                android:layout_width="wrap_content"
                 android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
-                android:src="@drawable/ic_incoming_call_accepted" />
+                android:layout_gravity="center_vertical">
+                    <!-- icons added programmatically -->
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/call_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp" />
 
         </LinearLayout>
 

@@ -193,13 +193,14 @@ class EventListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterVi
         Log.d(this, "onItemClick")
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
-        val event = eventListAdapter.getItem(i)
+        val eventGroup = eventListAdapter.getItem(i)
+        val latestEvent = eventGroup.last()
 
-        val knownContact = binder.getContacts().getContactByPublicKey(event.publicKey)
+        val knownContact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
         val contact = if (knownContact != null) {
             knownContact
         } else {
-            event.createUnknownContact("")
+            latestEvent.createUnknownContact("")
         }
 
         if (contact.addresses.isEmpty()) {

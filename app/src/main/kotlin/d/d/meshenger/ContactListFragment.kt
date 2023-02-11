@@ -16,12 +16,68 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONException
 
-class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+class ContactListFragment : Fragment() {
     private lateinit var contactListView: ListView
     private lateinit var fabScan: FloatingActionButton
     private lateinit var fabGen: FloatingActionButton
     private lateinit var fab: FloatingActionButton
     private var fabExpanded = false
+
+    private val onContactClickListener =
+        AdapterView.OnItemClickListener { adapterView, _, i, _ ->
+            Log.d(this, "onItemClick")
+            val activity = requireActivity()
+            val contact = adapterView.adapter.getItem(i) as Contact
+            if (contact.addresses.isEmpty()) {
+                Toast.makeText(activity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
+            } else {
+                Log.d(this, "start CallActivity")
+                val intent = Intent(activity, CallActivity::class.java)
+                intent.action = "ACTION_OUTGOING_CALL"
+                intent.putExtra("EXTRA_CONTACT", contact)
+                startActivity(intent)
+            }
+    }
+
+    private val onContactLongClickListener =
+        AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
+            val contact = adapterView.adapter.getItem(i) as Contact
+            val menu = PopupMenu(activity, view)
+            val delete = getString(R.string.delete)
+            val rename = getString(R.string.rename)
+            val block = getString(R.string.block)
+            val unblock = getString(R.string.unblock)
+            val share = getString(R.string.share)
+            val qrcode = getString(R.string.qrcode)
+            menu.menu.add(delete)
+            menu.menu.add(rename)
+            menu.menu.add(share)
+            if (contact.blocked) {
+                menu.menu.add(unblock)
+            } else {
+                menu.menu.add(block)
+            }
+            menu.menu.add(qrcode)
+            menu.setOnMenuItemClickListener { menuItem: MenuItem ->
+                val title = menuItem.title.toString()
+                val publicKey = contact.publicKey
+                when (title) {
+                    delete -> showDeleteDialog(publicKey, contact.name)
+                    rename -> showRenameDialog(publicKey, contact.name)
+                    share -> shareContact(contact)
+                    block -> setBlocked(publicKey, true)
+                    unblock -> setBlocked(publicKey, false)
+                    qrcode -> {
+                        val intent = Intent(activity, QRShowActivity::class.java)
+                        intent.putExtra("EXTRA_CONTACT", contact)
+                        startActivity(intent)
+                    }
+                }
+                false
+            }
+            menu.show()
+            true
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,8 +91,8 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
         contactListView = view.findViewById(R.id.contactList)
-        contactListView.onItemClickListener = this
-        contactListView.onItemLongClickListener = this
+        contactListView.onItemClickListener = onContactClickListener
+        contactListView.onItemLongClickListener = onContactLongClickListener
 
         val activity = requireActivity()
         fabScan.setOnClickListener {
@@ -241,60 +297,5 @@ class ContactListFragment : Fragment(), AdapterView.OnItemClickListener, Adapter
     override fun onPause() {
         super.onPause()
         collapseFab()
-    }
-
-    override fun onItemClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
-        Log.d(this, "onItemClick")
-        val activity = requireActivity()
-        val contact = adapterView.adapter.getItem(i) as Contact
-        if (contact.addresses.isEmpty()) {
-            Toast.makeText(activity, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        Log.d(this, "start CallActivity")
-        val intent = Intent(activity, CallActivity::class.java)
-        intent.action = "ACTION_OUTGOING_CALL"
-        intent.putExtra("EXTRA_CONTACT", contact)
-        startActivity(intent)
-    }
-
-    override fun onItemLongClick(adapterView: AdapterView<*>, view: View, i: Int, l: Long): Boolean {
-        val contact = adapterView.adapter.getItem(i) as Contact
-        val menu = PopupMenu(activity, view)
-        val delete = getString(R.string.delete)
-        val rename = getString(R.string.rename)
-        val block = getString(R.string.block)
-        val unblock = getString(R.string.unblock)
-        val share = getString(R.string.share)
-        val qrcode = getString(R.string.qrcode)
-        menu.menu.add(delete)
-        menu.menu.add(rename)
-        menu.menu.add(share)
-        if (contact.blocked) {
-            menu.menu.add(unblock)
-        } else {
-            menu.menu.add(block)
-        }
-        menu.menu.add(qrcode)
-        menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            val title = menuItem.title.toString()
-            val publicKey = contact.publicKey
-            when (title) {
-                delete -> showDeleteDialog(publicKey, contact.name)
-                rename -> showRenameDialog(publicKey, contact.name)
-                share -> shareContact(contact)
-                block -> setBlocked(publicKey, true)
-                unblock -> setBlocked(publicKey, false)
-                qrcode -> {
-                    val intent = Intent(activity, QRShowActivity::class.java)
-                    intent.putExtra("EXTRA_CONTACT", contact)
-                    startActivity(intent)
-                }
-            }
-            false
-        }
-        menu.show()
-        return true
     }
 }

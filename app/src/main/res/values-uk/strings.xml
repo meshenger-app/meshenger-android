@@ -24,7 +24,7 @@
     <string name="button_save">Зберегти</string>
     <string name="call_authentication_failed">Помилка автентифікації</string>
     <string name="call_connected">Підключений</string>
-    <string name="call_connecting">Виклик...</string>
+    <string name="call_connecting">Виклик…</string>
     <string name="call_connection_failed">"З'єднання не вдалося"</string>
     <string name="call_denied">Відхилено</string>
     <string name="call_ended">Виклик завершено</string>
@@ -33,9 +33,9 @@
     <string name="call_error_not_listening">Помилка: не запущено програми</string>
     <string name="call_error_unresolved_hostname">Помилка: не вдається визначити адресу</string>
     <string name="call_no_network">Немає мережі - включити WiFi?</string>
-    <string name="call_ringing">Дзвінок...</string>
+    <string name="call_ringing">Дзвінок…</string>
     <string name="call_start_or_abort">Почати або перервати дзвінок</string>
-    <string name="call_waiting">Очікування...</string>
+    <string name="call_waiting">Очікування…</string>
     <string name="cancel">Скасувати</string>
     <string name="capture_format_change_text">Прокрутіть для змінення формату захоплення</string>
     <string name="capture_format_description">%1$dx%2$d @ %3$d fps</string>

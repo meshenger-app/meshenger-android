@@ -1,17 +1,14 @@
 package d.d.meshenger
 
 import android.content.Context
-import android.widget.ArrayAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 
 internal class ContactListAdapter(
     context: Context,
@@ -22,12 +19,12 @@ internal class ContactListAdapter(
 ) {
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    override fun getView(position: Int, convertView_: View?, parent: ViewGroup): View {
-        val convertView = convertView_ ?: inflater.inflate(R.layout.item_contact, null)
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val itemView = convertView ?: inflater.inflate(R.layout.item_contact, null)
         val contact = contacts[position]
 
-        convertView.findViewById<TextView>(R.id.contact_name).text = contact.name
-        convertView.findViewById<ImageView>(R.id.contact_state).setOnClickListener {
+        itemView.findViewById<TextView>(R.id.contact_name).text = contact.name
+        itemView.findViewById<ImageView>(R.id.contact_state).setOnClickListener {
             val state = when (contact.state) {
                 Contact.State.CONTACT_ONLINE -> R.string.state_contact_online
                 Contact.State.CONTACT_OFFLINE -> R.string.state_contact_offline
@@ -43,7 +40,7 @@ internal class ContactListAdapter(
             }
         }
 
-        val state = convertView.findViewById<ImageView>(R.id.contact_state)
+        val state = itemView.findViewById<ImageView>(R.id.contact_state)
         val bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val p = Paint()
@@ -62,6 +59,6 @@ internal class ContactListAdapter(
         }
         state.setImageBitmap(bitmap)
 
-        return convertView
+        return itemView
     }
 }

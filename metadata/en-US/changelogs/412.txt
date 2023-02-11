@@ -1,4 +1,5 @@
 * fix bug about the proximity screen on/off was performed after a call ended
-* show number of missed calls in notification
+* show number of missed calls in notification#
+* group multiple call events into one
 * add Ukrainian translation
 * some display fixes for blocked contacts

@@ -51,13 +51,14 @@ class EventListFragment : Fragment() {
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return@OnItemLongClickListener false
 
-        val event = adapterView.adapter.getItem(i) as Event
+        val eventGroup = eventListAdapter.getItem(i)
+        val latestEvent = eventGroup.last()
         val menu = PopupMenu(activity, view)
         val res = resources
         val add = res.getString(R.string.add)
         val block = res.getString(R.string.block)
         val unblock = res.getString(R.string.unblock)
-        val contact = binder.getContacts().getContactByPublicKey(event.publicKey)
+        val contact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
 
         // allow to add unknown caller
         if (contact == null) {
@@ -75,13 +76,13 @@ class EventListFragment : Fragment() {
         menu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.title.toString()) {
                 add -> {
-                    showAddDialog(event)
+                    showAddDialog(eventGroup)
                 }
                 block -> {
-                    setBlocked(event, true)
+                    setBlocked(latestEvent, true)
                 }
                 unblock -> {
-                    setBlocked(event, false)
+                    setBlocked(latestEvent, false)
                 }
             }
             false
@@ -181,10 +182,12 @@ class EventListFragment : Fragment() {
     }
 
     // only available for unknown contacts
-    private fun showAddDialog(event: Event) {
+    private fun showAddDialog(eventGroup: List<Event>) {
         Log.d(this, "showAddDialog")
         val activity = requireActivity() as MainActivity
         val binder = activity.binder ?: return
+        // prefer latest event that has an address
+        val latestEvent = eventGroup.lastOrNull { it.address != null } ?: eventGroup.last()
 
         val dialog = Dialog(activity)
         dialog.setContentView(R.layout.dialog_add_contact)
@@ -203,7 +206,7 @@ class EventListFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val contact = event.createUnknownContact(name)
+            val contact = latestEvent.createUnknownContact(name)
             binder.addContact(contact)
 
             Toast.makeText(activity, R.string.done, Toast.LENGTH_SHORT).show()

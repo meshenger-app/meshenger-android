@@ -160,7 +160,7 @@ class EventListFragment : Fragment() {
     }
 
     private fun refreshEventListBroadcast() {
-        LocalBroadcastManager.getInstance(requireActivity().applicationContext).sendBroadcast(Intent("refresh_event_list"))
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(Intent("refresh_event_list"))
     }
 
     // only available for known contacts

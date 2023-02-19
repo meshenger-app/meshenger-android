@@ -156,9 +156,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 settings.startOnBootup = isChecked
                 BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
-                if (isChecked) {
-                    binder!!.clearEvents()
-                }
                 binder!!.saveDatabase()
             }
         }
@@ -167,9 +164,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             isChecked = settings.disableProximitySensor
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
                 settings.disableProximitySensor = isChecked
-                if (isChecked) {
-                    binder!!.clearEvents()
-                }
                 binder!!.saveDatabase()
             }
         }

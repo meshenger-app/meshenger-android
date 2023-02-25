@@ -304,6 +304,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
     }
 
+    private fun updateMicrophoneIcon() {
+        if (currentCall.getMicrophoneEnabled() && rtcAudioManager.getMicrophoneEnabled()) {
+            toggleMicButton.setImageResource(R.drawable.ic_mic_on)
+        } else {
+            toggleMicButton.setImageResource(R.drawable.ic_mic_off)
+        }
+    }
+
     override fun onCameraEnabled() {
         runOnUiThread {
             updateCameraButtons()
@@ -332,11 +340,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     override fun onMicrophoneEnabled(enabled: Boolean) {
         Log.d(this, "onMicrophoneEnabled: $enabled")
         runOnUiThread {
-            if (currentCall.getMicrophoneEnabled()) {
-                toggleMicButton.setImageResource(R.drawable.ic_mic_off)
-            } else {
-                toggleMicButton.setImageResource(R.drawable.ic_mic_on)
-            }
+            updateMicrophoneIcon()
         }
     }
 
@@ -344,11 +348,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     override fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean) {
         runOnUiThread {
             val addressString = address.toString().replace("/", "")
-            if (isConnected) {
-                callAddress.text = String.format(getString(R.string.connected_to_address), addressString)
+            val formatString = if (isConnected) {
+                getString(R.string.connected_to_address)
             } else {
-                callAddress.text = String.format(getString(R.string.connecting_to_address), addressString)
+                getString(R.string.connecting_to_address)
             }
+
+            callAddress.text = String.format(formatString, addressString)
         }
     }
 

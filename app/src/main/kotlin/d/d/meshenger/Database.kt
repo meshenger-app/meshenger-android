@@ -248,7 +248,7 @@ class Database {
             }
 
             if (newFrom == "4.1.3") {
-                // nothing to do
+                settings.put("push_to_talk", false)
                 newFrom = "4.1.4"
             }
 

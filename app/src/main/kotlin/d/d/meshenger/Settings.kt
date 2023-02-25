@@ -18,6 +18,7 @@ class Settings {
     var disableProximitySensor = false
     var disableAudioProcessing = false
     var showUsernameAsLogo = false
+    var pushToTalk = false
     var startOnBootup = false
     var connectRetries = 1
     var connectTimeout = 500
@@ -49,6 +50,7 @@ class Settings {
             s.disableProximitySensor = obj.getBoolean("disable_proximity_sensor")
             s.promptOutgoingCalls = obj.getBoolean("prompt_outgoing_calls")
             s.showUsernameAsLogo = obj.getBoolean("show_username_as_logo")
+            s.pushToTalk = obj.getBoolean("push_to_talk")
             s.startOnBootup = obj.getBoolean("start_on_bootup")
             s.connectRetries = obj.getInt("connect_retries")
 
@@ -89,6 +91,7 @@ class Settings {
             obj.put("disable_proximity_sensor", s.disableProximitySensor)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
             obj.put("show_username_as_logo", s.showUsernameAsLogo)
+            obj.put("push_to_talk", s.pushToTalk)
             obj.put("start_on_bootup", s.startOnBootup)
             obj.put("connect_retries", s.connectRetries)
 

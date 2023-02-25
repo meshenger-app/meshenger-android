@@ -200,6 +200,14 @@ class RTCAudioManager(contextArg: Context) {
         isSpeakerphoneOn = false
     }
 
+    fun getMicrophoneEnabled(): Boolean {
+        return !audioManager.isMicrophoneMute
+    }
+
+    fun setMicrophoneEnabled(enabled: Boolean) {
+        audioManager.isMicrophoneMute = !enabled
+    }
+
     fun updateAudioDeviceState() {
         Utils.checkIsOnMainThread()
         Log.d(this, "updateAudioDeviceState()")

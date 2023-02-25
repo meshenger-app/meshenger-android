@@ -53,6 +53,7 @@
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
     <string name="settings_start_on_bootup">Start On Bootup</string>
     <string name="settings_show_username_as_logo">Show Username As Logo</string>
+    <string name="settings_push_to_talk">Push To Talk</string>
     <string name="settings_connect_retries">Connect Retries</string>
     <string name="state_contact_online">Contact is Online</string>
     <string name="state_contact_offline">Contact is Offline</string>

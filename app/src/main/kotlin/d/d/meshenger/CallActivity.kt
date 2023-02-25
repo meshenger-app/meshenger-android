@@ -1,12 +1,14 @@
 package d.d.meshenger
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
 import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.*
 import android.os.PowerManager.WakeLock
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager.LayoutParams
 import android.widget.ImageButton
@@ -15,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import d.d.meshenger.call.*
 import d.d.meshenger.call.RTCPeerConnection.CallState
 import org.webrtc.*
@@ -591,6 +594,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }, waitMS)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun continueCallSetup() {
         Log.d(this, "continueCallSetup")
 
@@ -628,9 +632,50 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             updateDebugDisplay()
         }
 
-        toggleMicButton.setOnClickListener { switchMicEnabled() }
         toggleCameraButton.setOnClickListener { switchCameraEnabled() }
-        speakerphoneButton.setOnClickListener { switchSpeakerphoneMode() }
+        speakerphoneButton.setOnClickListener { changeSpeakerphoneMode() }
+
+        if (!binder!!.getSettings().pushToTalk) {
+            // default behavior
+            toggleMicButton.setOnClickListener { switchMicEnabled() }
+        } else {
+            // push-to-talk behavior
+            fun updateMicrophoneBackground(pressed: Boolean) {
+                // set background for the microphone icon
+                val resourceId = when (pressed) {
+                    true -> R.drawable.ic_button_background_enabled_border
+                    false -> R.drawable.ic_button_background_disabled_border
+                }
+                toggleMicButton.background = ResourcesCompat.getDrawable(resources, resourceId, null)
+            }
+
+            // disable microphone by default
+            rtcAudioManager.setMicrophoneEnabled(false)
+            updateMicrophoneBackground(false)
+
+            toggleMicButton.setOnTouchListener { v: View, event: MotionEvent ->
+                Log.d(this, "setOnTouchListener() action=${event.action}")
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        if (!currentCall.getMicrophoneEnabled()) {
+                            // need to enable microphone on the WebRTC sidefirst
+                            currentCall.setMicrophoneEnabled(true)
+                        } else {
+                            rtcAudioManager.setMicrophoneEnabled(true)
+                            updateMicrophoneBackground(true)
+                        }
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        rtcAudioManager.setMicrophoneEnabled(false)
+                        updateMicrophoneBackground(false)
+                    }
+                }
+
+                updateMicrophoneIcon()
+
+                v.onTouchEvent(event)
+            }
+        }
 
         toggleFrontCameraButton.setOnClickListener {
             Log.d(this, "frontFacingSwitch: swappedVideoFeeds: $swappedVideoFeeds, frontCameraEnabled: ${currentCall.getFrontCameraEnabled()}}")

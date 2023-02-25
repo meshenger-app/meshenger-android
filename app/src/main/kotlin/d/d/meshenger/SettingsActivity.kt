@@ -160,6 +160,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.pushToTalkSwitch).apply {
+            isChecked = settings.pushToTalk
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.pushToTalk = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
         findViewById<SwitchMaterial>(R.id.disableProximitySensorSwitch).apply {
             isChecked = settings.disableProximitySensor
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->

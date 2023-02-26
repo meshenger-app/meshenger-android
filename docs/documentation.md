@@ -15,7 +15,11 @@ Connections are established via the addresses that are part of a contact. by def
 
 ## Randomised MAC Addresses
 
-Most Android version these days try to prevent identification of phones by changing the MAC address. The MAC address might be randomly initialised different for each WiFi network, change on every connect or after some timeout (IPv6 Privacy Extensions). This can be a major drawback for Meshenger, since connections cannot be established anymore after the MAC/IP address changes and the contact needs to be updated. The Adnroid Developer Settings let you disable it, but this might be not what you want.
+By default, Meshenger puts the MAC address of the WiFi interface in the QR-code that others will use to call. But if the MAC address changes, other Meshenger instances won't be able to reach the local Meshenger instance. This behavior is defined by internal settings and settings available to the user:
+
+<img src="mac-randomization-menu.png" height="200">
+
+For more information see the Android documentation on [MAC Randomization Behavior](https://source.android.com/docs/core/connect/wifi-mac-randomization-behavior).
 
 ## WebRTC
 

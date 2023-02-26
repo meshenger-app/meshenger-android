@@ -83,7 +83,13 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                 return@setOnClickListener
             }
 
-            val ae = AddressEntry(address, "", false)
+            // multicast addresses are not supported yet
+            if (AddressUtils.isMulticastAddress(address)) {
+                Toast.makeText(this, R.string.address_management_address_invalid, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val ae = AddressEntry(address, "")
 
             if (ae in addressListViewAdapter.allAddresses) {
                 Toast.makeText(applicationContext, R.string.address_management_address_exists, Toast.LENGTH_LONG)
@@ -116,9 +122,9 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         for (address in binder!!.getSettings().addresses) {
             val ae = systemAddresses.firstOrNull { it.address == address }
             if (ae != null) {
-                addresses.add(AddressEntry(address, ae.device, ae.multicast))
+                addresses.add(AddressEntry(address, ae.device))
             } else {
-                addresses.add(AddressEntry(address, "", false))
+                addresses.add(AddressEntry(address, ""))
             }
         }
 
@@ -202,8 +208,12 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                         info.add(ae.device)
                     }
 
-                    if (ae.multicast) {
+                    if (AddressUtils.isMulticastAddress(ae.address)) {
                         info.add("<multicast>")
+                    }
+
+                    if (AddressUtils.isGlobalAddress(ae.address)) {
+                        info.add("<global>")
                     }
 
                     if (info.isNotEmpty()) {
@@ -248,9 +258,9 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         for (address in binder!!.getSettings().addresses) {
             val ae = systemAddresses.firstOrNull { it.address == address }
             if (ae != null) {
-                storedAddresses.add(AddressEntry(address, ae.device, ae.multicast))
+                storedAddresses.add(AddressEntry(address, ae.device))
             } else {
-                storedAddresses.add(AddressEntry(address, "", false))
+                storedAddresses.add(AddressEntry(address, ""))
             }
         }
 

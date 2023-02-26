@@ -4,9 +4,8 @@ package d.d.meshenger
  * Item for address management (AddressActivity)
  */
 class AddressEntry internal constructor(
-    var address: String,
-    var device: String,
-    var multicast: Boolean,
+    val address: String,
+    val device: String
 ) : Comparable<AddressEntry> {
     override fun compareTo(other: AddressEntry): Int {
         return address.compareTo(other.address)

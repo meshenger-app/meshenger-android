@@ -83,23 +83,55 @@ internal object AddressUtils
                 array[i] = Integer.decode("0x" + elements[i]).toByte()
                 i += 1
             }
-            return array
-        } else {
-            return null
+            if (isValidMAC(array)) {
+                return array
+            }
         }
+        return null
     }
 
-    // Check if MAC address is unicast/multicast
-    fun isMulticastMAC(mac: ByteArray): Boolean {
-        return mac[0].toInt() and 1 != 0
+    private fun parseInetAddress(address: String): InetAddress? {
+        if (isIPAddress(address)) {
+            val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                InetAddresses.parseNumericAddress(address)
+            } else {
+                InetAddress.getByName(address)
+            }
+            return inetAddress
+        }
+
+        return null
     }
 
-    // Check if MAC address is local/universal
-    fun isUniversalMAC(mac: ByteArray): Boolean {
-        return mac[0].toInt() and 2 == 0
+    fun isGlobalAddress(address: String): Boolean {
+        val macBytes = macAddressToBytes(address)
+        if (macBytes != null) {
+            return ((macBytes[0].toInt() and 2) == 0)
+        }
+
+        val ipBytes = parseInetAddress(address)?.getAddress()
+        if (ipBytes != null) {
+            return ((ipBytes[1].toInt() and 15) == 0x0E)
+        }
+
+        return false
     }
 
-    private fun isValidHardwareMAC(mac: ByteArray?): Boolean {
+    fun isMulticastAddress(address: String): Boolean {
+        val macBytes = macAddressToBytes(address)
+        if (macBytes != null) {
+            return ((macBytes[0].toInt() and 1) != 0)
+        }
+
+        val ipAddress = parseInetAddress(address)
+        if (ipAddress != null) {
+            return ipAddress.isMulticastAddress
+        }
+
+        return false
+    }
+
+    private fun isValidMAC(mac: ByteArray?): Boolean {
         // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
         return (mac != null
                 && mac.size == 6
@@ -238,14 +270,10 @@ internal object AddressUtils
                 }
 
                 val hardwareMAC = nif.hardwareAddress
-                if (isValidHardwareMAC(hardwareMAC)) {
+                if (isValidMAC(hardwareMAC)) {
                     val macAddress = formatMAC(hardwareMAC)
                     if (addressList.find { it.address == macAddress } == null) {
-                        addressList.add(AddressEntry(
-                            macAddress,
-                            nif.name,
-                            isMulticastMAC(hardwareMAC)
-                        ))
+                        addressList.add(AddressEntry(macAddress, nif.name))
                     }
                 }
 
@@ -256,11 +284,7 @@ internal object AddressUtils
 
                     val hostAddress = ia.address.hostAddress
                     if (hostAddress != null && addressList.find { it.address == hostAddress } == null) {
-                        addressList.add(AddressEntry(
-                            hostAddress,
-                            nif.name,
-                            ia.address.isMulticastAddress
-                        ))
+                        addressList.add(AddressEntry(hostAddress, nif.name))
                     }
 
                     // extract MAC address from fe80:: address
@@ -268,11 +292,7 @@ internal object AddressUtils
                     if (softwareMAC != null) {
                         val macAddress = formatMAC(softwareMAC)
                         if (addressList.find { it.address == macAddress } == null) {
-                            addressList.add(AddressEntry(
-                                macAddress,
-                                nif.name,
-                                isMulticastMAC(softwareMAC)
-                            ))
+                            addressList.add(AddressEntry(macAddress, nif.name))
                         }
                     }
                 }
@@ -287,7 +307,9 @@ internal object AddressUtils
     // list all IP/MAC addresses of running network interfaces - for debugging only
     fun printOwnAddresses() {
         for (ae in collectAddresses()) {
-            Log.d(this, "Address: ${ae.address} (${ae.device}" + (if (ae.multicast) ", multicast" else "") + ")")
+            val multicast = if (isMulticastAddress(ae.address)) "multicast" else ""
+            val global = if (isGlobalAddress(ae.address)) "global" else ""
+            Log.d(this, "Address: ${ae.address} (${ae.device} $multicast $global)")
         }
     }
 

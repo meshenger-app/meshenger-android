@@ -175,6 +175,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             label.let {
                 if (isEmpty) {
                     label.text = getString(R.string.empty_list_item)
+                    label.textAlignment = View.TEXT_ALIGNMENT_CENTER
                     label.setTextColor(defaultColor)
                     icon.isVisible = false
                 } else {

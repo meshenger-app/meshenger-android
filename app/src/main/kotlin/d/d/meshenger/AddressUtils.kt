@@ -103,32 +103,37 @@ internal object AddressUtils
         return null
     }
 
-    fun isGlobalAddress(address: String): Boolean {
-        val macBytes = macAddressToBytes(address)
-        if (macBytes != null) {
-            return ((macBytes[0].toInt() and 2) == 0)
-        }
-
-        val ipBytes = parseInetAddress(address)?.getAddress()
-        if (ipBytes != null) {
-            return ((ipBytes[1].toInt() and 15) == 0x0E)
-        }
-
-        return false
+    // coarse address type distinction
+    enum class AddressType {
+        GLOBAL_IP, GLOBAL_MAC, LOCAL_IP, LOCAL_MAC, MULTICAST_MAC, MULTICAST_IP, DOMAIN
     }
 
-    fun isMulticastAddress(address: String): Boolean {
+    fun getAddressType(address: String): AddressType {
         val macBytes = macAddressToBytes(address)
         if (macBytes != null) {
-            return ((macBytes[0].toInt() and 1) != 0)
+            if ((macBytes[0].toInt() and 1) != 0) {
+                return AddressType.MULTICAST_MAC
+            } else if ((macBytes[0].toInt() and 2) == 0) {
+                // globally administered MAC address
+                return AddressType.GLOBAL_MAC
+            } else {
+                return AddressType.LOCAL_MAC
+            }
         }
 
         val ipAddress = parseInetAddress(address)
         if (ipAddress != null) {
-            return ipAddress.isMulticastAddress
+            if (ipAddress.isMulticastAddress) {
+                return AddressType.MULTICAST_IP
+            } else if ((ipAddress.address[1].toInt() and 15) == 0x0E) {
+                // global IP address
+                return AddressType.GLOBAL_IP
+            } else {
+                return AddressType.LOCAL_IP
+            }
         }
 
-        return false
+        return AddressType.DOMAIN
     }
 
     private fun isValidMAC(mac: ByteArray?): Boolean {
@@ -307,9 +312,8 @@ internal object AddressUtils
     // list all IP/MAC addresses of running network interfaces - for debugging only
     fun printOwnAddresses() {
         for (ae in collectAddresses()) {
-            val multicast = if (isMulticastAddress(ae.address)) "multicast" else ""
-            val global = if (isGlobalAddress(ae.address)) "global" else ""
-            Log.d(this, "Address: ${ae.address} (${ae.device} $multicast $global)")
+            val type = getAddressType(ae.address)
+            Log.d(this, "Address: ${ae.address} (${ae.device} $type)")
         }
     }
 

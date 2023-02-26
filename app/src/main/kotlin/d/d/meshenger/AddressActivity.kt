@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import d.d.meshenger.MainService.MainBinder
+import d.d.meshenger.AddressUtils.AddressType
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -84,7 +85,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             }
 
             // multicast addresses are not supported yet
-            if (AddressUtils.isMulticastAddress(address)) {
+            if (AddressUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
                 Toast.makeText(this, R.string.address_management_address_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -208,12 +209,11 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                         info.add(ae.device)
                     }
 
-                    if (AddressUtils.isMulticastAddress(ae.address)) {
-                        info.add("<multicast>")
-                    }
-
-                    if (AddressUtils.isGlobalAddress(ae.address)) {
-                        info.add("<global>")
+                    when (AddressUtils.getAddressType(ae.address)) {
+                        AddressType.GLOBAL_MAC -> info.add("<hardware>")
+                        AddressType.MULTICAST_MAC,
+                        AddressType.MULTICAST_IP -> info.add("<multicast>")
+                        else -> {}
                     }
 
                     if (info.isNotEmpty()) {

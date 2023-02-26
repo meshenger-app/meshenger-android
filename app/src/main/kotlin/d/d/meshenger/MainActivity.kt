@@ -47,7 +47,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(this, "onCreate")
+        Log.d(this, "onCreate()")
 
         // need to be called before super.onCreate()
         applyNightMode()
@@ -97,7 +97,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Handler(Looper.getMainLooper()).postDelayed({
             val localBinder = this@MainActivity.binder
             if (localBinder == null) {
-                Log.w(this, "binder is null")
+                Log.w(this, "showInvalidAddressSettingsWarning() binder is null")
                 return@postDelayed
             }
 
@@ -141,7 +141,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        Log.d(this, "onServiceConnected")
+        Log.d(this, "onServiceConnected()")
         binder = iBinder as MainBinder
 
         val settings = binder!!.getSettings()
@@ -192,12 +192,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        Log.d(this, "onServiceConnected")
+        Log.d(this, "onServiceConnected()")
         binder = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d(this, "onOptionsItemSelected")
+        Log.d(this, "onOptionsItemSelected()")
         when (item.itemId) {
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
@@ -217,7 +217,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onResume() {
-        Log.d(this, "onResume")
+        Log.d(this, "onResume()")
         super.onResume()
 
         // clear notification of any missed calls
@@ -228,7 +228,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        Log.d(this, "onCreateOptionsMenu")
+        Log.d(this, "onCreateOptionsMenu()")
         menuInflater.inflate(R.menu.menu_main_activity, menu)
         return true
     }

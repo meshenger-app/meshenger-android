@@ -11,10 +11,11 @@ import kotlin.experimental.xor
 
 internal object AddressUtils
 {
-    fun getAllSocketAddresses(contact: Contact, useNeighborTable: Boolean = false, extractFE80MAC: Boolean = true): List<InetSocketAddress> {
+    fun getAllSocketAddresses(contact: Contact, useNeighborTable: Boolean = false): List<InetSocketAddress> {
         val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
+        val extractFE80MAC = true
 
         Utils.checkIsNotOnMainThread()
 
@@ -278,7 +279,7 @@ internal object AddressUtils
             }
         } catch (ex: Exception) {
             // ignore
-            Log.d(this, "error: $ex")
+            Log.d(this, "collectAddresses() error=$ex")
         }
         return addressList
     }

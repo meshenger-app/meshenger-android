@@ -94,7 +94,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     override fun onStateChange(state: CallState) {
         runOnUiThread {
-            Log.d(this, "onStateChange: $state")
+            Log.d(this, "onStateChange() state=$state")
             val isIncoming = (intent.action == "ACTION_INCOMING_CALL")
 
             val handleError = { messageId: Int ->
@@ -207,7 +207,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private fun updateVideoDisplay() {
         val frontCameraEnabled = currentCall.getFrontCameraEnabled()
 
-        Log.d(this, "updateVideoDisplay: swappedVideoFeeds=$swappedVideoFeeds, frontCameraEnabled=$frontCameraEnabled")
+        Log.d(this, "updateVideoDisplay() swappedVideoFeeds=$swappedVideoFeeds, frontCameraEnabled=$frontCameraEnabled")
 
         if (swappedVideoFeeds) {
             localProxyVideoSink.setTarget(fullscreenRenderer)
@@ -240,7 +240,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private fun updateCameraButtons() {
         val cameraEnabled = currentCall.getCameraEnabled()
 
-        Log.d(this, "updateCameraButtons: cameraEnabled=$cameraEnabled")
+        Log.d(this, "updateCameraButtons() cameraEnabled=$cameraEnabled")
 
         if (cameraEnabled) {
             toggleFrontCameraButton.visibility = View.VISIBLE
@@ -254,7 +254,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private fun updateDebugDisplay() {
         val cameraEnabled = currentCall.getCameraEnabled()
 
-        Log.d(this, "updateDebugDisplay: cameraEnabled=$cameraEnabled")
+        Log.d(this, "updateDebugDisplay() cameraEnabled=$cameraEnabled")
 
         if (debugOutputEnabled) {
             currentCall.setStatsCollector(statsCollector)
@@ -278,31 +278,28 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun setPipButtonEnabled(enable: Boolean) {
+        Log.d(this, "setPipButtonEnabled() enable=$enable")
         if (enable) {
-            Log.d(this, "show pip button")
             togglePipButton.visibility = View.VISIBLE
         } else {
-            Log.d(this, "hide pip button")
             togglePipButton.visibility = View.INVISIBLE
         }
     }
 
     private fun showPipView(enable: Boolean) {
+        Log.d(this, "showPipView() enable=$enable")
         if (enable) {
-            Log.d(this, "show pip video")
             pipRenderer.visibility = View.VISIBLE
         } else {
-            Log.d(this, "hide pip video")
             pipRenderer.visibility = View.INVISIBLE
         }
     }
 
     private fun showFullscreenView(enable: Boolean) {
+        Log.d(this, "showFullscreenView() enable=$enable")
         if (enable) {
-            Log.d(this, "show fullscreen video")
             fullscreenRenderer.visibility = View.VISIBLE
         } else {
-            Log.d(this, "hide fullscreen video")
             fullscreenRenderer.visibility = View.INVISIBLE
         }
     }
@@ -323,7 +320,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     override fun onLocalVideoEnabled(enabled: Boolean) {
-        Log.d(this, "onLocalVideoEnabled: $enabled")
+        Log.d(this, "onLocalVideoEnabled() enabled=$enabled")
         runOnUiThread {
             isLocalVideoAvailable = enabled
             updateVideoDisplay()
@@ -333,7 +330,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     override fun onRemoteVideoEnabled(enabled: Boolean) {
-        Log.d(this, "onRemoteVideoEnabled: $enabled")
+        Log.d(this, "onRemoteVideoEnabled() enabled=$enabled")
         runOnUiThread {
             isRemoteVideoAvailable = enabled
             updateVideoDisplay()
@@ -341,7 +338,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     override fun onMicrophoneEnabled(enabled: Boolean) {
-        Log.d(this, "onMicrophoneEnabled: $enabled")
+        Log.d(this, "onMicrophoneEnabled() enabled=$enabled")
         runOnUiThread {
             updateMicrophoneIcon()
         }
@@ -368,7 +365,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(this, "onCreate")
+        Log.d(this, "onCreate()")
 
         super.onCreate(savedInstanceState)
 
@@ -432,11 +429,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         Log.d(this, "intent: ${intent.action}, state: ${this.lifecycle.currentState}")
 
-        when (intent.action) {
+        when (val action = intent.action) {
             "ACTION_OUTGOING_CALL" -> initOutgoingCall()
             "ACTION_INCOMING_CALL" -> initIncomingCall()
             else -> {
-                Log.e(this, "invalid action: ${intent.action}, this should never happen")
+                Log.e(this, "invalid action: $action, this should never happen")
                 finish()
             }
         }
@@ -505,7 +502,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private fun initIncomingCall() {
         connection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                Log.d(this@CallActivity, "onServiceConnected")
+                Log.d(this@CallActivity, "onServiceConnected()")
                 binder = iBinder as MainService.MainBinder
                 currentCall = binder!!.getCurrentCall()!!
 
@@ -596,9 +593,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun continueCallSetup() {
-        Log.d(this, "continueCallSetup")
-
-        Log.d(this, "continueCallSetup"
+        Log.d(this, "continueCallSetup()"
             + " init.action: ${intent.action}"
             + ", lifecycle.currentState: ${this.lifecycle.currentState}"
             + ", audio permissions: ${Utils.hasPermission(this, Manifest.permission.RECORD_AUDIO)}"
@@ -607,7 +602,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         // swap pip and fullscreen content
         pipRenderer.setOnClickListener {
-            Log.d(this, "pipRenderer.setOnClickListener")
+            Log.d(this, "pipRenderer.setOnClickListener()")
             showPipEnabled = true
             swappedVideoFeeds = !swappedVideoFeeds
             updateVideoDisplay()
@@ -615,14 +610,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         // swap pip and fullscreen content
         fullscreenRenderer.setOnClickListener {
-            Log.d(this, "fullscreenRenderer.setOnClickListener")
+            Log.d(this, "fullscreenRenderer.setOnClickListener()")
             swappedVideoFeeds = !swappedVideoFeeds
             showPipEnabled = true
             updateVideoDisplay()
         }
 
         togglePipButton.setOnClickListener {
-            Log.d(this, "togglePipButton.setOnClickListener")
+            Log.d(this, "togglePipButton.setOnClickListener()")
             showPipEnabled = !showPipEnabled
             updateVideoDisplay()
         }
@@ -640,7 +635,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             toggleMicButton.setOnClickListener { switchMicEnabled() }
         } else {
             // push-to-talk behavior
-            fun updateMicrophoneBackground(pressed: Boolean) {
+            fun updateMicrophoneIconBackground(pressed: Boolean) {
                 // set background for the microphone icon
                 val resourceId = when (pressed) {
                     true -> R.drawable.ic_button_background_enabled_border
@@ -651,23 +646,23 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
             // disable microphone by default
             rtcAudioManager.setMicrophoneEnabled(false)
-            updateMicrophoneBackground(false)
+            updateMicrophoneIconBackground(false)
 
             toggleMicButton.setOnTouchListener { v: View, event: MotionEvent ->
                 Log.d(this, "setOnTouchListener() action=${event.action}")
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         if (!currentCall.getMicrophoneEnabled()) {
-                            // need to enable microphone on the WebRTC sidefirst
+                            // need to enable microphone on the WebRTC side first
                             currentCall.setMicrophoneEnabled(true)
                         } else {
                             rtcAudioManager.setMicrophoneEnabled(true)
-                            updateMicrophoneBackground(true)
+                            updateMicrophoneIconBackground(true)
                         }
                     }
                     MotionEvent.ACTION_UP -> {
                         rtcAudioManager.setMicrophoneEnabled(false)
-                        updateMicrophoneBackground(false)
+                        updateMicrophoneIconBackground(false)
                     }
                 }
 
@@ -678,7 +673,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
 
         toggleFrontCameraButton.setOnClickListener {
-            Log.d(this, "frontFacingSwitch: swappedVideoFeeds: $swappedVideoFeeds, frontCameraEnabled: ${currentCall.getFrontCameraEnabled()}}")
+            Log.d(this, "frontFacingSwitch() swappedVideoFeeds=$swappedVideoFeeds, frontCameraEnabled=${currentCall.getFrontCameraEnabled()}}")
             currentCall.setFrontCameraEnabled(
                 !currentCall.getFrontCameraEnabled()
             )
@@ -686,22 +681,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun initCall() {
-        Log.d(this, "initCall")
-
         val settings = InitialSettings()
-
-        Log.d(this, "initCall"
+        Log.d(this, "initCall() settings"
             + " mic ${settings.micEnabled} => ${currentCall.getMicrophoneEnabled()}"
             + ", cam ${settings.cameraEnabled} =>  ${currentCall.getCameraEnabled()}"
             + ", front cam ${settings.frontCameraEnabled} => ${currentCall.getFrontCameraEnabled()}")
 
-        if (settings.micEnabled != currentCall.getMicrophoneEnabled()) {
-            switchMicEnabled()
-        }
-
-        if (settings.cameraEnabled != currentCall.getCameraEnabled()) {
-            switchCameraEnabled()
-        }
+        switchMicEnabled()
+        switchCameraEnabled()
 
         if (settings.frontCameraEnabled != currentCall.getFrontCameraEnabled()) {
             currentCall.setFrontCameraEnabled(settings.frontCameraEnabled)
@@ -741,11 +728,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             }
         })
 
-        val speakerphoneMode = when (binder!!.getSettings().speakerphoneMode) {
+        val speakerphoneMode = when (val mode = binder!!.getSettings().speakerphoneMode) {
             "auto" -> RTCAudioManager.SpeakerphoneMode.AUTO
             "on" -> RTCAudioManager.SpeakerphoneMode.ON
             "off" -> RTCAudioManager.SpeakerphoneMode.OFF
-            else -> RTCAudioManager.SpeakerphoneMode.AUTO
+            else -> {
+                Log.w(this, "Invalid speakerphone mode: $mode")
+                RTCAudioManager.SpeakerphoneMode.AUTO
+            }
         }
 
         // set initial speakerphone mode
@@ -800,7 +790,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun startRinging() {
-        Log.d(this, "startRinging")
+        Log.d(this, "startRinging()")
         val ringerMode = (getSystemService(AUDIO_SERVICE) as AudioManager).ringerMode
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return
@@ -823,7 +813,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun stopRinging() {
-        Log.d(this, "stopRinging")
+        Log.d(this, "stopRinging()")
         vibrator.cancel()
         ringtone.stop()
     }
@@ -849,7 +839,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         speakerphoneButton.setImageResource(icon)
     }
 
-    private fun switchSpeakerphoneMode() {
+    private fun changeSpeakerphoneMode() {
         val oldMode = rtcAudioManager.getSpeakerphoneMode()
 
         // switch to the next speakerphone mode
@@ -859,7 +849,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             RTCAudioManager.SpeakerphoneMode.ON -> RTCAudioManager.SpeakerphoneMode.AUTO
         }
 
-        Log.d(this, "switchSpeakerphoneMode: $oldMode => $newMode")
+        Log.d(this, "changeSpeakerphoneMode() $oldMode => $newMode")
         rtcAudioManager.setSpeakerphoneMode(newMode)
         updateSpeakerphoneIcon()
     }
@@ -884,17 +874,20 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun switchMicEnabled() {
-        if (currentCall.getMicrophoneEnabled()) {
-            // turn microphone off
-            currentCall.setMicrophoneEnabled(false)
-        } else {
+        Log.d(this, "switchMicEnabled()")
+
+        if (!currentCall.getMicrophoneEnabled()) {
             // check permission
             if (!Utils.hasPermission(this, Manifest.permission.RECORD_AUDIO)) {
                 enabledMicrophoneForResult.launch(Manifest.permission.RECORD_AUDIO)
                 return
             }
-            // check and request permission
+
+            // turn microphone on
             currentCall.setMicrophoneEnabled(true)
+        } else {
+            // turn microphone off
+            currentCall.setMicrophoneEnabled(false)
         }
     }
 
@@ -908,12 +901,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun switchCameraEnabled() {
-        Log.d(this, "switchCameraEnabled")
+        Log.d(this, "switchCameraEnabled()")
 
-        if (currentCall.getCameraEnabled()) {
-            // turn camera off
-            currentCall.setCameraEnabled(false)
-        } else {
+        if (!currentCall.getCameraEnabled()) {
             // check and request permission
             if (!Utils.hasPermission(this, Manifest.permission.CAMERA)) {
                 enabledCameraForResult.launch(Manifest.permission.CAMERA)
@@ -921,11 +911,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             }
             // turn camera on
             currentCall.setCameraEnabled(true)
+        } else {
+            // turn camera off
+            currentCall.setCameraEnabled(false)
         }
     }
 
     override fun onDestroy() {
-        Log.d(this, "onDestroy")
+        Log.d(this, "onDestroy()")
 
         currentCall.setCallContext(null)
 
@@ -971,7 +964,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     // turn off/on the camera while the proximity sensor is triggered
     private fun onProximitySensorToggleCamera(isNear: Boolean) {
-        Log.d(this, "onProximitySensorToggleCamera: $isNear")
+        Log.d(this, "onProximitySensorToggleCamera() isNear=$isNear")
 
         if (isNear) {
             if (currentCall.getCameraEnabled() && !currentCall.getFrontCameraEnabled()) {
@@ -988,7 +981,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     // turn off/on the screen while the proximity sensor is triggered
     private fun onProximitySensorToggleScreen(isProximityNear: Boolean) {
-        Log.d(this, "onProximitySensorToggleScreen: $isProximityNear")
+        Log.d(this, "onProximitySensorToggleScreen() isProximityNear=$isProximityNear")
 
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
 

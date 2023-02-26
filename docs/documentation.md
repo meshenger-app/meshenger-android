@@ -3,11 +3,11 @@ Meshenger Documentation
 
 ## Motivation
 
-Currently, the market of VoIP software is dominated by software owned by big companies and it is tied to central infrastructure in order to monetize the platform and control the data flow. Various communities (e.g. [Freifunk](https://freifunk.net/), [Yggdrasil](https://yggdrasil-network.github.io/), ..) try to establish decentralized networks, to connect people with local pathways even if there is no Internet. Common VoIP software usually does not work there. That is where Meshenger can serve as a "killer" App.
+Currently, the market of VoIP software is dominated by software owned by big companies and tied to central infrastructure and the Internet in order to monetize the platform and control the data flow. On the other side there a various communities (e.g. [Freifunk](https://freifunk.net/), [Yggdrasil](https://yggdrasil-network.github.io/), ..) try to establish various kinds of decentralized networks to connect people with alternative pathways even without Internet. Common VoIP software usually does not work there. This is where Meshenger can serve as a use case or even "killer" App for these networks.
 
 ## Finding Contacts
 
-Meshenger has no discovery mechanism by design. Contacts are shared via QR-Code or JSON text blob.
+Meshenger has no discovery mechanism by design. Contacts are shared via QR-Code or text blob.
 
 ## How It Connects
 
@@ -23,7 +23,7 @@ For more information see the Android documentation on [MAC Randomization Behavio
 
 ## WebRTC
 
-Meshenger uses [WebRTC](https://webrtc.org/), a well-build, tested and mostly documented standard for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger, as there is no use.
+Meshenger uses [WebRTC](https://webrtc.org/), a well known library for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger, because it is not needed.
 
 Resources:
 

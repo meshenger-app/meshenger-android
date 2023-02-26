@@ -103,6 +103,8 @@
     <string name="address_management">Address Management</string>
     <string name="custom_address">CUSTOM ADDRESS</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your WiFi.</string>
+    <string name="address_management_address_invalid">Please enter a valid MAC/IP address or domain name</string>
+    <string name="address_management_address_exists">This address already exists</string>
     <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="invalid_name">Invalid Name</string>
     <string name="invalid_number_value">Invalid Value (must be %1$d..%2$d)</string>

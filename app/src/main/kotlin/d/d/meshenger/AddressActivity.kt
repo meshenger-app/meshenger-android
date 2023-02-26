@@ -79,14 +79,14 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             } else if (AddressUtils.isMACAddress(address)) {
                 address.uppercase(Locale.ROOT)
             } else {
-                Toast.makeText(this, "Please enter a valid MAC/IP address or domain name", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.address_management_address_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val ae = AddressEntry(address, "", false)
 
             if (ae in addressListViewAdapter.allAddresses) {
-                Toast.makeText(applicationContext, "THIS ADDRESS ALREADY EXISTS", Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, R.string.address_management_address_exists, Toast.LENGTH_LONG)
                     .show()
                 return@setOnClickListener
             }

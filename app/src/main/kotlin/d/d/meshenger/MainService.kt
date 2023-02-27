@@ -232,8 +232,7 @@ class MainService : Service(), Runnable {
             startForeground(NOTIFICATION_ID, notification)
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "Received Stop Foreground Intent")
-            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION_ID)
-            stopSelf()
+            shutdown()
         }
         return START_NOT_STICKY
     }
@@ -259,11 +258,10 @@ class MainService : Service(), Runnable {
                 }
             }
         } catch (e: IOException) {
-            Log.e(this, "Exit service: $e")
+            Log.e(this, "run() e=$e")
             e.printStackTrace()
             Handler(mainLooper).post { Toast.makeText(this, e.message, Toast.LENGTH_LONG).show() }
-            stopSelf()
-            return
+            shutdown()
         }
     }
 
@@ -351,7 +349,7 @@ class MainService : Service(), Runnable {
         }
 
         fun shutdown() {
-            this@MainService.stopSelf()
+            this@MainService.shutdown()
         }
 
         fun pingContacts(contactList: List<Contact>) {
@@ -385,6 +383,13 @@ class MainService : Service(), Runnable {
             LocalBroadcastManager.getInstance(this@MainService)
                 .sendBroadcast(Intent("refresh_event_list"))
         }
+    }
+
+    private fun shutdown() {
+        Log.i(this, "shutdown()")
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
+        stopSelf()
     }
 
     override fun onBind(intent: Intent): IBinder {

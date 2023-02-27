@@ -19,6 +19,8 @@ By default, Meshenger puts the MAC address of the WiFi interface in the QR-code 
 
 <img src="mac-randomization-menu.png" height="200">
 
+But, if the MAC address is used that was given by the hardware manufacturer, then Android might not use that in the link local address (fe80::\*), which makes Meshenger not work, since others cannot create this IP address from that MAC address only. On the other hand, it then depends on the router to assign an IP address that is based on the MAC address (EUI-64).
+
 For more information see the Android documentation on [MAC Randomization Behavior](https://source.android.com/docs/core/connect/wifi-mac-randomization-behavior).
 
 ## WebRTC

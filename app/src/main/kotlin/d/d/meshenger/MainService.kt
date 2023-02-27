@@ -57,7 +57,7 @@ class MainService : Service(), Runnable {
     }
 
     private fun createNotification(text: String, showSinceWhen: Boolean): Notification {
-        Log.d(this, "createNotification() text=$text, setShowWhen=$showSinceWhen")
+        Log.d(this, "createNotification() text=$text setShowWhen=$showSinceWhen")
         val channelId = "meshenger_service"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val chan = NotificationChannel(
@@ -147,13 +147,13 @@ class MainService : Service(), Runnable {
                 socket.connect(address, connectTimeout)
                 return socket
             } catch (e: SocketTimeoutException) {
-                Log.d(this, "SocketTimeoutException: $address")
+                Log.d(this, "createCommSocket() SocketTimeoutException address=$address")
             } catch (e: ConnectException) {
                 // device is online, but does not listen on the given port
-                Log.d(this, "ConnectException: $address")
+                Log.d(this, "createCommSocket() ConnectException address=$address")
             } catch (e: UnknownHostException) {
                 // hostname did not resolve
-                Log.d(this, "UnknownHostException: $address")
+                Log.d(this, "createCommSocket() UnknownHostException address=$address")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -169,7 +169,7 @@ class MainService : Service(), Runnable {
     }
 
     override fun onDestroy() {
-        Log.d(this, "onDestroy")
+        Log.d(this, "onDestroy()")
         isServerSocketRunning = false
 
         // say goodbye
@@ -221,17 +221,17 @@ class MainService : Service(), Runnable {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(this, "onStartCommand")
+        Log.d(this, "onStartCommand()")
 
         if (intent == null || intent.action == null) {
-            Log.d(this, "Received invalid intent")
+            Log.d(this, "onStartCommand() Received invalid intent")
         } else if (intent.action == START_FOREGROUND_ACTION) {
-            Log.d(this, "Received Start Foreground Intent")
+            Log.d(this, "onStartCommand() Received Start Foreground Intent")
             val message = resources.getText(R.string.listen_for_incoming_calls).toString()
             val notification = createNotification(message, false)
             startForeground(NOTIFICATION_ID, notification)
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
-            Log.d(this, "Received Stop Foreground Intent")
+            Log.d(this, "onStartCommand() Received Stop Foreground Intent")
             shutdown()
         }
         return START_NOT_STICKY
@@ -251,7 +251,7 @@ class MainService : Service(), Runnable {
             while (isServerSocketRunning) {
                 try {
                     val socket = serverSocket!!.accept()
-                    Log.d(this, "new incoming connection")
+                    Log.d(this, "run() new incoming connection")
                     RTCPeerConnection.createIncomingCall(binder, socket)
                 } catch (e: IOException) {
                     // ignore
@@ -287,14 +287,14 @@ class MainService : Service(), Runnable {
 
         fun getDatabase(): Database {
             if (this@MainService.database == null) {
-                Log.e(this, "database is null => try to reload")
+                Log.e(this, "getDatabase() database is null => try to reload")
                 try {
                     // database is null, this should not happen, but
                     // happens anyway, so let's mitigate it for now
                     // => try to reload it
                     this@MainService.loadDatabase()
                 } catch (e: Exception) {
-                    Log.e(this, "failed to reload database")
+                    Log.e(this, "getDatabase() failed to reload database")
                 }
             }
             return this@MainService.database!!
@@ -353,7 +353,7 @@ class MainService : Service(), Runnable {
         }
 
         fun pingContacts(contactList: List<Contact>) {
-            Log.d(this, "pingContacts")
+            Log.d(this, "pingContacts()")
             Thread(
                 Pinger(binder, contactList)
             ).start()

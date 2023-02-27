@@ -20,7 +20,7 @@
     <string name="call_connecting">Appel en cours …</string>
     <string name="unknown_caller">Appelant Inconnu</string>
     <string name="settings_name">Changer de nom</string>
-    <string name="settings_addresses">Changement d’adresse</string>
+    <string name="settings_addresses">Changement d’adresse*</string>
     <string name="settings_password">Changer le mot de passe</string>
     <string name="settings_nightmode">Mode nuit</string>
     <string name="settings_block_unknown">Ignorer les appelants inconnus</string>

@@ -20,7 +20,7 @@
     <string name="call_connecting">Verbinde…</string>
     <string name="unknown_caller">Unbekannter Anrufer Blocken</string>
     <string name="settings_name">Name</string>
-    <string name="settings_addresses">Adresse</string>
+    <string name="settings_addresses">Adressen*</string>
     <string name="settings_password">Passwort</string>
     <string name="settings_nightmode">Dunkler Modus</string>
     <string name="settings_block_unknown">Ignoriere Unbekannte Anrufer</string>

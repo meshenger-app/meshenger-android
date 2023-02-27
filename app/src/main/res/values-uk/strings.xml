@@ -90,7 +90,7 @@
     <string name="scan_invitation">Відсканувати QR-код</string>
     <string name="scan_invited">Сканування QR-коду</string>
     <string name="settings">Параметри</string>
-    <string name="settings_addresses">Адреси</string>
+    <string name="settings_addresses">Адреси*</string>
     <string name="settings_block_unknown">Блокувати невідомих абонентів</string>
     <string name="settings_change_name">"Змінити ім'я"</string>
     <string name="settings_connect_retries">"Повторити спроби з'єднати"</string>

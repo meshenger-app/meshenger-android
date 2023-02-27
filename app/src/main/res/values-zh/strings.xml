@@ -27,7 +27,7 @@
     <string name="settings">设置</string>
     <string name="settings_name">名称</string>
     <string name="settings_change_name">更改名称</string>
-    <string name="settings_addresses">地址</string>
+    <string name="settings_addresses">地址*</string>
     <string name="settings_password">密码</string>
     <string name="settings_nightmode">夜间模式</string>
     <string name="settings_block_unknown">拦截未知呼叫人</string>

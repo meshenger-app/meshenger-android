@@ -29,7 +29,7 @@
     <string name="settings">Configurações</string>
     <string name="settings_name">Nome</string>
     <string name="settings_change_name">Mudar nome</string>
-    <string name="settings_addresses">Endereços</string>
+    <string name="settings_addresses">Endereços*</string>
     <string name="settings_password">Senha</string>
     <string name="settings_nightmode">Modo escuro</string>
     <string name="settings_block_unknown">Bloqueie ligações desconhecidas</string>

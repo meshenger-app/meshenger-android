@@ -19,7 +19,7 @@
     <string name="call_connecting">Вызов...</string>
     <string name="unknown_caller">Неизвестный абонент</string>
     <string name="settings_name">Изменить имя</string>
-    <string name="settings_addresses">Изменить адрес</string>
+    <string name="settings_addresses">Изменить адрес*</string>
     <string name="settings_password">Изменить пароль</string>
     <string name="settings_nightmode">Ночной режим</string>
     <string name="settings_block_unknown">Блокировать неизвестных абонентов</string>

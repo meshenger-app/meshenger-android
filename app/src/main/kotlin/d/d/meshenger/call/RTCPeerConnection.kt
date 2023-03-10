@@ -551,6 +551,8 @@ abstract class RTCPeerConnection(
         // used to pass incoming RTCCall to CallActiviy
         public var incomingRTCCall: RTCCall? = null
 
+/*
+        // for debug purposes
         private fun ByteArray.toHex(): String = joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
 
         private fun debugPacket(label: String, msg: ByteArray?) {
@@ -560,6 +562,7 @@ abstract class RTCPeerConnection(
                 Log.d(this, "$label: message is null!")
             }
         }
+*/
 
         fun closeSocket(socket: Socket?) {
             try {
@@ -707,7 +710,6 @@ abstract class RTCPeerConnection(
                         return
                     }
 
-                    debugPacket("createIncomingCallInternal() send ringing message: ", encrypted)
                     pw.writeMessage(encrypted)
 
                     incomingRTCCall?.cleanup() // just in case

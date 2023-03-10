@@ -279,6 +279,7 @@ abstract class RTCPeerConnection(
         writeExecutor.shutdown()
         writeExecutor.awaitTermination(100, TimeUnit.MILLISECONDS)
 
+        // detect broken initial connection
         if (isCallInit(state) && socket.isClosed) {
             Log.d(this, "createOutgoingCallInternal() call (state=$state) is not connected and socket is closed")
             reportStateChange(CallState.ERROR_COMMUNICATION)
@@ -381,6 +382,7 @@ abstract class RTCPeerConnection(
         //Log.d(this, "continueOnIncomingSocket() dataChannel is null: ${dataChannel == null}")
         closeSocket(socket)
 
+        // detect broken initial connection
         if (isCallInit(state) && socket.isClosed) {
             Log.d(this, "continueOnIncomingSocket() call (state=$state) is not connected and socket is closed")
             reportStateChange(CallState.ERROR_COMMUNICATION)

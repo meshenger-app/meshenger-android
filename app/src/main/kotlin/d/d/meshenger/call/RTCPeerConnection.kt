@@ -548,6 +548,9 @@ abstract class RTCPeerConnection(
     companion object {
         private const val SOCKET_TIMEOUT_MS = 3000L
 
+        // used to pass incoming RTCCall to CallActiviy
+        public var incomingRTCCall: RTCCall? = null
+
         private fun ByteArray.toHex(): String = joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
 
         private fun debugPacket(label: String, msg: ByteArray?) {
@@ -674,7 +677,7 @@ abstract class RTCPeerConnection(
             Log.d(this, "createIncomingCallInternal() action: $action")
             when (action) {
                 "call" -> {
-                    if (binder.getCurrentCall() != null) {
+                    if (CallActivity.isCallInProgress) {
                         Log.d(this, "createIncomingCallInternal() call in progress => decline")
                         decline() // TODO: send busy
                         return
@@ -707,8 +710,8 @@ abstract class RTCPeerConnection(
                     debugPacket("createIncomingCallInternal() send ringing message: ", encrypted)
                     pw.writeMessage(encrypted)
 
-                    val currentCall = RTCCall(binder, contact, socket, offer)
-                    binder.setCurrentCall(currentCall)
+                    incomingRTCCall?.cleanup() // just in case
+                    incomingRTCCall = RTCCall(binder, contact, socket, offer)
                     try {
                         val activity = MainActivity.instance
                         if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
@@ -727,8 +730,8 @@ abstract class RTCPeerConnection(
                             service.startActivity(intent)
                         }
                     } catch (e: Exception) {
-                        binder.setCurrentCall(null)
-                        currentCall.cleanup()
+                        incomingRTCCall?.cleanup()
+                        incomingRTCCall = null
                         e.printStackTrace()
                     }
                 }

@@ -34,7 +34,6 @@ class MainService : Service(), Runnable {
 
     @Volatile
     private var isServerSocketRunning = true
-    private var currentCall: RTCCall? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -310,14 +309,6 @@ class MainService : Service(), Runnable {
 
         fun getEvents(): Events {
             return getDatabase().events
-        }
-
-        fun getCurrentCall(): RTCCall? {
-            return currentCall
-        }
-
-        fun setCurrentCall(call: RTCCall?) {
-            currentCall = call
         }
 
         fun showDefaultNotification() {

@@ -367,6 +367,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(this, "onCreate()")
 
+        CallActivity.isCallInProgress = true
         super.onCreate(savedInstanceState)
 
         // keep screen on during the call
@@ -445,7 +446,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 Log.d(this@CallActivity, "onServiceConnected")
                 binder = iBinder as MainService.MainBinder
                 currentCall = RTCCall(binder!!, contact)
-                binder!!.setCurrentCall(currentCall)
 
                 updateVideoDisplay()
 
@@ -473,7 +473,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         val startCallListener = View.OnClickListener {
             Log.d(this, "start call...")
-            if (binder!!.getCurrentCall() == null) {
+            if (currentCall == null) {
                 Log.d(this, "currentCall not set")
                 return@OnClickListener
             }
@@ -504,7 +504,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 Log.d(this@CallActivity, "onServiceConnected()")
                 binder = iBinder as MainService.MainBinder
-                currentCall = binder!!.getCurrentCall()!!
+                currentCall = RTCPeerConnection.incomingRTCCall!!
 
                 currentCall.setRemoteRenderer(remoteProxyVideoSink)
                 currentCall.setLocalRenderer(localProxyVideoSink)
@@ -542,7 +542,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         // accept call
         val acceptListener = View.OnClickListener {
             Log.d(this, "accept call...")
-            if (binder!!.getCurrentCall() == null) {
+            if (currentCall == null) {
                 Log.d(this, "currentCall not set")
                 return@OnClickListener
             }
@@ -920,36 +920,41 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     override fun onDestroy() {
         Log.d(this, "onDestroy()")
 
-        currentCall.setCallContext(null)
+        try {
+            currentCall.setCallContext(null)
 
-        proximitySensor.stop()
+            proximitySensor.stop()
 
-        stopRinging()
+            stopRinging()
 
-        binder!!.setCurrentCall(null)
+            currentCall.cleanup()
 
-        currentCall.cleanup()
+            if (callEventType != Event.Type.UNKNOWN) {
+                val event = Event(contact.publicKey, contact.lastWorkingAddress, callEventType, Date())
+                binder!!.addEvent(event)
+            }
 
-        if (callEventType != Event.Type.UNKNOWN) {
-            val event = Event(contact.publicKey, contact.lastWorkingAddress, callEventType, Date())
-            binder!!.addEvent(event)
+            unbindService(connection)
+
+            proximityScreenLock?.release()
+
+            rtcAudioManager.stop()
+
+            remoteProxyVideoSink.setTarget(null)
+            localProxyVideoSink.setTarget(null)
+
+            pipRenderer.release()
+            fullscreenRenderer.release()
+
+            currentCall.releaseCamera()
+
+            eglBase.release()
+        } catch (e: Exception) {
+            Log.e(this, "onDestroy() e=$e")
+        } finally {
+            RTCPeerConnection.incomingRTCCall = null // free for the garbage collector
+            isCallInProgress = false
         }
-
-        unbindService(connection)
-
-        proximityScreenLock?.release()
-
-        rtcAudioManager.stop()
-
-        remoteProxyVideoSink.setTarget(null)
-        localProxyVideoSink.setTarget(null)
-
-        pipRenderer.release()
-        fullscreenRenderer.release()
-
-        currentCall.releaseCamera()
-
-        eglBase.release()
 
         super.onDestroy()
     }
@@ -1002,5 +1007,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             )
             proximityScreenLock?.acquire(10*60*1000L) // 10 minutes
         }
+    }
+
+    companion object {
+        @Volatile
+        public var isCallInProgress: Boolean = false
     }
 }

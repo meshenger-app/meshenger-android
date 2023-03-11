@@ -222,6 +222,30 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 binder!!.saveDatabase()
             }
         }
+
+        findViewById<SwitchMaterial>(R.id.enableMicrophoneByDefaultSwitch).apply {
+            isChecked = settings.enableMicrophoneByDefault
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.enableMicrophoneByDefault = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
+        findViewById<SwitchMaterial>(R.id.enableCameraByDefaultSwitch).apply {
+            isChecked = settings.enableCameraByDefault
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.enableCameraByDefault = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
+        findViewById<SwitchMaterial>(R.id.selectFrontCameraByDefaultSwitch).apply {
+            isChecked = settings.selectFrontCameraByDefault
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.selectFrontCameraByDefault = isChecked
+                binder!!.saveDatabase()
+            }
+        }
     }
 
     private fun showChangeNameDialog() {

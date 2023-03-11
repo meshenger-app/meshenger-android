@@ -22,6 +22,9 @@ class Settings {
     var startOnBootup = false
     var connectRetries = 1
     var connectTimeout = 500
+    var enableMicrophoneByDefault = true
+    var enableCameraByDefault = false
+    var selectFrontCameraByDefault = false
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -53,6 +56,9 @@ class Settings {
             s.pushToTalk = obj.getBoolean("push_to_talk")
             s.startOnBootup = obj.getBoolean("start_on_bootup")
             s.connectRetries = obj.getInt("connect_retries")
+            s.enableMicrophoneByDefault = obj.getBoolean("enable_microphone_by_default")
+            s.enableCameraByDefault = obj.getBoolean("enable_camera_by_default")
+            s.selectFrontCameraByDefault = obj.getBoolean("select_front_camera_by_default")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -94,6 +100,9 @@ class Settings {
             obj.put("push_to_talk", s.pushToTalk)
             obj.put("start_on_bootup", s.startOnBootup)
             obj.put("connect_retries", s.connectRetries)
+            obj.put("enable_microphone_by_default", s.enableMicrophoneByDefault)
+            obj.put("enable_camera_by_default", s.enableCameraByDefault)
+            obj.put("select_front_camera_by_default", s.selectFrontCameraByDefault)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

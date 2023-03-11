@@ -71,12 +71,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private var isLocalVideoAvailable = false // own camera is on/off
     private var isRemoteVideoAvailable = false // we receive a video feed
 
-    class InitialSettings {
-        var cameraEnabled = false
-        var micEnabled = true
-        var frontCameraEnabled = false
-    }
-
     private val statsCollector = object : RTCStatsCollectorCallback {
         var statsReportUtil = StatsReportUtil()
 
@@ -459,10 +453,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 // nothing to do
             }
         }
+
         bindService(Intent(this, MainService::class.java), connection, 0)
 
         val declineListener = View.OnClickListener {
             Log.d(this, "decline call...")
+            if (!this::currentCall.isInitialized) {
+                Log.d(this, "currentCall not set")
+                return@OnClickListener
+            }
 
             if (callWasStarted) {
                 currentCall.hangup()
@@ -473,7 +472,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         val startCallListener = View.OnClickListener {
             Log.d(this, "start call...")
-            if (currentCall == null) {
+            if (!this::currentCall.isInitialized) {
                 Log.d(this, "currentCall not set")
                 return@OnClickListener
             }
@@ -542,7 +541,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         // accept call
         val acceptListener = View.OnClickListener {
             Log.d(this, "accept call...")
-            if (currentCall == null) {
+            if (!this::currentCall.isInitialized) {
                 Log.d(this, "currentCall not set")
                 return@OnClickListener
             }
@@ -632,7 +631,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         if (!binder!!.getSettings().pushToTalk) {
             // default behavior
-            toggleMicButton.setOnClickListener { switchMicEnabled() }
+            toggleMicButton.setOnClickListener { switchMicrophoneEnabled() }
         } else {
             // push-to-talk behavior
             fun updateMicrophoneIconBackground(pressed: Boolean) {
@@ -648,7 +647,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             rtcAudioManager.setMicrophoneEnabled(false)
             updateMicrophoneIconBackground(false)
 
-            toggleMicButton.setOnTouchListener { v: View, event: MotionEvent ->
+            toggleMicButton.setOnTouchListener { view: View, event: MotionEvent ->
                 Log.d(this, "setOnTouchListener() action=${event.action}")
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -668,7 +667,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
                 updateMicrophoneIcon()
 
-                v.onTouchEvent(event)
+                view.onTouchEvent(event)
             }
         }
 
@@ -681,17 +680,25 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun initCall() {
-        val settings = InitialSettings()
+        val settings = binder!!.getSettings()
+
         Log.d(this, "initCall() settings"
-            + " mic ${settings.micEnabled} => ${currentCall.getMicrophoneEnabled()}"
-            + ", cam ${settings.cameraEnabled} =>  ${currentCall.getCameraEnabled()}"
-            + ", front cam ${settings.frontCameraEnabled} => ${currentCall.getFrontCameraEnabled()}")
+            + " microphone ${settings.enableMicrophoneByDefault} => ${currentCall.getMicrophoneEnabled()}"
+            + ", camera ${settings.enableCameraByDefault} =>  ${currentCall.getCameraEnabled()}"
+            + ", front camera ${settings.selectFrontCameraByDefault} => ${currentCall.getFrontCameraEnabled()}")
 
-        switchMicEnabled()
-        switchCameraEnabled()
+        if (settings.enableMicrophoneByDefault != currentCall.getMicrophoneEnabled()) {
+            if (!settings.pushToTalk) {
+                switchMicrophoneEnabled()
+            }
+        }
 
-        if (settings.frontCameraEnabled != currentCall.getFrontCameraEnabled()) {
-            currentCall.setFrontCameraEnabled(settings.frontCameraEnabled)
+        if (settings.enableCameraByDefault != currentCall.getCameraEnabled()) {
+            switchCameraEnabled()
+        }
+
+        if (settings.selectFrontCameraByDefault != currentCall.getFrontCameraEnabled()) {
+            currentCall.setFrontCameraEnabled(settings.selectFrontCameraByDefault)
         }
 
         rtcAudioManager.setEventListener(object : RTCAudioManager.AudioManagerEvents {
@@ -866,15 +873,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     private val enabledMicrophoneForResult = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted -> if (isGranted) {
-            switchMicEnabled()
+            switchMicrophoneEnabled()
         } else {
             // do not turn on microphone
             showTextMessage(getString(R.string.missing_microphone_permission))
         }
     }
 
-    private fun switchMicEnabled() {
-        Log.d(this, "switchMicEnabled()")
+    private fun switchMicrophoneEnabled() {
+        Log.d(this, "switchMicrophoneEnabled()")
 
         if (!currentCall.getMicrophoneEnabled()) {
             // check permission

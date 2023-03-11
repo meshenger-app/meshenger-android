@@ -55,6 +55,9 @@
     <string name="settings_show_username_as_logo">Show Username As Logo</string>
     <string name="settings_push_to_talk">Push To Talk</string>
     <string name="settings_connect_retries">Connect Retries</string>
+    <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
+    <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
+    <string name="settings_select_front_camera_by_default">Use Front Camera By Default</string>
     <string name="state_contact_online">Contact is Online</string>
     <string name="state_contact_offline">Contact is Offline</string>
     <string name="state_app_not_running">App Not Running</string>

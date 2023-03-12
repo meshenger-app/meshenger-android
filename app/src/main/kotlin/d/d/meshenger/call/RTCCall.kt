@@ -501,7 +501,8 @@ class RTCCall : RTCPeerConnection, DataChannel.Observer {
                                 Log.d(this, "onIceGatheringChange() send connected")
                                 pw.writeMessage(encrypted)
                                 callActivity?.onRemoteAddressChange(remoteAddress, true)
-                                reportStateChange(CallState.CONNECTED)
+                                // connected state will be reported by WebRTC onIceConnectionChange()
+                                //reportStateChange(CallState.CONNECTED)
                             } else {
                                 Log.d(this, "onIceGatheringChange() encryption failed")
                                 reportStateChange(CallState.ERROR_COMMUNICATION)

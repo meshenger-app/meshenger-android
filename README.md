@@ -10,6 +10,11 @@ Features:
 - database backup and encryption
 - add custom addresses to reach contacts
 
+Limitations:
+
+- no calls through firewalls / NAT borders
+- no calls after MAC / IP address change
+
 ## Download
 
 [<img src="docs/fdroid.png" alt="Get it on F-Droid" height="90">](https://f-droid.org/packages/d.d.meshenger/)
@@ -28,9 +33,9 @@ Details can be found in the [Documentation](docs/documentation.md) or in the [FA
 
 ## Similar Projects
 
+* [linphone](https://linphone.org/) - many features, uses SIP, not geared towards direct IP connections
 * [Keet](https://keet.io) - many features, uses a DHT, Bitcoin payments
 * [Briar](https://briarproject.org/) - text messages only, for the Internet the Tor network is used
 * [Jami](https://jami.net/) - many features, but might not work in mesh or local networks
 * [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE
 * [Qaul](https://qaul.net/) - many features, interlinked P2P mesh via BLE, Wifi & Internet-overlay
-* [CupLink](https://github.com/RiV-chain/CupLink) - for RiV-mesh and a fork of Meshenger

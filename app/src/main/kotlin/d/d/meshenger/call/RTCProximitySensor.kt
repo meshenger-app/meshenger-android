@@ -66,6 +66,7 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
     /** Deactivate the proximity sensor.  */
     fun stop() {
         threadChecker.checkIsOnValidThread()
+        onSensorStateListeners.clear()
         Log.d(this, "stop() ${Utils.getThreadInfo()}")
         if (proximitySensor != null) {
             Log.d(this, "stop() unregisterListener")

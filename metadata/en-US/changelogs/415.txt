@@ -1,3 +1,4 @@
+* fix crash in QR code scanner
 * prevent false call in progress 
 * add setting to enable microphone/camera by default
 * add setting to select front camera by default

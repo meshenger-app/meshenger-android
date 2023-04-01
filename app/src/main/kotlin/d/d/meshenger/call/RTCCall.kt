@@ -10,7 +10,7 @@ import java.net.*
 import java.nio.ByteBuffer
 import java.util.*
 
-class RTCCall : RTCPeerConnection, DataChannel.Observer {
+class RTCCall : RTCPeerConnection {
     private lateinit var factory: PeerConnectionFactory
     private var peerConnection: PeerConnection? = null
     private var dataChannel: DataChannel? = null
@@ -104,6 +104,47 @@ class RTCCall : RTCPeerConnection, DataChannel.Observer {
             } else {
                 Log.d(this, "changeCaptureFormat() ${width}x${height}@${framerate}")
                 videoSource?.adaptOutputFormat(width, height, framerate)
+            }
+        }
+    }
+
+    val dataChannelObserver = object : DataChannel.Observer {
+        override fun onBufferedAmountChange(l: Long) {
+            // nothing to do
+        }
+
+        override fun onStateChange() {
+            val channel = dataChannel
+            if (channel == null) {
+                Log.d(this, "onStateChange dataChannel: is null")
+            } else {
+                Log.d(this, "onStateChange dataChannel: ${channel.state()}")
+                if (channel.state() == DataChannel.State.OPEN) {
+                    callActivity?.onDataChannelReady()
+                }
+            }
+        }
+
+        override fun onMessage(buffer: DataChannel.Buffer) {
+            val data = ByteArray(buffer.data.remaining())
+            buffer.data.get(data)
+            val s = String(data)
+            try {
+                Log.d(this, "onMessage() s=$s")
+                val o = JSONObject(s)
+                if (o.has(STATE_CHANGE_MESSAGE)) {
+                    when (o.getString(STATE_CHANGE_MESSAGE)) {
+                        CAMERA_ENABLE_MESSAGE -> callActivity?.onRemoteVideoEnabled(true)
+                        CAMERA_DISABLE_MESSAGE -> callActivity?.onRemoteVideoEnabled(false)
+                        HANGUP_MESSAGE -> reportStateChange(CallState.DISMISSED)
+                        else -> {}
+                    }
+                } else {
+                    Log.d(this, "onMessage() unknown message: $s")
+                }
+
+            } catch (e: JSONException) {
+                e.printStackTrace()
             }
         }
     }
@@ -219,15 +260,12 @@ class RTCCall : RTCPeerConnection, DataChannel.Observer {
                     super.onAddStream(mediaStream)
                     handleMediaStream(mediaStream)
                 }
-
             })!!
 
             val init = DataChannel.Init()
             init.ordered = true
             dataChannel = peerConnection!!.createDataChannel("data", init)
-            dataChannel!!.registerObserver(this)
-
-            callActivity?.onCameraEnabled()
+            dataChannel!!.registerObserver(dataChannelObserver)
 
             createPeerConnection()
 
@@ -248,37 +286,6 @@ class RTCCall : RTCPeerConnection, DataChannel.Observer {
 
     fun setLocalRenderer(localVideoSink: ProxyVideoSink?) {
         this.localVideoSink = localVideoSink
-    }
-
-    override fun onBufferedAmountChange(l: Long) {
-        // nothing to do
-    }
-
-    override fun onStateChange() {
-        // nothing to do
-    }
-
-    override fun onMessage(buffer: DataChannel.Buffer) {
-        val data = ByteArray(buffer.data.remaining())
-        buffer.data.get(data)
-        val s = String(data)
-        try {
-            Log.d(this, "onMessage() s=$s")
-            val o = JSONObject(s)
-            if (o.has(STATE_CHANGE_MESSAGE)) {
-                when (o.getString(STATE_CHANGE_MESSAGE)) {
-                    CAMERA_ENABLE_MESSAGE -> callActivity?.onRemoteVideoEnabled(true)
-                    CAMERA_DISABLE_MESSAGE -> callActivity?.onRemoteVideoEnabled(false)
-                    HANGUP_MESSAGE -> reportStateChange(CallState.DISMISSED)
-                    else -> {}
-                }
-            } else {
-                Log.d(this, "onMessage() unknown message: $s")
-            }
-
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
     }
 
     fun releaseCamera() {
@@ -541,8 +548,7 @@ class RTCCall : RTCPeerConnection, DataChannel.Observer {
                     Log.d(this, "onDataChannel()")
                     super.onDataChannel(dataChannel)
                     this@RTCCall.dataChannel = dataChannel
-                    this@RTCCall.dataChannel!!.registerObserver(this@RTCCall)
-                    callActivity?.onCameraEnabled()
+                    this@RTCCall.dataChannel!!.registerObserver(dataChannelObserver)
                 }
             })!!
 
@@ -630,7 +636,7 @@ class RTCCall : RTCPeerConnection, DataChannel.Observer {
         fun onRemoteVideoEnabled(enabled: Boolean)
         fun onFrontFacingCamera(enabled: Boolean)
         fun onMicrophoneEnabled(enabled: Boolean)
-        fun onCameraEnabled()
+        fun onDataChannelReady()
         fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean)
 
         fun showTextMessage(message: String)

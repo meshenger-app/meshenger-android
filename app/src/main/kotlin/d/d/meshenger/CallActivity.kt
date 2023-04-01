@@ -306,10 +306,27 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
     }
 
-    override fun onCameraEnabled() {
+    override fun onDataChannelReady() {
         runOnUiThread {
             updateCameraButtons()
             updateDebugDisplay()
+
+            val settings = binder!!.getSettings()
+            if (settings.enableMicrophoneByDefault != currentCall.getMicrophoneEnabled()) {
+                if (!settings.pushToTalk) {
+                    Log.d(this, "onDataChannelReady() toggle microphone")
+                    toggleMicButton.performClick()
+                }
+            }
+            if (settings.enableCameraByDefault != currentCall.getCameraEnabled()) {
+                Log.d(this, "onDataChannelReady() toggle camera")
+                toggleCameraButton.performClick()
+            }
+
+            if (settings.selectFrontCameraByDefault != currentCall.getFrontCameraEnabled()) {
+                Log.d(this, "onDataChannelReady() toggle front camera")
+                toggleFrontCameraButton.performClick()
+            }
         }
     }
 
@@ -683,23 +700,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         val settings = binder!!.getSettings()
 
         Log.d(this, "initCall() settings"
-            + " microphone ${settings.enableMicrophoneByDefault} => ${currentCall.getMicrophoneEnabled()}"
-            + ", camera ${settings.enableCameraByDefault} =>  ${currentCall.getCameraEnabled()}"
-            + ", front camera ${settings.selectFrontCameraByDefault} => ${currentCall.getFrontCameraEnabled()}")
-
-        if (settings.enableMicrophoneByDefault != currentCall.getMicrophoneEnabled()) {
-            if (!settings.pushToTalk) {
-                switchMicrophoneEnabled()
-            }
-        }
-
-        if (settings.enableCameraByDefault != currentCall.getCameraEnabled()) {
-            switchCameraEnabled()
-        }
-
-        if (settings.selectFrontCameraByDefault != currentCall.getFrontCameraEnabled()) {
-            currentCall.setFrontCameraEnabled(settings.selectFrontCameraByDefault)
-        }
+            + " microphone ${currentCall.getMicrophoneEnabled()} => ${settings.enableMicrophoneByDefault}"
+            + ", camera ${currentCall.getCameraEnabled()} => ${settings.enableCameraByDefault}"
+            + ", front camera ${currentCall.getFrontCameraEnabled()} => ${settings.selectFrontCameraByDefault}")
 
         rtcAudioManager.setEventListener(object : RTCAudioManager.AudioManagerEvents {
             private fun getAudioDeviceName(device: RTCAudioManager.AudioDevice): String {
@@ -842,7 +845,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             RTCAudioManager.SpeakerphoneMode.OFF -> R.drawable.ic_audio_device_phone // enforced setting
         }
 
-         Log.d(this, "updateSpeakerphoneIcon() mode=$mode, device=$device")
+        Log.d(this, "updateSpeakerphoneIcon() mode=$mode, device=$device")
         speakerphoneButton.setImageResource(icon)
     }
 

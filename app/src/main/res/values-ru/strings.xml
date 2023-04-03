@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="name_prompt">Каким должно быть ваше имя?</string>
     <string name="scan_invitation">Сканируйте этот QR-код</string>
@@ -16,7 +17,7 @@
     <string name="menu_backup">Бэкап</string>
     <string name="menu_about">О приложении</string>
     <string name="menu_exit">Выход</string>
-    <string name="call_connecting">Вызов...</string>
+    <string name="call_connecting">Вызов…</string>
     <string name="unknown_caller">Неизвестный абонент</string>
     <string name="settings_name">Изменить имя</string>
     <string name="settings_addresses">Изменить адрес*</string>
@@ -42,7 +43,7 @@
     <string name="empty_list_item">Пусто</string>
     <string name="call_connected">Соединено</string>
     <string name="call_denied">Отклонено</string>
-    <string name="call_ringing">Звонит...</string>
+    <string name="call_ringing">Звонит…</string>
     <string name="call_ended">Звонок закончен</string>
     <string name="call_error">Ошибка</string>
     <string name="button_import">Импорт</string>

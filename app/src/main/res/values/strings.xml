@@ -1,11 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Meshenger</string>
     <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
-    <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR-Code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
+    <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
     <string name="name_prompt">What should be your name?</string>
-    <string name="scan_invitation">Scan This QR-Code</string>
-    <string name="scan_invited">QR-Code Scanning</string>
+    <string name="scan_invitation">Scan This QR Code</string>
+    <string name="scan_invited">QR Code Scanning</string>
     <string name="paste_invitation">Paste Contact Data Here</string>
     <string name="invalid_data">Invalid data</string>
     <string name="cancel">Cancel</string>
@@ -27,10 +28,10 @@
     <string name="missing_camera_permission">Missing permission. Camera not available.</string>
     <string name="missing_microphone_permission">Missing permission. Microphone not available.</string>
     <string name="missing_bluetooth_permission">Missing permission. Bluetooth not available.</string>
-    <string name="invalid_qr">Invalid QR-Code</string>
+    <string name="invalid_qr">Invalid QR code</string>
     <string name="contact_has_no_address_warning">Warning: Contact has no address</string>
     <string name="setup_address">Setup Address</string>
-    <string name="setup_no_address_found">No address of your WiFi card found. Enable WiFi now (no Internet needed) or skip to configure later.</string>
+    <string name="setup_no_address_found">Could not find the MAC address of your Wi-Fi card. Enable Wi-Fi now (no Internet needed) or skip to configure later.</string>
     <string name="contact_with_name_already_exists">A contact with that name already exists.</string>
     <string name="warning_no_addresses_configured">No address for QR code configured.</string>
     <string name="warning_no_addresses_found">Configured addresses not found. Did the network change?</string>
@@ -90,23 +91,23 @@
     <string name="block">Block</string>
     <string name="unblock">Unblock</string>
     <string name="replace">Replace</string>
-    <string name="qrcode">QR-Code</string>
+    <string name="qrcode">QR code</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
     <string name="contact_edit">Edit Contact</string>
     <string name="hello">Hello!</string>
     <string name="empty_list_item">Empty</string>
     <string name="failed_to_export_database">Failed to export database</string>
-    <string name="call_connecting">Calling...</string>
+    <string name="call_connecting">Calling…</string>
     <string name="call_connected">Connected</string>
     <string name="call_denied">Declined</string>
-    <string name="call_waiting">Waiting...</string>
-    <string name="call_ringing">Ringing...</string>
+    <string name="call_waiting">Waiting…</string>
+    <string name="call_ringing">Ringing…</string>
     <string name="call_connection_failed">Connection Failed</string>
     <string name="call_authentication_failed">Authentication Failed</string>
     <string name="call_ended">Call Ended</string>
     <string name="call_error">Error</string>
-    <string name="call_no_network">No network - enable WiFi?</string>
+    <string name="call_no_network">No network - enable Wi-Fi\?</string>
     <string name="call_start_or_abort">Start or Abort Call</string>
     <string name="button_import">Import</string>
     <string name="button_export">Export</string>
@@ -122,7 +123,7 @@
     <string name="about_app_license">License:</string>
     <string name="address_management">Address Management</string>
     <string name="custom_address">CUSTOM ADDRESS</string>
-    <string name="address_management_help_text">Select one address or more that will be included in your QR-Code. A good idea is to use the MAC address of the WiFi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your WiFi.</string>
+    <string name="address_management_help_text">Select one address or more that will be included in your QR code. A good idea is to use the MAC address of the Wi-Fi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your Wi-Fi.</string>
     <string name="address_management_address_invalid">Please enter a valid MAC/IP address or domain name</string>
     <string name="address_management_address_exists">This address already exists</string>
     <string name="listen_for_incoming_calls">Listen for incoming calls.</string>

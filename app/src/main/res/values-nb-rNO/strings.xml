@@ -57,4 +57,6 @@
     <string name="yes">Ja</string>
     <string name="scan_invited">QR-kodeskanning</string>
     <string name="app_description">Tillat lyd- og videokommunikasjon uten noen tjener eller tilgang til Internett. Skann hverandres kontakt-QR-kode og ring hverandre. Dette fungerer på de fleste nettverk, f.eks. hjemme, i delte nett, eller på arbeid.</string>
+    <string name="settings_block_unknown">Blokker ukjente anrop</string>
+    <string name="settings_connect_timeout">Tilkoblingstidsavbrudd (ms)</string>
 </resources>

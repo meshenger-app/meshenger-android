@@ -25,6 +25,10 @@ Limitations:
 
 <img src="graphical-assets/phone-screenshots/logo_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/hello_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/qrcode_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/contacts_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/ringing_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/video_call_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/settings_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/address_management_4.0.4.png" width="170">
 
+## Translations
+
+Visit [weblate.org](https://hosted.weblate.org/projects/meshenger/meshenger-android/) to contribute translations. An alternative is to translate the values in the [resource folder](https://github.com/meshenger-app/meshenger-android/tree/master/app/src/main/res) and then to create a merge request.
+
 ## Documentation
 
 Meshenger connects to IP addresses in a true P2P fashion. Contacts are shared via QR-Code. They contain a name, a public key and a list of MAC/IPv4/IPv6 addresses or domain names. By default, only a single MAC address is transferred and used to create an IPv6 link local address (among others) to establish a connection. This does not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can transmit voice and video.

@@ -460,6 +460,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
                 updateVideoDisplay()
 
+                continueCallSetup()
+
                 if (!binder!!.getSettings().promptOutgoingCalls) {
                     // start outgoing call immediately
                     acceptButton.performClick()
@@ -502,10 +504,10 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             currentCall.initVideo()
             currentCall.initOutgoing()
 
-            initCall()
-
             acceptButton.visibility = View.GONE
             declineButton.visibility = View.VISIBLE
+
+            initCall()
         }
 
         acceptButton.visibility = View.VISIBLE
@@ -533,6 +535,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
                 updateVideoDisplay()
 
+                continueCallSetup()
+
                 startRinging()
             }
 
@@ -540,8 +544,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 binder = null
             }
         }
-
-        bindService(Intent(this, MainService::class.java), connection, 0)
 
         // decline before call starts
         val declineListener = View.OnClickListener {
@@ -579,38 +581,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         acceptButton.visibility = View.VISIBLE
         declineButton.visibility = View.VISIBLE
-    }
 
-    override fun onResume() {
-        super.onResume()
-        if (polledStartInit) {
-            polledStartInit = false
-            polledStart()
-        }
-    }
-
-    // hack since we need access to binder _and_ activity in state STARTED (for permissions launcher)
-    private fun polledStart(counter: Int = 0) {
-        Log.d(this, "polledStart")
-
-        val waitMS = 500L
-        Handler(mainLooper).postDelayed({
-            if (this@CallActivity.binder != null) {
-                continueCallSetup()
-            } else if ((counter * waitMS) > 4000) {
-                Log.d(this, "give up")
-                // give up
-                finish()
-            } else {
-                polledStart(counter + 1)
-            }
-        }, waitMS)
+        bindService(Intent(this, MainService::class.java), connection, 0)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun continueCallSetup() {
         Log.d(this, "continueCallSetup()"
-            + " init.action: ${intent.action}"
+            + " lifecycle.currentState: ${lifecycle.currentState}"
+            + ", init.action: ${intent.action}"
             + ", lifecycle.currentState: ${this.lifecycle.currentState}"
             + ", audio permissions: ${Utils.hasPermission(this, Manifest.permission.RECORD_AUDIO)}"
             + ", video permissions: ${Utils.hasPermission(this, Manifest.permission.CAMERA)}"

@@ -26,6 +26,7 @@ class Settings {
     var enableCameraByDefault = false
     var selectFrontCameraByDefault = false
     var autoAcceptCalls = false
+    var menuPassword = ""
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -61,6 +62,7 @@ class Settings {
             s.enableCameraByDefault = obj.getBoolean("enable_camera_by_default")
             s.selectFrontCameraByDefault = obj.getBoolean("select_front_camera_by_default")
             s.autoAcceptCalls = obj.getBoolean("auto_accept_calls")
+            s.menuPassword = obj.getString("menu_password")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -106,6 +108,7 @@ class Settings {
             obj.put("enable_camera_by_default", s.enableCameraByDefault)
             obj.put("select_front_camera_by_default", s.selectFrontCameraByDefault)
             obj.put("auto_accept_calls", s.autoAcceptCalls)
+            obj.put("menu_password", s.menuPassword)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

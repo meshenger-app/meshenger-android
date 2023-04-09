@@ -260,6 +260,7 @@ class Database {
             }
 
             if (newFrom == "4.1.5") {
+                settings.put("menu_password", "")
                 settings.put("auto_accept_calls", false)
                 newFrom = "4.1.6"
             }

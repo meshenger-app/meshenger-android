@@ -254,6 +254,12 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 binder!!.saveDatabase()
             }
         }
+
+        val menuPassword = settings.menuPassword
+        findViewById<TextView>(R.id.menuPasswordTv)
+            .text = if (menuPassword.isEmpty()) getString(R.string.none) else "*".repeat(menuPassword.length)
+        findViewById<View>(R.id.menuPasswordLayout)
+            .setOnClickListener { showMenuPasswordDialog() }
     }
 
     private fun showChangeNameDialog() {
@@ -363,6 +369,28 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         changeButton.setOnClickListener {
             val newPassword = passwordInput.text.toString()
             binder!!.getService().databasePassword = newPassword
+            binder!!.saveDatabase()
+            Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            initViews()
+            dialog.cancel()
+        }
+        abortButton.setOnClickListener { dialog.cancel() }
+        dialog.show()
+    }
+
+    private fun showMenuPasswordDialog() {
+        val menuPassword = binder!!.getSettings().menuPassword
+
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_menu_password)
+        val passwordInput = dialog.findViewById<TextInputEditText>(R.id.change_password_edit_textview)
+        val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
+        val changeButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+
+        passwordInput.setText(menuPassword)
+        changeButton.setOnClickListener {
+            val newPassword = passwordInput.text.toString()
+            binder!!.getSettings().menuPassword = newPassword
             binder!!.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()

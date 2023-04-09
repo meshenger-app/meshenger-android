@@ -1,6 +1,7 @@
 package d.d.meshenger
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -13,9 +14,7 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -196,9 +195,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
         binder = null
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d(this, "onOptionsItemSelected()")
-        when (item.itemId) {
+    private fun menuAction(itemId: Int) {
+        when (itemId) {
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }
@@ -213,6 +211,48 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 finish()
             }
         }
+    }
+
+    // request password for setting activity
+    private fun showMenuPasswordDialog(itemId: Int, menuPassword: String) {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_enter_database_password)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+
+        val passwordEditText = dialog.findViewById<EditText>(R.id.change_password_edit_textview)
+        val exitButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
+        val okButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+        okButton.setOnClickListener {
+            val password = passwordEditText.text.toString()
+            if (menuPassword == password) {
+                // start menu action
+                menuAction(itemId)
+            } else {
+                Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
+            }
+
+            // close dialog
+            dialog.dismiss()
+        }
+
+        exitButton.setOnClickListener {
+            // close dialog
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(this, "onOptionsItemSelected()")
+        val settings = binder!!.getSettings()
+        if (settings.menuPassword.isEmpty()) {
+            menuAction(item.itemId)
+        } else {
+            showMenuPasswordDialog(item.itemId, settings.menuPassword)
+        }
+
         return super.onOptionsItemSelected(item)
     }
 

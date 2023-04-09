@@ -73,11 +73,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 startActivity(Intent(this@SettingsActivity, AddressActivity::class.java))
             }
 
-        val password = binder!!.getService().databasePassword
-        findViewById<TextView>(R.id.passwordTv)
-            .text = if (password.isEmpty()) getString(R.string.none) else "*".repeat(password.length)
-        findViewById<View>(R.id.passwordLayout)
-            .setOnClickListener { showChangePasswordDialog() }
+        val databasePassword = binder!!.getService().databasePassword
+        findViewById<TextView>(R.id.databasePasswordTv)
+            .text = if (databasePassword.isEmpty()) getString(R.string.none) else "*".repeat(databasePassword.length)
+        findViewById<View>(R.id.databasePasswordLayout)
+            .setOnClickListener { showDatabasePasswordDialog() }
 
         findViewById<TextView>(R.id.publicKeyTv)
             .text = Utils.byteArrayToHexString(settings.publicKey)
@@ -342,8 +342,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         dialog.show()
     }
 
-    private fun showChangePasswordDialog() {
-        val password = binder!!.getService().databasePassword
+    private fun showDatabasePasswordDialog() {
+        val databasePassword = binder!!.getService().databasePassword
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_database_password)
@@ -351,7 +351,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
         val changeButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
 
-        passwordInput.setText(password)
+        passwordInput.setText(databasePassword)
         changeButton.setOnClickListener {
             val newPassword = passwordInput.text.toString()
             binder!!.getService().databasePassword = newPassword

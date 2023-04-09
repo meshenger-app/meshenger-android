@@ -20,7 +20,7 @@
     <string name="unknown_caller">Llamada desconocida</string>
     <string name="settings_name">Nombre</string>
     <string name="settings_addresses">Dirección*</string>
-    <string name="settings_password">Contraseña</string>
+    <string name="settings_database_password">Contraseña</string>
     <string name="settings_nightmode">Modo Nocturno</string>
     <string name="settings_block_unknown">Bloquear llamadas desconocidas</string>
     <string name="about_app_website">Código fuente:</string>

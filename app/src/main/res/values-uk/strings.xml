@@ -100,7 +100,7 @@
     <string name="settings_disable_proximity_sensor">Вимкнути датчик наближення</string>
     <string name="settings_name">"Ім'я"</string>
     <string name="settings_nightmode">Нічний режим</string>
-    <string name="settings_password">Пароль</string>
+    <string name="settings_database_password">Пароль</string>
     <string name="settings_prompt_outgoing_calls">Швидкі вихідні дзвінки</string>
     <string name="settings_public_key">Відкритий ключ</string>
     <string name="settings_settings_mode">Режим налаштувань</string>

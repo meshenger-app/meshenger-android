@@ -21,7 +21,7 @@
     <string name="unknown_caller">Appelant Inconnu</string>
     <string name="settings_name">Changer de nom</string>
     <string name="settings_addresses">Changement d’adresse*</string>
-    <string name="settings_password">Changer le mot de passe</string>
+    <string name="settings_database_password">Changer le mot de passe</string>
     <string name="settings_nightmode">Mode nuit</string>
     <string name="settings_block_unknown">Ignorer les appelants inconnus</string>
     <string name="about_app_website">Code source :</string>

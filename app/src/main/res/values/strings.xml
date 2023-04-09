@@ -38,7 +38,7 @@
     <string name="settings_name">Name</string>
     <string name="settings_change_name">Change Name</string>
     <string name="settings_addresses">Addresses*</string>
-    <string name="settings_password">Password</string>
+    <string name="settings_database_password">Startup Password</string>
     <string name="settings_use_neighbor_table">Use Neighbor Table (ARP/ND)</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_speakerphone_mode">Speakerphone</string>

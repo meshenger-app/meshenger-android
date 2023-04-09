@@ -307,6 +307,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     override fun onDataChannelReady() {
+        Log.d(this, "onDataChannelReady()")
         runOnUiThread {
             updateCameraButtons()
             updateDebugDisplay()
@@ -318,6 +319,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                     toggleMicButton.performClick()
                 }
             }
+
             if (settings.enableCameraByDefault != currentCall.getCameraEnabled()) {
                 Log.d(this, "onDataChannelReady() toggle camera")
                 toggleCameraButton.performClick()
@@ -685,13 +687,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         rtcAudioManager.setEventListener(object : RTCAudioManager.AudioManagerEvents {
             private fun getAudioDeviceName(device: RTCAudioManager.AudioDevice): String {
-                val id = when (device) {
-                    RTCAudioManager.AudioDevice.SPEAKER_PHONE -> R.string.audio_device_speakerphone
-                    RTCAudioManager.AudioDevice.WIRED_HEADSET -> R.string.audio_device_wired_headset
-                    RTCAudioManager.AudioDevice.EARPIECE -> R.string.audio_device_earpiece
-                    RTCAudioManager.AudioDevice.BLUETOOTH -> R.string.audio_device_bluetooth
+                return when (device) {
+                    RTCAudioManager.AudioDevice.SPEAKER_PHONE -> getString(R.string.audio_device_speakerphone)
+                    RTCAudioManager.AudioDevice.WIRED_HEADSET -> getString(R.string.audio_device_wired_headset)
+                    RTCAudioManager.AudioDevice.EARPIECE -> getString(R.string.audio_device_earpiece)
+                    RTCAudioManager.AudioDevice.BLUETOOTH -> getString(R.string.audio_device_bluetooth)
                 }
-                return getString(id)
             }
 
             override fun onBluetoothConnectPermissionRequired() {

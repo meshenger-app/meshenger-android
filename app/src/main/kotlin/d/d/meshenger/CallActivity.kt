@@ -539,7 +539,11 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
                 continueCallSetup()
 
-                startRinging()
+                if (binder!!.getSettings().autoAcceptCalls) {
+                    acceptButton.performClick()
+                } else {
+                    startRinging()
+                }
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {

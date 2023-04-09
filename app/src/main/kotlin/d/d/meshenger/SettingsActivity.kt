@@ -246,6 +246,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 binder!!.saveDatabase()
             }
         }
+
+        findViewById<SwitchMaterial>(R.id.autoAcceptCallsSwitch).apply {
+            isChecked = settings.autoAcceptCalls
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.autoAcceptCalls = isChecked
+                binder!!.saveDatabase()
+            }
+        }
     }
 
     private fun showChangeNameDialog() {

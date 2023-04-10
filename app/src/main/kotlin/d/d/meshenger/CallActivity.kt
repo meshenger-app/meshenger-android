@@ -601,6 +601,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             + ", video permissions: ${Utils.hasPermission(this, Manifest.permission.CAMERA)}"
         )
 
+        val settings = binder!!.getSettings()
+
         // swap pip and fullscreen content
         pipRenderer.setOnClickListener {
             Log.d(this, "pipRenderer.setOnClickListener()")
@@ -631,7 +633,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         toggleCameraButton.setOnClickListener { switchCameraEnabled() }
         speakerphoneButton.setOnClickListener { changeSpeakerphoneMode() }
 
-        if (!binder!!.getSettings().pushToTalk) {
+        if (!settings.pushToTalk) {
             // default behavior
             toggleMicButton.setOnClickListener { switchMicrophoneEnabled() }
         } else {
@@ -722,7 +724,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             }
         })
 
-        val speakerphoneMode = when (val mode = binder!!.getSettings().speakerphoneMode) {
+        val speakerphoneMode = when (val mode = settings.speakerphoneMode) {
             "auto" -> RTCAudioManager.SpeakerphoneMode.AUTO
             "on" -> RTCAudioManager.SpeakerphoneMode.ON
             "off" -> RTCAudioManager.SpeakerphoneMode.OFF
@@ -737,7 +739,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         updateSpeakerphoneIcon()
         rtcAudioManager.start()
 
-        setProximitySensorEnabled(!binder!!.getSettings().disableProximitySensor)
+        setProximitySensorEnabled(!settings.disableProximitySensor)
 
         toggleMicButton.visibility = View.VISIBLE
         toggleCameraButton.visibility = View.VISIBLE

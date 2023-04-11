@@ -59,8 +59,8 @@
                 android:elevation="30dp"
                 app:strokeColor="@null"
                 android:theme="@style/CurvedImageViewStyle"
-                android:src="@drawable/ic_meshenger_icon"
-                android:background="@drawable/meshenger_icon_background"/>
+                android:src="@drawable/logo_foreground"
+                android:background="@drawable/logo_background"/>
 
             <TextView
                 android:layout_width="wrap_content"

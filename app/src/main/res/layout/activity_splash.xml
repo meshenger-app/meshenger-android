@@ -18,7 +18,7 @@
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_meshenger_icon" />
+            android:src="@drawable/logo_foreground" />
 
     </RelativeLayout>
 

@@ -73,9 +73,6 @@
             android:name=".BackupActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".ContactActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
             android:name=".AddressActivity"
             android:parentActivityName=".SettingsActivity" />
         <activity

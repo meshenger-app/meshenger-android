@@ -267,7 +267,7 @@ class RTCCall : RTCPeerConnection {
             dataChannel = peerConnection!!.createDataChannel("data", init)
             dataChannel!!.registerObserver(dataChannelObserver)
 
-            createPeerConnection()
+            addTracks()
 
             peerConnection!!.createOffer(object : DefaultSdpObserver() {
                 override fun onCreateSuccess(sessionDescription: SessionDescription) {
@@ -312,7 +312,7 @@ class RTCCall : RTCPeerConnection {
         }
     }
 
-    private fun createPeerConnection() {
+    private fun addTracks() {
         try {
             peerConnection!!.addTrack(createAudioTrack(), listOf("stream1"))
             peerConnection!!.addTrack(createVideoTrack(), listOf("stream1"))
@@ -552,7 +552,7 @@ class RTCCall : RTCPeerConnection {
                 }
             })!!
 
-            createPeerConnection()
+            addTracks()
 
             Log.d(this, "setting remote description")
             peerConnection!!.setRemoteDescription(object : DefaultSdpObserver() {

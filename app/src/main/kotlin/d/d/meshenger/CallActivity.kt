@@ -60,6 +60,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private lateinit var speakerphoneButton: ImageButton
     private lateinit var captureFormatSlider: SeekBar
     private lateinit var captureFormatText: TextView
+    private lateinit var toggleDebugButton: ImageButton
 
     // set by CallActivity
     private var debugOutputEnabled = false // small window for video/audio statistics and other debug data
@@ -406,6 +407,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         speakerphoneButton = findViewById(R.id.speakerphoneButton)
         captureFormatSlider = findViewById(R.id.captureFormatSlider)
         captureFormatText = findViewById(R.id.captureFormatText)
+        toggleDebugButton = findViewById(R.id.toggle_debug_output)
 
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
@@ -625,7 +627,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             updateVideoDisplay()
         }
 
-        findViewById<ImageButton>(R.id.toggle_debug_output).setOnClickListener {
+        toggleDebugButton.setOnClickListener {
             debugOutputEnabled = !debugOutputEnabled
             updateDebugDisplay()
         }

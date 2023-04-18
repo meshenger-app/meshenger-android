@@ -461,6 +461,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 Log.d(this@CallActivity, "onServiceConnected")
                 binder = iBinder as MainService.MainBinder
                 currentCall = RTCCall(binder!!, contact)
+                currentCall.setCallContext(this@CallActivity)
 
                 updateVideoDisplay()
 
@@ -502,7 +503,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
             currentCall.setRemoteRenderer(remoteProxyVideoSink)
             currentCall.setLocalRenderer(localProxyVideoSink)
-            currentCall.setCallContext(this@CallActivity)
             currentCall.setEglBase(eglBase)
 
             currentCall.initVideo()

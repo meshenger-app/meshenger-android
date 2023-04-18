@@ -421,7 +421,9 @@ abstract class RTCPeerConnection(
                 ownSecretKey
             )
 
-            if (encrypted != null) {
+            if (encrypted == null) {
+                reportStateChange(CallState.ERROR_COMMUNICATION)
+            } else {
                 try {
                     Log.d(this, "declineInternal() write dismissed message to socket")
                     pw.writeMessage(encrypted)
@@ -429,9 +431,9 @@ abstract class RTCPeerConnection(
                     e.printStackTrace()
                 }
                 reportStateChange(CallState.DISMISSED)
-            } else {
-                reportStateChange(CallState.ERROR_COMMUNICATION)
             }
+        } else {
+            reportStateChange(CallState.DISMISSED)
         }
     }
 

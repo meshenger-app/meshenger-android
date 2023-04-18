@@ -18,7 +18,7 @@
         android:textSize="23sp"
         android:fontFamily="@font/lato_bold"
         android:text="@string/settings_connect_timeout"
-        android:textColor="@color/black" />
+        android:textColor="?android:textColorPrimary" />
 
     <EditText
         android:id="@+id/connectTimeoutEditText"

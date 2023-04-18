@@ -36,6 +36,20 @@
         <item>expert</item>
     </string-array>
 
+    <string-array name="videoDegradationModeLabels">
+        <item>Maintain Resolution</item>
+        <item>Maintain Framerate</item>
+        <item>Balanced</item>
+        <item>Disabled</item>
+    </string-array>
+
+    <string-array name="videoDegradationModeValues">
+        <item>maintain_resolution</item>
+        <item>maintain_framerate</item>
+        <item>balanced</item>
+        <item>disabled</item>
+    </string-array>
+
     <string-array name="videoResolutionsLabels">
         <item>Default</item>
         <item>4K (3840 x 2160)</item>

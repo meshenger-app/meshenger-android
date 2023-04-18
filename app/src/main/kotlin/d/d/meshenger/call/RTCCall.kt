@@ -121,6 +121,7 @@ class RTCCall : RTCPeerConnection {
                 Log.d(this, "onStateChange dataChannel: ${channel.state()}")
                 if (channel.state() == DataChannel.State.OPEN) {
                     callActivity?.onDataChannelReady()
+                    applyDegradationPreference()
                 }
             }
         }
@@ -578,6 +579,41 @@ class RTCCall : RTCPeerConnection {
             }, SessionDescription(SessionDescription.Type.OFFER, offer))
 
             Log.d(this, "initIncoming() executor end")
+        }
+    }
+
+    private fun getDegradationPreference(): RtpParameters.DegradationPreference {
+        val degradationModeString = binder.getSettings().videoDegradationMode
+
+        return when (degradationModeString) {
+            "maintain_resolution" -> RtpParameters.DegradationPreference.MAINTAIN_RESOLUTION
+            "maintain_framerate" -> RtpParameters.DegradationPreference.MAINTAIN_FRAMERATE
+            "balanced" -> RtpParameters.DegradationPreference.BALANCED
+            "disabled" -> RtpParameters.DegradationPreference.DISABLED
+            else -> {
+                Log.e(this, "Unknown videoDegradationMode: $degradationModeString")
+                RtpParameters.DegradationPreference.BALANCED
+            }
+        }
+    }
+
+    // affects receiving video
+    private fun applyDegradationPreference() {
+        Log.d(this, "applyDegradationPreference()")
+
+        val senders = peerConnection!!.senders
+        if (senders.isNotEmpty()) {
+            for (sender in senders) {
+                // set on RTPSender
+                if (sender.track()?.kind() == "video") {
+                    val oldPreference = sender.parameters.degradationPreference
+                    val newPreference = getDegradationPreference()
+                    Log.d(this, "applyDegradationPreference() preference: $oldPreference => $newPreference")
+                    sender.parameters.degradationPreference = newPreference
+                }
+            }
+        } else {
+            Log.e(this, "applyDegradationPreference() RTPSender list is empty")
         }
     }
 

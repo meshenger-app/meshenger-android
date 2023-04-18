@@ -266,7 +266,7 @@ class Database {
             }
 
             if (newFrom == "4.1.6") {
-                // nothing to do
+                settings.put("video_degradation_mode", "balanced")
                 newFrom = "4.1.7"
             }
 

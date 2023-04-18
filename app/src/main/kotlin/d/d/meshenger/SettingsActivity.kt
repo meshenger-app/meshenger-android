@@ -178,6 +178,19 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         applySettingsMode(settingsMode)
 
+        setupSpinner(settings.videoDegradationMode,
+            R.id.spinnerVideoDegradationModes,
+            R.array.videoDegradationModeLabels,
+            R.array.videoDegradationModeValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        settings.videoDegradationMode = it
+                        applySettingsMode(it)
+                    }
+                }
+            })
+
         setupSpinner(settingsMode,
             R.id.spinnerSettingsModes,
             R.array.settingsModeLabels,

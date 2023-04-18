@@ -378,6 +378,40 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
+                    android:id="@+id/videoDegradationModeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_video_degradation_mode"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <Spinner
+                        android:id="@+id/spinnerVideoDegradationModes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:drawSelectorOnTop="false"
+                        android:textSize="@dimen/options_text_size" />
+
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    app:dividerColor="@color/light_grey" />
+
+                <RelativeLayout
                     android:id="@+id/promptOutgoingCallsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

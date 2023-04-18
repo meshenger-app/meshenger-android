@@ -816,7 +816,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         ringtone.stop()
     }
 
-    fun onCaptureFormatChange(width: Int, height: Int, framerate: Int) {
+    fun changeCaptureFormat(width: Int, height: Int, framerate: Int) {
         currentCall.changeCaptureFormat(width, height, framerate)
     }
 

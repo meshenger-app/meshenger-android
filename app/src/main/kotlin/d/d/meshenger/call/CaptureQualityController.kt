@@ -95,7 +95,7 @@ class CaptureQualityController(
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {}
     override fun onStopTrackingTouch(seekBar: SeekBar) {
-        callEvents.onCaptureFormatChange(width, height, framerate)
+        callEvents.changeCaptureFormat(width, height, framerate)
     }
 
     // Return the highest frame rate possible based on bandwidth and format.

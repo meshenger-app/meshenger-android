@@ -180,8 +180,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
             addressWarningShown = true
         }
 
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
+        MainService.refreshEvents(this)
+        MainService.refreshContacts(this)
 
         // clear notification of any missed calls
         binder?.showDefaultNotification()
@@ -263,8 +263,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
         // clear notification of any missed calls
         binder?.showDefaultNotification()
 
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_contact_list"))
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent("refresh_event_list"))
+        MainService.refreshEvents(this)
+        MainService.refreshContacts(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -323,20 +323,16 @@ class MainService : Service(), Runnable {
 
             pingContacts(listOf(contact))
 
-            LocalBroadcastManager.getInstance(this@MainService)
-                .sendBroadcast(Intent("refresh_contact_list"))
-            LocalBroadcastManager.getInstance(this@MainService)
-                .sendBroadcast(Intent("refresh_event_list"))
+            MainService.refreshContacts(this@MainService)
+            MainService.refreshEvents(this@MainService)
         }
 
         fun deleteContact(publicKey: ByteArray) {
             getDatabase().contacts.deleteContact(publicKey)
             saveDatabase()
 
-            LocalBroadcastManager.getInstance(this@MainService)
-                .sendBroadcast(Intent("refresh_contact_list"))
-            LocalBroadcastManager.getInstance(this@MainService)
-                .sendBroadcast(Intent("refresh_event_list"))
+            MainService.refreshContacts(this@MainService)
+            MainService.refreshEvents(this@MainService)
         }
 
         fun shutdown() {
@@ -364,15 +360,13 @@ class MainService : Service(), Runnable {
             if (!getSettings().disableCallHistory) {
                 saveDatabase()
                 getEvents().addEvent(event)
-                LocalBroadcastManager.getInstance(this@MainService)
-                    .sendBroadcast(Intent("refresh_event_list"))
+                MainService.refreshEvents(this@MainService)
             }
         }
 
         fun clearEvents() {
             getEvents().clearEvents()
-            LocalBroadcastManager.getInstance(this@MainService)
-                .sendBroadcast(Intent("refresh_event_list"))
+            MainService.refreshEvents(this@MainService)
         }
     }
 
@@ -403,6 +397,16 @@ class MainService : Service(), Runnable {
             val stopIntent = Intent(ctx, MainService::class.java)
             stopIntent.action = STOP_FOREGROUND_ACTION
             ctx.startService(stopIntent)
+        }
+
+        fun refreshContacts(ctx: Context) {
+            LocalBroadcastManager.getInstance(ctx)
+                .sendBroadcast(Intent("refresh_contact_list"))
+        }
+
+        fun refreshEvents(ctx: Context) {
+            LocalBroadcastManager.getInstance(ctx)
+                .sendBroadcast(Intent("refresh_event_list"))
         }
     }
 }

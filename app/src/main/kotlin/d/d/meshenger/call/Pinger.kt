@@ -108,7 +108,8 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                 ?.state = state
         }
 
-        LocalBroadcastManager.getInstance(binder.getService()).sendBroadcast(Intent("refresh_contact_list"))
-        LocalBroadcastManager.getInstance(binder.getService()).sendBroadcast(Intent("refresh_event_list"))
+
+        MainService.refreshContacts(binder.getService())
+        MainService.refreshEvents(binder.getService())
     }
 }

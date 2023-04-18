@@ -395,9 +395,11 @@ abstract class RTCPeerConnection(
         try {
             executor.execute(r)
         } catch (e: RejectedExecutionException) {
+            e.printStackTrace()
             // can happen when the executor has shut down
             Log.w(this, "execute() catched RejectedExecutionException")
         } catch (e: Exception) {
+            e.printStackTrace()
             Log.w(this, "execute() catched $e")
             reportStateChange(CallState.ERROR_COMMUNICATION)
         }

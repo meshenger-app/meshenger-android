@@ -684,6 +684,9 @@ abstract class RTCPeerConnection(
             Log.d(this, "createIncomingCallInternal() action: $action")
             when (action) {
                 "call" -> {
+                    contact.state = Contact.State.CONTACT_ONLINE
+                    MainService.refreshContacts(binder.getService())
+
                     if (CallActivity.isCallInProgress) {
                         Log.d(this, "createIncomingCallInternal() call in progress => decline")
                         decline() // TODO: send busy
@@ -745,6 +748,8 @@ abstract class RTCPeerConnection(
                     Log.d(this, "createIncomingCallInternal() ping...")
                     // someone wants to know if we are online
                     contact.state = Contact.State.CONTACT_ONLINE
+                    MainService.refreshContacts(binder.getService())
+
                     val encrypted = Crypto.encryptMessage(
                         "{\"action\":\"pong\"}",
                         contact.publicKey,
@@ -764,6 +769,7 @@ abstract class RTCPeerConnection(
                     val status = obj.getString("status")
                     if (status == "offline") {
                         contact.state = Contact.State.CONTACT_OFFLINE
+                        MainService.refreshContacts(binder.getService())
                     } else {
                         Log.d(this, "createIncomingCallInternal() received unknown status_change: $status")
                     }

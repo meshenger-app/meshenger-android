@@ -118,9 +118,11 @@ internal class EventListAdapter(
         // show counter if not all calls have an icon
         val eventCount = eventGroup.size
         val iconCount = iconsView.size
+        val counterTV = view.findViewById<TextView>(R.id.call_counter)
         if (eventCount > iconCount) {
-            val counterTV = view.findViewById<TextView>(R.id.call_counter)
             counterTV.text = "(${eventCount})"
+        } else {
+            counterTV.text = ""
         }
 
         return view

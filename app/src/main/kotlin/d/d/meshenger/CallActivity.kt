@@ -40,7 +40,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private var proximityScreenLock: WakeLock? = null
     private var proximityCameraWasOn = false
 
-    private var polledStartInit = true
     private var activityActive = true
     private var callEventType = Event.Type.UNKNOWN
     private lateinit var vibrator: Vibrator

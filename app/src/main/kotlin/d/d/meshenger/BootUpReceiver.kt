@@ -17,13 +17,13 @@ class BootUpReceiver : BroadcastReceiver() {
         if (intent != null && intent.action == Intent.ACTION_BOOT_COMPLETED) {
             val i = Intent(context, StartActivity::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            i.putExtra(START_MAIN_ACTIVITY, false) // start MainService only, not MainActivity
+            i.putExtra(IS_START_ON_BOOTUP, true) // start MainService only, not MainActivity
             context.startActivity(i)
         }
     }
 
     companion object {
-        const val START_MAIN_ACTIVITY = "START_MAIN_ACTIVITY"
+        const val IS_START_ON_BOOTUP = "IS_START_ON_BOOTUP"
 
         fun setEnabled(context: Context, enabled: Boolean) {
             val newState = if (enabled) {

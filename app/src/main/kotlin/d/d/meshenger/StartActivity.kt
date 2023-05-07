@@ -26,6 +26,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null
     private var dialog : Dialog? = null
     private var startState = 0
+    private var isStartOnBootup = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(this, "onCreate() Meshenger version ${BuildConfig.VERSION_NAME}")
@@ -39,6 +40,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
                     + "Model: ${Build.MODEL}, "
                     + "Product: ${Build.PRODUCT}"
         )
+
+        // set by BootUpReceiver
+        isStartOnBootup = intent.getBooleanExtra(BootUpReceiver.IS_START_ON_BOOTUP, false)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
@@ -115,10 +119,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 // set night mode
                 setDefaultNightMode(settings.nightMode)
 
-                // when started on bootup, we do not want to start MainActivity
-                val startMainActivity = intent.getBooleanExtra(BootUpReceiver.START_MAIN_ACTIVITY, true)
-
-                if (startMainActivity) {
+                if (!isStartOnBootup) {
                     startActivity(Intent(this, MainActivity::class.java))
                 }
 

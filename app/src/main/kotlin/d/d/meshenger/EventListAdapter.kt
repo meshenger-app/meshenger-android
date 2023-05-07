@@ -110,7 +110,7 @@ internal class EventListAdapter(
         val address = latestEvent.address ?. address
 
         if (address != null) {
-            addressTV.text = address.toString().trimStart {it == '/'}
+            addressTV.text = address.toString().removePrefix("/")
         } else {
             addressTV.text = ""
         }

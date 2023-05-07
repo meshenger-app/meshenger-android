@@ -32,7 +32,7 @@ class Event(
                     )
                 )
             } else {
-                addresses.add(address.toString())
+                addresses.add(address.toString().removePrefix("/"))
             }
         }
         return Contact(name, publicKey, addresses)

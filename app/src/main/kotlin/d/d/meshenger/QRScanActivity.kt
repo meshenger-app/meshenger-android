@@ -127,10 +127,11 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         }
         renameButton.setOnClickListener {
             val name = nameEditText.text.toString()
-            if (name.isEmpty()) {
-                Toast.makeText(this, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
+            if (!Utils.isValidName(name)) {
+                Toast.makeText(this, R.string.contact_name_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
             if (binder!!.getContacts().getContactByName(name) != null) {
                 Toast.makeText(this, R.string.contact_name_exists, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

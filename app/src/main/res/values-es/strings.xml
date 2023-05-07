@@ -59,7 +59,7 @@
     <string name="wrong_password">Contraseña incorrecta</string>
     <string name="contact_name_conflict">Existe un contacto con el mismo nombre.</string>
     <string name="contact_key_conflict">Existe un contacto con la misma clave.</string>
-    <string name="contact_name_empty">El nombre del contacto está vacío.</string>
+    <string name="contact_name_invalid">El nombre del contacto está vacío.</string>
     <string name="contact_name_exists">Ya existe un contacto con ese nombre.</string>
     <string name="contact_remove">¿Eliminar contacto? %1$s</string>
     <string name="error">Error</string>

@@ -196,8 +196,8 @@ class EventListFragment : Fragment() {
         val okButton = dialog.findViewById<Button>(R.id.OkButton)
         okButton.setOnClickListener {
             val name = nameEditText.text.toString()
-            if (name.isEmpty()) {
-                Toast.makeText(activity, R.string.contact_name_empty, Toast.LENGTH_SHORT).show()
+            if (!Utils.isValidName(name)) {
+                Toast.makeText(activity, R.string.contact_name_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

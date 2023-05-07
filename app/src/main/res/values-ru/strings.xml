@@ -59,7 +59,7 @@
     <string name="wrong_password">Плохой пароль</string>
     <string name="contact_name_conflict">Контакт с тем же именем существует.</string>
     <string name="contact_key_conflict">Контакт с тем же ключом существует.</string>
-    <string name="contact_name_empty">Имя контакта пустое.</string>
+    <string name="contact_name_invalid">Имя контакта пустое.</string>
     <string name="contact_name_exists">Контакт с таким именем уже существует.</string>
     <string name="contact_remove">Удалить контакт? %1$s</string>
     <string name="error">Ошибка</string>

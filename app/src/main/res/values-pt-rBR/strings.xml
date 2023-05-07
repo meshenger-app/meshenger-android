@@ -74,7 +74,7 @@
     <string name="wrong_password">Senha incorreta</string>
     <string name="contact_name_conflict">Já existe um contato com o mesmo nome:</string>
     <string name="contact_key_conflict">Já existe um contato com a mesma chave:</string>
-    <string name="contact_name_empty">Contato sem nome.</string>
+    <string name="contact_name_invalid">Contato sem nome.</string>
     <string name="contact_name_exists">Já existe um contato com esse nome:</string>
     <string name="contact_remove">Apagar contato? %1$s</string>
     <string name="error">Erro</string>

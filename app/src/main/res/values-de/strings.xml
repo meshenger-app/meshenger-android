@@ -61,7 +61,7 @@
     <string name="wrong_password">Falsches Passwort</string>
     <string name="contact_name_conflict">Ein Kontakt mit dem Namen existiert bereits.</string>
     <string name="contact_key_conflict">Ein Kontakt mit dem Schlüssel existiert bereits.</string>
-    <string name="contact_name_empty">Der Name is leer.</string>
+    <string name="contact_name_invalid">Der Name is ungültig.</string>
     <string name="contact_name_exists">Der Name existiert bereits.</string>
     <string name="contact_remove">Kontakt löschen? %1$s</string>
     <string name="error">Fehler</string>

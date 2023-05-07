@@ -118,7 +118,7 @@
     <string name="wrong_password">Wrong password</string>
     <string name="contact_name_conflict">A contact with the same name exists:</string>
     <string name="contact_key_conflict">A contact with the same key exists:</string>
-    <string name="contact_name_empty">Contact name is empty.</string>
+    <string name="contact_name_invalid">Contact name is invalid.</string>
     <string name="contact_name_exists">A contact with that name exists already:</string>
     <string name="contact_remove">Remove contact? %1$s</string>
     <string name="connected_to_address">(to %1$s)</string>

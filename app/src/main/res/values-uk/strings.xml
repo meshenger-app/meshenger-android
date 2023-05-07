@@ -47,7 +47,7 @@
     <string name="contact_has_no_address_warning">Попередження: контакт не має адреси</string>
     <string name="contact_key_conflict">Контакт з таким ключем існує:</string>
     <string name="contact_name_conflict">Контакт з таким іменем існує:</string>
-    <string name="contact_name_empty">"Ім'я контакту пусте."</string>
+    <string name="contact_name_invalid">"Ім'я контакту пусте."</string>
     <string name="contact_name_exists">Контакт із таким іменем уже існує:</string>
     <string name="contact_remove">Видалити контакт? %1$s</string>
     <string name="contact_with_name_already_exists">"Контакт з цим ім'ям вже існує."</string>

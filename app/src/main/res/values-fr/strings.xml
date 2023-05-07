@@ -60,7 +60,7 @@
     <string name="wrong_password">Mot de passe non valide</string>
     <string name="contact_name_conflict">Un contact ayant le même nom existe déjà.</string>
     <string name="contact_key_conflict">Un contact ayant la même clé existe déjà.</string>
-    <string name="contact_name_empty">Le nom du contact est vide.</string>
+    <string name="contact_name_invalid">Le nom du contact est vide.</string>
     <string name="contact_name_exists">Un contact ayant ce nom existe déjà.</string>
     <string name="contact_remove">Supprimer le contact \? %1$s</string>
     <string name="error">Erreur</string>

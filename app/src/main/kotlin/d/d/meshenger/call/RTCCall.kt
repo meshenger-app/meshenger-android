@@ -215,10 +215,10 @@ class RTCCall : RTCPeerConnection {
             "true"
         }
 
-        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_ECHO_CANCELLATION_CONSTRAINT, enable))
-        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT, enable))
-        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_HIGH_PASS_FILTER_CONSTRAINT, enable))
-        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair(AUDIO_NOISE_SUPPRESSION_CONSTRAINT, enable))
+        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair("googEchoCancellation", enable))
+        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair("googAutoGainControl", enable))
+        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair("googHighpassFilter", enable))
+        audioConstraints.mandatory.add(MediaConstraints.KeyValuePair("googNoiseSuppression", enable))
     }
 
     fun initOutgoing() {
@@ -700,11 +700,6 @@ class RTCCall : RTCPeerConnection {
     }
 
     companion object {
-        private const val AUDIO_ECHO_CANCELLATION_CONSTRAINT = "googEchoCancellation"
-        private const val AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT = "googAutoGainControl"
-        private const val AUDIO_HIGH_PASS_FILTER_CONSTRAINT = "googHighpassFilter"
-        private const val AUDIO_NOISE_SUPPRESSION_CONSTRAINT = "googNoiseSuppression"
-
         private const val STATE_CHANGE_MESSAGE = "StateChange"
         private const val CAMERA_DISABLE_MESSAGE = "CameraDisabled"
         private const val CAMERA_ENABLE_MESSAGE = "CameraEnabled"

@@ -61,6 +61,8 @@
     <string name="settings_menu_password">Menu Password</string>
     <string name="settings_auto_accept_calls">Auto Accept Calls</string>
     <string name="settings_video_degradation_mode">Video Degradation</string>
+    <string name="settings_camera_resolution">Default Resolution</string>
+    <string name="settings_camera_framerate">Default Framerate</string>
     <string name="state_contact_online">Contact is Online</string>
     <string name="state_contact_offline">Contact is Offline</string>
     <string name="state_app_not_running">App Not Running</string>

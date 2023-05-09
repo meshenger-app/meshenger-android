@@ -2,6 +2,7 @@ package d.d.meshenger
 
 import android.app.Dialog
 import android.content.*
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -176,8 +177,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        applySettingsMode(settingsMode)
-
         setupSpinner(settings.videoDegradationMode,
             R.id.spinnerVideoDegradationModes,
             R.array.videoDegradationModeLabels,
@@ -186,7 +185,31 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 override fun call(newValue: String?) {
                     newValue?.let {
                         settings.videoDegradationMode = it
-                        applySettingsMode(it)
+                        applyVideoDegradationMode(it)
+                    }
+                }
+            })
+
+        setupSpinner(settings.cameraResolution,
+            R.id.spinnerCameraResolution,
+            R.array.cameraResolutionLabels,
+            R.array.cameraResolutionValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        settings.cameraResolution = it
+                    }
+                }
+            })
+
+        setupSpinner(settings.cameraFramerate,
+            R.id.spinnerCameraFramerate,
+            R.array.cameraFramerateLabels,
+            R.array.cameraFramerateValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    newValue?.let {
+                        settings.cameraFramerate = it
                     }
                 }
             })
@@ -273,6 +296,10 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .text = if (menuPassword.isEmpty()) getString(R.string.none) else "*".repeat(menuPassword.length)
         findViewById<View>(R.id.menuPasswordLayout)
             .setOnClickListener { showMenuPasswordDialog() }
+
+        applySettingsMode(settingsMode)
+        applyVideoDegradationMode(settings.videoDegradationMode)
+
     }
 
     private fun showChangeNameDialog() {
@@ -416,6 +443,38 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     override fun onResume() {
         super.onResume()
         initViews()
+    }
+
+    // grey out resolution/framerate spinners that are not considered by certain
+    // degradation modes. We still allow those two values to be changed though.
+    private fun applyVideoDegradationMode(degradation: String) {
+        val videoDegradationModeText = findViewById<TextView>(R.id.videoDegradationModeText)
+        val cameraResolutionText = findViewById<TextView>(R.id.cameraResolutionText)
+        val cameraFramerateText = findViewById<TextView>(R.id.cameraFramerateText)
+        val enabledColor = videoDegradationModeText.currentTextColor
+        val disabledColor = Color.parseColor("#d3d3d3")
+
+        when (degradation) {
+            "balanced" -> {
+                cameraResolutionText.setTextColor(disabledColor)
+                cameraFramerateText.setTextColor(disabledColor)
+            }
+            "maintain_resolution" -> {
+                cameraResolutionText.setTextColor(enabledColor)
+                cameraFramerateText.setTextColor(disabledColor)
+            }
+            "maintain_framerate" -> {
+                cameraResolutionText.setTextColor(disabledColor)
+                cameraFramerateText.setTextColor(enabledColor)
+            }
+            "disabled" -> {
+                cameraResolutionText.setTextColor(enabledColor)
+                cameraFramerateText.setTextColor(enabledColor)
+            }
+            else -> {
+                Log.w(this, "applyVideoDegradationMode() unhandled degradation=$degradation")
+            }
+        }
     }
 
     private fun applySettingsMode(settingsMode: String) {

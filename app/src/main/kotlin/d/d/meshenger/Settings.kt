@@ -28,6 +28,8 @@ class Settings {
     var autoAcceptCalls = false
     var menuPassword = ""
     var videoDegradationMode = "balanced"
+    var cameraResolution = "auto"
+    var cameraFramerate = "auto"
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -65,6 +67,8 @@ class Settings {
             s.autoAcceptCalls = obj.getBoolean("auto_accept_calls")
             s.menuPassword = obj.getString("menu_password")
             s.videoDegradationMode = obj.getString("video_degradation_mode")
+            s.cameraResolution = obj.getString("camera_resolution")
+            s.cameraFramerate = obj.getString("camera_framerate")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -112,6 +116,8 @@ class Settings {
             obj.put("auto_accept_calls", s.autoAcceptCalls)
             obj.put("menu_password", s.menuPassword)
             obj.put("video_degradation_mode", s.videoDegradationMode)
+            obj.put("camera_resolution", s.cameraResolution)
+            obj.put("camera_framerate", s.cameraFramerate)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

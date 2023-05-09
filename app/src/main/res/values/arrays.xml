@@ -50,45 +50,41 @@
         <item>disabled</item>
     </string-array>
 
-    <string-array name="videoResolutionsLabels">
-        <item>Default</item>
-        <item>4K (3840 x 2160)</item>
-        <item>Full HD (1920 x 1080)</item>
-        <item>HD (1280 x 720)</item>
-        <item>VGA (640 x 480)</item>
-        <item>QVGA (320 x 240)</item>
+    <string-array name="cameraResolutionLabels">
+        <item>Auto</item>
+        <item>3840x2160</item>
+        <item>1920x1080</item>
+        <item>1280x720</item>
+        <item>640x480</item>
+        <item>320x240</item>
     </string-array>
 
-    <string-array name="videoResolutionsValues">
-        <item>default</item>
-        <item>3840 x 2160</item>
-        <item>1920 x 1080</item>
-        <item>1280 x 720</item>
-        <item>640 x 480</item>
-        <item>320 x 240</item>
+    <string-array name="cameraResolutionValues">
+        <item>auto</item>
+        <item>3840x2160</item>
+        <item>1920x1080</item>
+        <item>1280x720</item>
+        <item>640x480</item>
+        <item>320x240</item>
     </string-array>
 
-    <string-array name="cameraFpsLabels">
-        <item>Default</item>
+    <string-array name="cameraFramerateLabels">
+        <item>Auto</item>
         <item>30 fps</item>
+        <item>20 fps</item>
         <item>15 fps</item>
+        <item>10 fps</item>
+        <item>5 fps</item>
+        <item>1 fps</item>
     </string-array>
 
-    <string-array name="startBitrate">
-        <item>Default</item>
-        <item>Manual</item>
+    <string-array name="cameraFramerateValues">
+        <item>auto</item>
+        <item>30</item>
+        <item>20</item>
+        <item>15</item>
+        <item>10</item>
+        <item>5</item>
+        <item>1</item>
     </string-array>
-
-    <string-array name="videoCodecs">
-        <item>VP8</item>
-        <item>VP9</item>
-        <item>H264 Baseline</item>
-        <item>H264 High</item>
-    </string-array>
-
-    <string-array name="audioCodecs">
-        <item>OPUS</item>
-        <item>ISAC</item>
-    </string-array>
-
 </resources>

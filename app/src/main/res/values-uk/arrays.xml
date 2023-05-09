@@ -39,30 +39,4 @@
         <item>on</item>
         <item>off</item>
     </string-array>
-    <string-array name="startBitrate">
-        <item>Default</item>
-        <item>Manual</item>
-    </string-array>
-    <string-array name="videoCodecs">
-        <item>VP8</item>
-        <item>VP9</item>
-        <item>H264 Baseline</item>
-        <item>H264 High</item>
-    </string-array>
-    <string-array name="videoResolutionsLabels">
-        <item>Стандартно</item>
-        <item>4K (3840 x 2160)</item>
-        <item>Full HD (1920 x 1080)</item>
-        <item>HD (1280 x 720)</item>
-        <item>VGA (640 x 480)</item>
-        <item>QVGA (320 x 240)</item>
-    </string-array>
-    <string-array name="videoResolutionsValues">
-        <item>default</item>
-        <item>3840 x 2160</item>
-        <item>1920 x 1080</item>
-        <item>1280 x 720</item>
-        <item>640 x 480</item>
-        <item>320 x 240</item>
-    </string-array>
 </resources>

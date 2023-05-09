@@ -5,6 +5,7 @@ import d.d.meshenger.*
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
+import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import org.webrtc.PeerConnection.*
 import java.net.*
 import java.nio.ByteBuffer
@@ -80,11 +81,12 @@ class RTCCall : RTCPeerConnection {
 
                 if (sendOnDataChannel(obj.toString())) {
                     if (enabled) {
-                        // start with default settings
-                        videoCapturer!!.startCapture(1280, 720, 25)
-                        callActivity?.onLocalVideoEnabled(true)
+                        // start with hard default settings
+                        videoCapturer!!.startCapture(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_FRAMERATE)
+                        callActivity!!.onLocalVideoEnabled(true)
+                        callActivity!!.onCameraChanged()
                     } else {
-                        callActivity?.onLocalVideoEnabled(false)
+                        callActivity!!.onLocalVideoEnabled(false)
                         videoCapturer!!.stopCapture()
                     }
 
@@ -97,13 +99,28 @@ class RTCCall : RTCPeerConnection {
         }
     }
 
-    fun changeCaptureFormat(width: Int, height: Int, framerate: Int) {
+    fun changeCaptureFormat(degradationPreference: String, width: Int, height: Int, framerate: Int) {
+        Log.d(this, "changeCaptureFormat() $degradationPreference ${width}x${height}@${framerate}")
+
         execute {
-            if (!getCameraEnabled() || videoCapturer == null || videoSource == null) {
-                Log.e(this, "changeCaptureFormat() Failed to change capture format. Video: ${getCameraEnabled()}.")
+            if (!getCameraEnabled() || peerConnection == null || videoCapturer == null || videoSource == null) {
+                Log.w(this, "changeCaptureFormat() cannot change capture format")
             } else {
-                Log.d(this, "changeCaptureFormat() ${width}x${height}@${framerate}")
-                videoSource?.adaptOutputFormat(width, height, framerate)
+                val sender = peerConnection!!.senders.first { it.track()?.kind() == "video" }
+                val preference = convertDegradationPreference(degradationPreference)
+                if (sender != null && preference != null) {
+                    // set on RTPSender
+                    sender.parameters.degradationPreference = preference
+                } else {
+                    Log.w(this, "changeCaptureFormat() cannot set degradation preference")
+                }
+
+                if (width > 0 && height > 0 && framerate > 0) {
+                    Log.w(this, "changeCaptureFormat() apply")
+                    videoSource!!.adaptOutputFormat(width, height, framerate)
+                } else {
+                    Log.w(this, "changeCaptureFormat() invalid format")
+                }
             }
         }
     }
@@ -121,7 +138,6 @@ class RTCCall : RTCPeerConnection {
                 Log.d(this, "onStateChange dataChannel: ${channel.state()}")
                 if (channel.state() == DataChannel.State.OPEN) {
                     callActivity?.onDataChannelReady()
-                    applyDegradationPreference()
                 }
             }
         }
@@ -326,26 +342,44 @@ class RTCCall : RTCPeerConnection {
         return useFrontFacingCamera
     }
 
-    fun setFrontCameraEnabled(enabled: Boolean) {
-        Log.d(this, "setFrontCameraEnabled() enabled=$enabled")
+    fun switchCamera(isFrontFacing: Boolean) {
+        Log.d(this, "switchCamera() isFrontFacing=$isFrontFacing")
         Utils.checkIsOnMainThread()
-        if (videoCapturer != null) {
-            if (enabled != useFrontFacingCamera) {
-                (videoCapturer as CameraVideoCapturer).switchCamera(null)
-                useFrontFacingCamera = enabled
-                callActivity?.onFrontFacingCamera(enabled)
+        if (videoCapturer != null && isFrontFacing != useFrontFacingCamera) {
+            val enumerator = Camera1Enumerator()
+
+            val deviceName = enumerator.deviceNames.find { isFrontFacing == enumerator.isFrontFacing(it) }
+            if (deviceName != null) {
+                // switch to camera
+                (videoCapturer as CameraVideoCapturer).switchCamera(object :
+                    CameraVideoCapturer.CameraSwitchHandler {
+                    override fun onCameraSwitchDone(isFrontCamera: Boolean) {
+                        useFrontFacingCamera = isFrontCamera
+                        val formats = enumerator.getSupportedFormats(deviceName)
+                        // tell CaptureQualityController that the camera changed
+                        callActivity!!.onCameraChange(deviceName, true, formats)
+                        callActivity!!.onCameraChanged()
+                    }
+
+                    override fun onCameraSwitchError(errorDescription: String) {
+                        callActivity?.showTextMessage(errorDescription)
+                    }
+                }, deviceName)
             }
         }
     }
 
     private fun createVideoTrack(): VideoTrack? {
         videoCapturer = null
+
         val enumerator = Camera1Enumerator()
-        for (name in enumerator.deviceNames) {
-            if (enumerator.isFrontFacing(name)) {
-                videoCapturer = enumerator.createCapturer(name, null)
-                break
-            }
+        val deviceName = enumerator.deviceNames.find { enumerator.isFrontFacing(it) }
+        if (deviceName != null) {
+            // select front facing by default
+            videoCapturer = enumerator.createCapturer(deviceName, null)
+            val formats = enumerator.getSupportedFormats(deviceName)
+            // for debug/settings menu
+            callActivity!!.onCameraChange(deviceName, true, formats)
         }
 
         if (videoCapturer != null) {
@@ -438,10 +472,10 @@ class RTCCall : RTCPeerConnection {
     }
 
     override fun reportStateChange(state: CallState) {
-        Log.d(this, "reportStateChange() $state")
+        Log.d(this, "reportStateChange() state=$state")
 
         this.state = state
-        callActivity?.onStateChange(state)
+        callActivity!!.onStateChange(state)
     }
 
     fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {
@@ -582,41 +616,6 @@ class RTCCall : RTCPeerConnection {
         }
     }
 
-    private fun getDegradationPreference(): RtpParameters.DegradationPreference {
-        val degradationModeString = binder.getSettings().videoDegradationMode
-
-        return when (degradationModeString) {
-            "maintain_resolution" -> RtpParameters.DegradationPreference.MAINTAIN_RESOLUTION
-            "maintain_framerate" -> RtpParameters.DegradationPreference.MAINTAIN_FRAMERATE
-            "balanced" -> RtpParameters.DegradationPreference.BALANCED
-            "disabled" -> RtpParameters.DegradationPreference.DISABLED
-            else -> {
-                Log.e(this, "Unknown videoDegradationMode: $degradationModeString")
-                RtpParameters.DegradationPreference.BALANCED
-            }
-        }
-    }
-
-    // affects receiving video
-    private fun applyDegradationPreference() {
-        Log.d(this, "applyDegradationPreference()")
-
-        val senders = peerConnection!!.senders
-        if (senders.isNotEmpty()) {
-            for (sender in senders) {
-                // set on RTPSender
-                if (sender.track()?.kind() == "video") {
-                    val oldPreference = sender.parameters.degradationPreference
-                    val newPreference = getDegradationPreference()
-                    Log.d(this, "applyDegradationPreference() preference: $oldPreference => $newPreference")
-                    sender.parameters.degradationPreference = newPreference
-                }
-            }
-        } else {
-            Log.e(this, "applyDegradationPreference() RTPSender list is empty")
-        }
-    }
-
     // send over data channel
     private fun hangupInternal() {
         Log.d(this, "hangupInternal")
@@ -667,16 +666,16 @@ class RTCCall : RTCPeerConnection {
     }
 
     interface CallContext {
+        fun getContext(): Context
         fun onStateChange(state: CallState)
         fun onLocalVideoEnabled(enabled: Boolean)
         fun onRemoteVideoEnabled(enabled: Boolean)
-        fun onFrontFacingCamera(enabled: Boolean)
         fun onMicrophoneEnabled(enabled: Boolean)
+        fun onCameraChange(name: String, isFrontFacing: Boolean, formats: List<CaptureFormat>)
+        fun onCameraChanged()
         fun onDataChannelReady()
         fun onRemoteAddressChange(address: InetSocketAddress, isConnected: Boolean)
-
         fun showTextMessage(message: String)
-        fun getContext(): Context
     }
 
     class ProxyVideoSink : VideoSink {
@@ -706,5 +705,22 @@ class RTCCall : RTCPeerConnection {
         private const val HANGUP_MESSAGE = "Hangup"
         private const val AUDIO_TRACK_ID = "audio1"
         private const val VIDEO_TRACK_ID = "video1"
+        const val DEFAULT_WIDTH = 1280
+        const val DEFAULT_HEIGHT = 720
+        const val DEFAULT_FRAMERATE = 25
+        const val DEFAULT_MAX_BITRATE_BPS = 3000 * 1000 * 8 // 3 MB/s
+
+        private fun convertDegradationPreference(degradationPreferenceString: String): RtpParameters.DegradationPreference? {
+            return when (degradationPreferenceString) {
+                "maintain_resolution" -> RtpParameters.DegradationPreference.MAINTAIN_RESOLUTION
+                "maintain_framerate" -> RtpParameters.DegradationPreference.MAINTAIN_FRAMERATE
+                "balanced" -> RtpParameters.DegradationPreference.BALANCED
+                "disabled" -> RtpParameters.DegradationPreference.DISABLED
+                else -> {
+                    Log.e(this, "convertDegradationPreference() Unknown degradationPreferenceString: $degradationPreferenceString")
+                    null
+                }
+            }
+        }
     }
 }

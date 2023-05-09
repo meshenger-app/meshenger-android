@@ -267,6 +267,8 @@ class Database {
 
             if (newFrom == "4.1.6") {
                 settings.put("video_degradation_mode", "balanced")
+                settings.put("camera_resolution", "auto")
+                settings.put("camera_framerate", "auto")
                 newFrom = "4.1.7"
             }
 

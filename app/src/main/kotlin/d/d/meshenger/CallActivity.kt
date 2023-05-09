@@ -8,13 +8,11 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.*
 import android.os.PowerManager.WakeLock
+import android.text.Layout
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager.LayoutParams
-import android.widget.ImageButton
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
@@ -57,9 +55,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private lateinit var toggleMicButton: ImageButton
     private lateinit var toggleFrontCameraButton: ImageButton
     private lateinit var speakerphoneButton: ImageButton
-    private lateinit var captureFormatSlider: SeekBar
-    private lateinit var captureFormatText: TextView
     private lateinit var toggleDebugButton: ImageButton
+    private lateinit var captureQualityLayout: LinearLayout
+    private lateinit var captureQualityController: CaptureQualityController
 
     // set by CallActivity
     private var debugOutputEnabled = false // small window for video/audio statistics and other debug data
@@ -261,13 +259,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
 
         if (debugOutputEnabled && cameraEnabled) {
-            captureFormatSlider.setOnSeekBarChangeListener(CaptureQualityController(captureFormatText, this))
-            captureFormatText.visibility = View.VISIBLE
-            captureFormatSlider.visibility = View.VISIBLE
+            captureQualityLayout.visibility = View.VISIBLE
         } else {
-            captureFormatSlider.setOnSeekBarChangeListener(null)
-            captureFormatText.visibility = View.GONE
-            captureFormatSlider.visibility = View.GONE
+            captureQualityLayout.visibility = View.GONE
         }
     }
 
@@ -404,9 +398,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         declineButton = findViewById(R.id.declineButton)
         toggleFrontCameraButton = findViewById(R.id.frontFacingSwitch)
         speakerphoneButton = findViewById(R.id.speakerphoneButton)
-        captureFormatSlider = findViewById(R.id.captureFormatSlider)
-        captureFormatText = findViewById(R.id.captureFormatText)
         toggleDebugButton = findViewById(R.id.toggle_debug_output)
+        captureQualityLayout = findViewById(R.id.captureQualityLayout)
 
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
@@ -423,6 +416,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         pipRenderer.setZOrderMediaOverlay(true)
         pipRenderer.setEnableHardwareScaler(true)
         fullscreenRenderer.setEnableHardwareScaler(false)
+
+        captureQualityController = CaptureQualityController(this)
 
         // make both invisible
         showPipView(false)
@@ -461,6 +456,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 binder = iBinder as MainService.MainBinder
                 currentCall = RTCCall(binder!!, contact)
                 currentCall.setCallContext(this@CallActivity)
+
+                captureQualityController.initFromSettings(binder!!.getSettings())
 
                 updateVideoDisplay()
 
@@ -526,11 +523,12 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 Log.d(this@CallActivity, "onServiceConnected()")
                 binder = iBinder as MainService.MainBinder
                 currentCall = RTCPeerConnection.incomingRTCCall!!
-
                 currentCall.setRemoteRenderer(remoteProxyVideoSink)
                 currentCall.setLocalRenderer(localProxyVideoSink)
                 currentCall.setCallContext(this@CallActivity)
                 currentCall.setEglBase(eglBase)
+
+                captureQualityController.initFromSettings(binder!!.getSettings())
 
                 Thread {
                     currentCall.continueOnIncomingSocket()
@@ -678,7 +676,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         toggleFrontCameraButton.setOnClickListener {
             Log.d(this, "frontFacingSwitch() swappedVideoFeeds=$swappedVideoFeeds, frontCameraEnabled=${currentCall.getFrontCameraEnabled()}}")
-            currentCall.setFrontCameraEnabled(
+            currentCall.switchCamera(
                 !currentCall.getFrontCameraEnabled()
             )
         }
@@ -758,12 +756,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
     }
 
-    override fun onFrontFacingCamera(enabled: Boolean) {
-        runOnUiThread {
-            updateVideoDisplay()
-        }
-    }
-
     private fun initRinging() {
         Log.d(this, "initRinging")
 
@@ -815,8 +807,25 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         ringtone.stop()
     }
 
-    fun changeCaptureFormat(width: Int, height: Int, framerate: Int) {
-        currentCall.changeCaptureFormat(width, height, framerate)
+    // aplly settings to camera
+    override fun onCameraChanged() {
+        val format = captureQualityController.getSelectedFormat()
+        val framerate = captureQualityController.getSelectedFramerate()
+        val degradation = captureQualityController.getSelectedDegradation()
+
+        currentCall.changeCaptureFormat(degradation, format.width, format.height, framerate)
+    }
+
+    // called when the camera is enabled/changed
+    override fun onCameraChange(name: String, isFrontFacing: Boolean, formats: List<CameraEnumerationAndroid.CaptureFormat>) {
+        runOnUiThread {
+            updateVideoDisplay()
+            captureQualityController.onCameraChange(name, isFrontFacing, formats)
+        }
+    }
+
+    fun getCurrentCall(): RTCCall {
+        return currentCall
     }
 
     private fun updateSpeakerphoneIcon() {

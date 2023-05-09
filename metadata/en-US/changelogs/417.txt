@@ -1,0 +1,5 @@
+* minor ui fixes
+* fix decline for call prompt
+* add setting for video degradation (e.g. prefer resolution over framerate)
+* add setting for camera resolution and framerate
+* allow change of video settings during call

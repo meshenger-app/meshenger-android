@@ -11,6 +11,9 @@ import java.lang.Integer.min
 import java.net.ConnectException
 import java.net.Socket
 
+/*
+ * Checks if a contact is online.
+*/
 class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : Runnable {
     private fun pingContact(contact: Contact) : Contact.State {
         Log.d(this, "pingContact() contact: ${contact.name}")
@@ -58,7 +61,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             val pw = PacketWriter(socket)
             val pr = PacketReader(socket)
 
-            Log.d(this, "send ping to ${contact.name}")
+            Log.d(this, "pingContact() send ping to ${contact.name}")
             val encrypted = Crypto.encryptMessage(
                 "{\"action\":\"ping\"}",
                 contact.publicKey,
@@ -82,7 +85,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             val obj = JSONObject(decrypted)
             val action = obj.optString("action", "")
             if (action == "pong") {
-                Log.d(this, "got pong")
+                Log.d(this, "pingContact() got pong")
                 return Contact.State.CONTACT_ONLINE
             } else {
                 return Contact.State.COMMUNICATION_FAILED

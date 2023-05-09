@@ -132,6 +132,7 @@ abstract class RTCPeerConnection(
             val pw = PacketWriter(socket)
             pw.writeMessage(encrypted)
         }
+
         run {
             Log.d(this, "createOutgoingCallInternal() outgoing call: expect ringing")
             val response = pr.readMessage()
@@ -265,7 +266,7 @@ abstract class RTCPeerConnection(
                 lastKeepAlive = System.currentTimeMillis()
                 continue
             } else {
-                Log.d(this, "createOutgoingCallInternal() unknown action reply $action")
+                Log.e(this, "createOutgoingCallInternal() unknown action reply $action")
                 reportStateChange(CallState.ERROR_COMMUNICATION)
                 break
             }
@@ -281,7 +282,7 @@ abstract class RTCPeerConnection(
 
         // detect broken initial connection
         if (isCallInit(state) && socket.isClosed) {
-            Log.d(this, "createOutgoingCallInternal() call (state=$state) is not connected and socket is closed")
+            Log.e(this, "createOutgoingCallInternal() call (state=$state) is not connected and socket is closed")
             reportStateChange(CallState.ERROR_COMMUNICATION)
         }
 
@@ -369,7 +370,7 @@ abstract class RTCPeerConnection(
                 // ignore, keeps the socket alive
                 lastKeepAlive = System.currentTimeMillis()
             } else {
-                Log.d(this, "continueOnIncomingSocket() received unknown action reply: $action")
+                Log.e(this, "continueOnIncomingSocket() received unknown action reply: $action")
                 reportStateChange(CallState.ERROR_COMMUNICATION)
                 break
             }
@@ -384,7 +385,7 @@ abstract class RTCPeerConnection(
 
         // detect broken initial connection
         if (isCallInit(state) && socket.isClosed) {
-            Log.d(this, "continueOnIncomingSocket() call (state=$state) is not connected and socket is closed")
+            Log.e(this, "continueOnIncomingSocket() call (state=$state) is not connected and socket is closed")
             reportStateChange(CallState.ERROR_COMMUNICATION)
         }
 

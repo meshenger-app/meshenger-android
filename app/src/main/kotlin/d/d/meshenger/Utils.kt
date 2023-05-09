@@ -33,13 +33,22 @@ internal object Utils {
         }
     }
 
+    fun printStackTrace() {
+        try {
+            throw Exception("printStackTrace() called")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun hasPermission(context: Context, permission: String): Boolean {
         return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
     }
 
     private val NAME_PATTERN = Pattern.compile("[\\w][\\w _-]{1,22}[\\w]")
 
-    // check for a name that has no funny unicode characters to not let them look to much like other names
+    // Check for a name that has no funny unicode characters
+    // and to not let them look to much like other names.
     fun isValidName(name: String?): Boolean {
         if (name == null || name.isEmpty()) {
             return false

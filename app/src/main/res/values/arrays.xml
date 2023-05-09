@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="nightModeLabels">
-        <item>Auto</item>
+        <item>System (default)</item>
         <item>On</item>
         <item>Off</item>
     </string-array>
@@ -13,7 +13,7 @@
     </string-array>
 
     <string-array name="speakerphoneModeLabels">
-        <item>Auto</item>
+        <item>Auto (default)</item>
         <item>Enabled</item>
         <item>Disabled</item>
     </string-array>
@@ -25,7 +25,7 @@
     </string-array>
 
     <string-array name="settingsModeLabels">
-        <item>Basic</item>
+        <item>Basic (default)</item>
         <item>Advanced</item>
         <item>Expert</item>
     </string-array>
@@ -39,7 +39,7 @@
     <string-array name="videoDegradationModeLabels">
         <item>Maintain Resolution</item>
         <item>Maintain Framerate</item>
-        <item>Balanced</item>
+        <item>Balanced (default)</item>
         <item>Disabled</item>
     </string-array>
 

@@ -112,7 +112,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:drawSelectorOnTop="false"
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>
@@ -252,7 +251,6 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         app:thumbTint="@color/selectedColor"
-                        android:drawSelectorOnTop="true"
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>
@@ -605,7 +603,6 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         app:thumbTint="@color/selectedColor"
-                        android:drawSelectorOnTop="true"
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>

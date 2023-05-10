@@ -120,7 +120,7 @@ class CaptureQualityController(private val callActivity: CallActivity) {
         if (settings.cameraFramerate == "auto") {
             defaultFramerate = RTCCall.DEFAULT_FRAMERATE
         } else try {
-            defaultFramerate = settings.cameraResolution.toInt()
+            defaultFramerate = settings.cameraFramerate.toInt()
         } catch (e: Exception) {
             Log.e(this, "applySettings() unhandled cameraFramerate=${settings.cameraFramerate}")
             defaultFramerate = RTCCall.DEFAULT_FRAMERATE
@@ -161,7 +161,7 @@ class CaptureQualityController(private val callActivity: CallActivity) {
         if (firstPixels != secondPixels) {
             secondPixels - firstPixels
         } else {
-            first.framerate.max - second.framerate.max
+            second.framerate.max - first.framerate.max
         }
     }
 

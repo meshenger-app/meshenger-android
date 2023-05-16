@@ -45,12 +45,14 @@ class ContactListFragment : Fragment() {
             val menu = PopupMenu(activity, view)
             val delete = getString(R.string.delete)
             val rename = getString(R.string.rename)
+            val ping = getString(R.string.ping)
             val block = getString(R.string.block)
             val unblock = getString(R.string.unblock)
             val share = getString(R.string.share)
             val qrcode = getString(R.string.qrcode)
             menu.menu.add(delete)
             menu.menu.add(rename)
+            menu.menu.add(ping)
             menu.menu.add(share)
             if (contact.blocked) {
                 menu.menu.add(unblock)
@@ -64,6 +66,7 @@ class ContactListFragment : Fragment() {
                 when (title) {
                     delete -> showDeleteDialog(publicKey, contact.name)
                     rename -> showRenameDialog(publicKey, contact.name)
+                    ping -> pingContact(contact)
                     share -> shareContact(contact)
                     block -> setBlocked(publicKey, true)
                     unblock -> setBlocked(publicKey, false)
@@ -188,6 +191,13 @@ class ContactListFragment : Fragment() {
             fabGen.y = fabGen.y + 200 * 2
             fabExpanded = false
         }
+    }
+
+    private fun pingContact(contact: Contact) {
+        val binder = (activity as MainActivity).binder ?: return
+        binder.pingContacts(listOf(contact))
+        val message = String.format(getString(R.string.update_contact_status_for), contact.name)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showDeleteDialog(publicKey: ByteArray, name: String) {

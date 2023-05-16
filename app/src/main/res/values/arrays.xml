@@ -70,6 +70,9 @@
 
     <string-array name="cameraFramerateLabels">
         <item>Auto</item>
+        <item>60 fps</item>
+        <item>50 fps</item>
+        <item>40 fps</item>
         <item>30 fps</item>
         <item>20 fps</item>
         <item>15 fps</item>

@@ -31,11 +31,11 @@ class CaptureQualityController(private val callActivity: CallActivity) {
     )
     private var cameraName = ""
     private val defaultFormats = listOf(
-        CaptureFormat(256, 144, 0, 30000), CaptureFormat(320, 240, 0, 30000),
-        CaptureFormat(480, 360, 0, 30000), CaptureFormat(640, 480, 0, 30000),
-        CaptureFormat(960, 540, 0, 30000), CaptureFormat(1280, 720, 0, 30000),
-        CaptureFormat(1920, 1080, 0, 30000), CaptureFormat(3840, 2160, 0, 30000),
-        CaptureFormat(7680, 4320, 0, 30000)
+        CaptureFormat(256, 144, 0, 60000), CaptureFormat(320, 240, 0, 60000),
+        CaptureFormat(480, 360, 0, 60000), CaptureFormat(640, 480, 0, 60000),
+        CaptureFormat(960, 540, 0, 60000), CaptureFormat(1280, 720, 0, 60000),
+        CaptureFormat(1920, 1080, 0, 60000), CaptureFormat(3840, 2160, 0, 60000),
+        CaptureFormat(7680, 4320, 0, 60000)
     )
     private var degradationSpinnerValue = ""
     private var degradationSpinnerInitialized = false

@@ -24,10 +24,6 @@ import java.util.*
 
 class CallActivity : BaseActivity(), RTCCall.CallContext {
     private var binder: MainService.MainBinder? = null
-    private lateinit var callStatus: TextView
-    private lateinit var callStats: TextView
-    private lateinit var callAddress: TextView
-    private lateinit var nameTextView: TextView
     private lateinit var connection: ServiceConnection
     private lateinit var currentCall: RTCCall
     private lateinit var contact: Contact
@@ -48,19 +44,30 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
     private lateinit var pipRenderer: SurfaceViewRenderer
     private lateinit var fullscreenRenderer: SurfaceViewRenderer
+
+    // call info texts
+    private lateinit var callStatus: TextView
+    private lateinit var callStats: TextView
+    private lateinit var callAddress: TextView
+    private lateinit var callName: TextView
+
+    // control buttons
     private lateinit var acceptButton: ImageButton
     private lateinit var declineButton: ImageButton
-    private lateinit var togglePipButton: ImageButton
     private lateinit var toggleCameraButton: ImageButton
     private lateinit var toggleMicButton: ImageButton
     private lateinit var toggleFrontCameraButton: ImageButton
     private lateinit var speakerphoneButton: ImageButton
-    private lateinit var toggleDebugButton: ImageButton
-    private lateinit var captureQualityLayout: LinearLayout
+
+    private lateinit var changePipButton: ImageButton // show/hide Picture-in-Picture window
+    private lateinit var changeUiButton: ImageButton // show/hide different control
+    private lateinit var controlPanel: View
+    private lateinit var capturePanel: View
     private lateinit var captureQualityController: CaptureQualityController
 
+    private var uiMode = 0
+
     // set by CallActivity
-    private var debugOutputEnabled = false // small window for video/audio statistics and other debug data
     private var swappedVideoFeeds = false // swapped fullscreen and pip video content
     private var showPipEnabled = true // enable PIP window
     private var callWasStarted = false
@@ -224,7 +231,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             showPipView(isLocalVideoAvailable && showPipEnabled)
             showFullscreenView(isRemoteVideoAvailable)
 
-            // video availabe for pip
+            // video available for pip
             setPipButtonEnabled(isLocalVideoAvailable)
         }
     }
@@ -243,34 +250,59 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
     }
 
-    private fun updateDebugDisplay() {
-        val cameraEnabled = currentCall.getCameraEnabled()
+    private fun updateControlDisplay() {
+        Log.d(this, "updateControlDisplay() uiMode=$uiMode")
 
-        Log.d(this, "updateDebugDisplay() cameraEnabled=$cameraEnabled")
+        val updateDebug = { enable: Boolean ->
+            val cameraEnabled = currentCall.getCameraEnabled()
+            if (enable && cameraEnabled) {
+                currentCall.setStatsCollector(statsCollector)
+                callStats.visibility = View.VISIBLE
+            } else {
+                currentCall.setStatsCollector(null)
+                callStats.visibility = View.GONE
+            }
 
-        if (debugOutputEnabled) {
-            currentCall.setStatsCollector(statsCollector)
-            callStats.visibility = View.VISIBLE
-            callAddress.visibility = View.VISIBLE
-        } else {
-            currentCall.setStatsCollector(null)
-            callStats.visibility = View.GONE
-            callAddress.visibility = View.GONE
+            if (enable) {
+                capturePanel.visibility = View.VISIBLE
+                callAddress.visibility = View.VISIBLE
+            } else {
+                capturePanel.visibility = View.GONE
+                callAddress.visibility = View.GONE
+            }
         }
 
-        if (debugOutputEnabled && cameraEnabled) {
-            captureQualityLayout.visibility = View.VISIBLE
-        } else {
-            captureQualityLayout.visibility = View.GONE
+        when (uiMode % 3) {
+            0 -> {
+                // default
+                updateDebug(false)
+                controlPanel.visibility = View.VISIBLE
+                callName.visibility = View.VISIBLE
+                callStatus.visibility = View.VISIBLE
+            }
+            1 -> {
+                // default + debug
+                updateDebug(true)
+                controlPanel.visibility = View.VISIBLE
+                callName.visibility = View.VISIBLE
+                callStatus.visibility = View.VISIBLE
+            }
+            2 -> {
+                // all off
+                updateDebug(false)
+                controlPanel.visibility = View.GONE
+                callName.visibility = View.GONE
+                callStatus.visibility = View.GONE
+            }
         }
     }
 
     private fun setPipButtonEnabled(enable: Boolean) {
         Log.d(this, "setPipButtonEnabled() enable=$enable")
         if (enable) {
-            togglePipButton.visibility = View.VISIBLE
+            changePipButton.visibility = View.VISIBLE
         } else {
-            togglePipButton.visibility = View.INVISIBLE
+            changePipButton.visibility = View.INVISIBLE
         }
     }
 
@@ -304,7 +336,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         Log.d(this, "onDataChannelReady()")
         runOnUiThread {
             updateCameraButtons()
-            updateDebugDisplay()
+            updateControlDisplay()
 
             val settings = binder!!.getSettings()
             if (settings.enableMicrophoneByDefault != currentCall.getMicrophoneEnabled()) {
@@ -332,7 +364,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             isLocalVideoAvailable = enabled
             updateVideoDisplay()
             updateCameraButtons()
-            updateDebugDisplay()
+            updateControlDisplay()
         }
     }
 
@@ -341,6 +373,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         runOnUiThread {
             isRemoteVideoAvailable = enabled
             updateVideoDisplay()
+            updateControlDisplay()
         }
     }
 
@@ -388,18 +421,19 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         callStatus = findViewById(R.id.callStatus)
         callStats = findViewById(R.id.callStats)
         callAddress = findViewById(R.id.callAddress)
-        nameTextView = findViewById(R.id.callName)
+        callName = findViewById(R.id.callName)
         pipRenderer = findViewById(R.id.pip_video_view)
         fullscreenRenderer = findViewById(R.id.fullscreen_video_view)
-        togglePipButton = findViewById(R.id.toggle_pip_window)
         toggleCameraButton = findViewById(R.id.toggleCameraButton)
         toggleMicButton = findViewById(R.id.toggleMicButton)
         acceptButton = findViewById(R.id.acceptButton)
         declineButton = findViewById(R.id.declineButton)
         toggleFrontCameraButton = findViewById(R.id.frontFacingSwitch)
         speakerphoneButton = findViewById(R.id.speakerphoneButton)
-        toggleDebugButton = findViewById(R.id.toggle_debug_output)
-        captureQualityLayout = findViewById(R.id.captureQualityLayout)
+        changePipButton = findViewById(R.id.change_pip_window)
+        changeUiButton = findViewById(R.id.change_ui)
+        controlPanel = findViewById(R.id.controlPanel)
+        capturePanel = findViewById(R.id.capturePanel)
 
         contact = intent.extras!!["EXTRA_CONTACT"] as Contact
 
@@ -432,9 +466,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         initRinging()
 
         if (contact.name.isEmpty()) {
-            nameTextView.text = resources.getString(R.string.unknown_caller)
+            callName.text = resources.getString(R.string.unknown_caller)
         } else {
-            nameTextView.text = contact.name
+            callName.text = contact.name
         }
 
         Log.d(this, "intent: ${intent.action}, state: ${this.lifecycle.currentState}")
@@ -459,6 +493,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
                 captureQualityController.initFromSettings(binder!!.getSettings())
 
+                updateControlDisplay()
                 updateVideoDisplay()
 
                 continueCallSetup()
@@ -534,6 +569,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                     currentCall.continueOnIncomingSocket()
                 }.start()
 
+                updateControlDisplay()
                 updateVideoDisplay()
 
                 continueCallSetup()
@@ -618,15 +654,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             updateVideoDisplay()
         }
 
-        togglePipButton.setOnClickListener {
-            Log.d(this, "togglePipButton.setOnClickListener()")
+        changePipButton.setOnClickListener {
+            Log.d(this, "changePipButton.setOnClickListener()")
             showPipEnabled = !showPipEnabled
             updateVideoDisplay()
         }
 
-        toggleDebugButton.setOnClickListener {
-            debugOutputEnabled = !debugOutputEnabled
-            updateDebugDisplay()
+        changeUiButton.setOnClickListener {
+            uiMode = (uiMode + 1) % 3
+            updateControlDisplay()
         }
 
         toggleCameraButton.setOnClickListener { switchCameraEnabled() }
@@ -807,7 +843,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         ringtone.stop()
     }
 
-    // aplly settings to camera
+    // apply settings to camera
     override fun onCameraChanged() {
         val format = captureQualityController.getSelectedFormat()
         val framerate = captureQualityController.getSelectedFramerate()

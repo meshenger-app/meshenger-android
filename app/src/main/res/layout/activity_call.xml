@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Picture-in-Picture window -->
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/pip_video_view"
             android:layout_width="150dp"
@@ -20,13 +21,15 @@
             android:layout_marginEnd="5dp"
             android:visibility="gone" />
 
+        <!-- fullscreen video window -->
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/fullscreen_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <!-- icon in the top left corner -->
         <ImageButton
-            android:id="@+id/toggle_debug_output"
+            android:id="@+id/change_ui"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentTop="true"
@@ -34,8 +37,9 @@
             android:background="@drawable/ic_call_stats"
             android:contentDescription="Toggle debug output" />
 
+        <!-- icon in the top left corner -->
         <ImageButton
-            android:id="@+id/toggle_pip_window"
+            android:id="@+id/change_pip_window"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentTop="true"
@@ -43,6 +47,7 @@
             android:background="@drawable/ic_toggle_pip"
             android:contentDescription="Show pip window" />
 
+        <!-- debug info window in the left lower corner -->
         <TextView
             android:id="@+id/callStats"
             android:layout_width="160dp"
@@ -63,34 +68,44 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/callName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/unknown_caller"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="30sp" />
-
-            <TextView
-                android:id="@+id/callStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/call_start_or_abort"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/callAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text=""
-                android:visibility="gone"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="12sp" />
-
+            <!-- caller name, call status, ... -->
             <LinearLayout
-                android:id="@+id/captureQualityLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/callName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unknown_caller"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/callStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/call_start_or_abort"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/callAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text=""
+                    android:visibility="gone"
+                    android:textColor="@android:color/holo_green_light"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- video capture quality controls -->
+            <LinearLayout
+                android:id="@+id/capturePanel"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
@@ -136,6 +151,7 @@
 
         <com.google.android.flexbox.FlexboxLayout
             xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/controlPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

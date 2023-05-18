@@ -69,7 +69,7 @@ internal object AddressUtils
         return device.contains("rmnet") || device.startsWith("dummy")
     }
 
-    private fun formatMAC(mac: ByteArray): String {
+    fun formatMAC(mac: ByteArray): String {
         return String.format("%02X:%02X:%02X:%02X:%02X:%02X",
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
     }
@@ -136,7 +136,7 @@ internal object AddressUtils
         return AddressType.DOMAIN
     }
 
-    private fun isValidMAC(mac: ByteArray?): Boolean {
+    fun isValidMAC(mac: ByteArray?): Boolean {
         // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
         return (mac != null
                 && mac.size == 6

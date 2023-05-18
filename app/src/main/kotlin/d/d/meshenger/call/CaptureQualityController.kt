@@ -43,8 +43,8 @@ class CaptureQualityController(private val callActivity: CallActivity) {
     private var resolutionSliderInitialized = false
     private var framerateSliderFraction = 0.5
     private var framerateSliderInitialized = false
-    private var availableCaptureFormats = listOf<CaptureFormat>()
-    private var availableCaptureFormatsInitialized = false
+    //private var availableCaptureFormats = listOf<CaptureFormat>()
+    //private var availableCaptureFormatsInitialized = false
 
     // from settings
     private var defaultHeight = 0
@@ -242,9 +242,8 @@ class CaptureQualityController(private val callActivity: CallActivity) {
 
     fun getSelectedFormat(): CaptureFormat {
         if (resolutionSliderInitialized) {
-            val formats = availableCaptureFormats.ifEmpty { defaultFormats }
-            val index = (resolutionSliderFraction * (formats.size - 1)).toInt()
-            return formats[index]
+            val index = (resolutionSliderFraction * (defaultFormats.size - 1)).toInt()
+            return defaultFormats[index]
         } else {
             // default
             return CaptureFormat(defaultWidth, defaultHeight, defaultFramerate, defaultFramerate)
@@ -269,7 +268,7 @@ class CaptureQualityController(private val callActivity: CallActivity) {
         degradationSpinnerInitialized = false
         resolutionSliderInitialized = false
         framerateSliderInitialized = false
-        availableCaptureFormatsInitialized = false
+        //availableCaptureFormatsInitialized = false
 
         // newCameraName is rather bad
         cameraName = if (isFrontFacing) {
@@ -277,16 +276,17 @@ class CaptureQualityController(private val callActivity: CallActivity) {
         } else {
             "Back Camera"
         }
-
+/*
         if (newFormats.isNotEmpty()) {
             availableCaptureFormatsInitialized = true
             availableCaptureFormats = newFormats
         } else {
             availableCaptureFormats = defaultFormats
         }
+*/
 
         // slide of sorted resolutions
-        availableCaptureFormats.sortedWith(compareFormats)
+        // availableCaptureFormats.sortedWith(compareFormats)
 
         updateView()
     }

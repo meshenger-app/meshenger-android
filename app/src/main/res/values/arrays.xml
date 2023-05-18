@@ -37,16 +37,16 @@
     </string-array>
 
     <string-array name="videoDegradationModeLabels">
+        <item>Balanced (default)</item>
         <item>Maintain Resolution</item>
         <item>Maintain Framerate</item>
-        <item>Balanced (default)</item>
         <item>Disabled</item>
     </string-array>
 
     <string-array name="videoDegradationModeValues">
+        <item>balanced</item>
         <item>maintain_resolution</item>
         <item>maintain_framerate</item>
-        <item>balanced</item>
         <item>disabled</item>
     </string-array>
 

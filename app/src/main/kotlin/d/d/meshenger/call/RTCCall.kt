@@ -221,11 +221,13 @@ class RTCCall : RTCPeerConnection {
     }
 
     private fun createMediaConstraints() {
+        val settings = binder.getSettings()
+
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"))
 
-        val enable = if (binder.getSettings().disableAudioProcessing) {
+        val enable = if (settings.disableAudioProcessing) {
             "false"
         } else {
             "true"

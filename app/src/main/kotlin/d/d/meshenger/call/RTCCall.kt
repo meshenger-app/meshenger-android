@@ -335,9 +335,15 @@ class RTCCall : RTCPeerConnection {
 
     private fun addTracks() {
         try {
-            peerConnection!!.addTrack(createAudioTrack(), listOf("stream1"))
-            peerConnection!!.addTrack(createVideoTrack(), listOf("stream1"))
-        } catch (e: Exception){
+            val rtpSenderAudio = peerConnection!!.addTrack(createAudioTrack(), listOf("stream1"))
+            val rtpSenderVideo = peerConnection!!.addTrack(createVideoTrack(), listOf("stream1"))
+
+            // needed to have a high resolution/framerate
+            for (encoding in rtpSenderVideo.parameters.encodings) {
+                encoding.maxBitrateBps = DEFAULT_MAX_BITRATE_BPS
+                encoding.scaleResolutionDownBy = 2.0
+            }
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -714,7 +720,7 @@ class RTCCall : RTCPeerConnection {
         const val DEFAULT_WIDTH = 1280
         const val DEFAULT_HEIGHT = 720
         const val DEFAULT_FRAMERATE = 25
-        const val DEFAULT_MAX_BITRATE_BPS = 3000 * 1000 * 8 // 3 MB/s
+        const val DEFAULT_MAX_BITRATE_BPS = 10000 * 1000 * 8 // 10 MB/s - just a high value
 
         private fun convertDegradationPreference(degradationPreferenceString: String): RtpParameters.DegradationPreference? {
             return when (degradationPreferenceString) {

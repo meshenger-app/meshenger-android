@@ -22,7 +22,7 @@ internal class EventListAdapter(
 ) : ArrayAdapter<List<Event>?>(
     ctx, resource
 ) {
-    // group consecutive events from the same contact
+    // group consecutive events from the same contact into one list entry
     private var eventGroups = compactEventList(events)
     private val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -129,7 +129,7 @@ internal class EventListAdapter(
     }
 
     companion object {
-        // group consecutive events from a contact
+        // group consecutive events of a single contact
         fun compactEventList(events: List<Event>): List<List<Event>> {
             val compactEventList = mutableListOf<List<Event>>()
             var lastEvent: Event? = null

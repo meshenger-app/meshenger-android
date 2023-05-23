@@ -99,18 +99,18 @@ class RTCCall : RTCPeerConnection {
         }
     }
 
-    fun changeCaptureFormat(degradationPreference: String, width: Int, height: Int, framerate: Int) {
-        Log.d(this, "changeCaptureFormat() $degradationPreference ${width}x${height}@${framerate}")
+    fun changeCaptureFormat(degradation: String, width: Int, height: Int, framerate: Int) {
+        Log.d(this, "changeCaptureFormat() degradation=$degradation format=${width}x${height}@${framerate}")
 
         execute {
             if (!getCameraEnabled() || peerConnection == null || videoCapturer == null || videoSource == null) {
                 Log.w(this, "changeCaptureFormat() cannot change capture format")
             } else {
                 val sender = peerConnection!!.senders.first { it.track()?.kind() == "video" }
-                val preference = convertDegradationPreference(degradationPreference)
-                if (sender != null && preference != null) {
+                val degradationPreference = convertDegradationPreference(degradation)
+                if (sender != null && degradationPreference != null) {
                     // set on RTPSender
-                    sender.parameters.degradationPreference = preference
+                    sender.parameters.degradationPreference = degradationPreference
                 } else {
                     Log.w(this, "changeCaptureFormat() cannot set degradation preference")
                 }

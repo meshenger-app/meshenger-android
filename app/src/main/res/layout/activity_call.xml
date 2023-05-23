@@ -63,7 +63,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
@@ -107,7 +107,7 @@
             <LinearLayout
                 android:id="@+id/capturePanel"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
@@ -132,7 +132,7 @@
                     android:id="@+id/captureFormatText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
                     android:visibility="gone"
                     android:textSize="16sp"
                     android:textColor="@android:color/darker_gray"
@@ -142,7 +142,7 @@
                     android:id="@+id/degradationSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
                     android:textSize="@dimen/options_text_size" />
 
             </LinearLayout>

@@ -37,6 +37,8 @@ Details can be found in the [Documentation](docs/documentation.md) or in the [FA
 
 ## Similar Projects
 
+This list only contains Open Source projects.
+
 * [linphone](https://linphone.org/) - many features, uses SIP, can use IP addresses, but not easy to use
 * [Keet](https://keet.io) - many features, uses a DHT, Bitcoin payments
 * [Briar](https://briarproject.org/) - text messages only, for the Internet the Tor network is used

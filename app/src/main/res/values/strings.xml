@@ -61,6 +61,7 @@
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
     <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
     <string name="settings_select_front_camera_by_default">Use Front Camera By Default</string>
+    <string name="settings_disable_cpu_overuse_detection">Disable CPU Overuse Detection</string>
     <string name="settings_menu_password">Menu Password</string>
     <string name="settings_auto_accept_calls">Auto Accept Calls</string>
     <string name="settings_video_degradation_mode">Video Degradation</string>

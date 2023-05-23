@@ -246,8 +246,10 @@ class RTCCall : RTCPeerConnection {
         execute {
             Log.d(this, "initOutgoing() executor start")
             val rtcConfig = RTCConfiguration(emptyList())
+            val settings = binder.getSettings()
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
+            rtcConfig.enableCpuOveruseDetection = !settings.disableCpuOveruseDetection // true by default
 
             peerConnection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {
@@ -516,10 +518,12 @@ class RTCCall : RTCPeerConnection {
 
         execute {
             Log.d(this, "initIncoming() executor start")
+            val settings = binder.getSettings()
             val remoteAddress = commSocket!!.remoteSocketAddress as InetSocketAddress
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
+            rtcConfig.enableCpuOveruseDetection = !settings.disableCpuOveruseDetection // true by default
 
             peerConnection = factory.createPeerConnection(rtcConfig, object : DefaultObserver() {
                 override fun onIceGatheringChange(iceGatheringState: IceGatheringState) {

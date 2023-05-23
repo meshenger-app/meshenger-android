@@ -283,6 +283,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.disableCpuOveruseDetectionSwitch).apply {
+            isChecked = settings.disableCpuOveruseDetection
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.disableCpuOveruseDetection = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
         findViewById<SwitchMaterial>(R.id.autoAcceptCallsSwitch).apply {
             isChecked = settings.autoAcceptCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->

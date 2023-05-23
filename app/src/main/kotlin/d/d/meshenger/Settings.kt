@@ -25,6 +25,7 @@ class Settings {
     var enableMicrophoneByDefault = true
     var enableCameraByDefault = false
     var selectFrontCameraByDefault = false
+    var disableCpuOveruseDetection = false
     var autoAcceptCalls = false
     var menuPassword = ""
     var videoDegradationMode = "balanced"
@@ -64,6 +65,7 @@ class Settings {
             s.enableMicrophoneByDefault = obj.getBoolean("enable_microphone_by_default")
             s.enableCameraByDefault = obj.getBoolean("enable_camera_by_default")
             s.selectFrontCameraByDefault = obj.getBoolean("select_front_camera_by_default")
+            s.disableCpuOveruseDetection = obj.getBoolean("disable_cpu_overuse_detection")
             s.autoAcceptCalls = obj.getBoolean("auto_accept_calls")
             s.menuPassword = obj.getString("menu_password")
             s.videoDegradationMode = obj.getString("video_degradation_mode")
@@ -113,6 +115,7 @@ class Settings {
             obj.put("enable_microphone_by_default", s.enableMicrophoneByDefault)
             obj.put("enable_camera_by_default", s.enableCameraByDefault)
             obj.put("select_front_camera_by_default", s.selectFrontCameraByDefault)
+            obj.put("disable_cpu_overuse_detection", s.disableCpuOveruseDetection)
             obj.put("auto_accept_calls", s.autoAcceptCalls)
             obj.put("menu_password", s.menuPassword)
             obj.put("video_degradation_mode", s.videoDegradationMode)

@@ -11,7 +11,6 @@
     <string name="cancel">Cancel</string>
     <string name="next">next</string>
     <string name="ping">Ping</string>
-    <string name="update_contact_status">Update Contacts</string>
     <string name="update_contact_status_for">Update %1$s</string>
     <string name="enter_password">Enter password</string>
     <string name="audio_device_speakerphone">Speakerphone</string>

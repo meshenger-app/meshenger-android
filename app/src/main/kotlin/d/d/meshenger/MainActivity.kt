@@ -188,10 +188,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         // update status here because EventListFragment.onResume is triggered twice
         val contacts = binder!!.getContacts().contactList
-        if (contacts.isNotEmpty()) {
-            binder!!.pingContacts(contacts)
-            Toast.makeText(this, R.string.update_contact_status, Toast.LENGTH_SHORT).show()
-        }
+        binder!!.pingContacts(contacts)
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

@@ -271,11 +271,11 @@ class CaptureQualityController(private val callActivity: CallActivity) {
         //availableCaptureFormatsInitialized = false
 
         // newCameraName is rather bad
-        cameraName = if (isFrontFacing) {
-            "Front Camera"
+        cameraName = callActivity.getString(if (isFrontFacing) {
+            R.string.camera_front
         } else {
-            "Back Camera"
-        }
+            R.string.camera_back
+        })
 /*
         if (newFormats.isNotEmpty()) {
             availableCaptureFormatsInitialized = true

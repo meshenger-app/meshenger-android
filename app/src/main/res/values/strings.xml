@@ -36,6 +36,8 @@
     <string name="menu_exit">Exit</string>
     <string name="user">User</string>
     <string name="unknown_caller">Unknown Caller</string>
+    <string name="camera_back">Back</string>
+    <string name="camera_front">Front</string>
     <string name="settings">Settings</string>
     <string name="settings_name">Name</string>
     <string name="settings_change_name">Change Name</string>

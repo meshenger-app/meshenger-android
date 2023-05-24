@@ -40,8 +40,13 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                         socket.connect(address, connectTimeout)
                         connected = true
                     } catch (e: ConnectException) {
-                        // target online, but Meshenger not running
-                        return Contact.State.APP_NOT_RUNNING
+                        Log.d(this, "pingContact() $e, ${e.message}")
+                        if (" ENETUNREACH " in e.toString()) {
+                            return Contact.State.NETWORK_UNREACHABLE
+                        } else {
+                            // target online, but Meshenger not running
+                            return Contact.State.APP_NOT_RUNNING
+                        }
                     } catch (e: Exception) {
                         // ignore
                     }

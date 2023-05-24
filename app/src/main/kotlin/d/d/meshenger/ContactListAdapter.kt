@@ -28,6 +28,7 @@ internal class ContactListAdapter(
             val state = when (contact.state) {
                 Contact.State.CONTACT_ONLINE -> R.string.state_contact_online
                 Contact.State.CONTACT_OFFLINE -> R.string.state_contact_offline
+                Contact.State.NETWORK_UNREACHABLE -> R.string.state_contact_network_unreachable
                 Contact.State.APP_NOT_RUNNING -> R.string.state_app_not_running
                 Contact.State.AUTHENTICATION_FAILED -> R.string.state_authentication_failed
                 Contact.State.COMMUNICATION_FAILED -> R.string.state_communication_failed
@@ -47,6 +48,7 @@ internal class ContactListAdapter(
         p.color = when (contact.state) {
             Contact.State.CONTACT_ONLINE -> Color.parseColor("#00ff0a") // green
             Contact.State.CONTACT_OFFLINE -> Color.parseColor("#ff0000") // red
+            Contact.State.NETWORK_UNREACHABLE -> Color.parseColor("#f25400") // light orange
             Contact.State.APP_NOT_RUNNING -> Color.parseColor("#ff7000") // orange
             Contact.State.AUTHENTICATION_FAILED -> Color.parseColor("#612c00") // brown
             Contact.State.COMMUNICATION_FAILED -> Color.parseColor("#808080") // grey

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="name_prompt">¿Cual debería de ser tu nombre?</string>
     <string name="scan_invitation">Escanea este código QR</string>
@@ -67,4 +68,6 @@
     <string name="skip">Omitir</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
+    <string name="audio_device_wired_headset">Auricular con cable</string>
+    <string name="audio_device_earpiece">Auricular</string>
 </resources>

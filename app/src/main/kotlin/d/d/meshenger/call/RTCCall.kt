@@ -637,7 +637,7 @@ class RTCCall : RTCPeerConnection {
         o.put(STATE_CHANGE_MESSAGE, HANGUP_MESSAGE)
 
         if (sendOnDataChannel(o.toString())) {
-            reportStateChange(CallState.DISMISSED)
+            reportStateChange(CallState.ENDED)
         } else {
             reportStateChange(CallState.ERROR_COMMUNICATION)
         }

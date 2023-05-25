@@ -158,7 +158,7 @@ internal object AddressUtils
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return InetAddresses.isNumericAddress(address)
         } else {
-            // lots of work to support for older SDKs
+            // lots of work to support older SDKs
             val pc = address.indexOf('%')
 
             val addressPart = if (pc != -1) {

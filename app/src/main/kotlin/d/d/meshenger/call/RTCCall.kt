@@ -628,7 +628,7 @@ class RTCCall : RTCPeerConnection {
         }
     }
 
-    // send over data channel
+    // send over data channel, when the call is established
     private fun hangupInternal() {
         Log.d(this, "hangupInternal")
 

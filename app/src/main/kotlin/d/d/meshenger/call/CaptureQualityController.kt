@@ -198,7 +198,8 @@ class CaptureQualityController(private val callActivity: CallActivity) {
             }
         }
 
-        var label = "" // "<name> <resolution>@<framerate>"
+        // "<name> <resolution>@<framerate>"
+        var label = ""
         if (formatText.visibility == View.VISIBLE) {
             val format =  getSelectedFormat()
             val framerate = getSelectedFramerate()

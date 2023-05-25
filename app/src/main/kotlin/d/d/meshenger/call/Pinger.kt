@@ -44,7 +44,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                         if (" ENETUNREACH " in e.toString()) {
                             return Contact.State.NETWORK_UNREACHABLE
                         } else {
-                            // target online, but Meshenger not running
+                            // target online, but App not running
                             return Contact.State.APP_NOT_RUNNING
                         }
                     } catch (e: Exception) {

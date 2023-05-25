@@ -406,7 +406,7 @@ abstract class RTCPeerConnection(
         }
     }
 
-    // send over initial socket
+    // send over initial socket when the call is not yet established
     private fun declineInternal() {
         Log.d(this, "declineInternal()")
         // send decline over initial socket

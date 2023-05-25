@@ -325,10 +325,24 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun updateMicrophoneIcon() {
-        if (currentCall.getMicrophoneEnabled() && rtcAudioManager.getMicrophoneEnabled()) {
+        Log.d(this, "updateMicrophoneIcon()")
+
+        val enabled = currentCall.getMicrophoneEnabled() && rtcAudioManager.getMicrophoneEnabled()
+
+        if (enabled) {
             toggleMicButton.setImageResource(R.drawable.ic_mic_on)
         } else {
             toggleMicButton.setImageResource(R.drawable.ic_mic_off)
+        }
+
+        // set background
+        val settings = binder!!.getSettings()
+        if (settings.pushToTalk) {
+            val backgroundId = when (enabled) {
+                true -> R.drawable.ic_button_background_enabled_border
+                false -> R.drawable.ic_button_background_disabled_border
+            }
+            toggleMicButton.background = ResourcesCompat.getDrawable(resources, backgroundId, null)
         }
     }
 
@@ -672,35 +686,20 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             // default behavior
             toggleMicButton.setOnClickListener { switchMicrophoneEnabled() }
         } else {
-            // push-to-talk behavior
-            fun updateMicrophoneIconBackground(pressed: Boolean) {
-                // set background for the microphone icon
-                val resourceId = when (pressed) {
-                    true -> R.drawable.ic_button_background_enabled_border
-                    false -> R.drawable.ic_button_background_disabled_border
-                }
-                toggleMicButton.background = ResourcesCompat.getDrawable(resources, resourceId, null)
-            }
-
-            // disable microphone by default
-            rtcAudioManager.setMicrophoneEnabled(false)
-            updateMicrophoneIconBackground(false)
-
             toggleMicButton.setOnTouchListener { view: View, event: MotionEvent ->
                 Log.d(this, "setOnTouchListener() action=${event.action}")
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
+                        // enable microphone
                         if (!currentCall.getMicrophoneEnabled()) {
-                            // need to enable microphone on the WebRTC side first
-                            currentCall.setMicrophoneEnabled(true)
-                        } else {
-                            rtcAudioManager.setMicrophoneEnabled(true)
-                            updateMicrophoneIconBackground(true)
+                            switchMicrophoneEnabled()
                         }
                     }
                     MotionEvent.ACTION_UP -> {
-                        rtcAudioManager.setMicrophoneEnabled(false)
-                        updateMicrophoneIconBackground(false)
+                        // disable microphone
+                        if (currentCall.getMicrophoneEnabled()) {
+                            switchMicrophoneEnabled()
+                        }
                     }
                 }
 
@@ -709,6 +708,8 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 view.onTouchEvent(event)
             }
         }
+
+        updateMicrophoneIcon()
 
         toggleFrontCameraButton.setOnClickListener {
             Log.d(this, "frontFacingSwitch() swappedVideoFeeds=$swappedVideoFeeds, frontCameraEnabled=${currentCall.getFrontCameraEnabled()}}")

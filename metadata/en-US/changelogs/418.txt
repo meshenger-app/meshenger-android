@@ -1,0 +1,2 @@
+* fix push-to-talk button behavior
+* show ended message when a call is hung up

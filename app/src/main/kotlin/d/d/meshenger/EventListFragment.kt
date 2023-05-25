@@ -25,7 +25,8 @@ class EventListFragment : Fragment() {
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return@OnItemClickListener
         val eventGroup = eventListAdapter.getItem(i)
-        val latestEvent = eventGroup.last()
+        // get last event that has an address
+        val latestEvent = eventGroup.lastOrNull { it.address != null } ?: eventGroup.last()
 
         val knownContact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
         val contact = if (knownContact != null) {

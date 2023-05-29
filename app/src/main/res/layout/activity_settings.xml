@@ -274,6 +274,40 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
+                    android:id="@+id/automaticStatusUpdatesLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_automatic_status_updates"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/automaticStatusUpdatesSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="5dp"
+                        app:thumbTint="@color/selectedColor" />
+
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    app:dividerColor="@color/light_grey" />
+
+                <RelativeLayout
                     android:id="@+id/enableMicrophoneByDefaultLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

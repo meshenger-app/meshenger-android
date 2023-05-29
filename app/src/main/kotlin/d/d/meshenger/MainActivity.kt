@@ -184,11 +184,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         MainService.refreshContacts(this)
 
         // clear notification of any missed calls
-        binder?.showDefaultNotification()
-
-        // update status here because EventListFragment.onResume is triggered twice
-        val contacts = binder!!.getContacts().contactList
-        binder!!.pingContacts(contacts)
+        binder!!.showDefaultNotification()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
@@ -261,8 +257,14 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onResume()")
         super.onResume()
 
-        // clear notification of any missed calls
-        binder?.showDefaultNotification()
+        binder?.let {
+            // clear notification of any missed calls
+            it.showDefaultNotification()
+
+            if (it.getSettings().automaticStatusUpdates) {
+                it.pingContacts(it.getContacts().contactList)
+            }
+        }
 
         MainService.refreshEvents(this)
         MainService.refreshContacts(this)

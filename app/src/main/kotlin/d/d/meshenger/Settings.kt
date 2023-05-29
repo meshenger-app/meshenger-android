@@ -31,6 +31,7 @@ class Settings {
     var videoDegradationMode = "balanced"
     var cameraResolution = "auto"
     var cameraFramerate = "auto"
+    var automaticStatusUpdates = true
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -71,6 +72,7 @@ class Settings {
             s.videoDegradationMode = obj.getString("video_degradation_mode")
             s.cameraResolution = obj.getString("camera_resolution")
             s.cameraFramerate = obj.getString("camera_framerate")
+            s.automaticStatusUpdates = obj.getBoolean("automatic_status_updates")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -121,6 +123,7 @@ class Settings {
             obj.put("video_degradation_mode", s.videoDegradationMode)
             obj.put("camera_resolution", s.cameraResolution)
             obj.put("camera_framerate", s.cameraFramerate)
+            obj.put("automatic_status_updates", s.automaticStatusUpdates)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

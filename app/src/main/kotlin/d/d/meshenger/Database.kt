@@ -274,7 +274,7 @@ class Database {
             }
 
             if (newFrom == "4.1.7") {
-                // nothing to do
+                settings.put("automatic_status_updates", true)
                 newFrom = "4.1.8"
             }
 

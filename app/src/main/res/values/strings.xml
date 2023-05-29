@@ -68,6 +68,7 @@
     <string name="settings_video_degradation_mode">Video Degradation</string>
     <string name="settings_camera_resolution">Default Resolution</string>
     <string name="settings_camera_framerate">Default Framerate</string>
+    <string name="settings_automatic_status_updates">Automatic Contact Updates</string>
     <string name="state_contact_online">Contact is Online</string>
     <string name="state_contact_offline">Contact is Offline</string>
     <string name="state_contact_network_unreachable">Network Unreachable</string>

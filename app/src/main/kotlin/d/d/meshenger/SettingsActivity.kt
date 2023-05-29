@@ -299,6 +299,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.automaticStatusUpdatesSwitch).apply {
+            isChecked = settings.automaticStatusUpdates
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.automaticStatusUpdates = isChecked
+                binder!!.saveDatabase()
+            }
+        }
+
         val menuPassword = settings.menuPassword
         findViewById<TextView>(R.id.menuPasswordTv)
             .text = if (menuPassword.isEmpty()) getString(R.string.none) else "*".repeat(menuPassword.length)

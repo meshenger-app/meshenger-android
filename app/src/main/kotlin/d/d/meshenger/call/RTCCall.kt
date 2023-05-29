@@ -7,6 +7,12 @@ import org.json.JSONObject
 import org.webrtc.*
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import org.webrtc.PeerConnection.*
+import org.webrtc.audio.AudioDeviceModule
+import org.webrtc.audio.JavaAudioDeviceModule
+import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordErrorCallback
+import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordStateCallback
+import org.webrtc.audio.JavaAudioDeviceModule.AudioTrackErrorCallback
+import org.webrtc.audio.JavaAudioDeviceModule.AudioTrackStateCallback
 import java.net.*
 import java.nio.ByteBuffer
 import java.util.*
@@ -430,9 +436,83 @@ class RTCCall : RTCPeerConnection {
         }
     }
 
+    private fun createJavaAudioDevice(): AudioDeviceModule? {
+        // Set audio record error callbacks
+        val audioRecordErrorCallback: AudioRecordErrorCallback = object : AudioRecordErrorCallback {
+            override fun onWebRtcAudioRecordInitError(errorMessage: String) {
+                Log.e(this, "onWebRtcAudioRecordInitError: $errorMessage")
+                callActivity!!.showTextMessage(errorMessage)
+            }
+
+            override fun onWebRtcAudioRecordStartError(
+                errorCode: JavaAudioDeviceModule.AudioRecordStartErrorCode, errorMessage: String
+            ) {
+                Log.e(this, "onWebRtcAudioRecordStartError: $errorCode. $errorMessage")
+                callActivity!!.showTextMessage(errorMessage)
+            }
+
+            override fun onWebRtcAudioRecordError(errorMessage: String) {
+                Log.e(this, "onWebRtcAudioRecordError: $errorMessage")
+                callActivity!!.showTextMessage(errorMessage)
+            }
+        }
+        val audioTrackErrorCallback: AudioTrackErrorCallback = object : AudioTrackErrorCallback {
+            override fun onWebRtcAudioTrackInitError(errorMessage: String) {
+                Log.e(this, "onWebRtcAudioTrackInitError: $errorMessage")
+                callActivity!!.showTextMessage(errorMessage)
+            }
+
+            override fun onWebRtcAudioTrackStartError(
+                errorCode: JavaAudioDeviceModule.AudioTrackStartErrorCode, errorMessage: String
+            ) {
+                Log.e(this, "onWebRtcAudioTrackStartError: $errorCode. $errorMessage")
+                callActivity!!.showTextMessage(errorMessage)
+            }
+
+            override fun onWebRtcAudioTrackError(errorMessage: String) {
+                Log.e(this, "onWebRtcAudioTrackError: $errorMessage")
+                callActivity!!.showTextMessage(errorMessage)
+            }
+        }
+
+        // Set audio record state callbacks
+        val audioRecordStateCallback: AudioRecordStateCallback = object : AudioRecordStateCallback {
+            override fun onWebRtcAudioRecordStart() {
+                Log.i(this, "Audio recording starts")
+            }
+
+            override fun onWebRtcAudioRecordStop() {
+                Log.i(this, "Audio recording stops")
+            }
+        }
+
+        // Set audio track state callbacks
+        val audioTrackStateCallback: AudioTrackStateCallback = object : AudioTrackStateCallback {
+            override fun onWebRtcAudioTrackStart() {
+                Log.i(this, "Audio playout starts")
+            }
+
+            override fun onWebRtcAudioTrackStop() {
+                Log.i(this, "Audio playout stops")
+            }
+        }
+
+        return JavaAudioDeviceModule.builder(callActivity!!.getContext())
+            //.setSamplesReadyCallback(saveRecordedAudioToFile)
+            .setUseHardwareAcousticEchoCanceler(true)
+            .setUseHardwareNoiseSuppressor(true)
+            .setAudioRecordErrorCallback(audioRecordErrorCallback)
+            .setAudioTrackErrorCallback(audioTrackErrorCallback)
+            .setAudioRecordStateCallback(audioRecordStateCallback)
+            .setAudioTrackStateCallback(audioTrackStateCallback)
+            .createAudioDeviceModule()
+    }
+
     fun initVideo() {
         Log.d(this, "initVideo()")
         Utils.checkIsOnMainThread()
+
+        val settings = binder.getSettings()
         reportStateChange(CallState.WAITING)
 
         // must be created in Main/GUI Thread!
@@ -445,7 +525,7 @@ class RTCCall : RTCPeerConnection {
         val encoderFactory: VideoEncoderFactory
         val decoderFactory: VideoDecoderFactory
 
-        Log.d(this, "initVideo() video acceleration: ${binder.getSettings().videoHardwareAcceleration}")
+        Log.d(this, "initVideo() video acceleration: ${settings.videoHardwareAcceleration}")
 
         if (binder.getSettings().videoHardwareAcceleration) {
             val enableIntelVp8Encoder = true
@@ -457,7 +537,14 @@ class RTCCall : RTCPeerConnection {
             decoderFactory = SoftwareVideoDecoderFactory()
         }
 
+        val adm = if (settings.disableAudioProcessing) {
+            null
+        } else {
+            createJavaAudioDevice()
+        }
+
         factory = PeerConnectionFactory.builder()
+            .setAudioDeviceModule(adm)
             .setVideoEncoderFactory(encoderFactory)
             .setVideoDecoderFactory(decoderFactory)
             .createPeerConnectionFactory()

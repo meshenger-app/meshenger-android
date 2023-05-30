@@ -31,7 +31,7 @@ class Settings {
     var videoDegradationMode = "balanced"
     var cameraResolution = "auto"
     var cameraFramerate = "auto"
-    var automaticStatusUpdates = true
+    var automaticStatusUpdates = false
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {

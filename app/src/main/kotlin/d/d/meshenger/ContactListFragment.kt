@@ -160,23 +160,23 @@ class ContactListFragment : Fragment() {
         val alphaAnimation: AlphaAnimation
 
         if (fabExpanded) {
-            scanAnimation = TranslateAnimation(0f, 0f, -distance, 0f)
-            generateAnimation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
-            pingAnimation = TranslateAnimation(-distance, 0f, 0f, 0f)
+            pingAnimation = TranslateAnimation(0f, 0f, -distance * 1, 0f)
+            scanAnimation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
+            generateAnimation = TranslateAnimation(0f, 0f, -distance * 3, 0f)
             alphaAnimation = AlphaAnimation(1.0f, 0.0f)
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
-            fabScan.y = fabScan.y + distance
-            fabGen.y = fabGen.y + distance * 2
-            fabPing.x = fabPing.x + distance
+            fabPing.y = fabPing.y + distance * 1
+            fabScan.y = fabScan.y + distance * 2
+            fabGen.y = fabGen.y + distance * 3
         } else {
-            scanAnimation = TranslateAnimation(0f, 0f, distance, 0f)
-            generateAnimation = TranslateAnimation(0f, 0f, distance * 2, 0f)
-            pingAnimation = TranslateAnimation(distance, 0f, 0f, 0f)
+            pingAnimation = TranslateAnimation(0f, 0f, distance * 1, 0f)
+            scanAnimation = TranslateAnimation(0f, 0f, distance * 2, 0f)
+            generateAnimation = TranslateAnimation(0f, 0f, distance * 3, 0f)
             alphaAnimation = AlphaAnimation(0.0f, 1.0f)
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-            fabScan.y = fabScan.y - distance
-            fabGen.y = fabGen.y - distance * 2
-            fabPing.x = fabPing.x - distance
+            fabPing.y = fabPing.y - distance * 1
+            fabScan.y = fabScan.y - distance * 2
+            fabGen.y = fabGen.y - distance * 3
         }
 
         scanSet.addAnimation(scanAnimation)
@@ -211,9 +211,9 @@ class ContactListFragment : Fragment() {
             fabScan.clearAnimation()
             fabGen.clearAnimation()
             fabPing.clearAnimation()
-            fabScan.y = fabScan.y + 200
-            fabGen.y = fabGen.y + 200 * 2
-            fabPing.x = fabPing.x + 200
+            fabPing.y = fabPing.y + 200 * 1
+            fabScan.y = fabScan.y + 200 * 2
+            fabGen.y = fabGen.y + 200 * 3
             fabExpanded = false
         }
     }

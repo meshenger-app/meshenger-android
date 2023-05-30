@@ -116,6 +116,7 @@ class ContactListFragment : Fragment() {
         }
         fabPing.setOnClickListener {
             pingAllContacts()
+            collapseFab()
         }
         fab.setOnClickListener { fab: View -> runFabAnimation(fab) }
 
@@ -146,6 +147,16 @@ class ContactListFragment : Fragment() {
         super.onDestroy()
     }
 
+    private fun showPingAllButton(): Boolean {
+        val binder = (activity as MainActivity).binder
+        if (binder != null) {
+            return !binder.getSettings().automaticStatusUpdates
+        } else {
+            // it does not hurt to show the button
+            return true
+        }
+    }
+
     private fun runFabAnimation(fab: View) {
         Log.d(this, "runFabAnimation")
         val activity = requireActivity()
@@ -155,28 +166,28 @@ class ContactListFragment : Fragment() {
         val distance = 200f
         val duration = 300f
         val scanAnimation: TranslateAnimation
-        val generateAnimation: TranslateAnimation
+        val showAnimation: TranslateAnimation
         val pingAnimation: TranslateAnimation
         val alphaAnimation: AlphaAnimation
 
         if (fabExpanded) {
             pingAnimation = TranslateAnimation(0f, 0f, -distance * 1, 0f)
             scanAnimation = TranslateAnimation(0f, 0f, -distance * 2, 0f)
-            generateAnimation = TranslateAnimation(0f, 0f, -distance * 3, 0f)
+            showAnimation = TranslateAnimation(0f, 0f, -distance * 3, 0f)
             alphaAnimation = AlphaAnimation(1.0f, 0.0f)
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
-            fabPing.y = fabPing.y + distance * 1
+            fabGen.y = fabGen.y + distance * 1
             fabScan.y = fabScan.y + distance * 2
-            fabGen.y = fabGen.y + distance * 3
+            fabPing.y = fabPing.y + distance * 3
         } else {
             pingAnimation = TranslateAnimation(0f, 0f, distance * 1, 0f)
             scanAnimation = TranslateAnimation(0f, 0f, distance * 2, 0f)
-            generateAnimation = TranslateAnimation(0f, 0f, distance * 3, 0f)
+            showAnimation = TranslateAnimation(0f, 0f, distance * 3, 0f)
             alphaAnimation = AlphaAnimation(0.0f, 1.0f)
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-            fabPing.y = fabPing.y - distance * 1
+            fabGen.y = fabGen.y - distance * 1
             fabScan.y = fabScan.y - distance * 2
-            fabGen.y = fabGen.y - distance * 3
+            fabPing.y = fabPing.y - distance * 3
         }
 
         scanSet.addAnimation(scanAnimation)
@@ -184,7 +195,7 @@ class ContactListFragment : Fragment() {
         scanSet.fillAfter = true
         scanSet.duration = duration.toLong()
 
-        showSet.addAnimation(generateAnimation)
+        showSet.addAnimation(showAnimation)
         showSet.addAnimation(alphaAnimation)
         showSet.fillAfter = true
         showSet.duration = duration.toLong()
@@ -194,9 +205,11 @@ class ContactListFragment : Fragment() {
         pingSet.fillAfter = true
         pingSet.duration = duration.toLong()
 
-        fabPing.visibility = View.VISIBLE
-        fabScan.visibility = View.VISIBLE
         fabGen.visibility = View.VISIBLE
+        fabScan.visibility = View.VISIBLE
+        if (showPingAllButton()) {
+            fabPing.visibility = View.VISIBLE
+        }
 
         fabScan.startAnimation(scanSet)
         fabGen.startAnimation(showSet)
@@ -211,9 +224,12 @@ class ContactListFragment : Fragment() {
             fabScan.clearAnimation()
             fabGen.clearAnimation()
             fabPing.clearAnimation()
-            fabPing.y = fabPing.y + 200 * 1
+
+            fabGen.y = fabGen.y + 200 * 1
             fabScan.y = fabScan.y + 200 * 2
-            fabGen.y = fabGen.y + 200 * 3
+            if (showPingAllButton()) {
+                fabPing.y = fabPing.y + 200 * 3
+            }
             fabExpanded = false
         }
     }

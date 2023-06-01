@@ -74,7 +74,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         }
 
         addButton.setOnClickListener {
-            var address = customAddressTextEdit.text?.toString() ?: return@setOnClickListener
+            var address = customAddressTextEdit.text!!.toString()
             address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                 address.lowercase(Locale.ROOT)
             } else if (AddressUtils.isMACAddress(address)) {
@@ -102,7 +102,6 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             addressListViewAdapter.storedAddresses.add(ae)
 
             addressListViewAdapter.notifyDataSetChanged()
-            addressListView.adapter = addressListViewAdapter
 
             customAddressTextEdit.setText("")
         }
@@ -137,7 +136,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         binder = null
     }
 
-    inner class AddressListAdapter(private val context: Activity) : BaseAdapter() {
+    inner class AddressListAdapter(private val context: Activity): BaseAdapter() {
         // hack, we want android:textColorPrimary
         private val defaultColor = Color.parseColor(if (isNightmodeEnabled(context)) "#DD0000" else "#000000")
         private val markColor = Color.parseColor("#39b300")
@@ -172,65 +171,61 @@ class AddressActivity : BaseActivity(), ServiceConnection {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val x = convertView ?: context.layoutInflater.inflate(
-                R.layout.activity_address_item,
-                parent,
-                false
-            )
-            val label = x.findViewById<TextView>(R.id.label)
-            val icon = x.findViewById<ImageView>(R.id.icon)
-            label.let {
-                if (isEmpty) {
-                    label.text = getString(R.string.empty_list_item)
-                    label.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                    label.setTextColor(defaultColor)
-                    icon.isVisible = false
-                } else {
-                    val ae = allAddresses[position]
+            val item = convertView ?: context.layoutInflater.inflate(
+                    R.layout.activity_address_item, parent, false)
+            val label = item.findViewById<TextView>(R.id.label)
+            val icon = item.findViewById<ImageView>(R.id.icon)
+            if (isEmpty) {
+                // no addresses
+                label.text = getString(R.string.empty_list_item)
+                label.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                label.setTextColor(defaultColor)
+                icon.isVisible = false
+            } else {
+                val ae = allAddresses[position]
 
-                    val isCustom = ae !in this.systemAddresses
-                    icon.isVisible = isCustom
-                    if (isCustom) {
-                        icon.setOnClickListener {
-                            storedAddresses.remove(ae)
-                            if (ae !in systemAddresses) {
-                                allAddresses.remove(ae)
-                            }
-                            notifyDataSetChanged()
+                val isCustom = ae !in this.systemAddresses
+                icon.isVisible = isCustom
+                if (isCustom) {
+                    icon.setOnClickListener {
+                        storedAddresses.remove(ae)
+                        if (ae !in systemAddresses) {
+                            allAddresses.remove(ae)
                         }
-                    } else {
-                        icon.setOnClickListener(null)
+                        notifyDataSetChanged()
                     }
+                } else {
+                    icon.setOnClickListener(null)
+                }
 
-                    val info = ArrayList<String>()
+                val info = ArrayList<String>()
 
-                    // add device name in brackets
-                    if (ae.device.isNotEmpty() && !ae.address.endsWith("%${ae.device}")) {
-                        info.add(ae.device)
-                    }
+                // add device name in brackets
+                if (ae.device.isNotEmpty() && !ae.address.endsWith("%${ae.device}")) {
+                    info.add(ae.device)
+                }
 
-                    when (AddressUtils.getAddressType(ae.address)) {
-                        AddressType.GLOBAL_MAC -> info.add("<hardware>")
-                        AddressType.MULTICAST_MAC,
-                        AddressType.MULTICAST_IP -> info.add("<multicast>")
-                        else -> {}
-                    }
+                when (AddressUtils.getAddressType(ae.address)) {
+                    AddressType.GLOBAL_MAC -> info.add("<hardware>")
+                    AddressType.MULTICAST_MAC,
+                    AddressType.MULTICAST_IP -> info.add("<multicast>")
+                    else -> {}
+                }
 
-                    if (info.isNotEmpty()) {
-                        label.text = "${ae.address} (${info.joinToString()})"
-                    } else {
-                        label.text = "${ae.address}"
-                    }
+                if (info.isNotEmpty()) {
+                    label.text = "${ae.address} (${info.joinToString()})"
+                } else {
+                    label.text = "${ae.address}"
+                }
 
-                    if (ae in storedAddresses) {
-                        label.setTextColor(markColor)
-                    } else {
-                        label.setTextColor(defaultColor)
-                    }
+                if (ae in storedAddresses) {
+                    label.setTextColor(markColor)
+                } else {
+                    label.setTextColor(defaultColor)
                 }
             }
 
-            return x
+            return item
         }
 
         fun toggle(pos: Int) {

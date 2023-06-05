@@ -873,7 +873,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
         // get matching button icon
         val icon = when (mode) {
-            RTCAudioManager.SpeakerphoneMode.AUTO -> R.drawable.ic_audio_device_bluetooth // preferred device
+            RTCAudioManager.SpeakerphoneMode.AUTO -> R.drawable.ic_audio_device_automatic // preferred device
             RTCAudioManager.SpeakerphoneMode.ON -> R.drawable.ic_audio_device_speakerphone // enforced setting
             RTCAudioManager.SpeakerphoneMode.OFF -> R.drawable.ic_audio_device_phone // enforced setting
         }

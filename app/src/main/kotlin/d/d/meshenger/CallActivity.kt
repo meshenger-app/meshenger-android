@@ -752,9 +752,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 val nameOld = getAudioDeviceName(oldDevice)
                 val nameNew = getAudioDeviceName(newDevice)
                 if (rtcAudioManager.getSpeakerphoneMode() == RTCAudioManager.SpeakerphoneMode.AUTO) {
-                    showTextMessage("$nameOld => $nameNew (auto)")
+                    showTextMessage("$nameNew (auto)")
                 } else {
-                    showTextMessage("$nameOld => $nameNew (fixed)")
+                    showTextMessage("$nameNew (fixed)")
                 }
                 updateSpeakerphoneIcon()
             }

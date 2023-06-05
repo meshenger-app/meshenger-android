@@ -46,6 +46,7 @@ class RTCAudioManager(contextArg: Context) {
     private var isSpeakerphoneOn = false
 
     private val bluetoothManager = RTCBluetoothManager(contextArg, this)
+    private var requestBluetoothPermissions = true
 
     /**
      * This method needs to be called when the proximity sensor reports a state change,
@@ -125,6 +126,7 @@ class RTCAudioManager(contextArg: Context) {
         }
 
         audioManagerInitialized = true
+        requestBluetoothPermissions = true
 
         // Store current audio state so we can restore it when stop() is called.
         savedAudioMode = audioManager.mode
@@ -198,6 +200,7 @@ class RTCAudioManager(contextArg: Context) {
 
         isProximityNear = true
         isSpeakerphoneOn = false
+        requestBluetoothPermissions = true
     }
 
     fun getMicrophoneEnabled(): Boolean {
@@ -219,18 +222,19 @@ class RTCAudioManager(contextArg: Context) {
 
         val oldAudioDevice = getAudioDevice()
 
-        if (!bluetoothManager.hasBluetoothPermissions()) {
+        if (bluetoothManager.hasBluetoothPermissions()) {
+            Log.d(this, "updateAudioDeviceState() BT device handling")
+            if (speakerphoneMode == SpeakerphoneMode.AUTO) {
+                bluetoothManager.tryConnect()
+            } else {
+                bluetoothManager.tryDisconnect()
+            }
+        } else {
             Log.d(this, "updateAudioDeviceState() BT permissions missing")
-            // ask for BT permissions
-            audioManagerEvents?.onBluetoothConnectPermissionRequired()
-        } else {
-            Log.d(this, "updateAudioDeviceState() BT permissions granted")
-        }
-
-        if (speakerphoneMode == SpeakerphoneMode.AUTO) {
-            bluetoothManager.tryConnect()
-        } else {
-            bluetoothManager.tryDisconnect()
+            if (speakerphoneMode == SpeakerphoneMode.AUTO && requestBluetoothPermissions) {
+                audioManagerEvents?.onBluetoothConnectPermissionRequired()
+                requestBluetoothPermissions = false
+            }
         }
 
         // The main audio logic.

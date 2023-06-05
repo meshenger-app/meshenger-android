@@ -745,11 +745,11 @@ class RTCCall : RTCPeerConnection {
         Log.d(this, "cleanup()")
         Utils.checkIsOnMainThread()
 
-        execute {
-            Log.d(this, "cleanup() executor start")
-            setCallContext(null)
-            setStatsCollector(null)
+        Log.d(this, "cleanup() executor start")
+        setCallContext(null)
+        setStatsCollector(null)
 
+        execute {
             try {
                 peerConnection?.close()
             } catch (e: Exception) {

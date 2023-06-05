@@ -964,8 +964,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         Log.d(this, "onDestroy()")
 
         try {
-            currentCall.setCallContext(null)
-
             proximitySensor.stop()
 
             stopRinging()

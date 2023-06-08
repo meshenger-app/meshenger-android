@@ -18,6 +18,8 @@
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_wired_headset">Wired Headset</string>
     <string name="audio_device_earpiece">Earpiece</string>
+    <string name="audio_device_auto">%1$s (auto)</string>
+    <string name="audio_device_fixed">%1$s (fixed)</string>
     <string name="import_dialog">Import new settings and add %1$d contacts and %2$d events?</string>
     <string name="password_title">Password</string>
     <string name="missing_camera_permission">Missing permission. Camera not available.</string>

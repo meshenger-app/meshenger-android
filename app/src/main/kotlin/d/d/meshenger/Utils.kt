@@ -29,7 +29,7 @@ internal object Utils {
 
     fun checkIsNotOnMainThread() {
         if (Thread.currentThread() == Looper.getMainLooper().thread) {
-            throw IllegalStateException("Code must _not_ run on the main thread!")
+            throw IllegalStateException("Code must not run on the main thread!")
         }
     }
 

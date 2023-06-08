@@ -53,8 +53,11 @@
     <string-array name="cameraResolutionLabels">
         <item>Auto</item>
         <item>3840x2160</item>
+        <item>2560x1440</item>
         <item>1920x1080</item>
         <item>1280x720</item>
+        <item>1024x600</item>
+        <item>800x600</item>
         <item>640x480</item>
         <item>320x240</item>
     </string-array>
@@ -62,8 +65,11 @@
     <string-array name="cameraResolutionValues">
         <item>auto</item>
         <item>3840x2160</item>
+        <item>2560x1440</item>
         <item>1920x1080</item>
         <item>1280x720</item>
+        <item>1024x600</item>
+        <item>800x600</item>
         <item>640x480</item>
         <item>320x240</item>
     </string-array>

@@ -57,9 +57,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
         initToolbar()
         permissionToDrawOverlays()
 
-        viewPager = findViewById(R.id.container)
-
         instance = this
+
+        viewPager = findViewById(R.id.container)
+        viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         bindService(Intent(this, MainService::class.java), this, 0)
     }
@@ -145,7 +146,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         val settings = binder!!.getSettings()
 
-        viewPager.adapter = ViewPagerFragmentAdapter(this)
+        (viewPager.adapter as ViewPagerFragmentAdapter).let {
+            it.ready = true
+            it.notifyDataSetChanged()
+        }
 
         val tabLayout = findViewById<TabLayout>(R.id.tabs)
         if (settings.disableCallHistory) {
@@ -277,8 +281,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
+        var ready = false
+
         override fun getItemCount(): Int {
-            return 2
+            return if (ready) 2 else 0
         }
 
         override fun createFragment(position: Int): Fragment {

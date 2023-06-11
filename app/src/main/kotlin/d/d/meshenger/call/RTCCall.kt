@@ -159,7 +159,7 @@ class RTCCall : RTCPeerConnection {
                     when (o.getString(STATE_CHANGE_MESSAGE)) {
                         CAMERA_ENABLE_MESSAGE -> callActivity?.onRemoteVideoEnabled(true)
                         CAMERA_DISABLE_MESSAGE -> callActivity?.onRemoteVideoEnabled(false)
-                        HANGUP_MESSAGE -> reportStateChange(CallState.DISMISSED)
+                        HANGUP_MESSAGE -> reportStateChange(CallState.ENDED)
                         else -> {}
                     }
                 } else {

@@ -34,10 +34,6 @@ class Event(
         return Contact(name, publicKey, addresses)
     }
 
-    fun isMissedCall(): Boolean {
-        return type == Type.INCOMING_MISSED || type == Type.OUTGOING_MISSED
-    }
-
     companion object {
         private fun eventTypeToString(value: Type): String {
             return when (value) {

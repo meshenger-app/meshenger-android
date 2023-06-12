@@ -5,8 +5,8 @@ import org.json.JSONObject
 import java.util.*
 
 class Events {
-    var eventsViewed = Date()
     val eventList = mutableListOf<Event>()
+    var eventsMissed = 0
 
     fun destroy() {
         // no sensitive data
@@ -38,20 +38,6 @@ class Events {
         }
     }
 
-    fun setEventsViewedDate() {
-        eventsViewed = Date()
-    }
-
-    fun getMissedCalls(): List<Event> {
-        val calls = mutableListOf<Event>()
-        for (event in eventList) {
-            if (event.isMissedCall() && event.date.time >= eventsViewed.time) {
-                calls.add(event)
-            }
-        }
-        return calls
-    }
-
     companion object {
         fun fromJSON(obj: JSONObject): Events {
             val eventList = mutableListOf<Event>()
@@ -64,11 +50,10 @@ class Events {
 
             // sort by date / oldest first
             eventList.sortWith(Comparator { lhs: Event, rhs: Event -> lhs.date.compareTo(rhs.date) })
-            val eventsViewed = Date(obj.getString("events_viewed").toLong(10))
 
             val events = Events()
             events.eventList.addAll(eventList)
-            events.eventsViewed = eventsViewed
+            events.eventsMissed = obj.getInt("events_missed")
             return events
         }
 
@@ -79,10 +64,7 @@ class Events {
                 array.put(Event.toJSON(event))
             }
             obj.put("entries", array)
-            obj.put(
-                "events_viewed",
-                events.eventsViewed.time.toString()
-            )
+            obj.put("events_missed", events.eventsMissed)
             return obj
         }
     }

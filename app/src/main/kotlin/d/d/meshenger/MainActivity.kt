@@ -174,7 +174,14 @@ class MainActivity : BaseActivity(), ServiceConnection {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.title_contacts)
-                else -> getString(R.string.title_calls)
+                else -> {
+                    val eventsMissed = binder!!.getEvents().eventsMissed
+                    if (eventsMissed == 0) {
+                        getString(R.string.title_calls)
+                    } else {
+                        String.format("%s (%d)", getString(R.string.title_calls), eventsMissed)
+                    }
+                }
             }
         }.attach()
 
@@ -187,8 +194,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
         MainService.refreshEvents(this)
         MainService.refreshContacts(this)
 
-        // clear notification of any missed calls
-        binder!!.showDefaultNotification()
+        // show notification message
+        binder!!.updateNotification()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
@@ -257,21 +264,19 @@ class MainActivity : BaseActivity(), ServiceConnection {
         return super.onOptionsItemSelected(item)
     }
 
+    fun updateMissedCalls() {
+        Log.d(this, "updateMissedCalls()")
+        // update event tab title
+        (viewPager.adapter as ViewPagerFragmentAdapter).let {
+            it.notifyDataSetChanged()
+        }
+    }
+
     override fun onResume() {
         Log.d(this, "onResume()")
         super.onResume()
 
-        binder?.let {
-            // clear notification of any missed calls
-            it.showDefaultNotification()
-
-            if (it.getSettings().automaticStatusUpdates) {
-                it.pingContacts(it.getContacts().contactList)
-            }
-        }
-
-        MainService.refreshEvents(this)
-        MainService.refreshContacts(this)
+        updateMissedCalls()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

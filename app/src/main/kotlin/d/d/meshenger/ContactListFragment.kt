@@ -147,6 +147,20 @@ class ContactListFragment : Fragment() {
         super.onDestroy()
     }
 
+    override fun onResume() {
+        Log.d(this, "onResume()")
+        super.onResume()
+
+        val activity = requireActivity() as MainActivity
+        activity.binder?.let {
+            if (it.getSettings().automaticStatusUpdates) {
+                it.pingContacts(it.getContacts().contactList)
+            }
+        }
+
+        MainService.refreshContacts(requireActivity())
+    }
+
     private fun showPingAllButton(): Boolean {
         val binder = (activity as MainActivity).binder
         if (binder != null) {

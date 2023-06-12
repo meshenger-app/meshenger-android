@@ -279,7 +279,10 @@ class Database {
             }
 
             if (newFrom == "4.1.8") {
-                // nothing to do
+                val eventsObject = db.getJSONObject("events")
+                // replace variable
+                eventsObject.remove("events_viewed")
+                eventsObject.put("events_missed", 0)
                 newFrom = "4.1.9"
             }
 

@@ -27,7 +27,6 @@ class MainService : Service(), Runnable {
     private val binder = MainBinder()
     private var serverSocket: ServerSocket? = null
     private var database: Database? = null
-    private var missedCallCounter = 0
     var firstStart = false
     private var databasePath = ""
     var databasePassword = ""
@@ -40,19 +39,6 @@ class MainService : Service(), Runnable {
         databasePath = this.filesDir.toString() + "/database.bin"
         // handle incoming connections
         Thread(this).start()
-    }
-
-    private fun showDefaultNotification() {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val message = resources.getText(R.string.listen_for_incoming_calls).toString()
-        val notification = createNotification(message, false)
-        manager.notify(NOTIFICATION_ID, notification)
-    }
-
-    private fun showNotificationMessage(message: String) {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notification = createNotification(message, true)
-        manager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun createNotification(text: String, showSinceWhen: Boolean): Notification {
@@ -264,12 +250,27 @@ class MainService : Service(), Runnable {
         }
     }
 
-    private fun showMissedCallFrom(publicKey: ByteArray) {
-        Log.d(this, "showMissedCallFrom()")
-        missedCallCounter += 1
-        val contact = database?.contacts?.getContactByPublicKey(publicKey)
-        val name = contact?.name ?: getString(R.string.unknown_caller)
-        showNotificationMessage(String.format(getString(R.string.missed_call_from), name, missedCallCounter))
+    private fun updateNotification() {
+        Log.d(this, "updateNotification()")
+
+        //val missedCalls = binder.getEvents().getMissedCalls()
+        val eventList = binder.getEvents().eventList
+
+        val eventsMissed = binder.getEvents().eventsMissed
+        Log.d(this, "updateNotification() eventsMissed=$eventsMissed")
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val message = if (eventList.isEmpty() || eventsMissed == 0) {
+            // default message
+            resources.getText(R.string.listen_for_incoming_calls).toString()
+        } else {
+            // missed calls
+            val publicKey = eventList.last().publicKey
+            val contact = binder.getContacts().getContactByPublicKey(publicKey)
+            val name = contact?.name ?: getString(R.string.unknown_caller)
+            String.format(getString(R.string.missed_call_from), name, eventsMissed)
+        }
+        val notification = createNotification(message, false)
+        manager.notify(NOTIFICATION_ID, notification)
     }
 
     /*
@@ -311,10 +312,8 @@ class MainService : Service(), Runnable {
             return getDatabase().events
         }
 
-        fun showDefaultNotification() {
-            this@MainService.missedCallCounter = 0
-            Log.d(this, "showDefaultNotification()")
-            this@MainService.showDefaultNotification()
+        fun updateNotification() {
+            this@MainService.updateNotification()
         }
 
         fun addContact(contact: Contact) {
@@ -360,14 +359,16 @@ class MainService : Service(), Runnable {
 
         fun addEvent(event: Event) {
             Log.d(this, "addEvent() event.type=${event.type}")
+
             // update notification
             if (event.type == Event.Type.INCOMING_MISSED) {
-                showMissedCallFrom(event.publicKey)
+                getEvents().eventsMissed += 1
+                updateNotification()
             }
 
             if (!getSettings().disableCallHistory) {
-                saveDatabase()
                 getEvents().addEvent(event)
+                saveDatabase()
                 MainService.refreshEvents(this@MainService)
             }
         }

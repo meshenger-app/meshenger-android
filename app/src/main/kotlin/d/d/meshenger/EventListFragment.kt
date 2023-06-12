@@ -153,6 +153,8 @@ class EventListFragment : Fragment() {
         val contacts = binder.getContacts().contactList
 
         activity.runOnUiThread {
+            activity.updateMissedCalls()
+
             eventListAdapter.update(events, contacts)
             eventListAdapter.notifyDataSetChanged()
             eventListView.adapter = eventListAdapter
@@ -179,6 +181,18 @@ class EventListFragment : Fragment() {
         } else {
             // ignore - not expected to happen
         }
+    }
+
+    override fun onResume() {
+        Log.d(this, "onResume()")
+        super.onResume()
+
+        val activity = requireActivity() as MainActivity
+        activity.binder?. let {
+            it.getEvents().eventsMissed = 0
+        }
+
+        MainService.refreshEvents(requireActivity())
     }
 
     private fun deleteEventGroup(eventGroup: List<Event>) {

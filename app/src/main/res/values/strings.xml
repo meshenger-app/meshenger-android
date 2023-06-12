@@ -13,6 +13,8 @@
     <string name="ping">Ping</string>
     <string name="ping_contact">Ping %1$s</string>
     <string name="ping_all_contacts">Ping All Contacts</string>
+    <string name="clear_events">Clear Events</string>
+    <string name="remove_all_events">Remove all events?</string>
     <string name="enter_password">Enter password</string>
     <string name="audio_device_speakerphone">Speakerphone</string>
     <string name="audio_device_bluetooth">Bluetooth</string>

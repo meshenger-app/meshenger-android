@@ -1,16 +1,14 @@
 package d.d.meshenger
 
 import android.app.Dialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,7 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class EventListFragment : Fragment() {
     private lateinit var eventListAdapter: EventListAdapter
     private lateinit var eventListView: ListView
-    private lateinit var fabDelete: FloatingActionButton
+    private lateinit var fabClear: FloatingActionButton
 
     private val onEventClickListener = AdapterView.OnItemClickListener { _, _, i, _ ->
         Log.d(this, "onItemClick")
@@ -47,7 +45,7 @@ class EventListFragment : Fragment() {
         }
     }
 
-    private val onContactLongClickListener = AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
+    private val onEventLongClickListener = AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
         Log.d(this, "onItemLongClick")
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return@OnItemLongClickListener false
@@ -57,6 +55,7 @@ class EventListFragment : Fragment() {
         val menu = PopupMenu(activity, view)
         val res = resources
         val add = res.getString(R.string.add)
+        val delete = res.getString(R.string.delete)
         val block = res.getString(R.string.block)
         val unblock = res.getString(R.string.unblock)
         val contact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
@@ -74,6 +73,8 @@ class EventListFragment : Fragment() {
             }
         }
 
+        menu.menu.add(delete)
+
         menu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.title.toString()) {
                 add -> {
@@ -84,6 +85,9 @@ class EventListFragment : Fragment() {
                 }
                 unblock -> {
                     setBlocked(latestEvent, false)
+                }
+                delete -> {
+                    deleteEventGroup(eventGroup)
                 }
             }
             false
@@ -99,24 +103,19 @@ class EventListFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_event_list, container, false)
         eventListView = view.findViewById(R.id.eventList)
-        fabDelete = view.findViewById(R.id.fabDelete)
+        fabClear = view.findViewById(R.id.fabClear)
 
         val activity = requireActivity()
 
-        fabDelete.setOnClickListener {
-            Log.d(this, "fabDelete")
-            val binder = (activity as MainActivity).binder!!
-
-            binder.clearEvents()
-            binder.saveDatabase()
-
-            refreshEventList()
+        fabClear.setOnClickListener {
+            Log.d(this, "fabClear")
+            showClearEventsDialog()
         }
 
         eventListAdapter = EventListAdapter(activity, R.layout.item_event, emptyList(), emptyList())
         eventListView.adapter = eventListAdapter
         eventListView.onItemClickListener = onEventClickListener
-        eventListView.onItemLongClickListener = onContactLongClickListener
+        eventListView.onItemLongClickListener = onEventLongClickListener
 
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))
@@ -148,8 +147,8 @@ class EventListFragment : Fragment() {
     private fun refreshEventList() {
         Log.d(this, "refreshEventList")
 
-        val activity = requireActivity()
-        val binder = (activity as MainActivity).binder ?: return
+        val activity = requireActivity() as MainActivity
+        val binder = activity.binder ?: return
         val events = binder.getEvents().eventList
         val contacts = binder.getContacts().contactList
 
@@ -180,6 +179,41 @@ class EventListFragment : Fragment() {
         } else {
             // ignore - not expected to happen
         }
+    }
+
+    private fun deleteEventGroup(eventGroup: List<Event>) {
+        Log.d(this, "removeEventGroup()")
+        val activity = requireActivity() as MainActivity
+        val binder = activity.binder ?: return
+
+        binder.deleteEvents(eventGroup.map { it.date })
+    }
+
+    private fun showClearEventsDialog() {
+        Log.d(this, "showClearEventsDialog()")
+
+        val activity = requireActivity() as MainActivity
+        val binder = activity.binder ?: return
+        val builder = AlertDialog.Builder(activity)
+        builder.setTitle(R.string.clear_events)
+        builder.setMessage(R.string.remove_all_events)
+        builder.setCancelable(false) // prevent key shortcut to cancel dialog
+        builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
+            binder.clearEvents()
+            binder.saveDatabase()
+
+            refreshEventList()
+            Toast.makeText(activity, R.string.done, Toast.LENGTH_SHORT).show()
+            dialog.cancel()
+        }
+
+        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, _: Int ->
+            dialog.cancel()
+        }
+
+        // create dialog box
+        val alert = builder.create()
+        alert.show()
     }
 
     // only available for unknown contacts

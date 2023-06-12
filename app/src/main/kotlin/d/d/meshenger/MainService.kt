@@ -335,6 +335,14 @@ class MainService : Service(), Runnable {
             MainService.refreshEvents(this@MainService)
         }
 
+        fun deleteEvents(eventDates: List<Date>) {
+            getDatabase().events.deleteEvents(eventDates)
+            saveDatabase()
+
+            MainService.refreshContacts(this@MainService)
+            MainService.refreshEvents(this@MainService)
+        }
+
         fun shutdown() {
             this@MainService.shutdown()
         }

@@ -16,6 +16,14 @@ class Events {
         eventList.clear()
     }
 
+    fun deleteEvents(eventDates: List<Date>) {
+        for (date in eventDates) {
+            eventList.removeAll {
+                it.date in eventDates
+            }
+        }
+    }
+
     fun addEvent(event: Event) {
         if (event !in eventList) {
             eventList.add(event)

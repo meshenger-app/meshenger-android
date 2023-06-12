@@ -571,7 +571,15 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 Log.d(this@CallActivity, "onServiceConnected()")
                 binder = iBinder as MainService.MainBinder
-                currentCall = RTCPeerConnection.incomingRTCCall!!
+                currentCall = RTCPeerConnection.incomingRTCCall ?: run {
+                    // This happens when the call is missed while in background.
+                    // and then the CallActivity is started from Recent Apps.
+                    Log.d(this, "initIncomingCall() no call active => start MainActivity")
+                    val intent = Intent(getContext(), MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    return
+                }
                 currentCall.setRemoteRenderer(remoteProxyVideoSink)
                 currentCall.setLocalRenderer(localProxyVideoSink)
                 currentCall.setCallContext(this@CallActivity)
@@ -972,7 +980,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
             stopRinging()
 
-            currentCall.cleanup()
+            if (this::currentCall.isInitialized) {
+                currentCall.cleanup()
+            }
 
             if (callEventType != Event.Type.UNKNOWN) {
                 val event = Event(contact.publicKey, contact.lastWorkingAddress, callEventType, Date())
@@ -991,7 +1001,9 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             pipRenderer.release()
             fullscreenRenderer.release()
 
-            currentCall.releaseCamera()
+            if (this::currentCall.isInitialized) {
+                currentCall.releaseCamera()
+            }
 
             eglBase.release()
         } catch (e: Exception) {

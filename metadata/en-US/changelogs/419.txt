@@ -1,0 +1,5 @@
+* fix crash when missed call is brought to foreground
+* add dialogs for deletion of all and single call events
+* show missed call count in call history title
+* more selectable resolutions in settings
+* show hangup from caller as ended call and not as declined

@@ -625,7 +625,6 @@ class RTCCall : RTCPeerConnection {
 
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         try {
-                            val settings = binder.getSettings()
                             val ownPublicKey = settings.publicKey
                             val ownSecretKey = settings.secretKey
                             val pw = PacketWriter(commSocket!!)

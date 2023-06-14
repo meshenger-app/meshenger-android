@@ -45,7 +45,7 @@ class EventListFragment : Fragment() {
         }
     }
 
-    private val onEventLongClickListener = AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
+    private val onEventLongClickListener = AdapterView.OnItemLongClickListener { _, view, i, _ ->
         Log.d(this, "onItemLongClick")
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return@OnItemLongClickListener false
@@ -153,7 +153,7 @@ class EventListFragment : Fragment() {
         val contacts = binder.getContacts().contactList
 
         activity.runOnUiThread {
-            activity.updateMissedCalls()
+            activity.updateEventTabTitle()
 
             eventListAdapter.update(events, contacts)
             eventListAdapter.notifyDataSetChanged()

@@ -146,6 +146,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         val settings = binder!!.getSettings()
 
+        // data source for the views was not ready before
         (viewPager.adapter as ViewPagerFragmentAdapter).let {
             it.ready = true
             it.notifyDataSetChanged()
@@ -186,7 +187,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }.attach()
 
         if (!addressWarningShown) {
-            // onyl show once since app start
+            // only show once since app start
             showInvalidAddressSettingsWarning()
             addressWarningShown = true
         }
@@ -264,8 +265,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
         return super.onOptionsItemSelected(item)
     }
 
-    fun updateMissedCalls() {
-        Log.d(this, "updateMissedCalls()")
+    fun updateEventTabTitle() {
+        Log.d(this, "updateEventTabTitle()")
         // update event tab title
         (viewPager.adapter as ViewPagerFragmentAdapter).let {
             it.notifyDataSetChanged()
@@ -276,7 +277,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onResume()")
         super.onResume()
 
-        updateMissedCalls()
+        updateEventTabTitle()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

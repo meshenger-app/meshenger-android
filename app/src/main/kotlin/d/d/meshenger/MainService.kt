@@ -199,6 +199,7 @@ class MainService : Service(), Runnable {
             // ignore
         }
 
+        // save database on exit
         saveDatabase()
         database?.destroy()
 
@@ -253,11 +254,8 @@ class MainService : Service(), Runnable {
     private fun updateNotification() {
         Log.d(this, "updateNotification()")
 
-        //val missedCalls = binder.getEvents().getMissedCalls()
         val eventList = binder.getEvents().eventList
-
         val eventsMissed = binder.getEvents().eventsMissed
-        Log.d(this, "updateNotification() eventsMissed=$eventsMissed")
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val message = if (eventList.isEmpty() || eventsMissed == 0) {
             // default message

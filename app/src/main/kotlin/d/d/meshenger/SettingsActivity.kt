@@ -341,7 +341,6 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .show()
     }
 
-
     private fun showChangeConnectRetriesDialog() {
         val settings = binder!!.getSettings()
         val dialog = Dialog(this)

@@ -194,9 +194,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         MainService.refreshEvents(this)
         MainService.refreshContacts(this)
-
-        // show notification message
-        binder!!.updateNotification()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

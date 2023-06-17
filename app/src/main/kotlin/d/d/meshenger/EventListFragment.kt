@@ -190,6 +190,7 @@ class EventListFragment : Fragment() {
         val activity = requireActivity() as MainActivity
         activity.binder?. let {
             it.getEvents().eventsMissed = 0
+            it.updateNotification();
         }
 
         MainService.refreshEvents(requireActivity())

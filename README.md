@@ -4,7 +4,7 @@ Voice- and video calls without any server or Internet access. Simply scan each o
 
 Features:
 
-- audio and video calls through IPv6 [RiV-mesh]([url](https://github.com/RiV-chain/RiV-mesh)) network
+- audio and video calls through IPv6 [RiV-mesh](https://github.com/RiV-chain/RiV-mesh) network
 - encrypted communication
 - database backup
 

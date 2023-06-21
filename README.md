@@ -4,10 +4,9 @@ Voice- and video calls without any server or Internet access. Simply scan each o
 
 Features:
 
-- audio and video calls
+- audio and video calls through IPv6 RiV-mesh network
 - encrypted communication
 - database backup
-- add custom addresses to reach contacts
 
 ## Documentation
 

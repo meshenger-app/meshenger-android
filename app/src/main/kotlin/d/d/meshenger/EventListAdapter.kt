@@ -107,7 +107,7 @@ internal class EventListAdapter(
         }
 
         val addressTV = view.findViewById<TextView>(R.id.call_address)
-        val address = latestEvent.address ?. address
+        val address = eventGroup.lastOrNull { it.address != null } ?.address
 
         val addressString = AddressUtils.inetSocketAddressToString(address)
         if (addressString != null) {

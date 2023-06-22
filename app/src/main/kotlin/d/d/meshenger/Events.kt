@@ -31,7 +31,7 @@ class Events {
             // sort by date / oldest first
             eventList.sortWith(Comparator { lhs: Event, rhs: Event -> lhs.date.compareTo(rhs.date) })
 
-            if (eventList.size > 100) {
+            while (eventList.size > 100) {
                 // remove first item
                 eventList.removeAt(0)
             }

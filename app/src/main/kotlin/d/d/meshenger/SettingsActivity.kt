@@ -56,11 +56,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun initViews() {
-        if (binder == null) {
-            return
-        }
-
-        val settings = binder!!.getSettings()
+        val binder = binder ?: return
+        val settings = binder.getSettings()
 
         findViewById<TextView>(R.id.nameTv)
             .text = settings.username.ifEmpty { getString(R.string.none) }
@@ -74,7 +71,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 startActivity(Intent(this@SettingsActivity, AddressActivity::class.java))
             }
 
-        val databasePassword = binder!!.getService().databasePassword
+        val databasePassword = binder.getService().databasePassword
         findViewById<TextView>(R.id.databasePasswordTv)
             .text = if (databasePassword.isEmpty()) getString(R.string.none) else "*".repeat(databasePassword.length)
         findViewById<View>(R.id.databasePasswordLayout)
@@ -88,8 +85,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<SwitchMaterial>(R.id.blockUnknownSwitch).apply {
             isChecked = settings.blockUnknown
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.blockUnknown = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.blockUnknown = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
@@ -99,9 +99,10 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.nightModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.nightMode = it
-                        binder!!.saveDatabase()
+                    val binder = binder
+                    if (newValue != null && binder != null) {
+                        settings.nightMode = newValue
+                        binder.saveDatabase()
                         setDefaultNightMode(newValue)
                         applyNightMode()
                         startActivity(Intent(this@SettingsActivity, SettingsActivity::class.java))
@@ -116,9 +117,10 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.speakerphoneModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.speakerphoneMode = it
-                        binder!!.saveDatabase()
+                    val binder = binder
+                    if (newValue != null && binder != null) {
+                        settings.speakerphoneMode = newValue
+                        binder.saveDatabase()
                     }
                 }
             })
@@ -136,44 +138,59 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<SwitchMaterial>(R.id.promptOutgoingCallsSwitch).apply {
             isChecked = settings.promptOutgoingCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.promptOutgoingCalls = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.promptOutgoingCalls = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableCallHistorySwitch).apply {
             isChecked = settings.disableCallHistory
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.disableCallHistory = isChecked
-                if (isChecked) {
-                    binder!!.clearEvents()
+                val binder = binder
+                if (binder != null) {
+                    settings.disableCallHistory = isChecked
+                    if (isChecked) {
+                        binder.clearEvents()
+                    }
+                    binder.saveDatabase()
                 }
-                binder!!.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.startOnBootupSwitch).apply {
             isChecked = settings.startOnBootup
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.startOnBootup = isChecked
-                BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.startOnBootup = isChecked
+                    BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.pushToTalkSwitch).apply {
             isChecked = settings.pushToTalk
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.pushToTalk = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.pushToTalk = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableProximitySensorSwitch).apply {
             isChecked = settings.disableProximitySensor
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.disableProximitySensor = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.disableProximitySensor = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
@@ -183,9 +200,9 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.videoDegradationModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.videoDegradationMode = it
-                        applyVideoDegradationMode(it)
+                    if (newValue != null) {
+                        settings.videoDegradationMode = newValue
+                        applyVideoDegradationMode(newValue)
                     }
                 }
             })
@@ -196,8 +213,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.cameraResolutionValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.cameraResolution = it
+                    if (newValue != null) {
+                        settings.cameraResolution = newValue
                     }
                 }
             })
@@ -208,8 +225,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.cameraFramerateValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    newValue?.let {
-                        settings.cameraFramerate = it
+                    if (newValue != null) {
+                        settings.cameraFramerate = newValue
                     }
                 }
             })
@@ -220,9 +237,9 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.settingsModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    newValue?.let {
-                        settingsMode = it
-                        applySettingsMode(it)
+                    if (newValue != null) {
+                        settingsMode = newValue
+                        applySettingsMode(newValue)
                     }
                 }
             })
@@ -230,80 +247,110 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<SwitchMaterial>(R.id.useNeighborTableSwitch).apply {
             isChecked = settings.useNeighborTable
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.useNeighborTable = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.useNeighborTable = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.videoHardwareAccelerationSwitch).apply {
             isChecked = settings.videoHardwareAcceleration
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.videoHardwareAcceleration = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.videoHardwareAcceleration = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableAudioProcessingSwitch).apply {
             isChecked = settings.disableAudioProcessing
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.disableAudioProcessing = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.disableAudioProcessing = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.showUsernameAsLogoSwitch).apply {
             isChecked = settings.showUsernameAsLogo
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.showUsernameAsLogo = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.showUsernameAsLogo = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.enableMicrophoneByDefaultSwitch).apply {
             isChecked = settings.enableMicrophoneByDefault
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.enableMicrophoneByDefault = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.enableMicrophoneByDefault = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.enableCameraByDefaultSwitch).apply {
             isChecked = settings.enableCameraByDefault
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.enableCameraByDefault = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.enableCameraByDefault = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.selectFrontCameraByDefaultSwitch).apply {
             isChecked = settings.selectFrontCameraByDefault
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.selectFrontCameraByDefault = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.selectFrontCameraByDefault = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableCpuOveruseDetectionSwitch).apply {
             isChecked = settings.disableCpuOveruseDetection
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.disableCpuOveruseDetection = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.disableCpuOveruseDetection = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.autoAcceptCallsSwitch).apply {
             isChecked = settings.autoAcceptCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.autoAcceptCalls = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.autoAcceptCalls = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
         findViewById<SwitchMaterial>(R.id.automaticStatusUpdatesSwitch).apply {
             isChecked = settings.automaticStatusUpdates
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.automaticStatusUpdates = isChecked
-                binder!!.saveDatabase()
+                val binder = binder
+                if (binder != null) {
+                    settings.automaticStatusUpdates = isChecked
+                    binder.saveDatabase()
+                }
             }
         }
 
@@ -319,7 +366,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showChangeNameDialog() {
-        val settings = binder!!.getSettings()
+        val binder = binder ?: return
+        val settings = binder.getSettings()
         val username = settings.username
         val et = EditText(this)
         et.setText(username)
@@ -331,7 +379,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 val newUsername = et.text.toString().trim { it <= ' ' }
                 if (Utils.isValidName(newUsername)) {
                     settings.username = newUsername
-                    binder!!.saveDatabase()
+                    binder.saveDatabase()
                     initViews()
                 } else {
                     Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
@@ -342,7 +390,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showChangeConnectRetriesDialog() {
-        val settings = binder!!.getSettings()
+        val binder = binder ?: return
+        val settings = binder.getSettings()
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_connect_retries)
         val connectRetriesEditText = dialog.findViewById<TextView>(R.id.connectRetriesEditText)
@@ -362,7 +411,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
             if (connectRetries in minValue..maxValue) {
                 settings.connectRetries = connectRetries
-                binder!!.saveDatabase()
+                binder.saveDatabase()
                 initViews()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
@@ -377,7 +426,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showChangeConnectTimeoutDialog() {
-        val settings = binder!!.getSettings()
+        val binder = binder ?: return
+        val settings = binder.getSettings()
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_connect_timeout)
         val connectTimeoutEditText = dialog.findViewById<TextView>(R.id.connectTimeoutEditText)
@@ -397,7 +447,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
             if (connectTimeout in minValue..maxValue) {
                 settings.connectTimeout = connectTimeout
-                binder!!.saveDatabase()
+                binder.saveDatabase()
                 initViews()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
@@ -412,7 +462,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showDatabasePasswordDialog() {
-        val databasePassword = binder!!.getService().databasePassword
+        val binder = binder ?: return
+        val databasePassword = binder.getService().databasePassword
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_database_password)
@@ -423,8 +474,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         passwordInput.setText(databasePassword)
         changeButton.setOnClickListener {
             val newPassword = passwordInput.text.toString()
-            binder!!.getService().databasePassword = newPassword
-            binder!!.saveDatabase()
+            binder.getService().databasePassword = newPassword
+            binder.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()
             dialog.cancel()
@@ -434,7 +485,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun showMenuPasswordDialog() {
-        val menuPassword = binder!!.getSettings().menuPassword
+        val binder = binder ?: return
+        val menuPassword = binder.getSettings().menuPassword
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_menu_password)
@@ -445,8 +497,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         passwordInput.setText(menuPassword)
         changeButton.setOnClickListener {
             val newPassword = passwordInput.text.toString()
-            binder!!.getSettings().menuPassword = newPassword
-            binder!!.saveDatabase()
+            binder.getSettings().menuPassword = newPassword
+            binder.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()
             dialog.cancel()

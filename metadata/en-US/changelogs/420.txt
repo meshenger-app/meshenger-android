@@ -1,0 +1,4 @@
+* fix a few potentional null pointer exceptions
+* show IPv6 format with braces in call history
+* update to WebRTC 113.0.0
+ 

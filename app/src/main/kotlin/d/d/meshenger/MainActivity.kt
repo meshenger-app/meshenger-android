@@ -252,11 +252,15 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.d(this, "onOptionsItemSelected()")
-        val settings = binder!!.getSettings()
-        if (settings.menuPassword.isEmpty()) {
-            menuAction(item.itemId)
-        } else {
-            showMenuPasswordDialog(item.itemId, settings.menuPassword)
+
+        val binder = binder
+        if (binder != null) {
+            val settings = binder.getSettings()
+            if (settings.menuPassword.isEmpty()) {
+                menuAction(item.itemId)
+            } else {
+                showMenuPasswordDialog(item.itemId, settings.menuPassword)
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -265,9 +269,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     fun updateEventTabTitle() {
         Log.d(this, "updateEventTabTitle()")
         // update event tab title
-        (viewPager.adapter as ViewPagerFragmentAdapter).let {
-            it.notifyDataSetChanged()
-        }
+        (viewPager.adapter as ViewPagerFragmentAdapter?)?.notifyDataSetChanged()
     }
 
     override fun onResume() {

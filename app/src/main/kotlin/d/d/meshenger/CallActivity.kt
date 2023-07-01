@@ -254,8 +254,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         Log.d(this, "updateControlDisplay() uiMode=$uiMode")
 
         val updateDebug = { enable: Boolean ->
-            val cameraEnabled = currentCall.getCameraEnabled()
-            if (enable && cameraEnabled) {
+            if (enable) {
                 currentCall.setStatsCollector(statsCollector)
                 callStats.visibility = View.VISIBLE
             } else {

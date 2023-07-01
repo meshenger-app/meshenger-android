@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="name_prompt">Wie wollen sie gennant werden?</string>
-    <string name="scan_invitation">Diesen QR-Code Scannen</string>
-    <string name="scan_invited">QR-Code Scannen</string>
+    <string name="scan_invitation">Diesen QR Code Scannen</string>
+    <string name="scan_invited">QR Code Scannen</string>
     <string name="paste_invitation">Hier Daten einfügen</string>
     <string name="invalid_data">Ungültige Daten</string>
     <string name="invalid_name">Ungültiger Name</string>
@@ -10,7 +10,7 @@
     <string name="next">Weiter</string>
     <string name="enter_password">Passwort eingeben</string>
     <string name="password_title">Passwort</string>
-    <string name="invalid_qr">Ungültiger QR-Code</string>
+    <string name="invalid_qr">Ungültiger QR Code</string>
     <string name="contact_has_no_address_warning">Warnung: Kontakt hat keine Adresse</string>
     <string name="menu_settings">Einstellungen</string>
     <string name="menu_license">Lizenz</string>
@@ -99,4 +99,11 @@
     <string name="settings_enable_microphone_by_default">Mikrofon Standardmäßig Aktivieren</string>
     <string name="settings_enable_camera_by_default">Kamera Standardmäßig Aktivieren</string>
     <string name="setup_no_address_found">MAC Adress der WLAN Karten nicht gefunden. WLAN anschalten (kein Internet nötig) oder überspringen um später zu konfigurieren.</string>
+    <string name="camera_back">Zurück</string>
+    <string name="camera_front">Vorderseite</string>
+    <string name="ping">Ping</string>
+    <string name="ping_contact">Ping %1$s</string>
+    <string name="ping_all_contacts">Alle Kontakte Anpingen</string>
+    <string name="audio_device_earpiece">Ohrstück</string>
+    <string name="settings_connect_timeout">Verbindungsauszeit (ms)</string>
 </resources>

@@ -30,18 +30,18 @@
         <!-- icon in the top left corner -->
         <ImageButton
             android:id="@+id/change_ui"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:background="@drawable/ic_call_stats"
             android:contentDescription="Toggle debug output" />
 
-        <!-- icon in the top left corner -->
+        <!-- icon in the top right corner -->
         <ImageButton
             android:id="@+id/change_pip_window"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:background="@drawable/ic_toggle_pip"

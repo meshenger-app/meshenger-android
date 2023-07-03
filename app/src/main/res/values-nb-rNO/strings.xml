@@ -14,7 +14,6 @@
     <string name="settings">Innstillinger</string>
     <string name="settings_name">Navn</string>
     <string name="settings_addresses">Adresser*</string>
-    <string name="settings_password">Passord</string>
     <string name="settings_settings_mode">Innstillingsmodus</string>
     <string name="settings_public_key">Offentlig nøkkel</string>
     <string name="state_app_not_running">Programmet kjører ikke</string>
@@ -119,7 +118,6 @@
     <string name="enter_contact_name">Skriv inn kontaktnavn:</string>
     <string name="contact_name_conflict">En kontakt med samme navn finnes allerede:</string>
     <string name="contact_key_conflict">En kontakt med samme nøkkel finnes:</string>
-    <string name="contact_name_empty">Kontaktnavnet er tomt.</string>
     <string name="contact_name_exists">En kontakt med det navnet finnes allerede:</string>
     <string name="connected_to_address">(til %1$s)</string>
     <string name="capture_format_description">%1$dx%2$d @ %3$d bps</string>

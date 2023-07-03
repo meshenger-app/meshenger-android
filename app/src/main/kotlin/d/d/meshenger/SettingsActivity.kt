@@ -52,7 +52,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        binder = null
+        // nothing to do
     }
 
     private fun initViews() {

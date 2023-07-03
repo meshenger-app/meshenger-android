@@ -197,8 +197,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        Log.d(this, "onServiceConnected()")
-        binder = null
+        // nothing to do
     }
 
     private fun menuAction(itemId: Int) {

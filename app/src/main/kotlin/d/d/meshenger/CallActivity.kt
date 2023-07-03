@@ -603,7 +603,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
-                binder = null
+                // nothing to do
             }
         }
 

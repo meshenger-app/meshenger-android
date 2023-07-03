@@ -85,7 +85,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        binder = null
+        // nothing to do
     }
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {

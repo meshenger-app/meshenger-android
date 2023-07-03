@@ -224,6 +224,6 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        binder = null
+        // nothing to do
     }
 }

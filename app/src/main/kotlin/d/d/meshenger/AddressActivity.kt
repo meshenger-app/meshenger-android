@@ -133,7 +133,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        binder = null
+        // nothing to do
     }
 
     inner class AddressListAdapter(private val context: Activity): BaseAdapter() {

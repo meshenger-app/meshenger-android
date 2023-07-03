@@ -146,8 +146,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        Log.d(this, "onServiceDisconnected")
-        binder = null
+        // nothing to do
     }
 
     override fun onDestroy() {

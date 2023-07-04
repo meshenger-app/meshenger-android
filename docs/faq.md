@@ -14,8 +14,8 @@
     Yes, Meshenger does not only use link local address, but also other kinds of IP addresses that are either configured or can be created from a MAC address.
 * **How much bandwidth does an Audio/Video call consume?**  
     Audio calls take 12KB/s, Video adds ~40KB/s per direction.
-* **Why can't you call a thethered phone as client?**  
-    IPv6 link local addresses seem to be blocked by Android in this kind of setup. Normal IPv4 addresses will work, but they might change on a whim at which point a connection cannot be established any more.
+* **Why can't you call a thethered/hotspot phone as client?**  
+    Simply put, this does not work reliably. It is probably an Android internal issue. The initial TCP/IP connection works, but then UDP packets for audio/video cannot cross.
 * **Why create a new phone App - there are so many!**  
     Most Apps do not work without Internet or when very limited broadcast/multicast communication is allowed. This project intends to motivate other projects to support this. It is good that this kind of App exists.
 * **Can I call contacts over the Internet?**  

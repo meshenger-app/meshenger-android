@@ -20,7 +20,7 @@ class ContactListFragment : Fragment() {
     private lateinit var contactListView: ListView
     private lateinit var fabScan: FloatingActionButton
     private lateinit var fabGen: FloatingActionButton
-    private lateinit var fabPing: FloatingActionButton
+    private lateinit var fabPingAll: FloatingActionButton
     private lateinit var fab: FloatingActionButton
     private var fabExpanded = false
 
@@ -94,7 +94,7 @@ class ContactListFragment : Fragment() {
         fab = view.findViewById(R.id.fab)
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
-        fabPing = view.findViewById(R.id.fabPing)
+        fabPingAll = view.findViewById(R.id.fabPing)
         contactListView = view.findViewById(R.id.contactList)
         contactListView.onItemClickListener = onContactClickListener
         contactListView.onItemLongClickListener = onContactLongClickListener
@@ -113,7 +113,8 @@ class ContactListFragment : Fragment() {
                 startActivity(intent)
             }
         }
-        fabPing.setOnClickListener {
+
+        fabPingAll.setOnClickListener {
             pingAllContacts()
             collapseFab()
         }
@@ -152,9 +153,11 @@ class ContactListFragment : Fragment() {
         super.onResume()
 
         val activity = requireActivity() as MainActivity
-        activity.binder?.let {
-            if (it.getSettings().automaticStatusUpdates) {
-                it.pingContacts(it.getContacts().contactList)
+        val binder = (activity as MainActivity).binder
+        if (binder != null) {
+            if (binder.getSettings().automaticStatusUpdates) {
+                // ping all contacts
+                binder.pingContacts(binder.getContacts().contactList)
             }
         }
 
@@ -192,7 +195,7 @@ class ContactListFragment : Fragment() {
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
             fabGen.y = fabGen.y + distance * 1
             fabScan.y = fabScan.y + distance * 2
-            fabPing.y = fabPing.y + distance * 3
+            fabPingAll.y = fabPingAll.y + distance * 3
         } else {
             pingAnimation = TranslateAnimation(0f, 0f, distance * 1, 0f)
             scanAnimation = TranslateAnimation(0f, 0f, distance * 2, 0f)
@@ -201,7 +204,7 @@ class ContactListFragment : Fragment() {
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
             fabGen.y = fabGen.y - distance * 1
             fabScan.y = fabScan.y - distance * 2
-            fabPing.y = fabPing.y - distance * 3
+            fabPingAll.y = fabPingAll.y - distance * 3
         }
 
         scanSet.addAnimation(scanAnimation)
@@ -222,12 +225,12 @@ class ContactListFragment : Fragment() {
         fabGen.visibility = View.VISIBLE
         fabScan.visibility = View.VISIBLE
         if (showPingAllButton()) {
-            fabPing.visibility = View.VISIBLE
+            fabPingAll.visibility = View.VISIBLE
         }
 
         fabScan.startAnimation(scanSet)
         fabGen.startAnimation(showSet)
-        fabPing.startAnimation(pingSet)
+        fabPingAll.startAnimation(pingSet)
 
         fabExpanded = !fabExpanded
     }
@@ -237,12 +240,12 @@ class ContactListFragment : Fragment() {
             fab.setImageResource(R.drawable.qr_glass)
             fabScan.clearAnimation()
             fabGen.clearAnimation()
-            fabPing.clearAnimation()
+            fabPingAll.clearAnimation()
 
             fabGen.y = fabGen.y + 200 * 1
             fabScan.y = fabScan.y + 200 * 2
             if (showPingAllButton()) {
-                fabPing.y = fabPing.y + 200 * 3
+                fabPingAll.y = fabPingAll.y + 200 * 3
             }
             fabExpanded = false
         }

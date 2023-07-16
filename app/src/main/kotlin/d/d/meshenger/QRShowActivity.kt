@@ -13,16 +13,14 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import d.d.meshenger.MainService.MainBinder
 
 class QRShowActivity : BaseActivity(), ServiceConnection {
-    private var extraContact: Contact? = null
+    private lateinit var publicKey: ByteArray
     private var binder: MainBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrshow)
 
-        if (intent.hasExtra("EXTRA_CONTACT")) {
-            extraContact = intent.extras!!["EXTRA_CONTACT"] as Contact?
-        }
+        publicKey = intent.extras!!["EXTRA_CONTACT_PUBLICKEY"] as ByteArray
 
         title = getString(R.string.scan_invitation)
 
@@ -35,7 +33,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         findViewById<View>(R.id.fabShare).setOnClickListener {
             try {
-                val contact = extraContact ?: binder!!.getSettings().getOwnContact()
+                val contact = binder!!.getContact(publicKey)!!
                 val data = Contact.toJSON(contact, false).toString()
                 val i = Intent(Intent.ACTION_SEND)
                 i.putExtra(Intent.EXTRA_TEXT, data)
@@ -75,7 +73,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
         binder = iBinder as MainBinder
 
         try {
-            val contact = extraContact ?: binder!!.getSettings().getOwnContact()
+            val contact = binder!!.getContact(publicKey)!!
             generateQR(contact)
         } catch (e: Exception) {
             e.printStackTrace()

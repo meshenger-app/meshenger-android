@@ -73,7 +73,7 @@ class ContactListFragment : Fragment() {
                     unblock -> setBlocked(publicKey, false)
                     qrcode -> {
                         val intent = Intent(activity, QRShowActivity::class.java)
-                        intent.putExtra("EXTRA_CONTACT", contact)
+                        intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
                         startActivity(intent)
                     }
                 }
@@ -101,23 +101,23 @@ class ContactListFragment : Fragment() {
 
         val activity = requireActivity()
         fabScan.setOnClickListener {
-            startActivity(
-                Intent(
-                    activity, QRScanActivity::class.java
-                )
-            )
+            val intent = Intent(activity, QRScanActivity::class.java)
+            startActivity(intent)
         }
+
         fabGen.setOnClickListener {
-            startActivity(
-                Intent(
-                    activity, QRShowActivity::class.java
-                )
-            )
+            val binder = (activity as MainActivity).binder
+            if (binder != null) {
+                val intent = Intent(activity, QRShowActivity::class.java)
+                intent.putExtra("EXTRA_CONTACT_PUBLICKEY", binder.getSettings().publicKey)
+                startActivity(intent)
+            }
         }
         fabPing.setOnClickListener {
             pingAllContacts()
             collapseFab()
         }
+
         fab.setOnClickListener { fab: View -> runFabAnimation(fab) }
 
         LocalBroadcastManager.getInstance(requireContext())

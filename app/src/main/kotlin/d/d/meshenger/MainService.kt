@@ -310,6 +310,15 @@ class MainService : Service(), Runnable {
             return getDatabase().events
         }
 
+        fun getContact(otherPublicKey: ByteArray): Contact? {
+            val db = getDatabase()
+            if (db.settings.publicKey.contentEquals(otherPublicKey)) {
+                return db.settings.getOwnContact()
+            } else {
+                return db.contacts.getContactByPublicKey(otherPublicKey)
+            }
+        }
+
         fun updateNotification() {
             this@MainService.updateNotification()
         }

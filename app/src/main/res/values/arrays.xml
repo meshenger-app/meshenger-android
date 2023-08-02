@@ -89,6 +89,9 @@
 
     <string-array name="cameraFramerateValues">
         <item>auto</item>
+        <item>60</item>
+        <item>50</item>
+        <item>40</item>
         <item>30</item>
         <item>20</item>
         <item>15</item>

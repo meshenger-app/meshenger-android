@@ -598,6 +598,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             var check = 0
             override fun onItemSelected(parent: AdapterView<*>?, view: View, pos: Int, id: Long) {
+                if (pos >= arrayValues.size) {
+                    Toast.makeText(this@SettingsActivity,
+                        "pos out of bounds: $arrayValues", Toast.LENGTH_SHORT).show()
+                    return
+                }
                 if (check++ > 0) {
                     callback.call(arrayValues[pos])
                 }

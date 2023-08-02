@@ -39,7 +39,7 @@ class RTCCall : RTCPeerConnection {
 
     private var isCameraEnabled = false
     private var isMicrophoneEnabled = false
-    private var useFrontFacingCamera = false
+    private var useFrontFacingCamera = true
 
     fun getMicrophoneEnabled(): Boolean {
         return isMicrophoneEnabled

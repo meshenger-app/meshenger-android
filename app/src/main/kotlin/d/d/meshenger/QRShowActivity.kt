@@ -33,7 +33,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         findViewById<View>(R.id.fabShare).setOnClickListener {
             try {
-                val contact = binder!!.getContact(publicKey)!!
+                val contact = binder!!.getContactOrOwn(publicKey)!!
                 val data = Contact.toJSON(contact, false).toString()
                 val i = Intent(Intent.ACTION_SEND)
                 i.putExtra(Intent.EXTRA_TEXT, data)
@@ -73,7 +73,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
         binder = iBinder as MainBinder
 
         try {
-            val contact = binder!!.getContact(publicKey)!!
+            val contact = binder!!.getContactOrOwn(publicKey)!!
             generateQR(contact)
         } catch (e: Exception) {
             e.printStackTrace()

@@ -310,7 +310,7 @@ class MainService : Service(), Runnable {
             return getDatabase().events
         }
 
-        fun getContact(otherPublicKey: ByteArray): Contact? {
+        fun getContactOrOwn(otherPublicKey: ByteArray): Contact? {
             val db = getDatabase()
             if (db.settings.publicKey.contentEquals(otherPublicKey)) {
                 return db.settings.getOwnContact()

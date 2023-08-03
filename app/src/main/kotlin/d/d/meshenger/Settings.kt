@@ -24,7 +24,7 @@ class Settings {
     var connectTimeout = 500
     var enableMicrophoneByDefault = true
     var enableCameraByDefault = false
-    var selectFrontCameraByDefault = false
+    var selectFrontCameraByDefault = true
     var disableCpuOveruseDetection = false
     var autoAcceptCalls = false
     var menuPassword = ""

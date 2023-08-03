@@ -255,7 +255,7 @@ class Database {
             if (newFrom == "4.1.4") {
                 settings.put("enable_microphone_by_default", true)
                 settings.put("enable_camera_by_default", false)
-                settings.put("select_front_camera_by_default", false)
+                settings.put("select_front_camera_by_default", true)
                 newFrom = "4.1.5"
             }
 

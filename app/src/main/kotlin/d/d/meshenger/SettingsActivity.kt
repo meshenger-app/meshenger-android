@@ -85,11 +85,8 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<SwitchMaterial>(R.id.blockUnknownSwitch).apply {
             isChecked = settings.blockUnknown
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.blockUnknown = isChecked
-                    binder.saveDatabase()
-                }
+                settings.blockUnknown = isChecked
+                binder.saveDatabase()
             }
         }
 
@@ -99,8 +96,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.nightModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    val binder = binder
-                    if (newValue != null && binder != null) {
+                    if (newValue != null) {
                         settings.nightMode = newValue
                         binder.saveDatabase()
                         setDefaultNightMode(newValue)
@@ -117,8 +113,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             R.array.speakerphoneModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
-                    val binder = binder
-                    if (newValue != null && binder != null) {
+                    if (newValue != null) {
                         settings.speakerphoneMode = newValue
                         binder.saveDatabase()
                     }
@@ -138,59 +133,44 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<SwitchMaterial>(R.id.promptOutgoingCallsSwitch).apply {
             isChecked = settings.promptOutgoingCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.promptOutgoingCalls = isChecked
-                    binder.saveDatabase()
-                }
+                settings.promptOutgoingCalls = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableCallHistorySwitch).apply {
             isChecked = settings.disableCallHistory
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.disableCallHistory = isChecked
-                    if (isChecked) {
-                        binder.clearEvents()
-                    }
-                    binder.saveDatabase()
+                settings.disableCallHistory = isChecked
+                if (isChecked) {
+                    binder.clearEvents()
                 }
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.startOnBootupSwitch).apply {
             isChecked = settings.startOnBootup
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.startOnBootup = isChecked
-                    BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
-                    binder.saveDatabase()
-                }
+                settings.startOnBootup = isChecked
+                BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.pushToTalkSwitch).apply {
             isChecked = settings.pushToTalk
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.pushToTalk = isChecked
-                    binder.saveDatabase()
-                }
+                settings.pushToTalk = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableProximitySensorSwitch).apply {
             isChecked = settings.disableProximitySensor
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.disableProximitySensor = isChecked
-                    binder.saveDatabase()
-                }
+                settings.disableProximitySensor = isChecked
+                binder.saveDatabase()
             }
         }
 
@@ -247,110 +227,80 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<SwitchMaterial>(R.id.useNeighborTableSwitch).apply {
             isChecked = settings.useNeighborTable
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.useNeighborTable = isChecked
-                    binder.saveDatabase()
-                }
+                settings.useNeighborTable = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.videoHardwareAccelerationSwitch).apply {
             isChecked = settings.videoHardwareAcceleration
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.videoHardwareAcceleration = isChecked
-                    binder.saveDatabase()
-                }
+                settings.videoHardwareAcceleration = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableAudioProcessingSwitch).apply {
             isChecked = settings.disableAudioProcessing
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.disableAudioProcessing = isChecked
-                    binder.saveDatabase()
-                }
+                settings.disableAudioProcessing = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.showUsernameAsLogoSwitch).apply {
             isChecked = settings.showUsernameAsLogo
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.showUsernameAsLogo = isChecked
-                    binder.saveDatabase()
-                }
+                settings.showUsernameAsLogo = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.enableMicrophoneByDefaultSwitch).apply {
             isChecked = settings.enableMicrophoneByDefault
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.enableMicrophoneByDefault = isChecked
-                    binder.saveDatabase()
-                }
+                settings.enableMicrophoneByDefault = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.enableCameraByDefaultSwitch).apply {
             isChecked = settings.enableCameraByDefault
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.enableCameraByDefault = isChecked
-                    binder.saveDatabase()
-                }
+                settings.enableCameraByDefault = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.selectFrontCameraByDefaultSwitch).apply {
             isChecked = settings.selectFrontCameraByDefault
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.selectFrontCameraByDefault = isChecked
-                    binder.saveDatabase()
-                }
+                settings.selectFrontCameraByDefault = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.disableCpuOveruseDetectionSwitch).apply {
             isChecked = settings.disableCpuOveruseDetection
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.disableCpuOveruseDetection = isChecked
-                    binder.saveDatabase()
-                }
+                settings.disableCpuOveruseDetection = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.autoAcceptCallsSwitch).apply {
             isChecked = settings.autoAcceptCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.autoAcceptCalls = isChecked
-                    binder.saveDatabase()
-                }
+                settings.autoAcceptCalls = isChecked
+                binder.saveDatabase()
             }
         }
 
         findViewById<SwitchMaterial>(R.id.automaticStatusUpdatesSwitch).apply {
             isChecked = settings.automaticStatusUpdates
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                val binder = binder
-                if (binder != null) {
-                    settings.automaticStatusUpdates = isChecked
-                    binder.saveDatabase()
-                }
+                settings.automaticStatusUpdates = isChecked
+                binder.saveDatabase()
             }
         }
 

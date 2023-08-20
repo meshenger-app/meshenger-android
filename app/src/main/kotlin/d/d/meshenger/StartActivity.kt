@@ -190,11 +190,11 @@ class StartActivity : BaseActivity(), ServiceConnection {
             val builder = AlertDialog.Builder(this)
             builder.setTitle(getString(R.string.setup_address))
             builder.setMessage(getString(R.string.setup_no_address_found))
-            builder.setPositiveButton(R.string.ok) { dialog: DialogInterface, _: Int ->
+            builder.setPositiveButton(R.string.button_ok) { dialog: DialogInterface, _: Int ->
                 showMissingAddressDialog()
                 dialog.cancel()
             }
-            builder.setNegativeButton(R.string.skip) { dialog: DialogInterface, _: Int ->
+            builder.setNegativeButton(R.string.button_skip) { dialog: DialogInterface, _: Int ->
                 dialog.cancel()
                 // continue with out address configuration
                 continueInit()
@@ -217,7 +217,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     // initial dialog to set the username
     private fun showMissingUsernameDialog() {
         val tw = TextView(this)
-        tw.setText(R.string.name_prompt)
+        tw.setText(R.string.startup_prompt_name)
         //tw.setTextColor(Color.BLACK);
         tw.textSize = 20f
         tw.gravity = Gravity.CENTER_HORIZONTAL
@@ -234,9 +234,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
         layout.setPadding(40, 80, 40, 40)
 
         val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.hello)
+        builder.setTitle(R.string.startup_hello)
         builder.setView(layout)
-        builder.setNegativeButton(R.string.skip) { dialog: DialogInterface?, _: Int ->
+        builder.setNegativeButton(R.string.button_skip) { dialog: DialogInterface?, _: Int ->
             val username = generateRandomUserName()
             if (Utils.isValidName(username)) {
                 binder!!.getSettings().username = username
@@ -248,7 +248,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
             }
         }
-        builder.setPositiveButton(R.string.next) { dialog: DialogInterface?, _: Int ->
+        builder.setPositiveButton(R.string.button_next) { dialog: DialogInterface?, _: Int ->
             val username = et.text.toString()
             if (Utils.isValidName(username)) {
                 binder!!.getSettings().username = username
@@ -345,7 +345,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun generateRandomUserName(): String {
-        val user = getString(R.string.user)
+        val user = getString(R.string.startup_name_prefix)
         val id = UUID.randomUUID().toString().substring(0..6)
         return "$user-$id"
     }

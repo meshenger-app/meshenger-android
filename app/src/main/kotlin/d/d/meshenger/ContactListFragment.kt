@@ -44,13 +44,13 @@ class ContactListFragment : Fragment() {
         AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
             val contact = adapterView.adapter.getItem(i) as Contact
             val menu = PopupMenu(activity, view)
-            val delete = getString(R.string.delete)
-            val rename = getString(R.string.rename)
-            val ping = getString(R.string.ping)
-            val block = getString(R.string.block)
-            val unblock = getString(R.string.unblock)
-            val share = getString(R.string.share)
-            val qrcode = getString(R.string.qrcode)
+            val delete = getString(R.string.contact_menu_delete)
+            val rename = getString(R.string.contact_menu_rename)
+            val ping = getString(R.string.contact_menu_ping)
+            val block = getString(R.string.contact_menu_block)
+            val unblock = getString(R.string.contact_menu_unblock)
+            val share = getString(R.string.contact_menu_share)
+            val qrcode = getString(R.string.contact_menu_qrcode)
             menu.menu.add(delete)
             menu.menu.add(rename)
             menu.menu.add(ping)
@@ -270,15 +270,15 @@ class ContactListFragment : Fragment() {
         val binder = (activity as MainActivity).binder ?: return
 
         val builder = AlertDialog.Builder(activity)
-        builder.setTitle(R.string.confirm)
+        builder.setTitle(R.string.dialog_title_confirm)
         builder.setMessage(String.format(getString(R.string.contact_remove), name))
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
-        builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->
                 binder.deleteContact(publicKey)
                 dialog.cancel()
             }
 
-        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, _: Int ->
+        builder.setNegativeButton(R.string.button_no) { dialog: DialogInterface, _: Int ->
             dialog.cancel() }
 
         // create dialog box
@@ -339,9 +339,9 @@ class ContactListFragment : Fragment() {
         AlertDialog.Builder(activity)
             .setTitle(R.string.contact_edit)
             .setView(et)
-            .setNegativeButton(getString(R.string.cancel), null)
+            .setNegativeButton(getString(R.string.button_cancel), null)
             .setPositiveButton(
-                R.string.ok,
+                R.string.button_ok,
                 DialogInterface.OnClickListener setPositiveButton@{ _: DialogInterface?, _: Int ->
                     val newName: String = et.text.toString().trim { it <= ' ' }
                     if (newName == contact.name) {

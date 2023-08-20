@@ -21,7 +21,7 @@
             android:fontFamily="@font/lato_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:text="@string/scan_invitation" />
+            android:text="@string/title_show_qr_code" />
 
         <ImageView
             android:id="@+id/QRView"

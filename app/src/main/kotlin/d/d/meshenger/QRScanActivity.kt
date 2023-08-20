@@ -31,7 +31,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrscan)
-        title = getString(R.string.scan_invited)
+        title = getString(R.string.title_scan_qr_code)
 
         barcodeView = findViewById(R.id.barcodeScannerView)
 
@@ -159,17 +159,17 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         barcodeView.pause()
         val b = AlertDialog.Builder(this)
         val et = EditText(this)
-        b.setTitle(R.string.paste_invitation)
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+        b.setTitle(R.string.paste_qr_code_data)
+            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 try {
                     val data = et.text.toString()
                     addContact(data)
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    Toast.makeText(this, R.string.invalid_data, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.invalid_qr_code_data, Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+            .setNegativeButton(R.string.button_cancel) { dialog: DialogInterface, _: Int ->
                 dialog.cancel()
                 barcodeView.resume()
             }

@@ -54,10 +54,10 @@ class EventListFragment : Fragment() {
         val latestEvent = eventGroup.last()
         val menu = PopupMenu(activity, view)
         val res = resources
-        val add = res.getString(R.string.add)
-        val delete = res.getString(R.string.delete)
-        val block = res.getString(R.string.block)
-        val unblock = res.getString(R.string.unblock)
+        val add = res.getString(R.string.contact_menu_add)
+        val delete = res.getString(R.string.contact_menu_delete)
+        val block = res.getString(R.string.contact_menu_block)
+        val unblock = res.getString(R.string.contact_menu_unblock)
         val contact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
 
         // allow to add unknown caller
@@ -213,7 +213,7 @@ class EventListFragment : Fragment() {
         builder.setTitle(R.string.clear_events)
         builder.setMessage(R.string.remove_all_events)
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
-        builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->
             binder.clearEvents()
             binder.saveDatabase()
 
@@ -222,7 +222,7 @@ class EventListFragment : Fragment() {
             dialog.cancel()
         }
 
-        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, _: Int ->
+        builder.setNegativeButton(R.string.button_no) { dialog: DialogInterface, _: Int ->
             dialog.cancel()
         }
 

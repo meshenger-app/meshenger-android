@@ -22,7 +22,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         publicKey = intent.extras!!["EXTRA_CONTACT_PUBLICKEY"] as ByteArray
 
-        title = getString(R.string.scan_invitation)
+        title = getString(R.string.title_show_qr_code)
 
         bindService(Intent(this, MainService::class.java), this, 0)
 

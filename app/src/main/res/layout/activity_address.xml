@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/next_button_background"
-                android:text="@string/add"
+                android:text="@string/contact_menu_add"
                 android:layout_weight="0"
                 android:textColor="@color/white" />
         </LinearLayout>

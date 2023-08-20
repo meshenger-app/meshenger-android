@@ -148,16 +148,16 @@ class BackupActivity : BaseActivity(), ServiceConnection {
         val contactCount = newDatabase.contacts.contactList.size
         val eventCount = newDatabase.events.eventList.size
         val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.confirm)
+        builder.setTitle(R.string.dialog_title_confirm)
         builder.setMessage(String.format(getString(R.string.import_dialog), contactCount, eventCount))
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
-        builder.setPositiveButton(R.string.yes) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->
             binder.getService().mergeDatabase(newDatabase)
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }
 
-        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, _: Int ->
+        builder.setNegativeButton(R.string.button_no) { dialog: DialogInterface, _: Int ->
             dialog.cancel()
         }
 

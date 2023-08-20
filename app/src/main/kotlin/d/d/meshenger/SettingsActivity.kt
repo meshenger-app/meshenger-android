@@ -22,7 +22,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        setTitle(R.string.menu_settings)
+        setTitle(R.string.title_settings)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.apply {
@@ -60,12 +60,12 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val settings = binder.getSettings()
 
         findViewById<TextView>(R.id.nameTv)
-            .text = settings.username.ifEmpty { getString(R.string.none) }
+            .text = settings.username.ifEmpty { getString(R.string.no_value) }
         findViewById<View>(R.id.nameLayout)
             .setOnClickListener { showChangeNameDialog() }
 
         findViewById<TextView>(R.id.addressTv)
-            .text = if (settings.addresses.isEmpty()) getString(R.string.none) else settings.addresses.joinToString()
+            .text = if (settings.addresses.isEmpty()) getString(R.string.no_value) else settings.addresses.joinToString()
         findViewById<View>(R.id.addressLayout)
             .setOnClickListener {
                 startActivity(Intent(this@SettingsActivity, AddressActivity::class.java))
@@ -73,14 +73,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         val databasePassword = binder.getService().databasePassword
         findViewById<TextView>(R.id.databasePasswordTv)
-            .text = if (databasePassword.isEmpty()) getString(R.string.none) else "*".repeat(databasePassword.length)
+            .text = if (databasePassword.isEmpty()) getString(R.string.no_value) else "*".repeat(databasePassword.length)
         findViewById<View>(R.id.databasePasswordLayout)
             .setOnClickListener { showDatabasePasswordDialog() }
 
         findViewById<TextView>(R.id.publicKeyTv)
             .text = Utils.byteArrayToHexString(settings.publicKey)
         findViewById<View>(R.id.publicKeyLayout)
-            .setOnClickListener { Toast.makeText(this@SettingsActivity, R.string.read_only, Toast.LENGTH_SHORT).show() }
+            .setOnClickListener { Toast.makeText(this@SettingsActivity, R.string.setting_read_only, Toast.LENGTH_SHORT).show() }
 
         findViewById<SwitchMaterial>(R.id.blockUnknownSwitch).apply {
             isChecked = settings.blockUnknown
@@ -306,7 +306,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         val menuPassword = settings.menuPassword
         findViewById<TextView>(R.id.menuPasswordTv)
-            .text = if (menuPassword.isEmpty()) getString(R.string.none) else "*".repeat(menuPassword.length)
+            .text = if (menuPassword.isEmpty()) getString(R.string.no_value) else "*".repeat(menuPassword.length)
         findViewById<View>(R.id.menuPasswordLayout)
             .setOnClickListener { showMenuPasswordDialog() }
 
@@ -325,7 +325,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.settings_change_name))
             .setView(et)
-            .setPositiveButton(R.string.ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 val newUsername = et.text.toString().trim { it <= ' ' }
                 if (Utils.isValidName(newUsername)) {
                     settings.username = newUsername
@@ -335,7 +335,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                     Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(resources.getText(R.string.cancel), null)
+            .setNegativeButton(resources.getText(R.string.button_cancel), null)
             .show()
     }
 
@@ -365,7 +365,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 initViews()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
-                val message = String.format(getString(R.string.invalid_number_value), minValue, maxValue)
+                val message = String.format(getString(R.string.invalid_number), minValue, maxValue)
                 Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
             }
 
@@ -401,7 +401,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 initViews()
                 Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
-                val message = String.format(getString(R.string.invalid_number_value), minValue, maxValue)
+                val message = String.format(getString(R.string.invalid_number), minValue, maxValue)
                 Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
             }
 

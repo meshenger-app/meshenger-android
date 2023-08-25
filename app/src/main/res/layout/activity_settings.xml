@@ -91,7 +91,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/nightModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -124,7 +123,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/blockUnknownLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -194,7 +192,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/startOnBootupLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -229,7 +226,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/settingsModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -274,7 +270,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/automaticStatusUpdatesLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -308,7 +303,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/enableMicrophoneByDefaultLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -342,7 +336,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/enableCameraByDefaultLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -376,7 +369,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/selectFrontCameraByDefaultLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -410,7 +402,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/videoDegradationModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -445,7 +436,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/cameraResolutionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -479,7 +469,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/cameraFramerateLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -513,7 +502,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/promptOutgoingCallsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -547,7 +535,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/showUsernameAsLogoLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -581,7 +568,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/pushToTalkLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -615,7 +601,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/speakerphoneModeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -715,7 +700,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/disableCallHistoryLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -749,7 +733,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/disableProxyimitySensorLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -794,7 +777,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/autoAcceptCallsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -828,7 +810,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/disableCpuOveruseDetectionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -897,7 +878,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/disableAudioProcessingLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -931,7 +911,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/videoHardwareAccelerationLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
@@ -1031,7 +1010,6 @@
                     app:dividerColor="@color/light_grey" />
 
                 <RelativeLayout
-                    android:id="@+id/useNeighborTableLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >

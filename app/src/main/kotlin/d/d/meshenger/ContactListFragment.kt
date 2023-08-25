@@ -44,6 +44,7 @@ class ContactListFragment : Fragment() {
         AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
             val contact = adapterView.adapter.getItem(i) as Contact
             val menu = PopupMenu(activity, view)
+            val details = getString(R.string.contact_menu_details)
             val delete = getString(R.string.contact_menu_delete)
             val rename = getString(R.string.contact_menu_rename)
             val ping = getString(R.string.contact_menu_ping)
@@ -51,6 +52,7 @@ class ContactListFragment : Fragment() {
             val unblock = getString(R.string.contact_menu_unblock)
             val share = getString(R.string.contact_menu_share)
             val qrcode = getString(R.string.contact_menu_qrcode)
+            menu.menu.add(details)
             menu.menu.add(delete)
             menu.menu.add(rename)
             menu.menu.add(ping)
@@ -65,6 +67,11 @@ class ContactListFragment : Fragment() {
                 val title = menuItem.title.toString()
                 val publicKey = contact.publicKey
                 when (title) {
+                    details -> {
+                        val intent = Intent(activity, ContactDetailsActivity::class.java)
+                        intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
+                        startActivity(intent)
+                    }
                     delete -> showDeleteDialog(publicKey, contact.name)
                     rename -> showRenameDialog(publicKey, contact.name)
                     ping -> pingContact(contact)

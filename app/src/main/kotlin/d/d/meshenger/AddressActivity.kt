@@ -172,7 +172,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val item = convertView ?: context.layoutInflater.inflate(
-                    R.layout.activity_address_item, parent, false)
+                    R.layout.item_address, parent, false)
             val label = item.findViewById<TextView>(R.id.label)
             val icon = item.findViewById<ImageView>(R.id.icon)
             if (isEmpty) {

@@ -46,22 +46,13 @@ class ContactListFragment : Fragment() {
             val menu = PopupMenu(activity, view)
             val details = getString(R.string.contact_menu_details)
             val delete = getString(R.string.contact_menu_delete)
-            val rename = getString(R.string.contact_menu_rename)
             val ping = getString(R.string.contact_menu_ping)
-            val block = getString(R.string.contact_menu_block)
-            val unblock = getString(R.string.contact_menu_unblock)
             val share = getString(R.string.contact_menu_share)
             val qrcode = getString(R.string.contact_menu_qrcode)
             menu.menu.add(details)
             menu.menu.add(delete)
-            menu.menu.add(rename)
             menu.menu.add(ping)
             menu.menu.add(share)
-            if (contact.blocked) {
-                menu.menu.add(unblock)
-            } else {
-                menu.menu.add(block)
-            }
             menu.menu.add(qrcode)
             menu.setOnMenuItemClickListener { menuItem: MenuItem ->
                 val title = menuItem.title.toString()
@@ -73,11 +64,8 @@ class ContactListFragment : Fragment() {
                         startActivity(intent)
                     }
                     delete -> showDeleteDialog(publicKey, contact.name)
-                    rename -> showRenameDialog(publicKey, contact.name)
                     ping -> pingContact(contact)
                     share -> shareContact(contact)
-                    block -> setBlocked(publicKey, true)
-                    unblock -> setBlocked(publicKey, false)
                     qrcode -> {
                         val intent = Intent(activity, QRShowActivity::class.java)
                         intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
@@ -309,20 +297,6 @@ class ContactListFragment : Fragment() {
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(Intent("refresh_contact_list"))
     }
 
-    private fun setBlocked(publicKey: ByteArray, blocked: Boolean) {
-        val binder = (requireActivity() as MainActivity).binder ?: return
-        val contacts = binder.getContacts()
-        val contact = contacts.getContactByPublicKey(publicKey)
-        if (contact != null) {
-            contact.blocked = blocked
-            binder.saveDatabase()
-            LocalBroadcastManager.getInstance(requireContext())
-                .sendBroadcast(Intent("refresh_contact_list"))
-            LocalBroadcastManager.getInstance(requireContext())
-                .sendBroadcast(Intent("refresh_event_list"))
-        }
-    }
-
     private fun shareContact(contact: Contact) {
         Log.d(this, "shareContact")
         try {
@@ -333,47 +307,6 @@ class ContactListFragment : Fragment() {
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-    }
-
-    private fun showRenameDialog(publicKey: ByteArray, name: String) {
-        Log.d(this, "showRenameDialog")
-        val activity = requireActivity()
-        val binder = (activity as MainActivity).binder ?: return
-        val contact = binder.getContacts().getContactByPublicKey(publicKey) ?: return
-
-        val et = EditText(activity)
-        et.setText(name)
-        AlertDialog.Builder(activity)
-            .setTitle(R.string.contact_edit)
-            .setView(et)
-            .setNegativeButton(getString(R.string.button_cancel), null)
-            .setPositiveButton(
-                R.string.button_ok,
-                DialogInterface.OnClickListener setPositiveButton@{ _: DialogInterface?, _: Int ->
-                    val newName: String = et.text.toString().trim { it <= ' ' }
-                    if (newName == contact.name) {
-                        // nothing to do
-                        return@setPositiveButton
-                    }
-                    if (!Utils.isValidName(newName)) {
-                        Toast.makeText(context, R.string.invalid_name, Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
-                    if (null != binder.getContacts().getContactByName(newName)) {
-                        Toast.makeText(
-                            context,
-                            R.string.contact_with_name_already_exists,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@setPositiveButton
-                    }
-
-                    // rename contact
-                    contact.name = newName
-                    binder.saveDatabase()
-
-                    refreshContactListBroadcast()
-                }).show()
     }
 
     override fun onPause() {

@@ -5,8 +5,6 @@
     <string name="about_app_version">版本:</string>
     <string name="about_app_website">网站:</string>
     <string name="address_management">地址管理</string>
-    <string name="address_management_address_exists">此地址已存在</string>
-    <string name="address_management_address_invalid">请输入有效的MAC/IP地址或域名</string>
     <string name="address_management_help_text">选择一个或多个将包含在你的二维码中的地址。 建议使用 Wi-Fi 适配器的 MAC 地址(wlan0)。但要注意，它是绑定设备硬件的。如果没有可见的 MAC 地址，那么开启你的 Wi-Fi。</string>
     <string name="app_description">无需服务器或互联网访问进行语音和视频通信。只需和联系人互扫二维码即可开始互相呼叫。 适用于多数网络，包括家庭网络、社区网络和公司网络。</string>
     <string name="audio_device_auto">%1$s (自动切换)</string>
@@ -48,7 +46,6 @@
     <string name="connected_to_address">(to %1$s)</string>
     <string name="connecting_to_address">正在连接到 %1$s</string>
     <string name="contact_blocked">已拉黑</string>
-    <string name="contact_edit">编辑联系人</string>
     <string name="contact_has_no_address_warning">警告：联系人没有地址</string>
     <string name="contact_key_conflict">存在密钥相同的联系人:</string>
     <string name="contact_menu_add">添加</string>
@@ -64,7 +61,6 @@
     <string name="contact_name_invalid">联系人名称无效。</string>
     <string name="contact_remove">删除联系人？ %1$s</string>
     <string name="contact_replace">替换</string>
-    <string name="contact_with_name_already_exists">存在同名联系人。</string>
     <string name="custom_address">自定义地址</string>
     <string name="dialog_title_confirm">确认</string>
     <string name="done">完毕</string>
@@ -72,6 +68,8 @@
     <string name="enter_contact_name">输入联系人昵称：</string>
     <string name="enter_password">输入密码</string>
     <string name="error">错误</string>
+    <string name="error_address_exists">此地址已存在</string>
+    <string name="error_address_invalid">请输入有效的MAC/IP地址或域名</string>
     <string name="failed_to_export_database">导出数据库失败</string>
     <string name="import_dialog">要导入新设置并添加 %1$d 位联系人和 %2$d 个事件吗？</string>
     <string name="invalid_name">无效名称</string>

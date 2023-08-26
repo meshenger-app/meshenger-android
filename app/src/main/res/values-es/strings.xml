@@ -26,7 +26,6 @@
     <string name="call_ended">Llamada finalizada</string>
     <string name="call_error">error</string>
     <string name="call_ringing">Llamando…</string>
-    <string name="contact_edit">Editar Contacto</string>
     <string name="contact_has_no_address_warning">Advertencia: el contacto no tiene dirección</string>
     <string name="contact_key_conflict">Existe un contacto con la misma clave.</string>
     <string name="contact_menu_add">Añadir</string>

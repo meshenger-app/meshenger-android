@@ -5,8 +5,6 @@
     <string name="about_app_version">Version:</string>
     <string name="about_app_website">Website:</string>
     <string name="address_management">Address Management</string>
-    <string name="address_management_address_exists">This address already exists</string>
-    <string name="address_management_address_invalid">Please enter a valid MAC/IP address or domain name</string>
     <string name="address_management_help_text">Select one address or more that will be included in your QR code. A good idea is to use the MAC address of the Wi-Fi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your Wi-Fi.</string>
     <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
@@ -38,9 +36,9 @@
     <string name="call_denied">Declined</string>
     <string name="call_ended">Call Ended</string>
     <string name="call_error">Error</string>
-    <string name="call_error_no_address">Error: no address</string>
-    <string name="call_error_not_listening">Error: no app running</string>
-    <string name="call_error_unresolved_hostname">Error: cannot resolve address</string>
+    <string name="call_error_no_address">Error: No address</string>
+    <string name="call_error_not_listening">Error: No app running</string>
+    <string name="call_error_unresolved_hostname">Error: Cannot resolve address</string>
     <string name="call_no_network">No network - enable Wi-Fi\?</string>
     <string name="call_ringing">Ringing…</string>
     <string name="call_start_or_abort">Start or Abort Call</string>
@@ -54,7 +52,6 @@
     <string name="contact_address_input">Address</string>
     <string name="contact_address_list">Addresses</string>
     <string name="contact_blocked">Blocked</string>
-    <string name="contact_edit">Edit Contact</string>
     <string name="contact_has_no_address_warning">Warning: Contact has no address</string>
     <string name="contact_key_conflict">A contact with the same key exists:</string>
     <string name="contact_menu_add">Add</string>
@@ -75,7 +72,6 @@
     <string name="contact_public_key_invalid">Contact public key is invalid.</string>
     <string name="contact_remove">Remove contact? %1$s</string>
     <string name="contact_replace">Replace</string>
-    <string name="contact_with_name_already_exists">A contact with that name already exists.</string>
     <string name="custom_address">CUSTOM ADDRESS</string>
     <string name="dialog_title_confirm">Confirm</string>
     <string name="done">Done</string>
@@ -84,7 +80,7 @@
     <string name="enter_contact_public_key">Change Public Key</string>
     <string name="enter_password">Enter password</string>
     <string name="error">Error</string>
-    <string name="error_address_already_in_list">Address already in list</string>
+    <string name="error_address_exists">Address exists</string>
     <string name="error_address_invalid">Address invalid</string>
     <string name="error_address_multicast_not_supported">Multicast address not supported</string>
     <string name="failed_to_export_database">Failed to export database</string>

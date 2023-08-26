@@ -24,7 +24,6 @@
     <string name="call_ended">Appel terminé</string>
     <string name="call_error">Erreur</string>
     <string name="call_ringing">Entrain de sonner …</string>
-    <string name="contact_edit">Éditer le contact</string>
     <string name="contact_has_no_address_warning">Attention : le contact n’a pas d’adresse</string>
     <string name="contact_key_conflict">Un contact ayant la même clé existe déjà.</string>
     <string name="contact_menu_add">Ajouter</string>

@@ -25,7 +25,6 @@
     <string name="call_ended">Ligação encerrada</string>
     <string name="call_error">Erro</string>
     <string name="call_ringing">Tocando…</string>
-    <string name="contact_edit">Editar contato</string>
     <string name="contact_has_no_address_warning">Aviso: O contato não tem endereço</string>
     <string name="contact_key_conflict">Já existe um contato com a mesma chave:</string>
     <string name="contact_menu_add">Adicionar</string>
@@ -40,7 +39,6 @@
     <string name="contact_name_invalid">Contato sem nome.</string>
     <string name="contact_remove">Apagar contato? %1$s</string>
     <string name="contact_replace">Substituir</string>
-    <string name="contact_with_name_already_exists">Já existe um contato com esse nome.</string>
     <string name="dialog_title_confirm">Confirmar</string>
     <string name="done">Concluído</string>
     <string name="empty_list_item">Nada aqui</string>

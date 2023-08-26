@@ -40,7 +40,6 @@
     <string name="capture_format_change_text">Прокрутіть для змінення формату захоплення</string>
     <string name="connected_to_address">(до %1$s)</string>
     <string name="connecting_to_address">Підключення до %1$s</string>
-    <string name="contact_edit">Редагувати контакт</string>
     <string name="contact_has_no_address_warning">Попередження: контакт не має адреси</string>
     <string name="contact_key_conflict">Контакт з таким ключем існує:</string>
     <string name="contact_menu_add">Додати</string>
@@ -55,7 +54,6 @@
     <string name="contact_name_invalid">"Ім'я контакту пусте."</string>
     <string name="contact_remove">Видалити контакт? %1$s</string>
     <string name="contact_replace">Замінити</string>
-    <string name="contact_with_name_already_exists">"Контакт з цим ім'ям вже існує."</string>
     <string name="custom_address">СПЕЦІАЛЬНА АДРЕСА</string>
     <string name="dialog_title_confirm">Підтвердити</string>
     <string name="done">Готово</string>

@@ -80,20 +80,20 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             } else if (AddressUtils.isMACAddress(address)) {
                 address.uppercase(Locale.ROOT)
             } else {
-                Toast.makeText(this, R.string.address_management_address_invalid, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_address_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             // multicast addresses are not supported yet
             if (AddressUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
-                Toast.makeText(this, R.string.address_management_address_invalid, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_address_multicast_not_supported, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val ae = AddressEntry(address, "")
 
             if (ae in addressListViewAdapter.allAddresses) {
-                Toast.makeText(applicationContext, R.string.address_management_address_exists, Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, R.string.error_address_exists, Toast.LENGTH_LONG)
                     .show()
                 return@setOnClickListener
             }
@@ -212,6 +212,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
                     else -> {}
                 }
 
+                label.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
                 if (info.isNotEmpty()) {
                     label.text = "${ae.address} (${info.joinToString()})"
                 } else {

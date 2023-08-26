@@ -123,7 +123,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
             }
 
             if (address in addressListViewAdapter.getAddresses()) {
-                Toast.makeText(this, R.string.error_address_already_in_list, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_address_exists, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

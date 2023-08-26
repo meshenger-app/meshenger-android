@@ -5,8 +5,8 @@
     <string name="about_app_version">Versjon:</string>
     <string name="about_app_website">Nettside:</string>
     <string name="address_management">Adressehåndtering</string>
-    <string name="address_management_address_exists">Denne adressen finnes allerede</string>
-    <string name="address_management_address_invalid">Skriv inn en gyldig MAC/IP-adresse eller domenenavn</string>
+    <string name="error_address_exists">Denne adressen finnes allerede</string>
+    <string name="error_address_invalid">Skriv inn en gyldig MAC/IP-adresse eller domenenavn</string>
     <string name="address_management_help_text">Velg én eller flere å inkludere i QR-koden din. En god idé er å bruke MAC-adressen tilhørende Wi-Fi-kortet (wlan0). Husk at Android kan endre det avhengig av systeminnstillingene. Hvis ingen MAC-adresse er synlig kan du skru på Wi-Fi.</string>
     <string name="app_description">Tillat lyd- og videokommunikasjon uten noen tjener eller tilgang til Internett. Skann hverandres kontakt-QR-kode og ring hverandre. Dette fungerer på de fleste nettverk, f.eks. hjemme, i delte nett, eller på arbeid.</string>
     <string name="audio_device_bluetooth">Blåtann</string>
@@ -43,7 +43,6 @@
     <string name="connected_to_address">(til %1$s)</string>
     <string name="connecting_to_address">Kobler til %1$s …</string>
     <string name="contact_blocked">Blokkert</string>
-    <string name="contact_edit">Rediger kontakt</string>
     <string name="contact_has_no_address_warning">Advarsel: Kontakten har ingen adresse.</string>
     <string name="contact_key_conflict">En kontakt med samme nøkkel finnes:</string>
     <string name="contact_menu_add">Legg til</string>
@@ -57,7 +56,6 @@
     <string name="contact_name_exists">En kontakt med det navnet finnes allerede:</string>
     <string name="contact_remove">Fjern kontakt\? %1$s</string>
     <string name="contact_replace">Erstatt</string>
-    <string name="contact_with_name_already_exists">En kontakt med det navnet finnes allerede.</string>
     <string name="custom_address">Egendefinert adresse</string>
     <string name="dialog_title_confirm">Bekreft</string>
     <string name="done">Ferdig</string>

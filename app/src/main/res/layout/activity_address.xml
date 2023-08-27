@@ -81,6 +81,7 @@
                 android:text="@string/contact_menu_add"
                 android:layout_weight="0"
                 android:textColor="@color/white" />
+
         </LinearLayout>
 
         <TextView

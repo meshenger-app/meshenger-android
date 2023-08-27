@@ -44,6 +44,7 @@
 
         <activity
             android:name=".QRShowActivity" />
+
         <activity
             android:name=".QRScanActivity" />
 
@@ -65,24 +66,31 @@
             android:parentActivityName=".MainActivity"
             android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout"
             android:screenOrientation="fullUser" />
+
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".AboutActivity"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".ContactDetailsActivity"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".BackupActivity"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".AddressActivity"
             android:parentActivityName=".SettingsActivity" />
+
         <activity
             android:name=".LicenseActivity"
             android:parentActivityName=".AboutActivity" />
+
         <receiver
             android:name=".BootUpReceiver"
             android:enabled="false"

@@ -3,7 +3,6 @@ package d.d.meshenger
 import android.app.Activity
 import android.app.Dialog
 import android.content.*
-import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
@@ -264,7 +263,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
                     R.layout.item_address, parent, false)
             val label = item.findViewById<TextView>(R.id.label)
             val icon = item.findViewById<ImageView>(R.id.icon)
-            if (isEmpty()) {
+            if (isEmpty) {
                 // no addresses
                 label.text = getString(R.string.empty_list_item)
                 label.textAlignment = View.TEXT_ALIGNMENT_CENTER

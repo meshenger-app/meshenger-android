@@ -63,7 +63,8 @@
                 android:paddingRight="10dp"
                 android:fontFamily="@font/lato_regular"
                 android:textColor="?android:textColorSecondary"
-                android:textSize="@dimen/options_text_size" />
+                android:textSize="@dimen/options_text_size"
+                tools:ignore="RtlHardcoded,RtlSymmetry" />
 
         </LinearLayout>
 
@@ -182,7 +183,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_10"

@@ -46,16 +46,13 @@
     <string name="contact_menu_block">Блокувати</string>
     <string name="contact_menu_delete">Видалити</string>
     <string name="contact_menu_qrcode">QR-код</string>
-    <string name="contact_menu_rename">Перейменувати</string>
     <string name="contact_menu_share">Поділитися</string>
     <string name="contact_menu_unblock">Розблокувати</string>
     <string name="contact_name_conflict">Контакт з таким іменем існує:</string>
     <string name="contact_name_exists">Контакт із таким іменем уже існує:</string>
     <string name="contact_name_invalid">"Ім'я контакту пусте."</string>
-    <string name="contact_remove">Видалити контакт? %1$s</string>
-    <string name="contact_replace">Замінити</string>
     <string name="custom_address">СПЕЦІАЛЬНА АДРЕСА</string>
-    <string name="dialog_title_confirm">Підтвердити</string>
+    <string name="dialog_title_delete_contact">Видалити контакт? %1$s</string>
     <string name="done">Готово</string>
     <string name="empty_list_item">Порожній</string>
     <string name="enter_contact_name">"Введіть ім'я контакту:"</string>

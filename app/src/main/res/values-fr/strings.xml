@@ -29,15 +29,12 @@
     <string name="contact_menu_add">Ajouter</string>
     <string name="contact_menu_block">Bloquer</string>
     <string name="contact_menu_delete">Effacer</string>
-    <string name="contact_menu_rename">Renommer</string>
     <string name="contact_menu_share">Partager</string>
     <string name="contact_menu_unblock">Débloquer</string>
     <string name="contact_name_conflict">Un contact ayant le même nom existe déjà.</string>
     <string name="contact_name_exists">Un contact ayant ce nom existe déjà.</string>
     <string name="contact_name_invalid">Le nom du contact est vide.</string>
-    <string name="contact_remove">Supprimer le contact \? %1$s</string>
-    <string name="contact_replace">Remplacer</string>
-    <string name="dialog_title_confirm">Confirmer</string>
+    <string name="dialog_title_delete_contact">Supprimer le contact \? %1$s</string>
     <string name="done">Terminé</string>
     <string name="empty_list_item">Vide</string>
     <string name="enter_contact_name">Entrez le nom du contact.</string>

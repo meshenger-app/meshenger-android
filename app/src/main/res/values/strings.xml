@@ -24,6 +24,7 @@
     <string name="button_next">next</string>
     <string name="button_no">No</string>
     <string name="button_ok">OK</string>
+    <string name="button_rename">Rename</string>
     <string name="button_replace">Replace</string>
     <string name="button_reset">Reset</string>
     <string name="button_save">Save</string>
@@ -60,7 +61,6 @@
     <string name="contact_menu_details">Details</string>
     <string name="contact_menu_ping">Ping</string>
     <string name="contact_menu_qrcode">QR code</string>
-    <string name="contact_menu_rename">Rename</string>
     <string name="contact_menu_share">Share</string>
     <string name="contact_menu_unblock">Unblock</string>
     <string name="contact_name">Name</string>
@@ -69,11 +69,10 @@
     <string name="contact_name_invalid">Contact name is invalid.</string>
     <string name="contact_public_key">Public Key</string>
     <string name="contact_public_key_already_exists">Contact public key already exists.</string>
-    <string name="contact_public_key_invalid">Contact public key is invalid.</string>
-    <string name="contact_remove">Remove contact? %1$s</string>
-    <string name="contact_replace">Replace</string>
+    <string name="contact_public_key_invalid">Contact public key is invalid.</string>´
     <string name="custom_address">CUSTOM ADDRESS</string>
-    <string name="dialog_title_confirm">Confirm</string>
+    <string name="dialog_title_delete_contact">Delete Contact?</string>
+    <string name="dialog_title_import_backup">Import Backup?</string>
     <string name="done">Done</string>
     <string name="empty_list_item">Empty</string>
     <string name="enter_contact_name">Change Name</string>

@@ -36,16 +36,13 @@
     <string name="contact_menu_block">Blocken</string>
     <string name="contact_menu_delete">Löschen</string>
     <string name="contact_menu_ping">Ping</string>
-    <string name="contact_menu_rename">Umbenennen</string>
     <string name="contact_menu_share">Teilen</string>
     <string name="contact_menu_unblock">Freigeben</string>
     <string name="contact_name_conflict">Ein Kontakt mit dem Namen existiert bereits.</string>
     <string name="contact_name_exists">Der Name existiert bereits.</string>
     <string name="contact_name_invalid">Der Name is ungültig.</string>
-    <string name="contact_remove">Kontakt löschen? %1$s</string>
-    <string name="contact_replace">Ersetzen</string>
     <string name="custom_address">Adresse hinzufügen</string>
-    <string name="dialog_title_confirm">Bestätigen</string>
+    <string name="dialog_title_delete_contact">Kontakt löschen? %1$s</string>
     <string name="done">Fertig</string>
     <string name="empty_list_item">Leer</string>
     <string name="enter_contact_name">Name des Kontaktes eingeben.</string>

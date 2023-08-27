@@ -53,16 +53,13 @@
     <string name="contact_menu_delete">删除</string>
     <string name="contact_menu_ping">Ping</string>
     <string name="contact_menu_qrcode">二维码</string>
-    <string name="contact_menu_rename">重命名</string>
     <string name="contact_menu_share">分享</string>
     <string name="contact_menu_unblock">取消拦截</string>
     <string name="contact_name_conflict">存在同名联系人:</string>
     <string name="contact_name_exists">已经存在同名联系人:</string>
     <string name="contact_name_invalid">联系人名称无效。</string>
-    <string name="contact_remove">删除联系人？ %1$s</string>
-    <string name="contact_replace">替换</string>
     <string name="custom_address">自定义地址</string>
-    <string name="dialog_title_confirm">确认</string>
+    <string name="dialog_title_delete_contact">删除联系人？ %1$s</string>
     <string name="done">完毕</string>
     <string name="empty_list_item">空</string>
     <string name="enter_contact_name">输入联系人昵称：</string>

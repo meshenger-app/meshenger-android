@@ -29,15 +29,12 @@
     <string name="contact_menu_add">Добавить</string>
     <string name="contact_menu_block">Блокировка</string>
     <string name="contact_menu_delete">Удалить</string>
-    <string name="contact_menu_rename">Переименовать</string>
     <string name="contact_menu_share">Отправить</string>
     <string name="contact_menu_unblock">Разблокировать</string>
     <string name="contact_name_conflict">Контакт с тем же именем существует.</string>
     <string name="contact_name_exists">Контакт с таким именем уже существует.</string>
     <string name="contact_name_invalid">Имя контакта пустое.</string>
-    <string name="contact_remove">Удалить контакт? %1$s</string>
-    <string name="contact_replace">Заменить</string>
-    <string name="dialog_title_confirm">Подтверждение</string>
+    <string name="dialog_title_delete_contact">Удалить контакт? %1$s</string>
     <string name="done">Готово</string>
     <string name="empty_list_item">Пусто</string>
     <string name="enter_contact_name">Введите имя контакта</string>

@@ -31,15 +31,12 @@
     <string name="contact_menu_block">Bloquear</string>
     <string name="contact_menu_delete">Apagar</string>
     <string name="contact_menu_qrcode">Código QR</string>
-    <string name="contact_menu_rename">Renomear</string>
     <string name="contact_menu_share">Compartilhe</string>
     <string name="contact_menu_unblock">Desbloquear</string>
     <string name="contact_name_conflict">Já existe um contato com o mesmo nome:</string>
     <string name="contact_name_exists">Já existe um contato com esse nome:</string>
     <string name="contact_name_invalid">Contato sem nome.</string>
-    <string name="contact_remove">Apagar contato? %1$s</string>
-    <string name="contact_replace">Substituir</string>
-    <string name="dialog_title_confirm">Confirmar</string>
+    <string name="dialog_title_delete_contact">Apagar contato? %1$s</string>
     <string name="done">Concluído</string>
     <string name="empty_list_item">Nada aqui</string>
     <string name="enter_contact_name">Digite o nome do contato.</string>

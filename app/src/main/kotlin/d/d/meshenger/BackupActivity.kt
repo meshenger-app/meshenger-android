@@ -148,7 +148,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
         val contactCount = newDatabase.contacts.contactList.size
         val eventCount = newDatabase.events.eventList.size
         val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.dialog_title_confirm)
+        builder.setTitle(R.string.dialog_title_import_backup)
         builder.setMessage(String.format(getString(R.string.import_dialog), contactCount, eventCount))
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->

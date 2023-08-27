@@ -1,3 +1,3 @@
 * add window for contact details
-  * move name and blocked state change from state change to there 
+  * move rename and block contact there
 * fix a potential crash when an outgoing call is aborted quickly

@@ -548,6 +548,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             currentCall.setRemoteRenderer(remoteProxyVideoSink)
             currentCall.setLocalRenderer(localProxyVideoSink)
             currentCall.setEglBase(eglBase)
+            currentCall.setCallContext(this@CallActivity)
 
             currentCall.initVideo()
             currentCall.initOutgoing()

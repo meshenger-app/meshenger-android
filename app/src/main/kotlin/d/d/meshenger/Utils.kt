@@ -45,7 +45,7 @@ internal object Utils {
         return (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
     }
 
-    private val NAME_PATTERN = Pattern.compile("[\\w][\\w _-]{1,22}[\\w]")
+    private val NAME_PATTERN = Pattern.compile("[\\w]|[\\w][\\w _-]{0,22}[\\w]")
 
     // Check for a name that has no funny unicode characters
     // and to not let them look to much like other names.

@@ -301,6 +301,11 @@ class Database {
                 newFrom = "4.2.2"
             }
 
+            if (newFrom == "4.2.2") {
+                // nothing to do
+                newFrom = "4.2.3"
+            }
+
             alignSettings(settings)
 
             db.put("version", newFrom)

@@ -8,16 +8,15 @@
         android:id="@+id/label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_10"
         android:layout_toStartOf="@id/icon"
         android:fontFamily="@font/lato_regular"
-        android:padding="5dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         android:textColor="?android:textColorPrimary"
         android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/icon"
-        android:padding="12dp"
         app:tint="#E34242"
         android:src="@drawable/ic_baseline_close_24"
         android:layout_centerVertical="true"
@@ -26,6 +25,3 @@
         android:layout_height="wrap_content"
         android:contentDescription="remove address" />
 </RelativeLayout>
-
-
-

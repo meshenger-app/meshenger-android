@@ -7,12 +7,13 @@
     >
 
     <TextView
-        android:id="@+id/connect_retries_textview"
+        android:id="@+id/ConnectRetriesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/ConnectRetriesEditText"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:textSize="23sp"
@@ -21,52 +22,53 @@
         android:textColor="?android:textColorPrimary" />
 
     <EditText
-        android:id="@+id/connectRetriesEditText"
+        android:id="@+id/ConnectRetriesEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connect_retries_textview"
-        android:paddingLeft="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/ConnectRetriesTextView"
+        app:layout_constraintBottom_toTopOf="@+id/CancelButton"
         android:layout_marginTop="10dp"
         android:layout_marginStart="@dimen/padding_20"
         android:layout_marginEnd="@dimen/padding_20"
-        android:background="@drawable/edit_text_background"
-        android:textColor="?android:textColorSecondary"
+        android:textSize="23sp"
         android:inputType="text"
+        android:text=""
         android:maxLines="1"
-        android:scrollHorizontally="true" />
+        android:scrollHorizontally="true"
+        android:textColor="?android:textColorPrimary" />
 
     <Button
-        android:id="@+id/AbortButton"
+        android:id="@+id/CancelButton"
         android:layout_width="125dp"
         android:layout_height="@dimen/padding_50"
-        android:layout_marginStart="@dimen/padding_10"
+        android:layout_marginStart="@dimen/padding_50"
         android:layout_marginTop="@dimen/padding_20"
-        app:layout_constraintTop_toBottomOf="@+id/connectRetriesEditText"
+        app:layout_constraintTop_toBottomOf="@+id/ConnectRetriesEditText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/SaveButton"
+        app:layout_constraintEnd_toStartOf="@+id/OkButton"
         android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
-        android:text="@string/button_abort"
+        android:text="@string/button_cancel"
         android:textAllCaps="false"
         android:textColor="@color/white" />
 
     <Button
-        android:id="@+id/SaveButton"
+        android:id="@+id/OkButton"
         android:layout_width="125dp"
         android:layout_height="@dimen/padding_50"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="@dimen/padding_10"
+        android:layout_marginStart="@dimen/padding_50"
+        android:layout_marginEnd="@dimen/padding_50"
         android:layout_marginTop="@dimen/padding_20"
-        app:layout_constraintTop_toBottomOf="@+id/connectRetriesEditText"
-        app:layout_constraintStart_toEndOf="@+id/AbortButton"
+        app:layout_constraintTop_toBottomOf="@+id/ConnectRetriesEditText"
+        app:layout_constraintStart_toEndOf="@+id/CancelButton"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
-        android:text="@string/button_save"
+        android:text="@string/button_ok"
         android:textAllCaps="false"
         android:textColor="@color/white" />
 

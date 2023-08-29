@@ -104,7 +104,9 @@ class AddressActivity : BaseActivity(), ServiceConnection {
             customAddressTextEdit.setText("")
         }
 
-        resetButton.setOnClickListener { initAddressList() }
+        resetButton.setOnClickListener {
+            initAddressList()
+        }
     }
 
     override fun onDestroy() {

@@ -148,7 +148,6 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
             val contact = getOriginalContact()
             if (contact != null) {
                 updateContact(contact)
-                Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
             }
@@ -201,14 +200,14 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_contact_change_name)
-        val nameInput = dialog.findViewById<EditText>(R.id.NameEditText)
+        val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
         val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
         val okButton = dialog.findViewById<Button>(R.id.OkButton)
 
-        nameInput.setText(contactNameEdit.text, TextView.BufferType.EDITABLE)
+        nameEditText.setText(contactNameEdit.text, TextView.BufferType.EDITABLE)
 
         okButton.setOnClickListener {
-            val newName = nameInput.text.toString()
+            val newName = nameEditText.text.toString().trim { it <= ' ' }
             val existingContact = binder!!.getContacts().getContactByName(newName)
 
             if (!Utils.isValidName(newName)) {

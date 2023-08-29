@@ -9,7 +9,6 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
@@ -62,7 +61,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<TextView>(R.id.nameTv)
             .text = settings.username.ifEmpty { getString(R.string.no_value) }
         findViewById<View>(R.id.nameLayout)
-            .setOnClickListener { showChangeNameDialog() }
+            .setOnClickListener { showChangeUsernameDialog() }
 
         findViewById<TextView>(R.id.addressTv)
             .text = if (settings.addresses.isEmpty()) getString(R.string.no_value) else settings.addresses.joinToString()
@@ -315,28 +314,37 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
     }
 
-    private fun showChangeNameDialog() {
+    private fun showChangeUsernameDialog() {
+        Log.d(this, "showChangeUsernameDialog()")
+
         val binder = binder ?: return
         val settings = binder.getSettings()
-        val username = settings.username
-        val et = EditText(this)
-        et.setText(username)
-        et.setSelection(username.length)
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.settings_change_name))
-            .setView(et)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
-                val newUsername = et.text.toString().trim { it <= ' ' }
-                if (Utils.isValidName(newUsername)) {
-                    settings.username = newUsername
-                    binder.saveDatabase()
-                    initViews()
-                } else {
-                    Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
-                }
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_name)
+        val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
+
+        nameEditText.setText(settings.username, TextView.BufferType.EDITABLE)
+
+        okButton.setOnClickListener {
+            val newUsername = nameEditText.text.toString().trim { it <= ' ' }
+            if (Utils.isValidName(newUsername)) {
+                settings.username = newUsername
+                binder.saveDatabase()
+                initViews()
+            } else {
+                Toast.makeText(this, R.string.invalid_name, Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton(resources.getText(R.string.button_cancel), null)
-            .show()
+
+            dialog.cancel()
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showChangeConnectRetriesDialog() {
@@ -344,11 +352,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val settings = binder.getSettings()
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_connect_retries)
-        val connectRetriesEditText = dialog.findViewById<TextView>(R.id.connectRetriesEditText)
-        val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
-        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
+        val connectRetriesEditText = dialog.findViewById<TextView>(R.id.ConnectRetriesEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
         connectRetriesEditText.text = "${settings.connectRetries}"
-        saveButton.setOnClickListener {
+        okButton.setOnClickListener {
             val minValue = 0
             val maxValue = 4
             var connectRetries = -1
@@ -371,7 +379,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
             dialog.cancel()
         }
-        abortButton.setOnClickListener { dialog.cancel() }
+        cancelButton.setOnClickListener { dialog.cancel() }
         dialog.show()
     }
 
@@ -380,11 +388,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         val settings = binder.getSettings()
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_connect_timeout)
-        val connectTimeoutEditText = dialog.findViewById<TextView>(R.id.connectTimeoutEditText)
-        val saveButton = dialog.findViewById<Button>(R.id.SaveButton)
-        val abortButton = dialog.findViewById<Button>(R.id.AbortButton)
+        val connectTimeoutEditText = dialog.findViewById<TextView>(R.id.ConnectTimeoutEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
         connectTimeoutEditText.text = "${settings.connectTimeout}"
-        saveButton.setOnClickListener {
+        okButton.setOnClickListener {
             val minValue = 20
             val maxValue = 4000
             var connectTimeout = -1
@@ -407,7 +415,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
             dialog.cancel()
         }
-        abortButton.setOnClickListener { dialog.cancel() }
+        cancelButton.setOnClickListener { dialog.cancel() }
         dialog.show()
     }
 
@@ -417,20 +425,20 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_database_password)
-        val passwordInput = dialog.findViewById<TextInputEditText>(R.id.change_password_edit_textview)
-        val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
-        val changeButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+        val passwordEditText = dialog.findViewById<TextInputEditText>(R.id.DatabasePasswordEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
 
-        passwordInput.setText(databasePassword)
-        changeButton.setOnClickListener {
-            val newPassword = passwordInput.text.toString()
+        passwordEditText.setText(databasePassword)
+        okButton.setOnClickListener {
+            val newPassword = passwordEditText.text.toString()
             binder.getService().databasePassword = newPassword
             binder.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()
             dialog.cancel()
         }
-        abortButton.setOnClickListener { dialog.cancel() }
+        cancelButton.setOnClickListener { dialog.cancel() }
         dialog.show()
     }
 
@@ -440,20 +448,20 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_change_menu_password)
-        val passwordInput = dialog.findViewById<TextInputEditText>(R.id.change_password_edit_textview)
-        val abortButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
-        val changeButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+        val passwordEditText = dialog.findViewById<TextInputEditText>(R.id.MenuPasswordEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
 
-        passwordInput.setText(menuPassword)
-        changeButton.setOnClickListener {
-            val newPassword = passwordInput.text.toString()
+        passwordEditText.setText(menuPassword)
+        okButton.setOnClickListener {
+            val newPassword = passwordEditText.text.toString()
             binder.getSettings().menuPassword = newPassword
             binder.saveDatabase()
             Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
             initViews()
             dialog.cancel()
         }
-        abortButton.setOnClickListener { dialog.cancel() }
+        cancelButton.setOnClickListener { dialog.cancel() }
         dialog.show()
     }
 

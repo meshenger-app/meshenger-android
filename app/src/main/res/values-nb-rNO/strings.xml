@@ -52,7 +52,7 @@
     <string name="contact_name_conflict">En kontakt med samme navn finnes allerede:</string>
     <string name="contact_name_exists">En kontakt med det navnet finnes allerede:</string>
     <string name="custom_address">Egendefinert adresse</string>
-    <string name="dialog_title_delete_contact">Fjern kontakt\? %1$s</string>
+    <string name="dialog_title_delete_contact">Fjern kontakt\?</string>
     <string name="done">Ferdig</string>
     <string name="empty_list_item">Tom</string>
     <string name="enter_contact_name">Skriv inn kontaktnavn:</string>

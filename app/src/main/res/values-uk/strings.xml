@@ -52,7 +52,7 @@
     <string name="contact_name_exists">Контакт із таким іменем уже існує:</string>
     <string name="contact_name_invalid">"Ім'я контакту пусте."</string>
     <string name="custom_address">СПЕЦІАЛЬНА АДРЕСА</string>
-    <string name="dialog_title_delete_contact">Видалити контакт? %1$s</string>
+    <string name="dialog_title_delete_contact">Видалити контакт?</string>
     <string name="done">Готово</string>
     <string name="empty_list_item">Порожній</string>
     <string name="enter_contact_name">"Введіть ім'я контакту:"</string>

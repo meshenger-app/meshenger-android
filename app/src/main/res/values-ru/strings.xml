@@ -34,7 +34,7 @@
     <string name="contact_name_conflict">Контакт с тем же именем существует.</string>
     <string name="contact_name_exists">Контакт с таким именем уже существует.</string>
     <string name="contact_name_invalid">Имя контакта пустое.</string>
-    <string name="dialog_title_delete_contact">Удалить контакт? %1$s</string>
+    <string name="dialog_title_delete_contact">Удалить контакт?</string>
     <string name="done">Готово</string>
     <string name="empty_list_item">Пусто</string>
     <string name="enter_contact_name">Введите имя контакта</string>

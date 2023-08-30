@@ -67,7 +67,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .text = if (settings.addresses.isEmpty()) getString(R.string.no_value) else settings.addresses.joinToString()
         findViewById<View>(R.id.addressLayout)
             .setOnClickListener {
-                startActivity(Intent(this@SettingsActivity, AddressActivity::class.java))
+                startActivity(Intent(this@SettingsActivity, AddressManagementActivity::class.java))
             }
 
         val databasePassword = binder.getService().databasePassword

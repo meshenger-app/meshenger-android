@@ -17,7 +17,7 @@ import d.d.meshenger.AddressUtils.AddressType
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AddressActivity : BaseActivity(), ServiceConnection {
+class AddressManagementActivity : BaseActivity(), ServiceConnection {
     private var binder: MainBinder? = null
     private lateinit var addressListView: ListView
     private lateinit var customAddressTextEdit: EditText
@@ -26,7 +26,7 @@ class AddressActivity : BaseActivity(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_address)
+        setContentView(R.layout.activity_address_management)
         setTitle(R.string.address_management)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)

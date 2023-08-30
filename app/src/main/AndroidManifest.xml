@@ -84,7 +84,7 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
-            android:name=".AddressActivity"
+            android:name=".AddressManagementActivity"
             android:parentActivityName=".SettingsActivity" />
 
         <activity

@@ -68,7 +68,6 @@
     <string name="ping_contact">Ping %1$s</string>
     <string name="settings_addresses">Adressen*</string>
     <string name="settings_block_unknown">Ignoriere Unbekannte Anrufer</string>
-    <string name="settings_change_name">Name Ändern</string>
     <string name="settings_connect_retries">Verbindungsversuche</string>
     <string name="settings_connect_timeout">Verbindungsauszeit (ms)</string>
     <string name="settings_database_password">Passwort</string>

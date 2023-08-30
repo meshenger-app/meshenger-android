@@ -60,7 +60,6 @@
     <string name="paste_qr_code_data">Colar dados aqui</string>
     <string name="settings_addresses">Endereços*</string>
     <string name="settings_block_unknown">Bloqueie ligações desconhecidas</string>
-    <string name="settings_change_name">Mudar nome</string>
     <string name="settings_database_password">Senha</string>
     <string name="settings_name">Nome</string>
     <string name="settings_nightmode">Modo escuro</string>

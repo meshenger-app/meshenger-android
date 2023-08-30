@@ -83,7 +83,6 @@
     <string name="setting_read_only">Skrivebeskyttet</string>
     <string name="settings_addresses">Adresser*</string>
     <string name="settings_block_unknown">Blokker ukjente anrop</string>
-    <string name="settings_change_name">Endre navn</string>
     <string name="settings_connect_retries">Gjentilkoblingsforsøk</string>
     <string name="settings_connect_timeout">Tilkoblingstidsavbrudd (ms)</string>
     <string name="settings_disable_audio_processing">Skru av lydbehandling</string>

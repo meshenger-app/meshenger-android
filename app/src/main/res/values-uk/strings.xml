@@ -81,7 +81,6 @@
     <string name="setting_read_only">Лише читання</string>
     <string name="settings_addresses">Адреси*</string>
     <string name="settings_block_unknown">Блокувати невідомих абонентів</string>
-    <string name="settings_change_name">"Змінити ім'я"</string>
     <string name="settings_connect_retries">"Повторити спроби з'єднати"</string>
     <string name="settings_connect_timeout">"Час очікування з'єднання (мс)"</string>
     <string name="settings_database_password">Пароль</string>

@@ -97,7 +97,6 @@
     <string name="settings_block_unknown">拦截未知呼叫人</string>
     <string name="settings_camera_framerate">默认帧率</string>
     <string name="settings_camera_resolution">默认分辨率</string>
-    <string name="settings_change_name">更改昵称</string>
     <string name="settings_connect_retries">连接重试</string>
     <string name="settings_connect_timeout">连接超时（毫秒）</string>
     <string name="settings_database_password">启动密码</string>

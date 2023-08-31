@@ -93,7 +93,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="@string/address_management_help_text"
             android:textAlignment="center"
-            android:textColor="?android:textColorSecondary"
+            android:textColor="?android:textColorPrimary"
             android:textSize="13sp" />
 
         <LinearLayout

@@ -25,7 +25,7 @@ class Settings {
     var enableMicrophoneByDefault = true
     var enableCameraByDefault = false
     var selectFrontCameraByDefault = true
-    var disableCpuOveruseDetection = false
+    var disableCpuOveruseDetection = true
     var autoAcceptCalls = false
     var menuPassword = ""
     var videoDegradationMode = "balanced"

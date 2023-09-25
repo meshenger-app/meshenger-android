@@ -306,6 +306,12 @@ class Database {
                 newFrom = "4.2.3"
             }
 
+            if (newFrom == "4.2.3") {
+                // disable detection to enable custom resolution/framerate
+                settings.put("disable_cpu_overuse_detection", true)
+                newFrom = "4.2.4"
+            }
+
             alignSettings(settings)
 
             db.put("version", newFrom)

@@ -100,4 +100,11 @@
     <string name="warning_no_addresses_configured">Keine Adresse für den QR Code konfiguriert.</string>
     <string name="warning_no_addresses_found">Konfigurierte Adresse nicht gefunden. Hat sich das Netzwerk geändert\?</string>
     <string name="wrong_password">Falsches Passwort</string>
+    <string name="button_rename">Umbenennen</string>
+    <string name="button_add">Hinzufügen</string>
+    <string name="call_error_no_address">Fehler: Keine Adresse</string>
+    <string name="call_authentication_failed">Authentifizierung fehlgeschlagen</string>
+    <string name="call_no_network">Kein Netzwerk - WLAN aktivieren\?</string>
+    <string name="button_reset">Zurücksetzen</string>
+    <string name="call_connection_failed">Verbindung fehlgeschlagen</string>
 </resources>

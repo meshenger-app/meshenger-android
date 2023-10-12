@@ -250,8 +250,8 @@ abstract class RTCPeerConnection(
             if (action == "connected") {
                 Log.d(this, "createOutgoingCallInternal() connected")
                 reportStateChange(CallState.CONNECTED)
-                val answer = obj.getString("answer")
-                if (answer != null) {
+                val answer = obj.optString("answer")
+                if (answer.isNotEmpty()) {
                     handleAnswer(answer)
                 } else {
                     reportStateChange(CallState.ERROR_COMMUNICATION)
@@ -361,7 +361,7 @@ abstract class RTCPeerConnection(
             }
 
             val obj = JSONObject(decrypted)
-            val action = obj.getString("action")
+            val action = obj.optString("action")
             if (action == "dismissed") {
                 Log.d(this, "continueOnIncomingSocket() received dismissed")
                 reportStateChange(CallState.DISMISSED)
@@ -689,8 +689,8 @@ abstract class RTCPeerConnection(
                     Log.d(this, "createIncomingCallInternal() got WebRTC offer")
 
                     // someone calls us
-                    val offer = obj.getString("offer")
-                    if (offer == null) {
+                    val offer = obj.optString("offer")
+                    if (offer.isEmpty()) {
                         Log.d(this, "createIncomingCallInternal() missing offer")
                         decline()
                         return

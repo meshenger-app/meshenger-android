@@ -13,7 +13,7 @@ class Settings {
     var blockUnknown = false
     var useNeighborTable = false
     var promptOutgoingCalls = false
-    var videoHardwareAcceleration = false
+    var videoHardwareAcceleration = true
     var disableCallHistory = false
     var disableProximitySensor = false
     var disableAudioProcessing = false
@@ -25,7 +25,7 @@ class Settings {
     var enableMicrophoneByDefault = true
     var enableCameraByDefault = false
     var selectFrontCameraByDefault = true
-    var disableCpuOveruseDetection = true
+    var disableCpuOveruseDetection = false
     var autoAcceptCalls = false
     var menuPassword = ""
     var videoDegradationMode = "balanced"

@@ -9,8 +9,6 @@ class StatsReportUtil {
     private var lastBytesSentVideo = BigInteger.ZERO
     private var lastBytesReceivedAudio = BigInteger.ZERO
     private var lastBytesSentAudio = BigInteger.ZERO
-    private var lastFrameDecodedOut = 0L
-    private var lastFrameDecodedIn = 0L
 
     fun getStatsReport(report: RTCStatsReport?): String {
         if (report == null) {
@@ -41,43 +39,50 @@ class StatsReportUtil {
         var videoOutFrameRate = 0L
 
         val statsMap = report.statsMap
+
+        /*
+        // for debugging
+        var str = "statsMap:\n"
+        for (key in statsMap.keys) {
+            val stats = statsMap[key]!!
+            str += "stats key: $key, type: ${stats.type}, members:\n"
+            for (member in stats.members) {
+                val typeName = member.value::class.java.typeName
+                str += "  ${member.key}: ${member.value} (${typeName})\n"
+            }
+        }
+        Log.d(this, str)
+        */
+
         for (stats in statsMap.values) {
             if (stats.type == "inbound-rtp") {
                 val members = stats.members
-                val mediaType = members["mediaType"]
+                val kind = members["kind"]
 
-                if (mediaType == "video") {
+                if (kind == "video") {
                     if (videoInFound) {
                         Log.w(this, "Already found inbound video track")
                         continue
                     }
 
                     val codecId = members["codecId"] as String?
-                    val trackId = members["trackId"] as String?
-
                     if (codecId != null) {
                         val vmap = statsMap[codecId]!!
                         videoInCodec = (vmap.members["mimeType"] as String?) ?: videoInCodec
                     }
 
-                    if (trackId != null) {
-                        val vmap = statsMap[trackId]!!
-                        videoInWidth = (vmap.members["frameWidth"] as Long?) ?: 0L
-                        videoInHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
-                    }
+                    videoInWidth = (members["frameWidth"] as Long?) ?: 0L
+                    videoInHeight = (members["frameHeight"] as Long?) ?: 0L
+                    videoInFrameRate = ((members["framesPerSecond"] as Double?) ?: 0.0).toLong()
 
-                    val bytes = members["bytesReceived"] as BigInteger
-                    videoInBytesDelta = (bytes.toLong() - lastBytesReceivedVideo.toLong()) * 8 / STATS_INTERVAL_MS
+                    val bytes = (members["bytesReceived"] as BigInteger)
+                    videoInBytesDelta = (bytes.toLong() - lastBytesReceivedVideo.toLong()) * 8L / STATS_INTERVAL_MS
                     lastBytesReceivedVideo = bytes
 
-                    val framesDecoded = members["framesDecoded"] as Long
-                    val lastFrame = lastFrameDecodedIn
-                    videoInFrameRate = ((framesDecoded - lastFrame) * 1000L / STATS_INTERVAL_MS)
-                    lastFrameDecodedIn = framesDecoded
                     videoInFound = true
                 }
 
-                if (mediaType == "audio") {
+                if (kind == "audio") {
                     if (audioInFound) {
                         Log.w(this, "Already found inbound audio track")
                         continue
@@ -95,53 +100,45 @@ class StatsReportUtil {
                     audioInFound = true
                 }
             } else if (stats.type == "outbound-rtp") {
-                val map = stats.members
-                val mediaType = map["mediaType"]
+                val members = stats.members
+                val kind = members["kind"]
 
-                if (mediaType == "video") {
+                if (kind == "video") {
                     if (videoOutFound) {
                         Log.w(this, "Already found outbound video track")
                         continue
                     }
 
-                    val trackId = map["trackId"] as String?
-                    val codecId = map["codecId"] as String?
-
-                    if (trackId != null) {
-                        val vmap = statsMap[trackId]!!
-                        videoOutWidth = (vmap.members["frameWidth"] as Long?) ?: 0L
-                        videoOutHeight = (vmap.members["frameHeight"] as Long?) ?: 0L
-                    }
-
+                    val codecId = members["codecId"] as String?
                     if (codecId != null) {
                         val vmap = statsMap[codecId]!!
                         videoOutCodec = (vmap.members["mimeType"] as String?) ?: videoOutCodec
                     }
 
-                    val bytes = map["bytesSent"] as BigInteger
-                    videoOutBytesDelta = (bytes.toLong() - lastBytesSentVideo.toLong()) * 8 / STATS_INTERVAL_MS
+                    videoOutWidth = (members["frameWidth"] as Long?) ?: 0L
+                    videoOutHeight = (members["frameHeight"] as Long?) ?: 0L
+                    videoOutFrameRate = ((members["framesPerSecond"] as Double?) ?: 0.0).toLong()
+
+                    val bytes = (members["bytesSent"] as BigInteger)
+                    videoOutBytesDelta = (bytes.toLong() - lastBytesSentVideo.toLong()) * 8L / STATS_INTERVAL_MS
                     lastBytesSentVideo = bytes
 
-                    val framesEncoded = map["framesEncoded"] as Long
-                    val lastFrame = lastFrameDecodedOut
-                    videoOutFrameRate = ((framesEncoded - lastFrame) * 1000L / STATS_INTERVAL_MS)
-                    lastFrameDecodedOut = framesEncoded
                     videoOutFound = true
                 }
 
-                if (mediaType == "audio") {
+                if (kind == "audio") {
                     if (audioOutFound) {
                         Log.w(this, "Already found outbound audio track")
                         continue
                     }
 
-                    val codecId = map["codecId"] as String?
+                    val codecId = members["codecId"] as String?
                     if (codecId != null) {
                         val vmap = statsMap[codecId]!!
                         audioOutCodec = (vmap.members["mimeType"] as String?) ?: audioOutCodec
                     }
 
-                    val bytes = map["bytesSent"] as BigInteger
+                    val bytes = members["bytesSent"] as BigInteger
                     audioOutBytesDelta = (bytes.toLong() - lastBytesSentAudio.toLong())  * 8 / STATS_INTERVAL_MS
                     lastBytesSentAudio = bytes
                     audioOutFound = true
@@ -158,12 +155,10 @@ class StatsReportUtil {
         }
 
         if (!videoInFound) {
-            lastFrameDecodedIn = 0
             lastBytesReceivedVideo = BigInteger.ZERO
         }
 
         if (!videoOutFound) {
-            lastFrameDecodedOut = 0
             lastBytesSentVideo = BigInteger.ZERO
         }
 

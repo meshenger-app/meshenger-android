@@ -107,4 +107,6 @@
     <string name="call_no_network">Kein Netzwerk - WLAN aktivieren\?</string>
     <string name="button_reset">Zurücksetzen</string>
     <string name="call_connection_failed">Verbindung fehlgeschlagen</string>
+    <string name="audio_device_fixed">%1$s (fest)</string>
+    <string name="audio_device_auto">%1$s (automatisch)</string>
 </resources>

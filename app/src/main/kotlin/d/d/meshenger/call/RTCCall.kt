@@ -1,6 +1,7 @@
 package d.d.meshenger.call
 
 import android.content.Context
+import android.media.MediaCodecInfo
 import d.d.meshenger.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -530,7 +531,12 @@ class RTCCall : RTCPeerConnection {
         if (binder.getSettings().videoHardwareAcceleration) {
             val enableIntelVp8Encoder = true
             val enableH264HighProfile = true
-            encoderFactory = DefaultVideoEncoderFactory(eglBase.eglBaseContext, enableIntelVp8Encoder, enableH264HighProfile)
+            encoderFactory = CustomHardwareVideoEncoderFactory(eglBase.eglBaseContext, enableIntelVp8Encoder, enableH264HighProfile, object :
+                CustomHardwareVideoEncoderFactory.VideoEncoderSupportedCallback {
+                override fun isSupportedVp8(info: MediaCodecInfo): Boolean {return false }
+                override fun isSupportedVp9(info: MediaCodecInfo): Boolean {return false }
+                override fun isSupportedH264(info: MediaCodecInfo): Boolean { return true }
+            })
             decoderFactory = DefaultVideoDecoderFactory(eglBase.eglBaseContext)
         } else {
             encoderFactory = SoftwareVideoEncoderFactory()

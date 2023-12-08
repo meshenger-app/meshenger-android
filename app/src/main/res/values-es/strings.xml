@@ -16,7 +16,7 @@
     <string name="button_next">Siguiente</string>
     <string name="button_no">No</string>
     <string name="button_ok">Ok</string>
-    <string name="button_replace">Reeplazar</string>
+    <string name="button_replace">Reemplazar</string>
     <string name="button_save">Guardar</string>
     <string name="button_skip">Omitir</string>
     <string name="button_yes">Si</string>
@@ -24,7 +24,7 @@
     <string name="call_connecting">Conectando…</string>
     <string name="call_denied">Rechazado</string>
     <string name="call_ended">Llamada finalizada</string>
-    <string name="call_error">error</string>
+    <string name="call_error">Error</string>
     <string name="call_ringing">Llamando…</string>
     <string name="contact_has_no_address_warning">Advertencia: el contacto no tiene dirección</string>
     <string name="contact_key_conflict">Existe un contacto con la misma clave.</string>
@@ -67,4 +67,10 @@
     <string name="title_show_qr_code">Escanea este código QR</string>
     <string name="unknown_caller">Llamada desconocida</string>
     <string name="wrong_password">Contraseña incorrecta</string>
+    <string name="button_rename">Renombrar</string>
+    <string name="button_add">Agregar</string>
+    <string name="audio_device_speakerphone">Altavoz</string>
+    <string name="call_authentication_failed">Error de autenticación</string>
+    <string name="button_reset">Reiniciar</string>
+    <string name="call_connection_failed">Error de conección</string>
 </resources>

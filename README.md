@@ -27,7 +27,7 @@ Limitations:
 
 ## Translations
 
-Visit [weblate.org](https://hosted.weblate.org/engage/meshenger/) to contribute translations. An alternative is to translate the values in the [resource folder](https://github.com/meshenger-app/meshenger-android/tree/master/app/src/main/res) and then to create a merge request.
+Visit [weblate.org](https://hosted.weblate.org/engage/meshenger/) to contribute translations. An alternative is to directly translate the values in [strings.xml](https://github.com/meshenger-app/meshenger-android/blob/master/app/src/main/res/values/strings.xml) and then to create a pull request or send it via Email.
 
 ## Documentation
 

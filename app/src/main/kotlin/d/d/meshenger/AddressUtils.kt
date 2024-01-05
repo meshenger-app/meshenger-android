@@ -51,33 +51,37 @@ internal object AddressUtils
             addresses.add(lastWorkingAddress)
         }
 
+        val ownInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
+
         for (address in contact.addresses) {
             if (isMACAddress(address)) {
                 val mac = macAddressToBytes(address)
-                addresses.addAll(mapMACtoPrefixes(mac, port))
+                addresses.addAll(mapMACtoPrefixes(ownInterfaces, mac, port))
                 if (useNeighborTable && mac != null) {
                     macs.add(formatMAC(mac))
                 }
             } else {
-                val socketAddress = stringToInetSocketAddress(address, port)
-                if (socketAddress != null) {
+                val socketAddress = stringToInetSocketAddress(address, port) ?: continue
+
+                if (isLinkLocalAddress(socketAddress.hostString)) {
+                    for (interfaceName in collectInterfaceNames(ownInterfaces)) {
+                        addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
+                    }
+                } else {
                     addresses.add(socketAddress)
                 }
 
-                // get MAC address from provided IPv6 address
-                if (isIPAddress(address)) {
+                // get MAC address from IPv6 EUI64 address
+                if (extractFE80MAC && isIPAddress(address)) {
                     val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         InetAddresses.parseNumericAddress(address)
                     } else {
                         InetAddress.getByName(address)
                     }
-
-                    if (extractFE80MAC) {
-                        val mac = extractMAC(inetAddress)
-                        addresses.addAll(mapMACtoPrefixes(mac, port))
-                        if (useNeighborTable && mac != null) {
-                            macs.add(formatMAC(mac))
-                        }
+                    val mac = extractMAC(inetAddress)
+                    addresses.addAll(mapMACtoPrefixes(ownInterfaces, mac, port))
+                    if (useNeighborTable && mac != null) {
+                        macs.add(formatMAC(mac))
                     }
                 }
             }
@@ -380,10 +384,27 @@ internal object AddressUtils
         return Inet6Address.getByAddress(null, bytes, address.scopeId)
     }
 
+    private fun collectInterfaceNames(networkInterfaces: List<NetworkInterface>): List<String> {
+        val ifNames = mutableSetOf<String>()
+        for (nif in networkInterfaces) {
+            if (nif.isLoopback) {
+                continue
+            }
+
+            if (ignoreDeviceByName(nif.name)) {
+                continue
+            }
+
+            ifNames.add(nif.name)
+        }
+
+        return ifNames.toList()
+    }
+
     /*
     * Duplicate own addresses that contain a MAC address with the given MAC address.
     */
-    private fun mapMACtoPrefixes(macAddress: ByteArray?, port: Int): List<InetSocketAddress> {
+    private fun mapMACtoPrefixes(networkInterfaces: List<NetworkInterface>, macAddress: ByteArray?, port: Int): List<InetSocketAddress> {
         val addresses = ArrayList<InetSocketAddress>()
 
         if (macAddress == null || macAddress.size != 6) {
@@ -391,7 +412,7 @@ internal object AddressUtils
         }
 
         try {
-            for (nif in Collections.list(NetworkInterface.getNetworkInterfaces())) {
+            for (nif in networkInterfaces) {
                 if (nif.isLoopback) {
                     continue
                 }

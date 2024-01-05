@@ -7,10 +7,37 @@ import java.io.*
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.experimental.and
 import kotlin.experimental.xor
 
 internal object AddressUtils
 {
+    fun isLinkLocalAddress(address: String): Boolean {
+        if (isIPAddress(address)) {
+            // IPv4
+            if (address.startsWith("169.254.")) {
+                return true
+            }
+
+            // IPv6 (check for fe80::/10)
+            if (address.startsWith("fe") && address.length >= 6) {
+                try {
+                    val idx = address.indexOf(":")
+                    if (idx != -1) {
+                        val secondByte = address.substring(2, idx).toLong(radix = 16)
+                        if ((secondByte.toByte().and(0xC0.toByte()) == 0x80.toByte())) {
+                            return true
+                        }
+                    }
+                } catch (nfe: NumberFormatException) {
+                    // ignore
+                }
+            }
+        }
+
+        return false
+    }
+
     fun getAllSocketAddresses(contact: Contact, useNeighborTable: Boolean = false): List<InetSocketAddress> {
         val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
@@ -429,7 +456,7 @@ internal object AddressUtils
                             && isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)
                         ) {
-                            if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
+                            if (isLinkLocalAddress(address)) {
                                 addresses.add(InetSocketAddress("$address%$device", port))
                             } else {
                                 addresses.add(InetSocketAddress(address, port))
@@ -449,7 +476,7 @@ internal object AddressUtils
                             && isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)
                         ) {
-                            if (address.startsWith("fe80:") || address.startsWith("169.254.")) {
+                            if (isLinkLocalAddress(address)) {
                                 addresses.add(InetSocketAddress("$address%$device", port))
                             } else {
                                 addresses.add(InetSocketAddress(address, port))

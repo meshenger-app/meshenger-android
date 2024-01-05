@@ -36,7 +36,7 @@ class Contact(
             obj.put("name", contact.name)
             obj.put("public_key", Utils.byteArrayToHexString(contact.publicKey))
             for (address in contact.addresses) {
-                array.put(address)
+                array.put(AddressUtils.stripInterface(address))
             }
             obj.put("addresses", array)
             if (all && contact.blocked) {
@@ -59,7 +59,7 @@ class Contact(
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
-                var address = array[i].toString()
+                var address = AddressUtils.stripInterface(array[i].toString())
                 if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
                 } else if (AddressUtils.isMACAddress(address)) {

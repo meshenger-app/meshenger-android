@@ -72,7 +72,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         }
 
         addButton.setOnClickListener {
-            var address = customAddressTextEdit.text!!.toString()
+            var address = AddressUtils.stripInterface(customAddressTextEdit.text!!.toString())
             address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                 address.lowercase(Locale.ROOT)
             } else if (AddressUtils.isMACAddress(address)) {

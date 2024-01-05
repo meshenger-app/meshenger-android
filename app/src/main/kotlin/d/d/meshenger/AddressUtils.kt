@@ -134,6 +134,16 @@ internal object AddressUtils
         return null
     }
 
+    // remove interface from link local address
+    fun stripInterface(address: String): String {
+        val pc = address.indexOf('%')
+        return if (pc == -1) {
+            address
+        } else {
+            address.substring(0, pc)
+        }
+    }
+
     // coarse address type distinction
     enum class AddressType {
         GLOBAL_IP, GLOBAL_MAC, LOCAL_IP, LOCAL_MAC, MULTICAST_MAC, MULTICAST_IP, DOMAIN
@@ -320,7 +330,7 @@ internal object AddressUtils
 
                     val hostAddress = ia.address.hostAddress
                     if (hostAddress != null && addressList.find { it.address == hostAddress } == null) {
-                        addressList.add(AddressEntry(hostAddress, nif.name))
+                        addressList.add(AddressEntry(stripInterface(hostAddress), nif.name))
                     }
 
                     // extract MAC address from fe80:: address

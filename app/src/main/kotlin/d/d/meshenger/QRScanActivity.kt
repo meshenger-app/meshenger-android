@@ -87,6 +87,8 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     }
 
     private fun showPubkeyConflictDialog(newContact: Contact, other_contact: Contact) {
+        barcodeView.pause()
+
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_add_contact_pubkey_conflict)
         val nameTextView =
@@ -111,6 +113,8 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     }
 
     private fun showNameConflictDialog(newContact: Contact, other_contact: Contact) {
+        barcodeView.pause()
+
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_add_contact_name_conflict)
         val nameEditText = dialog.findViewById<EditText>(R.id.conflict_contact_edit_textview)
@@ -179,7 +183,6 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
     override fun barcodeResult(result: BarcodeResult) {
         // no more scan until result is processed
-        barcodeView.pause()
         try {
             addContact(result.text)
         } catch (e: JSONException) {

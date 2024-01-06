@@ -24,6 +24,8 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
         val ownSecretKey = settings.secretKey
         val connectRetries = settings.connectRetries
         var connectedSocket: Socket? = null
+        var networkNotReachable = false
+        var appNotRunning = false
 
         try {
             val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
@@ -40,11 +42,10 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                         break
                     } catch (e: ConnectException) {
                         Log.d(this, "pingContact() $e, ${e.message}")
-                        return if (" ENETUNREACH " in e.toString()) {
-                            Contact.State.NETWORK_UNREACHABLE
+                        if (" ENETUNREACH " in e.toString()) {
+                            networkNotReachable = true
                         } else {
-                            // target online, but App not running
-                            Contact.State.APP_NOT_RUNNING
+                            appNotRunning = true
                         }
                     } catch (e: Exception) {
                         // ignore
@@ -61,7 +62,13 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             }
 
             if (connectedSocket == null) {
-                return Contact.State.CONTACT_OFFLINE
+                return if (appNotRunning) {
+                    Contact.State.APP_NOT_RUNNING
+                } else if (networkNotReachable) {
+                    Contact.State.NETWORK_UNREACHABLE
+                } else {
+                    Contact.State.CONTACT_OFFLINE
+                }
             }
 
             connectedSocket.soTimeout = 3000

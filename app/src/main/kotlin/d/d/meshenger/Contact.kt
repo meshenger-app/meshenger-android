@@ -21,6 +21,7 @@ class Contact(
         APP_NOT_RUNNING, // host is online, but Meshenger does not run
         AUTHENTICATION_FAILED, // authentication failed, key might have changed
         COMMUNICATION_FAILED, // something went wrong during communication
+        PENDING, // temporary state until the contact has been pinged
     }
 
     // contact state

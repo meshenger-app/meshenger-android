@@ -122,15 +122,26 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
     }
 
     override fun run() {
+        // set all states to unknown
+        for (contact in contacts) {
+            binder.getContacts()
+                .getContactByPublicKey(contact.publicKey)
+                ?.state = Contact.State.PENDING
+        }
+
+        MainService.refreshContacts(binder.getService())
+        MainService.refreshEvents(binder.getService())
+
+        // ping contacts
         for (contact in contacts) {
             val state = pingContact(contact)
             Log.d(this, "contact state is $state")
+
             // set contact state
             binder.getContacts()
                 .getContactByPublicKey(contact.publicKey)
                 ?.state = state
         }
-
 
         MainService.refreshContacts(binder.getService())
         MainService.refreshEvents(binder.getService())

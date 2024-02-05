@@ -525,6 +525,7 @@ class CallActivity : CupLinkActivity(), ServiceConnection, SensorEventListener {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         moveTaskToBack(true)
     }
 }

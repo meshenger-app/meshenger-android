@@ -300,6 +300,7 @@ class MainActivity : CupLinkActivity(), ServiceConnection, OnItemClickListener {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         moveTaskToBack(true)
     }
 

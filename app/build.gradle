@@ -9,7 +9,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     defaultConfig {
-        compileSdkVersion 33
+        compileSdkVersion 34
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 33

@@ -2,18 +2,33 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Backup Import/Export -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Common permission for voice/video calls -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- For audio over Bluetooth (BLUETOOTH only for SDK <= 30) -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+    <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Allow to start activity from background -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Allow the app to start on device bootup -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".MainApplication"
@@ -29,15 +44,15 @@
 
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
 
         <activity
             android:name=".QRShowActivity"
             android:exported="true"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".QRScanActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
 
         <service
             android:name=".MainService"
@@ -50,7 +65,7 @@
             android:name=".StartActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -59,11 +74,20 @@
 
         <activity
             android:name=".CallActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".AddressActivity" />
-        <activity android:name=".LicenseActivity" />
-    </application>
+            android:parentActivityName=".MainActivity"
+            android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout"
+            android:screenOrientation="fullUser" />
 
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".LicenseActivity"
+            android:parentActivityName=".AboutActivity" />
+        <activity android:name=".AboutActivity"
+            android:parentActivityName=".AboutActivity"/>
+        <activity android:name=".AddressActivity"
+            android:parentActivityName=".AboutActivity"/>
+
+    </application>
 </manifest>

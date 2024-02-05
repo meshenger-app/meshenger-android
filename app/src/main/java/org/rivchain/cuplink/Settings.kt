@@ -13,6 +13,7 @@ class Settings {
     var developmentMode = false
     var addresses: MutableList<String> = ArrayList()
     var videoCodec = "H264"
+    var startOnBootup = false
 
     // ICE (Interactive Connectivity Establishment) servers implement STUN and TURN
     var iceServers: MutableList<String> = ArrayList()
@@ -40,6 +41,7 @@ class Settings {
             s.nightMode = obj.getBoolean("night_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.developmentMode = obj.getBoolean("development_mode")
+            s.startOnBootup = obj.getBoolean("start_on_bootup")
             val addresses = obj.getJSONArray("addresses")
             run {
                 var i = 0
@@ -67,6 +69,7 @@ class Settings {
             obj.put("night_mode", s.nightMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("development_mode", s.developmentMode)
+            obj.put("start_on_bootup", s.startOnBootup)
             val addresses = JSONArray()
             run {
                 var i = 0

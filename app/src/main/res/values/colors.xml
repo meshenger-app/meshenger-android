@@ -6,4 +6,7 @@
     <color name="colorBackgroundDark">#33343B</color>
     <color name="colorTextDarkPrimary">@android:color/primary_text_dark</color>
     <color name="colorTextDarkSecondary">@android:color/secondary_text_dark</color>
+    <color name="light_grey">#B1B1B1</color>
+    <color name="selectedColor">#227d51</color>
+    <color name="unselectedColor">#1AEC3E3F</color>
 </resources>

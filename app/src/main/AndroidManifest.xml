@@ -89,5 +89,14 @@
         <activity android:name=".AddressActivity"
             android:parentActivityName=".AboutActivity"/>
 
+        <receiver
+            android:name=".BootUpReceiver"
+            android:enabled="false"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

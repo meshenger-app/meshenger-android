@@ -32,7 +32,12 @@ class StartActivity : CupLinkActivity() {
     private lateinit var serviceConnection: ServiceConnection
     private lateinit var binder: MainBinder
     private var startState = 0
+    private var isStartOnBootup = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // set by BootUpReceiver
+        isStartOnBootup = intent.getBooleanExtra(BootUpReceiver.IS_START_ON_BOOTUP, false)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
@@ -103,14 +108,19 @@ class StartActivity : CupLinkActivity() {
             }
             6 -> {
                 log("init 6: start contact list")
+                val settings = binder.settings
+                // set in case we just updated the app
+                BootUpReceiver.setEnabled(this, settings.startOnBootup)
+
                 // set night mode
-                val nightMode = binder.settings.nightMode
+                val nightMode = settings.nightMode
                 AppCompatDelegate.setDefaultNightMode(
                     if (nightMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
-                // all done - show contact list
-                startActivity(Intent(this, MainActivity::class.java))
+                if (!isStartOnBootup) {
+                    startActivity(Intent(this, MainActivity::class.java))
+                }
                 finish()
             }
         }

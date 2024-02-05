@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.switchmaterial.SwitchMaterial
 import org.rivchain.cuplink.MainService.MainBinder
 import java.util.*
 
@@ -63,7 +64,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             if (addresses.size == 0) resources.getString(R.string.none) else Utils.join(addresses)
 
         val blockUnknown = binder!!.settings.blockUnknown
-        val blockUnknownCB = findViewById<CheckBox>(R.id.checkBoxBlockUnknown)
+        val blockUnknownCB = findViewById<SwitchMaterial>(R.id.blockUnknownSwitch)
         blockUnknownCB.isChecked = blockUnknown
         blockUnknownCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // save value
@@ -71,7 +72,7 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             binder!!.saveDatabase()
         }
         val nightMode = binder!!.settings.nightMode
-        val nightModeCB = findViewById<CheckBox>(R.id.checkBoxNightMode)
+        val nightModeCB = findViewById<SwitchMaterial>(R.id.checkBoxNightMode)
         nightModeCB.isChecked = nightMode
         nightModeCB.setOnCheckedChangeListener { compoundButton: CompoundButton?, isChecked: Boolean ->
             // apply value
@@ -93,6 +94,14 @@ class SettingsActivity : CupLinkActivity(), ServiceConnection {
             // save value
             binder!!.settings.developmentMode = isChecked
             binder!!.saveDatabase()
+        }
+        findViewById<SwitchMaterial>(R.id.startOnBootupSwitch).apply {
+            isChecked = binder!!.settings.startOnBootup
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                binder!!.settings.startOnBootup = isChecked
+                BootUpReceiver.setEnabled(this@SettingsActivity, isChecked) // apply setting
+                binder!!.saveDatabase()
+            }
         }
         locale
     }

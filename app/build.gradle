@@ -9,6 +9,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     defaultConfig {
+        compileSdkVersion 33
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 33
@@ -19,11 +20,8 @@ android {
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding true

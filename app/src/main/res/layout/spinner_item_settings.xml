@@ -3,5 +3,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="@dimen/options_text_size"
-    android:gravity="right"
+    android:gravity="end"
     android:textColor="?android:textColorSecondary" />

@@ -86,6 +86,6 @@ class StatsReportUtil {
     }
 
     companion object {
-        private const val STATS_INTERVAL_MS = 5000
+        const val STATS_INTERVAL_MS = 5000L
     }
 }

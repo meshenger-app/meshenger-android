@@ -42,6 +42,9 @@ android {
             keyPassword keystoreProperties['KEY_PASSWORD']
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {

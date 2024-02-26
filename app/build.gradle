@@ -1,7 +1,5 @@
-plugins {
-    id("com.android.application")
-    id "org.jetbrains.kotlin.android" version '1.9.0'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -9,15 +7,23 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     defaultConfig {
-        compileSdkVersion 34
+        namespace 'org.rivchain.cuplink'
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 377
-        versionName "0.4.6.7"
+        versionCode 378
+        versionName "0.5.0.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+        resourceConfigurations += ['de', 'en', 'es', 'fr', 'nb-rNO', 'pt-rBR', 'ru', 'uk', 'zh']
         setProperty("archivesBaseName", project.getParent().name + "-" + versionName)
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -34,14 +40,15 @@ android {
             keyPassword keystoreProperties['KEY_PASSWORD']
         }
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+
+    productFlavors {
+        google {
+            applicationId 'app.cuplink'
+        }
+        fdroid {
+            applicationId 'org.rivchain.cuplink'
         }
     }
-    namespace 'org.rivchain.cuplink'
 }
 
 dependencies {
@@ -49,15 +56,16 @@ dependencies {
     implementation 'ch.acra:acra-http:5.9.6'
     implementation 'ch.acra:acra-dialog:5.9.6'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.android.support.constraint:constraint-layout:2.1.4'
     implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.preference:preference:1.2.1'
-    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
-    implementation 'com.google.zxing:core:3.4.1'
-    //implementation 'org.webrtc:google-webrtc:1.0.32006'
+    implementation 'com.google.zxing:core:3.3.3'
+//    implementation 'org.webrtc:google-webrtc:1.0.24064'
+    implementation 'dev.bargen:webrtc-android:115.0.0'
+    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk17:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.google.android:flexbox:2.0.0'
 }

@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@android:color/black"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.6"
-        android:background="@color/colorPrimary">
+        android:background="#FFEC3E3E"
+    >
 
         <ImageView
-            android:layout_width="256dp"
-            android:layout_height="256dp"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:src="@mipmap/ic_launcher" />
+            android:layout_centerInParent="true"
+            android:src="@drawable/logo_foreground" />
 
     </RelativeLayout>
 
@@ -24,19 +26,20 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
-        android:background="@color/colorPrimary">
-
+        android:background="@android:color/black"
+    >
 
         <TextView
             android:id="@+id/splashText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:paddingTop="20dp"
             android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="40sp" />
+            android:textColor="#FFEC3E3E"
+            android:textSize="40dp"
+            android:paddingTop="20dp"/>
 
     </RelativeLayout>
+
 
 </LinearLayout>

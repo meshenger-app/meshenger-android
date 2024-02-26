@@ -1,0 +1,4 @@
+* update WebRTC to M107
+* show connected address as part of debug display in call
+* fix crash when debug display is enabled a second time
+* some translation and style fixes

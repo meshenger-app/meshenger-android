@@ -2,11 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Common permission for voice/video calls -->
+    <!-- Backup Import/Export -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Common permission for voice/video calls -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -35,37 +39,26 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:largeHeap="true"
-        android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="false"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
 
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="fullSensor" />
+            android:name=".MainActivity" />
 
         <activity
-            android:name=".QRShowActivity"
-            android:exported="true"
-            android:screenOrientation="fullSensor" />
+            android:name=".QRShowActivity" />
+
         <activity
-            android:name=".QRScanActivity"
-            android:screenOrientation="fullSensor" />
+            android:name=".QRScanActivity" />
 
         <service
             android:name=".MainService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:exported="false" />
 
         <activity
             android:name=".StartActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="fullSensor">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -81,13 +74,26 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".AboutActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ContactDetailsActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".BackupActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".AddressManagementActivity"
+            android:parentActivityName=".SettingsActivity" />
+
         <activity
             android:name=".LicenseActivity"
             android:parentActivityName=".AboutActivity" />
-        <activity android:name=".AboutActivity"
-            android:parentActivityName=".AboutActivity"/>
-        <activity android:name=".AddressActivity"
-            android:parentActivityName=".AboutActivity"/>
 
         <receiver
             android:name=".BootUpReceiver"

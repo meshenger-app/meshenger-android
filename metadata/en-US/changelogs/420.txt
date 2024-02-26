@@ -1,0 +1,5 @@
+* fix a few potentional null pointer exceptions
+* show IPv6 format with braces in call history
+* update to WebRTC 113.0.0
+* show debug window even when no video is on
+* update various translations

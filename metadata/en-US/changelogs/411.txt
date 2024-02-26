@@ -1,0 +1,5 @@
+* show last missed call in app notification
+* add setting to show username instead of logo
+* add setting to change retries for connection (0..4)
+* minor UI changes, e.g. colors for call event icons
+* internal refactoring

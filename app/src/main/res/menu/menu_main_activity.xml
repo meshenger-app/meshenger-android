@@ -5,17 +5,21 @@
 
     <item
         android:id="@+id/action_settings"
-        android:title="@string/menu_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:title="@string/menu_settings"/>
 
     <item
         android:id="@+id/action_backup"
-        android:title="@string/menu_backup"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:title="@string/menu_backup"/>
 
     <item
         android:id="@+id/action_about"
-        android:title="@string/menu_about"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:title="@string/menu_about"/>
 
+    <item
+        android:id="@+id/action_exit"
+        app:showAsAction="never"
+        android:title="@string/menu_exit"/>
 </menu>

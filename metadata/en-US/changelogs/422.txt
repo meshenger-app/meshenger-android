@@ -1,0 +1,3 @@
+* add window for contact details
+  * move rename and block contact there
+* fix a potential crash when an outgoing call is aborted quickly

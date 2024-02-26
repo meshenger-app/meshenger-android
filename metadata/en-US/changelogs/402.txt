@@ -1,0 +1,9 @@
+* fix occasional crash in main window
+* silence notification sound when navigating the app
+* improved debug window output
+* keep phone from ringing if call is aborted
+* use Android targetSdkVersion 33
+* updated Brazilian Portuguese translation by m_s_
+* do not show network ports in event list
+* show notification as collapsed by default
+* allow to switch fullscreen and pip (picture-in-picture) video feeds

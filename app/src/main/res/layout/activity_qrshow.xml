@@ -1,38 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".QRShowActivity">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
 
-    <ImageView
-        android:id="@+id/QRView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabShare"
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
+        android:padding="@dimen/padding_20"
         android:layout_height="wrap_content"
-        android:layout_above="@id/fabPresenter"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="@dimen/fab_margin"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginEnd="101dp"
-        android:layout_marginBottom="-77dp"
-        android:background="@color/colorPrimary"
-        app:srcCompat="@android:drawable/ic_menu_share" />
+        android:background="@drawable/qrscan_background">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabPresenter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@color/colorPrimary"
-        app:srcCompat="@drawable/qr_glass" />
+        <TextView
+            android:id="@+id/scan_invite_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/lato_bold"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="@string/title_show_qr_code" />
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/QRView"
+            android:layout_below="@id/scan_invite_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/contact_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/lato_bold"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:layout_below="@id/QRView" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/contact_name_tv"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="@dimen/padding_10"
+            android:layout_marginBottom="@dimen/padding_10"
+            app:srcCompat="@drawable/ic_baseline_share_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabPresenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/contact_name_tv"
+            android:layout_marginStart="@dimen/padding_20"
+            android:layout_marginTop="@dimen/padding_10"
+            android:layout_marginBottom="@dimen/padding_10"
+            android:layout_toEndOf="@id/fabShare"
+            app:srcCompat="@drawable/qr_glass" />
+
+    </RelativeLayout>
+</ScrollView>

@@ -1,0 +1,2 @@
+* fix context menu crash in call list (introduced in 4.1.2)
+* do not do hangup and decline at the same time

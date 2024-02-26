@@ -1,0 +1,2 @@
+* update WebRTC to 115.0.0
+* enable cpu protection again in favor of hardware accelaration

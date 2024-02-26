@@ -26,6 +26,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -39,15 +40,6 @@ android {
             storePassword keystoreProperties['KEYSTORE_PASSWORD']
             keyAlias keystoreProperties['KEY_ALIAS']
             keyPassword keystoreProperties['KEY_PASSWORD']
-        }
-    }
-
-    productFlavors {
-        google {
-            applicationId 'app.cuplink'
-        }
-        fdroid {
-            applicationId 'org.rivchain.cuplink'
         }
     }
 }

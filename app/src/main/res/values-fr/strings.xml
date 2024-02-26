@@ -6,7 +6,7 @@
     <string name="about_app_website">Code source :</string>
     <string name="address_management">Gestion des adresses</string>
     <string name="address_management_help_text">Choisissez une ou plusieurs adresses à intégrer dans votre code QR. Une bonne idée consiste à utiliser l’adresse MAC de l’adaptateur Wi-Fi (wlan0). Notez cependant que l’adresse est liée au matériel du périphérique. Allumez le Wi-Fi si l’adresse MAC n’est pas visible.</string>
-    <string name="app_description">L’application Meshenger permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les codes QR des contacts, les uns des autres. Cela fonctionne sur la plupart des réseaux, p. ex. à la maison, dans les réseaux communautaires ou au travail.</string>
+    <string name="app_description">L’application CupLink permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les codes QR des contacts, les uns des autres. Cela fonctionne sur la plupart des réseaux, p. ex. à la maison, dans les réseaux communautaires ou au travail.</string>
     <string name="button_abort">Abandonner</string>
     <string name="button_cancel">annuler</string>
     <string name="button_export">Exporter</string>

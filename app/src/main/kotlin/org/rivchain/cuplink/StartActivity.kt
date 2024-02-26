@@ -29,7 +29,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     private var isStartOnBootup = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(this, "onCreate() Meshenger version ${BuildConfig.VERSION_NAME}")
+        Log.d(this, "onCreate() CupLink version ${BuildConfig.VERSION_NAME}")
         Log.d(this, "Android SDK: ${Build.VERSION.SDK_INT}, "
                     + "Release: ${Build.VERSION.RELEASE}, "
                     + "Brand: ${Build.BRAND}, "

@@ -6,7 +6,7 @@
     <string name="about_app_website">Código fuente:</string>
     <string name="address_management">Gestión de dirección</string>
     <string name="address_management_help_text">Seleccione una o más direcciones que se incluirán en su código QR. Una buena idea es usar la dirección MAC del adaptador WiFi (wlan0). Pero tenga en cuenta que está vinculado al hardware de su dispositivo. Si no hay una dirección MAC visible, habilite su WiFi.</string>
-    <string name="app_description">La aplicación Meshenger permite la comunicación de voz y video sin ningún servidor o acceso a Internet. Simplemente escanee el código QR de cada uno y llámenos. Esto funciona en la mayoría de las redes, p. en casa, en redes comunitarias o en el trabajo.</string>
+    <string name="app_description">La aplicación CupLink permite la comunicación de voz y video sin ningún servidor o acceso a Internet. Simplemente escanee el código QR de cada uno y llámenos. Esto funciona en la mayoría de las redes, p. en casa, en redes comunitarias o en el trabajo.</string>
     <string name="audio_device_earpiece">Auricular</string>
     <string name="audio_device_wired_headset">Auricular con cable</string>
     <string name="button_abort">Cancelar</string>

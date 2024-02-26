@@ -8,8 +8,8 @@
     <string name="address_management_help_text">Select one address or more that will be included in your QR code. A good idea is to use the MAC address of the Wi-Fi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your Wi-Fi.</string>
     <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
-    <string name="app_name" translatable="false">Meshenger</string>
-    <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
+    <string name="app_name" translatable="false">CupLink</string>
+    <string name="app_website" translatable="false">https://github.com/RiV-chain/CupLink</string>
     <string name="audio_device_auto">%1$s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Earpiece</string>

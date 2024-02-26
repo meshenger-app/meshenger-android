@@ -50,11 +50,11 @@ class MainService : Service(), Runnable {
 
     private fun createNotification(text: String, showSinceWhen: Boolean): Notification {
         Log.d(this, "createNotification() text=$text setShowWhen=$showSinceWhen")
-        val channelId = "meshenger_service"
+        val channelId = "cuplink_service"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val chan = NotificationChannel(
                 channelId,
-                "Meshenger Call Listener",
+                "CupLink Call Listener",
                 NotificationManager.IMPORTANCE_LOW // display notification as collapsed by default
             )
             chan.lightColor = Color.RED

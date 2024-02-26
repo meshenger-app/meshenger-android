@@ -1051,14 +1051,14 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             // turn screen off
             proximityScreenLock = powerManager.newWakeLock(
                 PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                "meshenger:tag"
+                "cuplink:tag"
             )
             proximityScreenLock?.acquire(10*60*1000L) // 10 minutes
         } else {
             // turn screen on
             proximityScreenLock = powerManager.newWakeLock(
                 PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                "meshenger:tag"
+                "cuplink:tag"
             )
             proximityScreenLock?.acquire(10*60*1000L) // 10 minutes
         }

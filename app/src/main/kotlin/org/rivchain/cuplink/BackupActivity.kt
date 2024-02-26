@@ -89,7 +89,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
         exportButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.putExtra(Intent.EXTRA_TITLE, "meshenger-backup.json")
+            intent.putExtra(Intent.EXTRA_TITLE, "cuplink-backup.json")
             intent.type = "application/json"
             exportFileLauncher.launch(intent)
         }

@@ -18,6 +18,7 @@ import org.libsodium.jni.Sodium
 import org.rivchain.cuplink.MainService.MainBinder
 import java.util.*
 
+
 /*
  * Show splash screen, name setup dialog, database password dialog and
  * start background service before starting the MainActivity.
@@ -262,9 +263,12 @@ class StartActivity : BaseActivity(), ServiceConnection {
         }
 
         val adialog = builder.create()
+        adialog.setOnShowListener {
+            adialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(R.color.white))
+            adialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.white))
+        }
         adialog.setCancelable(false)
         adialog.setCanceledOnTouchOutside(false)
-
         adialog.setOnShowListener { dialog: DialogInterface ->
             val okButton = (dialog as AlertDialog).getButton(
                 AlertDialog.BUTTON_POSITIVE

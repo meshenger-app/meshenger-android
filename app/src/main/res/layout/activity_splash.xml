@@ -3,14 +3,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@android:color/darker_gray"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.6"
-        android:background="#FFEC3E3E"
+        android:textColor="@color/colorPrimary"
     >
 
         <ImageView
@@ -18,7 +18,7 @@
             android:layout_height="250dp"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
-            android:src="@drawable/logo_foreground" />
+            android:src="@mipmap/ic_launcher" />
 
     </RelativeLayout>
 
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
-        android:background="@android:color/black"
+        android:background="@android:color/darker_gray"
     >
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:text="@string/app_name"
-            android:textColor="#FFEC3E3E"
+            android:textColor="@color/colorPrimary"
             android:textSize="40dp"
             android:paddingTop="20dp"/>
 

@@ -59,8 +59,8 @@
                 android:elevation="30dp"
                 app:strokeColor="@null"
                 android:theme="@style/CurvedImageViewStyle"
-                android:src="@drawable/logo_foreground"
-                android:background="@drawable/logo_background"/>
+                android:src="@mipmap/ic_launcher"
+                android:background="@mipmap/ic_launcher"/>
 
             <TextView
                 android:layout_width="wrap_content"

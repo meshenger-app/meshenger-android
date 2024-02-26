@@ -77,7 +77,7 @@ class MainService : Service(), Runnable {
             .setOngoing(true)
             .setShowWhen(showSinceWhen)
             .setUsesChronometer(showSinceWhen)
-            .setSmallIcon(R.drawable.ic_logo)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setContentText(text)

@@ -10,6 +10,7 @@ android {
         namespace 'org.rivchain.cuplink'
         applicationId "org.rivchain.cuplink"
         minSdkVersion 21
+        compileSdkVersion 33
         targetSdkVersion 33
         versionCode 378
         versionName "0.5.0.0"

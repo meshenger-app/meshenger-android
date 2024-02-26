@@ -9,7 +9,7 @@ internal object Crypto {
     // for development / testing only
     private const val disableDatabaseCrypto = false
 
-    private const val disableMessagesCrypto = true
+    private const val disableMessagesCrypto = false
 
     // decrypt database using a password
     @JvmStatic

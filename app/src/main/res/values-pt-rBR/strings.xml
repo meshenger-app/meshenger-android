@@ -19,7 +19,7 @@
     <string name="button_save">Salvar</string>
     <string name="button_skip">Pular</string>
     <string name="button_yes">Sim</string>
-    <string name="call_connected">Conectado.</string>
+    <string name="call_connected">Conectado</string>
     <string name="call_connecting">Chamando…</string>
     <string name="call_denied">Rejeitado</string>
     <string name="call_ended">Ligação encerrada</string>
@@ -77,4 +77,7 @@
     <string name="warning_no_addresses_configured">Nenhum endereço para o código QR está definido.</string>
     <string name="warning_no_addresses_found">Endereços configurados não encontrados. A rede foi alterada?</string>
     <string name="wrong_password">Senha incorreta</string>
+    <string name="button_add">Adicionar</string>
+    <string name="button_rename">Renomear</string>
+    <string name="call_authentication_failed">Autenticação falhou</string>
 </resources>

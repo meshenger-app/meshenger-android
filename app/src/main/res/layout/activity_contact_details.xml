@@ -59,8 +59,8 @@
                 android:id="@+id/contactNameTv"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:paddingRight="10dp"
+                android:gravity="end"
+                android:paddingEnd="10dp"
                 android:fontFamily="@font/lato_regular"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/title_text_size"
@@ -85,6 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerInParent="true"
+                android:layout_toStartOf="@+id/contactBlockedSwitch"
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/contact_blocked"
                 android:textColor="?android:textColorPrimary"
@@ -200,7 +201,8 @@
                 android:text="@string/button_save"
                 android:layout_weight="1"
                 android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                style="?android:attr/borderlessButtonStyle"/>
 
             <Button
                 android:id="@+id/ResetButton"
@@ -211,7 +213,8 @@
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_reset"
                 android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                style="?android:attr/borderlessButtonStyle"/>
 
         </LinearLayout>
 

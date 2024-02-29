@@ -75,8 +75,9 @@
                         android:id="@+id/nameTv"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:paddingRight="10dp"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -98,8 +99,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/spinnerNightModes"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_nightmode"
                         android:textColor="?android:textColorPrimary"
@@ -112,7 +114,8 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:textSize="@dimen/options_text_size"
-                        android:padding="15dp"/>
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"/>
 
                 </RelativeLayout>
 
@@ -130,8 +133,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/blockUnknownSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_block_unknown"
                         android:textColor="?android:textColorPrimary"
@@ -143,9 +147,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:padding="15dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:theme="@style/SwitchTheme"
-                        />
+                        android:contentDescription="@string/settings_block_unknown"/>
 
                 </RelativeLayout>
 
@@ -176,8 +181,9 @@
                         android:id="@+id/addressTv"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:paddingRight="10dp"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -199,8 +205,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/startOnBootupSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_start_on_bootup"
                         android:textColor="?android:textColorPrimary"
@@ -212,7 +219,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:padding="15dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:theme="@style/SwitchTheme"
                         />
 
@@ -232,8 +240,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/spinnerSettingsModes"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_settings_mode"
                         android:textColor="?android:textColorPrimary"
@@ -247,7 +256,8 @@
                         android:layout_alignParentEnd="true"
                         app:thumbTint="@color/selectedColor"
                         android:textSize="@dimen/options_text_size"
-                        android:padding="15dp"/>
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"/>
 
                 </RelativeLayout>
 
@@ -277,8 +287,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/automaticStatusUpdatesSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_automatic_status_updates"
                         android:textColor="?android:textColorPrimary"
@@ -310,8 +321,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/enableMicrophoneByDefaultSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_enable_microphone_by_default"
                         android:textColor="?android:textColorPrimary"
@@ -343,8 +355,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/enableCameraByDefaultSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_enable_camera_by_default"
                         android:textColor="?android:textColorPrimary"
@@ -376,8 +389,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/selectFrontCameraByDefaultSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_select_front_camera_by_default"
                         android:textColor="?android:textColorPrimary"
@@ -410,8 +424,9 @@
                         android:id="@+id/videoDegradationModeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/spinnerVideoDegradationModes"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_video_degradation_mode"
                         android:textColor="?android:textColorPrimary"
@@ -444,8 +459,9 @@
                         android:id="@+id/cameraResolutionText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/spinnerCameraResolution"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_camera_resolution"
                         android:textColor="?android:textColorPrimary"
@@ -477,8 +493,9 @@
                         android:id="@+id/cameraFramerateText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/spinnerCameraFramerate"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_camera_framerate"
                         android:textColor="?android:textColorPrimary"
@@ -509,8 +526,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/promptOutgoingCallsSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_prompt_outgoing_calls"
                         android:textColor="?android:textColorPrimary"
@@ -542,8 +560,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/showUsernameAsLogoSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_show_username_as_logo"
                         android:textColor="?android:textColorPrimary"
@@ -575,8 +594,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/pushToTalkSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_push_to_talk"
                         android:textColor="?android:textColorPrimary"
@@ -608,8 +628,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/spinnerSpeakerphoneModes"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_speakerphone_mode"
                         android:textColor="?android:textColorPrimary"
@@ -651,8 +672,9 @@
                         android:id="@+id/databasePasswordTv"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:paddingRight="10dp"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -684,8 +706,9 @@
                         android:id="@+id/menuPasswordTv"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:paddingRight="10dp"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -707,8 +730,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/disableCallHistorySwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_disable_call_history"
                         android:textColor="?android:textColorPrimary"
@@ -740,8 +764,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/disableProximitySensorSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_disable_proximity_sensor"
                         android:textColor="?android:textColorPrimary"
@@ -784,8 +809,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/autoAcceptCallsSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_auto_accept_calls"
                         android:textColor="?android:textColorPrimary"
@@ -817,8 +843,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/disableCpuOveruseDetectionSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_disable_cpu_overuse_detection"
                         android:textColor="?android:textColorPrimary"
@@ -861,7 +888,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:paddingRight="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textIsSelectable="true"
                         android:text=""
@@ -884,8 +912,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/disableAudioProcessingSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_disable_audio_processing"
                         android:textColor="?android:textColorPrimary"
@@ -897,7 +926,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:padding="15dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
@@ -915,8 +945,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/videoHardwareAccelerationSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_video_hardware_acceleration"
                         android:textColor="?android:textColorPrimary"
@@ -928,7 +959,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:padding="15dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
@@ -957,8 +989,9 @@
                         android:id="@+id/connectTimeoutTv"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:paddingRight="10dp"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -990,8 +1023,9 @@
                         android:id="@+id/connectRetriesTv"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:paddingRight="10dp"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
                         android:fontFamily="@font/lato_regular"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="@dimen/options_text_size" />
@@ -1012,8 +1046,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
+                        android:layout_toStartOf="@+id/useNeighborTableSwitch"
                         android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_use_neighbor_table"
                         android:textColor="?android:textColorPrimary"
@@ -1025,7 +1060,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:padding="15dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>

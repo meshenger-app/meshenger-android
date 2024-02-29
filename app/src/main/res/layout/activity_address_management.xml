@@ -66,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:hint="@string/custom_address"
+                android:importantForAutofill="no"
                 android:gravity="center_horizontal"
                 android:inputType="textNoSuggestions"
                 android:layout_weight="1"
@@ -86,8 +87,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/address_management_help_text"
             android:textAlignment="center"
@@ -111,7 +112,8 @@
                 android:text="@string/button_save"
                 android:layout_weight="1"
                 android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                style="?android:attr/borderlessButtonStyle"/>
 
             <Button
                 android:id="@+id/reset_button"
@@ -122,7 +124,8 @@
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_reset"
                 android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                style="?android:attr/borderlessButtonStyle"/>
 
         </LinearLayout>
 

@@ -106,7 +106,7 @@
     <string name="ping_contact">Ping %1$s</string>
     <string name="remove_all_events">Remove all events?</string>
     <string name="setting_read_only">Read Only</string>
-    <string name="settings_addresses">Addresses*</string>
+    <string name="settings_addresses">Addresses</string>
     <string name="settings_auto_accept_calls">Auto Accept Calls</string>
     <string name="settings_automatic_status_updates">Automatic Contact Updates</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>

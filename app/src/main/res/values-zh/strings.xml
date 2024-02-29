@@ -91,7 +91,7 @@
     <string name="ping_contact">Ping %1$s</string>
     <string name="remove_all_events">要移除全部事件吗？</string>
     <string name="setting_read_only">只读</string>
-    <string name="settings_addresses">地址*</string>
+    <string name="settings_addresses">地址</string>
     <string name="settings_auto_accept_calls">自动接听电话</string>
     <string name="settings_automatic_status_updates">自动更新联系人</string>
     <string name="settings_block_unknown">拦截未知呼叫人</string>

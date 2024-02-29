@@ -54,7 +54,7 @@
     <string name="no_value">Nada</string>
     <string name="password_title">Contraseña</string>
     <string name="paste_qr_code_data">Pega los datos aquí</string>
-    <string name="settings_addresses">Dirección*</string>
+    <string name="settings_addresses">Dirección</string>
     <string name="settings_block_unknown">Bloquear llamadas desconocidas</string>
     <string name="settings_database_password">Contraseña</string>
     <string name="settings_name">Nombre</string>

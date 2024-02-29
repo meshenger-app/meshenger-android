@@ -52,7 +52,7 @@
     <string name="no_value">Никакой</string>
     <string name="password_title">Пароль</string>
     <string name="paste_qr_code_data">Вставьте данные здесь</string>
-    <string name="settings_addresses">Изменить адрес*</string>
+    <string name="settings_addresses">Изменить адрес</string>
     <string name="settings_block_unknown">Блокировать неизвестных абонентов</string>
     <string name="settings_database_password">Изменить пароль</string>
     <string name="settings_name">Изменить имя</string>

@@ -7,7 +7,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:dropDownListViewStyle">@style/MySpinner</item>
-        <item name="android:textColorSecondary">@color/colorAccent</item>
+        <item name="android:textColorSecondary">@color/light_grey</item>
     </style>
     <style name="CurvedImageViewStyle" parent="">
         <item name="cornerFamily">rounded</item>
@@ -23,7 +23,7 @@
     </style>
 
     <style name="MySpinner" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:dividerHeight">2dp</item>
+        <item name="android:dividerHeight">1dp</item>
         <item name="android:divider">#7C7B7B</item>
     </style>
 

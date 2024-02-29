@@ -79,7 +79,7 @@
     <string name="password_title">Пароль</string>
     <string name="paste_qr_code_data">Вставте сюди контактні дані</string>
     <string name="setting_read_only">Лише читання</string>
-    <string name="settings_addresses">Адреси*</string>
+    <string name="settings_addresses">Адреси</string>
     <string name="settings_block_unknown">Блокувати невідомих абонентів</string>
     <string name="settings_connect_retries">"Повторити спроби з'єднати"</string>
     <string name="settings_connect_timeout">"Час очікування з'єднання (мс)"</string>

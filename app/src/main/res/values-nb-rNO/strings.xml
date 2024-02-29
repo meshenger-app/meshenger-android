@@ -81,7 +81,7 @@
     <string name="password_title">Passord</string>
     <string name="paste_qr_code_data">Lim inn kontaktdata her</string>
     <string name="setting_read_only">Skrivebeskyttet</string>
-    <string name="settings_addresses">Adresser*</string>
+    <string name="settings_addresses">Adresser</string>
     <string name="settings_block_unknown">Blokker ukjente anrop</string>
     <string name="settings_connect_retries">Gjentilkoblingsforsøk</string>
     <string name="settings_connect_timeout">Tilkoblingstidsavbrudd (ms)</string>

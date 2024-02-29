@@ -52,7 +52,7 @@
     <string name="no_value">Aucun</string>
     <string name="password_title">Mot de passe</string>
     <string name="paste_qr_code_data">Collez les données ici</string>
-    <string name="settings_addresses">Changement d’adresse*</string>
+    <string name="settings_addresses">Changement d’adresse</string>
     <string name="settings_block_unknown">Ignorer les appelants inconnus</string>
     <string name="settings_database_password">Changer le mot de passe</string>
     <string name="settings_name">Changer de nom</string>

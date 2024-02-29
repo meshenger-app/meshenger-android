@@ -50,7 +50,7 @@
         <!-- debug info window in the left lower corner -->
         <TextView
             android:id="@+id/callStats"
-            android:layout_width="160dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="5dp"
@@ -58,8 +58,9 @@
             android:visibility="gone"
             android:alpha="0.6"
             android:background="@color/colorBackgroundDark"
+            android:lines="10"
             android:textColor="@android:color/holo_green_light"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"

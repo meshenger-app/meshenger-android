@@ -144,7 +144,8 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:padding="15dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme"
+                        />
 
                 </RelativeLayout>
 
@@ -212,7 +213,8 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:padding="15dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme"
+                        />
 
                 </RelativeLayout>
 
@@ -289,7 +291,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -322,7 +324,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -355,7 +357,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -388,7 +390,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -521,7 +523,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -554,7 +556,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -587,7 +589,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -719,7 +721,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -752,7 +754,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -796,7 +798,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -829,7 +831,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -896,7 +898,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:padding="15dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -927,7 +929,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:padding="15dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 
@@ -1024,7 +1026,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:padding="15dp"
-                        app:thumbTint="@color/selectedColor" />
+                        android:theme="@style/SwitchTheme" />
 
                 </RelativeLayout>
 

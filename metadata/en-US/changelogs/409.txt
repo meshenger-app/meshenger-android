@@ -1,0 +1,1 @@
+* ask for Bluetooth permission when potentially required

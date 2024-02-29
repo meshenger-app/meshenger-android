@@ -1,0 +1,6 @@
+* fix push-to-talk does not enable microphone
+* show ended message when a call is hung up
+* reduce Bluetooth permission spam
+* update contact list contacts on every view
+* add setting to disable automatic contact list updates
+* add button to ping all contacts

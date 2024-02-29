@@ -1,0 +1,8 @@
+* fix continous ringing if the initial connection breaks
+  * this breaks compatibility with previous releases!
+* fix encrypted database detection
+* fix disable call history
+* show contact state as text on state icon click
+* update contact state on call
+* add setting to enable startup on bootup
+* improve dialog styles

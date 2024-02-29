@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="nightModeLabels">
+        <item>System (default)</item>
+        <item>On</item>
+        <item>Off</item>
+    </string-array>
+
+    <string-array name="nightModeValues">
+        <item>auto</item>
+        <item>on</item>
+        <item>off</item>
+    </string-array>
+
+    <string-array name="speakerphoneModeLabels">
+        <item>Auto (default)</item>
+        <item>Enabled</item>
+        <item>Disabled</item>
+    </string-array>
+
+    <string-array name="speakerphoneModeValues">
+        <item>auto</item>
+        <item>on</item>
+        <item>off</item>
+    </string-array>
+
+    <string-array name="settingsModeLabels">
+        <item>Basic (default)</item>
+        <item>Advanced</item>
+        <item>Expert</item>
+    </string-array>
+
+    <string-array name="settingsModeValues">
+        <item>basic</item>
+        <item>advanced</item>
+        <item>expert</item>
+    </string-array>
+
+    <string-array name="videoDegradationModeLabels">
+        <item>Balanced (default)</item>
+        <item>Maintain Resolution</item>
+        <item>Maintain Framerate</item>
+        <item>Disabled</item>
+    </string-array>
+
+    <string-array name="videoDegradationModeValues">
+        <item>balanced</item>
+        <item>maintain_resolution</item>
+        <item>maintain_framerate</item>
+        <item>disabled</item>
+    </string-array>
+
+    <string-array name="cameraResolutionLabels">
+        <item>Auto</item>
+        <item>3840x2160</item>
+        <item>2560x1440</item>
+        <item>1920x1080</item>
+        <item>1280x720</item>
+        <item>1024x600</item>
+        <item>800x600</item>
+        <item>640x480</item>
+        <item>320x240</item>
+    </string-array>
+
+    <string-array name="cameraResolutionValues">
+        <item>auto</item>
+        <item>3840x2160</item>
+        <item>2560x1440</item>
+        <item>1920x1080</item>
+        <item>1280x720</item>
+        <item>1024x600</item>
+        <item>800x600</item>
+        <item>640x480</item>
+        <item>320x240</item>
+    </string-array>
+
+    <string-array name="cameraFramerateLabels">
+        <item>Auto</item>
+        <item>60 fps</item>
+        <item>50 fps</item>
+        <item>40 fps</item>
+        <item>30 fps</item>
+        <item>20 fps</item>
+        <item>15 fps</item>
+        <item>10 fps</item>
+        <item>5 fps</item>
+        <item>1 fps</item>
+    </string-array>
+
+    <string-array name="cameraFramerateValues">
+        <item>auto</item>
+        <item>60</item>
+        <item>50</item>
+        <item>40</item>
+        <item>30</item>
+        <item>20</item>
+        <item>15</item>
+        <item>10</item>
+        <item>5</item>
+        <item>1</item>
+    </string-array>
+</resources>

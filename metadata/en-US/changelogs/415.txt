@@ -1,0 +1,5 @@
+* fix crash in QR code scanner (Android 6)
+* prevent false call in progress 
+* add setting to enable microphone by default
+* add setting to enable camera by default
+* add setting to select front camera by default

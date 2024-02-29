@@ -1,0 +1,4 @@
+* add setting for push to talk
+* fix bug, do not clear events when some unrelated setting changes
+* use light blue color for missed call icon in call history
+* fix shutdown, sometimes the notification did not shut down

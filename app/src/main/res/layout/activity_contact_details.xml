@@ -168,6 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:hint="@string/contact_address_input"
+                android:importantForAutofill="no"
                 android:gravity="center_horizontal"
                 android:inputType="textNoSuggestions"
                 android:layout_weight="1"

@@ -149,6 +149,7 @@
                         android:layout_alignParentEnd="true"
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
+                        android:minWidth="48dp"
                         android:theme="@style/SwitchTheme"
                         android:contentDescription="@string/settings_block_unknown"/>
 
@@ -221,6 +222,7 @@
                         android:layout_alignParentEnd="true"
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
+                        android:minWidth="48dp"
                         android:theme="@style/SwitchTheme"
                         />
 

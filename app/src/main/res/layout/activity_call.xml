@@ -30,20 +30,22 @@
         <!-- icon in the top left corner -->
         <ImageButton
             android:id="@+id/change_ui"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
             android:background="@drawable/ic_call_stats"
             android:contentDescription="Toggle debug output" />
 
         <!-- icon in the top right corner -->
         <ImageButton
             android:id="@+id/change_pip_window"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
             android:background="@drawable/ic_toggle_pip"
             android:contentDescription="Show pip window" />
 
@@ -165,6 +167,7 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:background="@drawable/ic_button_background"
+                app:tint="@android:color/white"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_call_accept"
@@ -174,7 +177,8 @@
                 android:id="@+id/declineButton"
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
-                android:background="@drawable/ic_button_background"
+                android:background="@drawable/ic_button_background_decline"
+                app:tint="@android:color/white"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_call_decline"
@@ -185,6 +189,7 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:background="@drawable/ic_button_background"
+                app:tint="@android:color/white"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_camera_on"
@@ -195,6 +200,7 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:background="@drawable/ic_button_background"
+                app:tint="@android:color/white"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_switch_camera"
@@ -206,6 +212,7 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:background="@drawable/ic_button_background"
+                app:tint="@android:color/white"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_mic_on"
@@ -216,6 +223,7 @@
                 android:layout_width="@dimen/call_button_size"
                 android:layout_height="@dimen/call_button_size"
                 android:background="@drawable/ic_button_background"
+                app:tint="@android:color/white"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_audio_device_speakerphone"

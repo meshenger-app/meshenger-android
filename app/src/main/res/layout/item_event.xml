@@ -22,7 +22,7 @@
                 android:id="@+id/call_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="26sp" />
+                android:textSize="24sp" />
 
             <LinearLayout
                 android:id="@+id/call_icons"
@@ -38,7 +38,7 @@
                 android:id="@+id/call_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 

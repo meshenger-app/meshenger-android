@@ -42,11 +42,18 @@
     <string name="call_start_or_abort">Démarrer ou abandonner</string>
     <string name="call_waiting">En attendant…</string>
     <string name="camera_back">Dos</string>
+    <string name="camera_front">Devant</string>
+    <string name="capture_format_change_text">Faites glisser pour changer le format de capture</string>
+    <string name="clear_events">Effacer les événements</string>
+    <string name="connected_to_address">(à l\' %1$s)</string>
+    <string name="connecting_to_address">Connexion à %1$s</string>
+    <string name="contact_address_input">Adresse</string>
     <string name="contact_has_no_address_warning">Attention : le contact n’a pas d’adresse</string>
     <string name="contact_key_conflict">Un contact ayant la même clé existe déjà.</string>
     <string name="contact_menu_add">Ajouter</string>
     <string name="contact_menu_block">Bloquer</string>
     <string name="contact_menu_delete">Effacer</string>
+    <string name="contact_menu_ping">Ping</string>
     <string name="contact_menu_share">Partager</string>
     <string name="contact_menu_unblock">Débloquer</string>
     <string name="contact_name_conflict">Un contact ayant le même nom existe déjà.</string>
@@ -82,6 +89,7 @@
     <string name="title_settings">Paramètres</string>
     <string name="title_show_qr_code">Scannez ce code QR</string>
     <string name="unknown_caller">Appelant Inconnu</string>
+    <string name="warning_no_addresses_found">Adresses configurées introuvables. Le réseau a-t-il changé ?</string>
     <string name="wrong_password">Mot de passe non valide</string>
     <string name="report_dialog_text">Sorry, the application crashed.</string>
     <string name="report_dialog_comment">Please describe what were you doing when the app crashed:</string>

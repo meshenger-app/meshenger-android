@@ -43,7 +43,7 @@
     <string name="camera_front">前置相机</string>
     <string name="capture_format_change_text">滑动以更改捕获格式</string>
     <string name="clear_events">清除事件</string>
-    <string name="connected_to_address">(to %1$s)</string>
+    <string name="connected_to_address">(到 %1$s)</string>
     <string name="connecting_to_address">正在连接到 %1$s</string>
     <string name="contact_blocked">已拉黑</string>
     <string name="contact_has_no_address_warning">警告：联系人没有地址</string>

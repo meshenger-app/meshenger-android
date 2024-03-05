@@ -35,11 +35,18 @@
     <string name="call_start_or_abort">Iniciar o cancelar</string>
     <string name="call_waiting">Esperando…</string>
     <string name="camera_back">Atrás</string>
+    <string name="camera_front">Delantera</string>
+    <string name="capture_format_change_text">Deslice para cambiar el formato de captura</string>
+    <string name="clear_events">Borrar eventos</string>
+    <string name="connected_to_address">(a la %1$s)</string>
+    <string name="connecting_to_address">Conectado a  %1$s</string>
+    <string name="contact_address_input">DIRECCIÓN</string>
     <string name="contact_has_no_address_warning">Advertencia: el contacto no tiene dirección</string>
     <string name="contact_key_conflict">Existe un contacto con la misma clave.</string>
     <string name="contact_menu_add">Añadir</string>
     <string name="contact_menu_block">Bloquear</string>
     <string name="contact_menu_delete">Eliminar</string>
+    <string name="contact_menu_ping">Ping</string>
     <string name="contact_menu_share">Compartir</string>
     <string name="contact_menu_unblock">Desbloquear</string>
     <string name="contact_name_conflict">Existe un contacto con el mismo nombre.</string>
@@ -75,6 +82,7 @@
     <string name="title_settings">Ajustes</string>
     <string name="title_show_qr_code">Escanea este código QR</string>
     <string name="unknown_caller">Llamada desconocida</string>
+    <string name="warning_no_addresses_found">Direcciones configuradas no encontradas. ¿Cambió la red?</string>
     <string name="wrong_password">Contraseña incorrecta</string>
     <string name="button_rename">Renombrar</string>
     <string name="button_add">Agregar</string>

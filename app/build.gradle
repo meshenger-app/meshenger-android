@@ -44,6 +44,9 @@ android {
             keyPassword keystoreProperties['KEY_PASSWORD']
         }
     }
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
 }
 
 dependencies {

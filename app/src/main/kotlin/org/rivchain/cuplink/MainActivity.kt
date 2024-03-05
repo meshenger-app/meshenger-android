@@ -32,6 +32,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.rivchain.cuplink.MainService.MainBinder
+import org.rivchain.cuplink.util.PowerManager
 
 // the main view with tabs
 class MainActivity : BaseActivity(), ServiceConnection {
@@ -70,6 +71,11 @@ class MainActivity : BaseActivity(), ServiceConnection {
         viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         bindService(Intent(this, MainService::class.java), this, 0)
+
+        if (PowerManager.needsFixing(this)) {
+            PowerManager.callPowerManager(this)
+            PowerManager.callAutostartManager(this)
+        }
     }
 
     override fun onDestroy() {

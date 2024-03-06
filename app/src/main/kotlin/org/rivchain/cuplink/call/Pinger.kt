@@ -74,7 +74,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
                 }
             }
 
-            connectedSocket.soTimeout = 3000
+            connectedSocket.soTimeout = 12000
 
             val pw = PacketWriter(connectedSocket)
             val pr = PacketReader(connectedSocket)

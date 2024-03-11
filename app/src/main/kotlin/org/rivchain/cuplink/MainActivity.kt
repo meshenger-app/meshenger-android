@@ -76,12 +76,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
             if (PowerManager.needsFixing(this)) {
                 PowerManager.callPowerManager(this)
                 PowerManager.callAutostartManager(this)
-                Toast.makeText(this, "Power management fix enabled", Toast.LENGTH_LONG).show()
+                Log.d(this, "Power management fix enabled")
             } else {
-                Toast.makeText(this, "Power management fix disabled", Toast.LENGTH_LONG).show()
+                Log.d(this, "Power management fix disabled")
             }
         } else {
-            Toast.makeText(this, "Power management fix skipped", Toast.LENGTH_LONG).show()
+            Log.d(this, "Power management fix skipped")
         }
     }
 

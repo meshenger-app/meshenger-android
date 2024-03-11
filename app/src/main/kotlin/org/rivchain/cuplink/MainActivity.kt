@@ -72,9 +72,16 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         bindService(Intent(this, MainService::class.java), this, 0)
 
-        if (PowerManager.needsFixing(this)) {
-            PowerManager.callPowerManager(this)
-            PowerManager.callAutostartManager(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (PowerManager.needsFixing(this)) {
+                PowerManager.callPowerManager(this)
+                PowerManager.callAutostartManager(this)
+                Toast.makeText(this, "Power management fix enabled", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Power management fix disabled", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            Toast.makeText(this, "Power management fix skipped", Toast.LENGTH_LONG).show()
         }
     }
 

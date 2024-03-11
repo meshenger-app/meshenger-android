@@ -32,6 +32,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.rivchain.cuplink.MainService.MainBinder
+import org.rivchain.cuplink.util.PowerManager
 
 // the main view with tabs
 class MainActivity : BaseActivity(), ServiceConnection {
@@ -70,6 +71,18 @@ class MainActivity : BaseActivity(), ServiceConnection {
         viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         bindService(Intent(this, MainService::class.java), this, 0)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (PowerManager.needsFixing(this)) {
+                PowerManager.callPowerManager(this)
+                PowerManager.callAutostartManager(this)
+                Log.d(this, "Power management fix enabled")
+            } else {
+                Log.d(this, "Power management fix disabled")
+            }
+        } else {
+            Log.d(this, "Power management fix skipped")
+        }
     }
 
     override fun onDestroy() {

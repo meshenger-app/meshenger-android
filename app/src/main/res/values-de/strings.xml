@@ -28,8 +28,15 @@
     <string name="call_ended">Beendet</string>
     <string name="call_error">Verbindungsfehler</string>
     <string name="call_ringing">Klingelt…</string>
+    <string name="call_start_or_abort">Starten oder Abbrechen</string>
+    <string name="call_waiting">Warten…</string>
     <string name="camera_back">Zurück</string>
     <string name="camera_front">Vorderseite</string>
+    <string name="capture_format_change_text">Schieben Sie, um das Aufnahmeformat zu ändern</string>
+    <string name="clear_events">Klare Ereignisse</string>
+    <string name="connected_to_address">(zur %1$s)</string>
+    <string name="connecting_to_address">Verbinden mit %1$s</string>
+    <string name="contact_address_input">Adresse</string>
     <string name="contact_has_no_address_warning">Warnung: Kontakt hat keine Adresse</string>
     <string name="contact_key_conflict">Ein Kontakt mit dem Schlüssel existiert bereits.</string>
     <string name="contact_menu_add">Hinzufügen</string>
@@ -104,6 +111,8 @@
     <string name="button_add">Hinzufügen</string>
     <string name="call_error_no_address">Fehler: Keine Adresse</string>
     <string name="call_authentication_failed">Authentifizierung fehlgeschlagen</string>
+    <string name="call_error_not_listening">"Fehler: Keine App läuft  "</string>
+    <string name="call_error_unresolved_hostname">Fehler: Adresse kann nicht aufgelöst werden</string>
     <string name="call_no_network">Kein Netzwerk - WLAN aktivieren\?</string>
     <string name="button_reset">Zurücksetzen</string>
     <string name="call_connection_failed">Verbindung fehlgeschlagen</string>

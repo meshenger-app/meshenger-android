@@ -21,7 +21,7 @@ class Settings {
     var pushToTalk = false
     var startOnBootup = false
     var connectRetries = 1
-    var connectTimeout = 500
+    var connectTimeout = 1500
     var enableMicrophoneByDefault = true
     var enableCameraByDefault = false
     var selectFrontCameraByDefault = true

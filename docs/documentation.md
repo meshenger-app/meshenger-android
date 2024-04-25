@@ -31,11 +31,15 @@ Meshenger uses [WebRTC](https://webrtc.org/), a well known library for video- an
 
 Resources:
 
-- [Serverless WebRTC Android](https://github.com/wojta/serverless-webrtc-android)
-- [Real time communication with Webrtc on Android](https://hackernoon.com/real-time-communication-with-webrtc-on-android-f96cdcfc4771)
-- [Getting Started with WebRTC for Android](https://vivekc.xyz/getting-started-with-webrtc-for-android-daab1e268ff4)
-- [WebRTC for Android](https://www.amryousef.me/android-webrtc)
-- [Android WebRTC Tutorial](https://github.com/GleasonK/android-webrtc-tutorial)
+- [WebRTC builds for Android](https://github.com/dbrgn/webrtc-android)
+   - used for Meshenger since the official WebRTC builds for Android are vastly outdated
+   - upladed to [Maven Central](https://mvnrepository.com/artifact/dev.bargen/webrtc-android)
+   - based on the builds for Threema
+- [Serverless WebRTC Android](https://github.com/wojta/serverless-webrtc-android) demo
+- [Real time communication with WebRTC on Android](https://hackernoon.com/real-time-communication-with-webrtc-on-android-f96cdcfc4771) documentation
+- [Getting Started with WebRTC for Android](https://vivekc.xyz/getting-started-with-webrtc-for-android-daab1e268ff4) blog post
+- [WebRTC for Android](https://www.amryousef.me/android-webrtc) blog post
+- [Android WebRTC](https://github.com/GleasonK/android-webrtc-tutorial) tutorial
 
 ## Crypto
 

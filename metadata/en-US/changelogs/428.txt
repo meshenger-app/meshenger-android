@@ -1,0 +1,2 @@
+* fix metdata descriptions
+* add pending contact state

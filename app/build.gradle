@@ -35,6 +35,7 @@ android {
             applicationId 'd.d.meshenger'
         }
     }
+    namespace 'd.d.meshenger'
 }
 
 dependencies {

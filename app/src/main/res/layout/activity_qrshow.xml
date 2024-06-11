@@ -1,64 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
 
-    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <TextView
+        android:id="@+id/scan_invite_tv"
         android:layout_width="wrap_content"
-        android:padding="@dimen/padding_20"
         android:layout_height="wrap_content"
-        android:background="@drawable/qrscan_background">
+        android:fontFamily="@font/lato_bold"
+        android:gravity="center"
+        android:text="@string/title_show_qr_code"
+        android:textColor="@color/selectedColor"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/QRView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="@dimen/padding_20"/>
 
-        <TextView
-            android:id="@+id/scan_invite_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/lato_bold"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:text="@string/title_show_qr_code" />
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/QRView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/qr_code_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:layout_margin="@dimen/padding_40"
+        app:shapeAppearanceOverlay="@style/RoundedCornerImageView"/>
 
-        <ImageView
-            android:id="@+id/QRView"
-            android:layout_below="@id/scan_invite_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/contact_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/lato_bold"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@id/QRView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/padding_20"/>
 
-        <TextView
-            android:id="@+id/contact_name_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/lato_bold"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:layout_below="@id/QRView" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_baseline_share_24"
+        app:tint="@color/white"
+        android:layout_margin="@dimen/padding_50"/>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabShare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/contact_name_tv"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/padding_10"
-            android:layout_marginBottom="@dimen/padding_10"
-            app:srcCompat="@drawable/ic_baseline_share_24" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabPresenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/qr_glass"
+        app:tint="@color/white"
+        android:layout_margin="@dimen/padding_50"/>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabPresenter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/contact_name_tv"
-            android:layout_marginStart="@dimen/padding_20"
-            android:layout_marginTop="@dimen/padding_10"
-            android:layout_marginBottom="@dimen/padding_10"
-            android:layout_toEndOf="@id/fabShare"
-            app:srcCompat="@drawable/qr_glass" />
-
-    </RelativeLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

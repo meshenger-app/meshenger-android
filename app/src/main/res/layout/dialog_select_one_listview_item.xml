@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/padding_10"
+    android:paddingStart="@dimen/padding_20"
+    android:paddingEnd="@dimen/padding_20"
+    android:gravity="center"
+    android:background="@drawable/dialog_rounded_corner">
+
+    <TextView
+        android:id="@+id/selectDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/name_text_size"
+        android:fontFamily="@font/poppins_regular"
+        android:paddingBottom="16dp"
+        android:text="Choose an option"/>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/padding_10"/>
+
+</LinearLayout>

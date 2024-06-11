@@ -1,0 +1,63 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/countryFlag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/hostInfoText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/hostInfoText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="45dp"
+        android:textSize="14sp"
+        android:textColor="@color/light_grey"
+        android:layout_marginStart="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/ping"
+        app:layout_constraintStart_toEndOf="@+id/countryFlag"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ping"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="45dp"
+        android:textSize="14sp"
+        android:textColor="@color/light_grey"
+        app:layout_constraintEnd_toStartOf="@+id/frame"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/checkbox_rounded_corner"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimaryDark"
+            android:checked="false"
+            android:scaleX="3"
+            android:scaleY="3"/>
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

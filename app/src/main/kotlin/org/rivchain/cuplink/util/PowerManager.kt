@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.PowerManager
-import org.rivchain.cuplink.Log
 
 object PowerManager {
 

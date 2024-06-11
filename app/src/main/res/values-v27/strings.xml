@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="is_calling">Calling</string>
+    <string name="contact_is_invalid">Contact is invalid</string>
+    <string name="add_contact_link_or_json">Enter contact link or contact JSON manually</string>
+    <string name="connect_as_public_peer">Connect as a Public Peer</string>
+    <string name="note_device_as_public_peer">Note: Connecting this device as a public peer may result in additional traffic utilization while it stays online. This may incur additional charges from your mobile operator.</string>
+    <string name="agree_to_connect1">I agree to connect this device as a public peer.</string>
+    <string name="settings_connect_as_public_peer">Connect as Public Peer</string>
+    <string name="qr_code_image">Contact QR code image</string>
+    <string name="port_status">Port status</string>
+</resources>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="RtlHardcoded"
+    android:layout_width="match_parent"
+    android:layout_height="128dip"
+    android:background="@drawable/button_background">
+
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_width="42dip"
+        android:layout_height="42dip"
+        android:layout_marginTop="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layerType="hardware"
+        tools:src="#0f0" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="16dip"
+        android:layout_height="16dip"
+        android:layout_alignBottom="@+id/photo"
+        android:layout_alignLeft="@+id/photo"
+        android:layout_marginLeft="-2dip"
+        android:layout_marginBottom="-2dip"
+        android:src="@drawable/ic_audio_device_phone" />
+
+    <LinearLayout
+        android:id="@+id/text_wrap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/photo"
+        android:layout_alignTop="@+id/photo"
+        android:layout_alignBottom="@+id/photo"
+        android:layout_marginTop="-12dip"
+        android:layout_marginBottom="-12dip"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="12dip"
+        android:gravity="center_vertical|right"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="#FFF"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="right"
+            tools:text="Wow Such Doge" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#FFF"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:gravity="right"
+            tools:text="CupLink Call" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#6BFFFFFF"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:gravity="right"
+            tools:text="to Account Name" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="48.3dip"
+        android:baselineAligned="false"
+        android:paddingTop=".3dip"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/answer_btn"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="2dip"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/answer_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:textAllCaps="true"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="#5ee067"
+                android:fontFamily="sans-serif-medium"
+                android:drawablePadding="12dip"
+                app:drawableRightCompat="@drawable/ic_call_accept"
+                tools:text="@string/button_yes"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/decline_btn"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="2dip"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/decline_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:textAllCaps="true"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="#ef5050"
+                android:fontFamily="sans-serif-medium"
+                android:drawablePadding="12dip"
+                app:drawableRightCompat="@drawable/ic_call_decline"
+                tools:text="@string/button_abort"/>
+
+        </FrameLayout>
+    </LinearLayout>
+</RelativeLayout>

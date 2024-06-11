@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".QRScanActivity">
+    tools:context=".QRScanActivity"
+    android:background="@color/colorPrimaryDark">
 
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:layout_width="match_parent"
@@ -21,7 +22,9 @@
         android:layout_above="@id/fabScan"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_menu_edit"
-        android:background="@color/colorPrimary" />
+        android:background="@color/colorPrimary"
+        app:tint="@color/white"
+        android:contentDescription="@string/add_contact_link_or_json"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabScan"
@@ -29,8 +32,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="50dp"
         app:srcCompat="@drawable/qr_code"
-        android:background="@color/colorPrimary" />
+        android:background="@color/colorPrimary"
+        app:tint="@color/white"
+        android:contentDescription="@string/title_scan_qr_code"/>
 
 </RelativeLayout>

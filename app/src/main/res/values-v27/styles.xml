@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:dropDownListViewStyle">@style/MySpinner</item>
+        <item name="android:textColor">@color/light_light_grey</item>
+        <item name="android:textColorHint">@color/light_grey</item>
+        <item name="android:textColorPrimary">@color/light_light_grey</item>
+        <item name="android:textColorSecondary">@color/light_grey</item>
+        <item name="android:itemBackground">@color/colorPrimaryDark</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="spinnerStyle">@style/MySpinner</item>
+        <!-- Set the default popup menu style -->
+        <item name="popupMenuBackground">@color/colorPrimaryDark</item>
+        <item name="dropDownBackgroundTint">@color/colorPrimaryDark</item>
+    </style>
+</resources>

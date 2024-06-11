@@ -1,45 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/frameLayout2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.6"
-        android:textColor="@color/colorPrimary"
-    >
-
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark">
+        <!-- Background image (for audio calls) -->
         <ImageView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/ic_launcher" />
-
-    </RelativeLayout>
+            android:id="@+id/background_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"
+            android:scaleType="fitCenter"
+            android:scaleX="0.35"
+            android:scaleY="0.35"
+            android:src="@drawable/cup_link"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
-        android:background="@android:color/darker_gray"
-    >
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout2"
+        android:layout_marginBottom="50dp">
 
         <TextView
             android:id="@+id/splashText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="@dimen/padding_30"
             android:layout_centerHorizontal="true"
+            android:gravity="center"
             android:text="@string/app_name"
-            android:textColor="@color/colorPrimary"
-            android:textSize="40dp"
-            android:paddingTop="20dp"/>
+            android:textColor="@color/light_light_grey"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins_regular"/>
 
     </RelativeLayout>
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

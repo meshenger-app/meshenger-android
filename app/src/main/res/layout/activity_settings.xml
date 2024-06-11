@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:windowBackground"
+        android:background="@color/colorPrimaryDark"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="30dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -26,7 +29,6 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/title_settings"
-                android:textColor="?android:textColorPrimary"
                 android:textSize="@dimen/headline_text_size" />
 
         </androidx.appcompat.widget.Toolbar>
@@ -35,1040 +37,696 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:layout_margin="5dp"
-        android:paddingBottom="80dp"
-        android:scrollbarThumbVertical="@color/call_blue"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="50dp"
+        android:scrollbarThumbVertical="@color/selectedColor"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appbar">
+        app:layout_constraintTop_toBottomOf="@id/appbar"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/basicSettingsLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/padding_20"
-                android:layout_marginRight="@dimen/padding_20"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_20"
+                android:layout_marginEnd="@dimen/padding_20"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
-                    android:id="@+id/nameLayout"
+                <TextView
+                    android:id="@+id/settingsName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_20"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_name"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/padding_20"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_name"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <TextView
+                    android:id="@+id/nameTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    app:layout_constraintEnd_toEndOf="@id/settingsName"
+                    app:layout_constraintTop_toTopOf="@id/settingsName"
+                    app:layout_constraintBottom_toBottomOf="@id/settingsName"/>
 
-                    <TextView
-                        android:id="@+id/nameTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/settingsNightModes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_nightmode"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/settingsName"
+                    android:layout_marginTop="@dimen/padding_40"
+                    android:visibility="gone"/>
 
-                    app:dividerColor="@color/light_grey" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/spinnerNightModes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="@id/settingsNightModes"
+                    app:layout_constraintTop_toTopOf="@id/settingsNightModes"
+                    app:layout_constraintBottom_toBottomOf="@id/settingsNightModes"
+                    android:visibility="gone"/>
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/blockUnknown"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_block_unknown"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/spinnerNightModes"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/spinnerNightModes"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_nightmode"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/blockUnknownSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="48dp"
+                    android:theme="@style/SwitchTheme"
+                    android:contentDescription="@string/settings_block_unknown"
+                    app:layout_constraintEnd_toEndOf="@id/blockUnknown"
+                    app:layout_constraintTop_toTopOf="@id/blockUnknown"
+                    app:layout_constraintBottom_toBottomOf="@id/blockUnknown"/>
 
-                    <Spinner
-                        android:id="@+id/spinnerNightModes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:textSize="@dimen/options_text_size"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"/>
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/editPeers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/peers"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/blockUnknownSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/startOnBootup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_start_on_bootup"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editPeers"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/blockUnknownSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_block_unknown"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/startOnBootupSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="48dp"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/startOnBootup"
+                    app:layout_constraintTop_toTopOf="@id/startOnBootup"
+                    app:layout_constraintBottom_toBottomOf="@id/startOnBootup"/>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/blockUnknownSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
-                        android:minWidth="48dp"
-                        android:theme="@style/SwitchTheme"
-                        android:contentDescription="@string/settings_block_unknown"/>
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/settingsModes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_settings_mode"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/startOnBootupSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    android:layout_marginBottom="15dp"
-                    android:visibility="visible"
-                    app:dividerColor="@color/light_grey" />
-
-                <LinearLayout
-                    android:id="@+id/addressLayout"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/spinnerSettingsModes"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="@id/settingsModes"
+                    app:layout_constraintTop_toTopOf="@id/settingsModes"
+                    app:layout_constraintBottom_toBottomOf="@id/settingsModes"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_addresses"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <TextView
-                        android:id="@+id/addressTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:visibility="visible"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/startOnBootupSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_start_on_bootup"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/startOnBootupSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
-                        android:minWidth="48dp"
-                        android:theme="@style/SwitchTheme"
-                        />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/spinnerSettingsModes"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_settings_mode"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <Spinner
-                        android:id="@+id/spinnerSettingsModes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        app:thumbTint="@color/selectedColor"
-                        android:textSize="@dimen/options_text_size"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"/>
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/advancedSettingsLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/padding_20"
-                android:layout_marginRight="@dimen/padding_20"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_20"
+                android:layout_marginEnd="@dimen/padding_20"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/basicSettingsLayout"
                 android:visibility="gone">
 
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/automaticStatusUpdates"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_automatic_status_updates"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/padding_40" />
 
-                <RelativeLayout
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/automaticStatusUpdatesSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/automaticStatusUpdates"
+                    app:layout_constraintTop_toTopOf="@id/automaticStatusUpdates"
+                    app:layout_constraintBottom_toBottomOf="@id/automaticStatusUpdates"/>
+
+                <TextView
+                    android:id="@+id/publicPeerLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_connect_as_public_peer"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/automaticStatusUpdatesSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/automaticStatusUpdatesSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_automatic_status_updates"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/automaticStatusUpdatesSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/publicPeerUrl"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:textIsSelectable="true"
+                    android:text=""
+                    android:textSize="@dimen/options_text_size"
+                    android:textAllCaps="false"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/publicPeerLayout"/>
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/enableMicrophoneByDefault"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_enable_microphone_by_default"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/publicPeerUrl"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/enableMicrophoneByDefaultSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_enable_microphone_by_default"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/enableMicrophoneByDefaultSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/enableMicrophoneByDefault"
+                    app:layout_constraintTop_toTopOf="@id/enableMicrophoneByDefault"
+                    app:layout_constraintBottom_toBottomOf="@id/enableMicrophoneByDefault"/>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/enableMicrophoneByDefaultSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/enableCameraByDefault"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_enable_camera_by_default"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/enableMicrophoneByDefaultSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/enableCameraByDefaultSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/enableCameraByDefault"
+                    app:layout_constraintTop_toTopOf="@id/enableCameraByDefault"
+                    app:layout_constraintBottom_toBottomOf="@id/enableCameraByDefault"/>
+
+                <TextView
+                    android:id="@+id/selectFrontCameraByDefault"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_select_front_camera_by_default"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/enableCameraByDefaultSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/enableCameraByDefaultSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_enable_camera_by_default"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/selectFrontCameraByDefaultSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/selectFrontCameraByDefault"
+                    app:layout_constraintTop_toTopOf="@id/selectFrontCameraByDefault"
+                    app:layout_constraintBottom_toBottomOf="@id/selectFrontCameraByDefault"/>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/enableCameraByDefaultSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/videoDegradationModeText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_video_degradation_mode"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/selectFrontCameraByDefaultSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/spinnerVideoDegradationModes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="@id/videoDegradationModeText"
+                    app:layout_constraintTop_toTopOf="@id/videoDegradationModeText"
+                    app:layout_constraintBottom_toBottomOf="@id/videoDegradationModeText"/>
+
+                <TextView
+                    android:id="@+id/cameraResolutionText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_camera_resolution"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/spinnerVideoDegradationModes"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/selectFrontCameraByDefaultSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_select_front_camera_by_default"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/spinnerCameraResolution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="@id/cameraResolutionText"
+                    app:layout_constraintTop_toTopOf="@id/cameraResolutionText"
+                    app:layout_constraintBottom_toBottomOf="@id/cameraResolutionText"/>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/selectFrontCameraByDefaultSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/cameraFramerateText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_camera_framerate"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cameraResolutionText"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/spinnerCameraFramerate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="@id/cameraFramerateText"
+                    app:layout_constraintTop_toTopOf="@id/cameraFramerateText"
+                    app:layout_constraintBottom_toBottomOf="@id/cameraFramerateText"/>
+
+                <TextView
+                    android:id="@+id/promptOutgoingCalls"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_prompt_outgoing_calls"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cameraFramerateText"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:id="@+id/videoDegradationModeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/spinnerVideoDegradationModes"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_video_degradation_mode"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/promptOutgoingCallsSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/promptOutgoingCalls"
+                    app:layout_constraintTop_toTopOf="@id/promptOutgoingCalls"
+                    app:layout_constraintBottom_toBottomOf="@id/promptOutgoingCalls"/>
 
-                    <Spinner
-                        android:id="@+id/spinnerVideoDegradationModes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:drawSelectorOnTop="false"
-                        android:textSize="@dimen/options_text_size" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/showUsernameAsLogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_show_username_as_logo"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/promptOutgoingCallsSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/showUsernameAsLogoSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/showUsernameAsLogo"
+                    app:layout_constraintTop_toTopOf="@id/showUsernameAsLogo"
+                    app:layout_constraintBottom_toBottomOf="@id/showUsernameAsLogo"/>
+
+                <TextView
+                    android:id="@+id/pushToTalk"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_push_to_talk"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/showUsernameAsLogo"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:id="@+id/cameraResolutionText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/spinnerCameraResolution"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_camera_resolution"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/pushToTalkSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/pushToTalk"
+                    app:layout_constraintTop_toTopOf="@id/pushToTalk"
+                    app:layout_constraintBottom_toBottomOf="@id/pushToTalk"/>
 
-                    <Spinner
-                        android:id="@+id/spinnerCameraResolution"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:textSize="@dimen/options_text_size" />
+                <TextView
+                    android:id="@+id/addressLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_addresses"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/pushToTalkSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                </RelativeLayout>
+                <TextView
+                    android:id="@+id/addressTv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:singleLine="true"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:ellipsize="middle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/addressLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/addressLayout"
+                    app:layout_constraintStart_toEndOf="@id/addressLayout"/>
 
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/textSpeakerphoneModes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_speakerphone_mode"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/addressTv"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/spinnerSpeakerphoneModes"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="@id/textSpeakerphoneModes"
+                    app:layout_constraintTop_toTopOf="@id/textSpeakerphoneModes"
+                    app:layout_constraintBottom_toBottomOf="@id/textSpeakerphoneModes"/>
 
-                    <TextView
-                        android:id="@+id/cameraFramerateText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/spinnerCameraFramerate"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_camera_framerate"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <Spinner
-                        android:id="@+id/spinnerCameraFramerate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:textSize="@dimen/options_text_size" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/promptOutgoingCallsSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_prompt_outgoing_calls"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/promptOutgoingCallsSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/showUsernameAsLogoSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_show_username_as_logo"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/showUsernameAsLogoSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/pushToTalkSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_push_to_talk"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/pushToTalkSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/spinnerSpeakerphoneModes"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_speakerphone_mode"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <Spinner
-                        android:id="@+id/spinnerSpeakerphoneModes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        app:thumbTint="@color/selectedColor"
-                        android:textSize="@dimen/options_text_size" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <LinearLayout
+                <TextView
                     android:id="@+id/databasePasswordLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_database_password"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/spinnerSpeakerphoneModes"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_database_password"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <TextView
-                        android:id="@+id/databasePasswordTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/databasePasswordTv"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    app:layout_constraintEnd_toEndOf="@id/databasePasswordLayout"
+                    app:layout_constraintTop_toTopOf="@id/databasePasswordLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/databasePasswordLayout"/>
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/menuPasswordLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_menu_password"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/databasePasswordTv"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_menu_password"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <TextView
+                    android:id="@+id/menuPasswordTv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    app:layout_constraintEnd_toEndOf="@id/menuPasswordLayout"
+                    app:layout_constraintTop_toTopOf="@id/menuPasswordLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/menuPasswordLayout"/>
 
-                    <TextView
-                        android:id="@+id/menuPasswordTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/disableProximitySensor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_disable_proximity_sensor"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/menuPasswordTv"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/disableProximitySensorSwitch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    >
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/disableProximitySensor"
+                    app:layout_constraintTop_toTopOf="@id/disableProximitySensor"
+                    app:layout_constraintBottom_toBottomOf="@id/disableProximitySensor"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/disableCallHistorySwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_disable_call_history"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/disableCallHistorySwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/disableProximitySensorSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_disable_proximity_sensor"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/disableProximitySensorSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/expertSettingsLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/padding_20"
-                android:layout_marginRight="@dimen/padding_20"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_20"
+                android:layout_marginEnd="@dimen/padding_20"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/advancedSettingsLayout"
                 android:visibility="gone">
 
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/autoAcceptCalls"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_auto_accept_calls"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/autoAcceptCallsSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/autoAcceptCalls"
+                    app:layout_constraintTop_toTopOf="@id/autoAcceptCalls"
+                    app:layout_constraintBottom_toBottomOf="@id/autoAcceptCalls"/>
+
+                <TextView
+                    android:id="@+id/disableCpuOveruseDetection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_disable_cpu_overuse_detection"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/autoAcceptCallsSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/autoAcceptCallsSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_auto_accept_calls"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/autoAcceptCallsSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/disableCpuOveruseDetectionSwitch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/disableCpuOveruseDetection"
+                    app:layout_constraintTop_toTopOf="@id/disableCpuOveruseDetection"
+                    app:layout_constraintBottom_toBottomOf="@id/disableCpuOveruseDetection"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/disableCpuOveruseDetectionSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_disable_cpu_overuse_detection"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/disableCpuOveruseDetectionSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="5dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <LinearLayout
+                <TextView
                     android:id="@+id/publicKeyLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_public_key"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/disableCpuOveruseDetectionSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_public_key"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <TextView
-                        android:id="@+id/publicKeyTv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textIsSelectable="true"
-                        android:text=""
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/publicKeyTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:textIsSelectable="true"
+                    android:text=""
+                    android:textSize="@dimen/options_text_size"
+                    android:textAllCaps="false"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/publicKeyLayout"/>
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/disableAudioProcessing"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_disable_audio_processing"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/publicKeyTv"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/disableAudioProcessingSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_disable_audio_processing"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/disableAudioProcessingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/disableAudioProcessing"
+                    app:layout_constraintTop_toTopOf="@id/disableAudioProcessing"
+                    app:layout_constraintBottom_toBottomOf="@id/disableAudioProcessing"/>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/disableAudioProcessingSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/videoHardwareAcceleration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:dividerColor="@color/light_grey" />
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_video_hardware_acceleration"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/disableAudioProcessingSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/videoHardwareAccelerationSwitch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    >
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/videoHardwareAcceleration"
+                    app:layout_constraintTop_toTopOf="@id/videoHardwareAcceleration"
+                    app:layout_constraintBottom_toBottomOf="@id/videoHardwareAcceleration"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/videoHardwareAccelerationSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_video_hardware_acceleration"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/videoHardwareAccelerationSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
-
-                <LinearLayout
+                <TextView
                     android:id="@+id/connectTimeoutLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_connect_timeout"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/videoHardwareAccelerationSwitch"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_connect_timeout"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <TextView
-                        android:id="@+id/connectTimeoutTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/connectTimeoutTv"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    app:layout_constraintEnd_toEndOf="@id/connectTimeoutLayout"
+                    app:layout_constraintTop_toTopOf="@id/connectTimeoutLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/connectTimeoutLayout"/>
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/connectRetriesLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_connect_retries"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/connectTimeoutTv"
+                    android:layout_marginTop="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_connect_retries"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
-
-                    <TextView
-                        android:id="@+id/connectRetriesTv"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:fontFamily="@font/lato_regular"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="@dimen/options_text_size" />
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
+                <TextView
+                    android:id="@+id/connectRetriesTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    app:dividerColor="@color/light_grey" />
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textSize="@dimen/options_text_size"
+                    app:layout_constraintEnd_toEndOf="@id/connectRetriesLayout"
+                    app:layout_constraintTop_toTopOf="@id/connectRetriesLayout"
+                    app:layout_constraintBottom_toBottomOf="@id/connectRetriesLayout"/>
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/useNeighborTable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/settings_use_neighbor_table"
+                    android:textSize="@dimen/title_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/connectRetriesTv"
+                    android:layout_marginTop="@dimen/padding_40"
+                    android:layout_marginBottom="@dimen/padding_40"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@+id/useNeighborTableSwitch"
-                        android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_use_neighbor_table"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="@dimen/title_text_size" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/useNeighborTableSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SwitchTheme"
+                    app:layout_constraintEnd_toEndOf="@id/useNeighborTable"
+                    app:layout_constraintTop_toTopOf="@id/useNeighborTable"
+                    app:layout_constraintBottom_toBottomOf="@id/useNeighborTable"/>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/useNeighborTableSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
-                        android:theme="@style/SwitchTheme" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 

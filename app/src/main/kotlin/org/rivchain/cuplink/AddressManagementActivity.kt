@@ -11,21 +11,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
-import android.widget.EditText
+import com.google.android.material.textfield.TextInputEditText
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import org.rivchain.cuplink.AddressUtils.AddressType
 import org.rivchain.cuplink.MainService.MainBinder
+import org.rivchain.cuplink.model.AddressEntry
+import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.AddressUtils.AddressType
 import java.util.Locale
 
 class AddressManagementActivity : BaseActivity(), ServiceConnection {
-    private var binder: MainBinder? = null
+    private var service: MainService? = null
     private lateinit var addressListView: ListView
-    private lateinit var customAddressTextEdit: EditText
+    private lateinit var customAddressTextEdit: TextInputEditText
     private lateinit var addressListViewAdapter: AddressListAdapter
     private var systemAddresses = mutableListOf<AddressEntry>()
 
@@ -62,7 +64,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun initViews() {
-        if (binder == null) {
+        if (service == null) {
             return
         }
 
@@ -71,9 +73,9 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         val addButton = findViewById<View>(R.id.AddCustomAddressButton)
 
         saveButton.setOnClickListener {
-            binder!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
+            service!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
-            binder!!.saveDatabase()
+            service!!.saveDatabase()
         }
 
         addButton.setOnClickListener {
@@ -120,11 +122,11 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainBinder
+        service = (iBinder as MainBinder).getService()
 
         // add extra information to stored addresses from system addresses
         val addresses = mutableListOf<AddressEntry>()
-        for (address in binder!!.getSettings().addresses) {
+        for (address in service!!.getSettings().addresses) {
             val ae = systemAddresses.firstOrNull { it.address == address }
             if (ae != null) {
                 addresses.add(AddressEntry(address, ae.device))
@@ -256,7 +258,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
     private fun initAddressList() {
         // add extra information to stored addresses
         val storedAddresses = mutableListOf<AddressEntry>()
-        for (address in binder!!.getSettings().addresses) {
+        for (address in service!!.getSettings().addresses) {
             val ae = systemAddresses.firstOrNull { it.address == address }
             if (ae != null) {
                 storedAddresses.add(AddressEntry(address, ae.device))

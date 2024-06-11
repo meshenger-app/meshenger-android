@@ -4,38 +4,44 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.rivchain.cuplink.Crypto.decryptDatabase
 import org.rivchain.cuplink.Crypto.encryptDatabase
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.model.Contacts
+import org.rivchain.cuplink.model.Events
+import org.rivchain.cuplink.model.Settings
+import org.rivchain.cuplink.rivmesh.ConfigurationProxy
+import org.rivchain.cuplink.util.Log
 import java.nio.charset.Charset
 
 class Database {
+
     var version = BuildConfig.VERSION_NAME
     var settings = Settings()
     var contacts = Contacts()
     var events = Events()
+    var mesh = ConfigurationProxy()
 
     // clear keys before the app exits
     fun destroy() {
         settings.destroy()
         contacts.destroy()
         events.destroy()
+        mesh.resetKeys()
     }
 
     class WrongPasswordException() : Exception()
 
     companion object {
-        fun fromData(db_data: ByteArray, password: String?): Database {
+        fun fromData(dbData: ByteArray, password: String?): Database {
             // encrypt database
-            val stringData = if (password != null && password.isNotEmpty()) {
+            val stringData = if (!password.isNullOrEmpty()) {
                 Log.d(this, "Decrypt database")
-                val encrypted = decryptDatabase(db_data, password.toByteArray())
-                if (encrypted == null) {
-                    throw WrongPasswordException()
-                }
+                val encrypted = decryptDatabase(dbData, password.toByteArray()) ?: throw WrongPasswordException()
                 encrypted
             } else {
-                if (db_data.isNotEmpty() && db_data[0] != '{'.code.toByte()) {
+                if (dbData.isNotEmpty() && dbData[0] != '{'.code.toByte()) {
                     throw WrongPasswordException()
                 }
-                db_data
+                dbData
             }
 
             val obj = JSONObject(
@@ -47,6 +53,7 @@ class Database {
             val db = fromJSON(obj)
             Log.d(this, "Loaded ${db.contacts.contactList.size} contacts")
             Log.d(this, "Loaded ${db.events.eventList.size} events")
+            Log.d(this, "Loaded ${db.mesh.getPeers().length()} peers")
             return db
         }
 
@@ -55,13 +62,13 @@ class Database {
             var dbdata : ByteArray? = obj.toString().toByteArray()
 
             // encrypt database
-            if (password != null && password.isNotEmpty()) {
+            if (!password.isNullOrEmpty()) {
                 Log.d(this, "Encrypt database")
                 dbdata = encryptDatabase(dbdata, password.toByteArray())
             }
             Log.d(this, "Stored ${db.contacts.contactList.size} contacts")
             Log.d(this, "Stored ${db.events.eventList.size} events")
-
+            Log.d(this, "Stored ${db.mesh.getPeers().length()} peers")
             return dbdata
         }
 
@@ -225,7 +232,7 @@ class Database {
             }
 
             if (newFrom == "4.0.9") {
-                settings.put("start_on_bootup", false)
+                settings.put("start_on_bootup", true)
                 settings.put("disable_audio_processing", settings.getBoolean("no_audio_processing"))
                 settings.remove("no_audio_processing")
                 newFrom = "4.1.0"
@@ -327,6 +334,21 @@ class Database {
                 newFrom = "4.2.7"
             }
 
+            if (newFrom.startsWith("0.6.5")) {
+                // clean up events from db if there are no
+                // corresponding contacts
+                val events = Events.fromJSON(db.getJSONObject("events")).eventList
+                val contacts: Contacts = Contacts.fromJSON(db.getJSONObject("contacts"))
+                events.removeAll {
+                    contacts.findContact(it.publicKey) < 0
+                }
+                val e = Events()
+                e.eventList = events
+                db.put("events", Events.toJSON(e))
+
+                newFrom = "0.6.6"
+            }
+
             alignSettings(settings)
 
             db.put("version", newFrom)
@@ -339,6 +361,7 @@ class Database {
             obj.put("settings", Settings.toJSON(db.settings))
             obj.put("contacts", Contacts.toJSON(db.contacts))
             obj.put("events", Events.toJSON(db.events))
+            obj.put("mesh", db.mesh.getJSON())
             return obj
         }
 
@@ -358,6 +381,9 @@ class Database {
             // import events
             val events = obj.getJSONObject("events")
             db.events = Events.fromJSON(events)
+
+            // import mesh
+            db.mesh = ConfigurationProxy().fromJSON(obj.getJSONObject("mesh"))
 
             return db
         }

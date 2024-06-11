@@ -7,10 +7,10 @@
     <string name="address_management">Gerenciar endereço</string>
     <string name="address_management_help_text">Selecione um ou mais endereços que serão incluídos no seu código QR. É recomendado usar o endereço MAC do adaptador WiFi (wlan0). Mas tem cuidado porque ele é vinculado ao hardware do seu dispositivo. Se nenhum endereço MAC estiver visível, então ative seu WiFi.</string>
     <string name="app_description">Permite uma comunicação de voz e vídeo sem nenhum servidor ou conexão à internet. Basta escanear código QR de contatos participantes e efetuar ligação. Funciona na maioria dos tipos de redes, p.ex., de casa, em redes comunitárias ou de trabalho.</string>
-    <string name="audio_device_auto">%1$s (auto)</string>
+    <string name="audio_device_auto">%s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Fone de ouvido</string>
-    <string name="audio_device_fixed">%1$s (fixo)</string>
+    <string name="audio_device_fixed">%s (fixo)</string>
     <string name="audio_device_speakerphone">Viva voz</string>
     <string name="audio_device_wired_headset">Fone de ouvido com fio</string>
     <string name="button_abort">Cancelar</string>
@@ -45,8 +45,8 @@
     <string name="camera_front">Frente</string>
     <string name="capture_format_change_text">Deslize para alterar o formato de captura</string>
     <string name="clear_events">Limpar eventos</string>
-    <string name="connected_to_address">(para o %1$s)</string>
-    <string name="connecting_to_address">Conectando à %1$s</string>
+    <string name="connected_to_address">(para o %s)</string>
+    <string name="connecting_to_address">Conectando à %s</string>
     <string name="contact_address_input">Endereço</string>
     <string name="contact_has_no_address_warning">Aviso: O contato não tem endereço</string>
     <string name="contact_key_conflict">Já existe um contato com a mesma chave:</string>
@@ -67,7 +67,7 @@
     <string name="enter_password">Digite senha</string>
     <string name="error">Erro</string>
     <string name="failed_to_export_database">Falha ao exportar base de dados</string>
-    <string name="import_dialog">Importar novas configurações e adicionar %1$d contatos e %2$d eventos?</string>
+    <string name="import_dialog">Importar novas configurações e adicionar %d contatos e %d eventos?</string>
     <string name="invalid_name">Nome inválido</string>
     <string name="invalid_qr">Código QR inválido</string>
     <string name="invalid_qr_code_data">Dados inválidos</string>
@@ -103,4 +103,23 @@
     <string name="wrong_password">Senha incorreta</string>
     <string name="report_dialog_text">Sorry, the application crashed.</string>
     <string name="report_dialog_comment">Please describe what were you doing when the app crashed:</string>
+    <string name="tile_disabled">Disabled</string>
+    <string name="tile_enabled">Enabled</string>
+    <string name="tile_connected">Connected</string>
+    <string name="permission_notification_text">Permission is missing. Please grant it in order to receive notifications.</string>
+    <string name="channel_name">VPN Service</string>
+    <string name="channel_description">Main channel for foreground notification</string>
+    <string name="title_activity_peer_list">Select peers</string>
+    <string name="node_info_copied">copied</string>
+    <string name="peers">Peers</string>
+    <string name="contact_menu_edit">Edit</string>
+    <string name="is_calling">is calling</string>
+    <string name="contact_is_invalid">Contact is invalid</string>
+    <string name="add_contact_link_or_json">Enter contact link or contact JSON manually</string>
+    <string name="connect_as_public_peer">Connect as a Public Peer</string>
+    <string name="note_device_as_public_peer">Note: Connecting this device as a public peer may result in additional traffic utilization while it stays online. This may incur additional charges from your mobile operator.</string>
+    <string name="agree_to_connect1">I agree to connect this device</string>
+    <string name="settings_connect_as_public_peer">Connect as Public Peer</string>
+    <string name="qr_code_image">Contact QR code image</string>
+    <string name="port_status">Port status</string>
 </resources>

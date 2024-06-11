@@ -1,21 +1,57 @@
 package org.rivchain.cuplink.call
 
 import android.content.Context
+import android.os.Handler
 import org.json.JSONException
 import org.json.JSONObject
-import org.rivchain.cuplink.*
-import org.webrtc.*
+import org.rivchain.cuplink.Crypto
+import org.rivchain.cuplink.MainService
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.Utils
+import org.webrtc.AudioSource
+import org.webrtc.AudioTrack
+import org.webrtc.Camera1Enumerator
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
-import org.webrtc.PeerConnection.*
+import org.webrtc.CameraVideoCapturer
+import org.webrtc.DataChannel
+import org.webrtc.DefaultVideoDecoderFactory
+import org.webrtc.DefaultVideoEncoderFactory
+import org.webrtc.EglBase
+import org.webrtc.MediaConstraints
+import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
+import org.webrtc.PeerConnection.ContinualGatheringPolicy
+import org.webrtc.PeerConnection.IceConnectionState
+import org.webrtc.PeerConnection.IceGatheringState
+import org.webrtc.PeerConnection.PeerConnectionState
+import org.webrtc.PeerConnection.RTCConfiguration
+import org.webrtc.PeerConnection.SdpSemantics
+import org.webrtc.PeerConnectionFactory
+import org.webrtc.RTCStatsCollectorCallback
+import org.webrtc.RtpParameters
+import org.webrtc.SessionDescription
+import org.webrtc.SoftwareVideoDecoderFactory
+import org.webrtc.SoftwareVideoEncoderFactory
+import org.webrtc.SurfaceTextureHelper
+import org.webrtc.VideoCapturer
+import org.webrtc.VideoDecoderFactory
+import org.webrtc.VideoEncoderFactory
+import org.webrtc.VideoFrame
+import org.webrtc.VideoSink
+import org.webrtc.VideoSource
+import org.webrtc.VideoTrack
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordErrorCallback
 import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordStateCallback
 import org.webrtc.audio.JavaAudioDeviceModule.AudioTrackErrorCallback
 import org.webrtc.audio.JavaAudioDeviceModule.AudioTrackStateCallback
-import java.net.*
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 class RTCCall : RTCPeerConnection {
     private lateinit var factory: PeerConnectionFactory
@@ -204,11 +240,11 @@ class RTCCall : RTCPeerConnection {
 
     // called for incoming calls
     constructor(
-        binder: MainService.MainBinder,
+        service: MainService,
         contact: Contact,
         commSocket: Socket,
         offer: String
-    ) : super(binder, contact, commSocket) {
+    ) : super(service, contact, commSocket) {
         Log.d(this, "RTCCall() created for incoming calls")
 
         this.offer = offer
@@ -218,16 +254,16 @@ class RTCCall : RTCPeerConnection {
 
     // called for outgoing calls
     constructor(
-        binder: MainService.MainBinder,
+        service: MainService,
         contact: Contact
-    ) : super(binder, contact, null) {
+    ) : super(service, contact, null) {
         Log.d(this, "RTCCall() created for outgoing calls")
 
         createMediaConstraints()
     }
 
     private fun createMediaConstraints() {
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
 
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
@@ -252,7 +288,7 @@ class RTCCall : RTCPeerConnection {
         execute {
             Log.d(this, "initOutgoing() executor start")
             val rtcConfig = RTCConfiguration(emptyList())
-            val settings = binder.getSettings()
+            val settings = service.getSettings()
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
             rtcConfig.enableCpuOveruseDetection = !settings.disableCpuOveruseDetection // true by default
@@ -512,7 +548,7 @@ class RTCCall : RTCPeerConnection {
         Log.d(this, "initVideo()")
         Utils.checkIsOnMainThread()
 
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
         reportStateChange(CallState.WAITING)
 
         // must be created in Main/GUI Thread!
@@ -527,7 +563,7 @@ class RTCCall : RTCPeerConnection {
 
         Log.d(this, "initVideo() video acceleration: ${settings.videoHardwareAcceleration}")
 
-        if (binder.getSettings().videoHardwareAcceleration) {
+        if (service.getSettings().videoHardwareAcceleration) {
             val enableIntelVp8Encoder = true
             val enableH264HighProfile = true
             encoderFactory = DefaultVideoEncoderFactory(eglBase.eglBaseContext, enableIntelVp8Encoder, enableH264HighProfile)
@@ -611,7 +647,7 @@ class RTCCall : RTCPeerConnection {
 
         execute {
             Log.d(this, "initIncoming() executor start")
-            val settings = binder.getSettings()
+            val settings = service.getSettings()
             val remoteAddress = commSocket!!.remoteSocketAddress as InetSocketAddress
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
@@ -742,28 +778,28 @@ class RTCCall : RTCPeerConnection {
 
     fun cleanup() {
         Log.d(this, "cleanup()")
-        Utils.checkIsOnMainThread()
+        Handler(service.mainLooper).post {
+            Utils.checkIsOnMainThread()
+            Log.d(this, "cleanup() executor start")
+            setCallContext(null)
+            setStatsCollector(null)
+            execute {
+                try {
+                    peerConnection?.close()
+                    declineOwnCall()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
-        Log.d(this, "cleanup() executor start")
-        setCallContext(null)
-        setStatsCollector(null)
-
-        execute {
-            try {
-                peerConnection?.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(this, "cleanup() executor end")
             }
-
-            Log.d(this, "cleanup() executor end")
+            super.cleanupRTCPeerConnection()
         }
-
-        super.cleanupRTCPeerConnection()
-
         Log.d(this, "cleanup() done")
     }
 
     interface CallContext {
+
         fun getContext(): Context
         fun onStateChange(state: CallState)
         fun onLocalVideoEnabled(enabled: Boolean)

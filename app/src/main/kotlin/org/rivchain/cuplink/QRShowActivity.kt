@@ -13,10 +13,12 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import org.rivchain.cuplink.MainService.MainBinder
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.util.RlpUtils
 
 class QRShowActivity : BaseActivity(), ServiceConnection {
     private lateinit var publicKey: ByteArray
-    private var binder: MainBinder? = null
+    private var service: MainService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +37,8 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
         findViewById<View>(R.id.fabShare).setOnClickListener {
             try {
-                val contact = binder!!.getContactOrOwn(publicKey)!!
-                val data = Contact.toJSON(contact, false).toString()
+                val contact = service!!.getContactOrOwn(publicKey)!!
+                val data = RlpUtils.generateLink(contact)
                 val i = Intent(Intent.ACTION_SEND)
                 i.putExtra(Intent.EXTRA_TEXT, data)
                 i.type = "text/plain"
@@ -50,7 +52,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (binder != null) {
+        if (service != null) {
             unbindService(this)
         }
     }
@@ -60,24 +62,55 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
             .text = contact.name
 
         val data = Contact.toJSON(contact, false).toString()
+        if (contact.addresses.isEmpty()) {
+            Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
+        }
+        if (contact.name.isEmpty()) {
+            Toast.makeText(this, R.string.contact_name_invalid, Toast.LENGTH_SHORT).show()
+        }
+        if (contact.publicKey.isEmpty()) {
+            Toast.makeText(this, R.string.contact_public_key_invalid, Toast.LENGTH_SHORT).show()
+        }
         val multiFormatWriter = MultiFormatWriter()
         val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080)
         val barcodeEncoder = BarcodeEncoder()
         val bitmap = barcodeEncoder.createBitmap(bitMatrix)
         findViewById<ImageView>(R.id.QRView).setImageBitmap(bitmap)
+    }
 
+    private fun generateDeepLinkQR(contact: Contact) {
+        findViewById<TextView>(R.id.contact_name_tv)
+            .text = contact.name
+
+        val data = RlpUtils.generateLink(contact)
+        if(data == null){
+            Toast.makeText(this, R.string.contact_is_invalid, Toast.LENGTH_SHORT).show()
+        }
         if (contact.addresses.isEmpty()) {
             Toast.makeText(this, R.string.contact_has_no_address_warning, Toast.LENGTH_SHORT).show()
         }
+        if (contact.name.isEmpty()) {
+            Toast.makeText(this, R.string.contact_name_invalid, Toast.LENGTH_SHORT).show()
+        }
+        if (contact.publicKey.isEmpty()) {
+            Toast.makeText(this, R.string.contact_public_key_invalid, Toast.LENGTH_SHORT).show()
+        }
+        val multiFormatWriter = MultiFormatWriter()
+        val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080)
+        val barcodeEncoder = BarcodeEncoder()
+        val bitmap = barcodeEncoder.createBitmap(bitMatrix)
+        findViewById<ImageView>(R.id.QRView).setImageBitmap(bitmap)
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        binder = iBinder as MainBinder
-
+        service = (iBinder as MainBinder).getService()
         try {
-            val contact = binder!!.getContactOrOwn(publicKey)!!
-            generateQR(contact)
-        } catch (e: Exception) {
+            val contact = service!!.getContactOrOwn(publicKey)!!
+            generateDeepLinkQR(contact)
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+            Toast.makeText(this, "NPE", Toast.LENGTH_LONG).show()
+        } catch (e: Exception){
             e.printStackTrace()
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             finish()

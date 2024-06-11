@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/padding_10"
+    android:paddingStart="@dimen/padding_20"
+    android:paddingEnd="@dimen/padding_20"
+    android:paddingBottom="@dimen/padding_20"
+    android:background="@drawable/dialog_rounded_corner">
+
+    <TextView
+        android:id="@+id/checkboxDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_regular"
+        android:paddingBottom="16dp"
+        android:textSize="@dimen/name_text_size"
+        android:text="@string/connect_as_public_peer"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/guideInfoText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="45dp"
+        android:textColor="@color/light_grey"
+        android:textSize="14sp"
+        android:textAllCaps="false"
+        android:fontFamily="@font/poppins_regular"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkboxDialogTitle" />
+
+    <TextView
+        android:id="@+id/noticeInfoText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="45dp"
+        android:text="@string/note_device_as_public_peer"
+        android:textColor="@color/light_grey"
+        android:textSize="14sp"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideInfoText" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:minWidth="@dimen/padding_50"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:checked="false"
+            android:textColor="@color/light_grey"
+            android:text="@string/agree_to_connect1"
+            app:layout_constraintStart_toStartOf="@+id/noticeInfoText"
+            app:layout_constraintTop_toBottomOf="@+id/noticeInfoText"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/CancelButton"
+            android:layout_width="125dp"
+            android:layout_height="@dimen/padding_50"
+            android:layout_marginTop="@dimen/padding_20"
+            android:background="@drawable/next_button_background"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/button_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:backgroundTint="@null"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/OkButton"
+            android:layout_width="125dp"
+            android:layout_height="@dimen/padding_50"
+            android:background="@drawable/next_button_background"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/button_ok"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:backgroundTint="@null"
+            android:enabled="false"
+            app:layout_constraintBottom_toBottomOf="@+id/CancelButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/CancelButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

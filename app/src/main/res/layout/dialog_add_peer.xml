@@ -1,0 +1,109 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:background="@drawable/dialog_rounded_corner">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/schema"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="10dp"
+        app:boxBackgroundMode="none"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textColorHint="@color/light_grey">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/schemaInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Schema"
+            android:textColor="@color/light_grey"
+            android:inputType="textNoSuggestions"
+            android:textCursorDrawable="@null"
+            style="@style/EditText.OutlinedBox"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/schema"
+        app:layout_constraintTop_toBottomOf="@+id/schema"
+        android:layout_margin="10dp"
+        app:boxBackgroundMode="none"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textColorHint="@color/light_grey">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ipInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0,1,2,3,4,5,6,7,8,9,.,qwertzuiopasdfghjklyxcvbnm,_,-"
+            android:hint="IP/domain"
+            android:inputType="textNoSuggestions"
+            android:textColor="@color/light_grey"
+            android:textCursorDrawable="@null"
+            android:focusedByDefault="true"
+            style="@style/EditText.OutlinedBox"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/port"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/schema"
+        app:layout_constraintTop_toBottomOf="@+id/ip"
+        android:layout_margin="10dp"
+        app:boxBackgroundMode="none"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textColorHint="@color/light_grey">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/portInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0123456789"
+            android:hint="Port"
+            android:textColor="@color/light_grey"
+            android:inputType="number"
+            android:textCursorDrawable="@null"
+            style="@style/EditText.OutlinedBox"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/ccp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:layout_margin="10dp"
+        app:ccp_contentColor="@color/white"
+        app:ccp_showFullName="true"
+        app:ccp_showPhoneCode="false"
+        app:ccp_showNameCode="false"
+        app:ccpDialog_backgroundColor="@color/colorBackgroundDark"
+        app:ccpDialog_textColor="@color/light_grey"
+        app:layout_constraintEnd_toEndOf="@+id/schema"
+        app:layout_constraintTop_toBottomOf="@+id/port"
+        android:background="@drawable/edit_text_rounded_corner"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Add"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="@+id/schema"
+        app:layout_constraintTop_toBottomOf="@+id/ccp"
+        android:background="@drawable/next_button_background"
+        app:backgroundTint="@null"
+        android:textColor="@color/white"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

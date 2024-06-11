@@ -7,10 +7,10 @@
     <string name="address_management">Gestion des adresses</string>
     <string name="address_management_help_text">Choisissez une ou plusieurs adresses à intégrer dans votre code QR. Une bonne idée consiste à utiliser l’adresse MAC de l’adaptateur Wi-Fi (wlan0). Notez cependant que l’adresse est liée au matériel du périphérique. Allumez le Wi-Fi si l’adresse MAC n’est pas visible.</string>
     <string name="app_description">L’application CupLink permet la communication vocale et vidéo sans serveur ni accès Internet. Il suffit de scanner les codes QR des contacts, les uns des autres. Cela fonctionne sur la plupart des réseaux, p. ex. à la maison, dans les réseaux communautaires ou au travail.</string>
-    <string name="audio_device_auto">%1$s (auto)</string>
+    <string name="audio_device_auto">%s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Écouteur</string>
-    <string name="audio_device_fixed">%1$s (fixé)</string>
+    <string name="audio_device_fixed">%s (fixé)</string>
     <string name="audio_device_speakerphone">Haut-parleur</string>
     <string name="audio_device_wired_headset">Casque filaire</string>
     <string name="button_abort">Abandonner</string>
@@ -45,8 +45,8 @@
     <string name="camera_front">Devant</string>
     <string name="capture_format_change_text">Faites glisser pour changer le format de capture</string>
     <string name="clear_events">Effacer les événements</string>
-    <string name="connected_to_address">(à l\' %1$s)</string>
-    <string name="connecting_to_address">Connexion à %1$s</string>
+    <string name="connected_to_address">(à l\' %s)</string>
+    <string name="connecting_to_address">Connexion à %s</string>
     <string name="contact_address_input">Adresse</string>
     <string name="contact_has_no_address_warning">Attention : le contact n’a pas d’adresse</string>
     <string name="contact_key_conflict">Un contact ayant la même clé existe déjà.</string>
@@ -93,4 +93,23 @@
     <string name="wrong_password">Mot de passe non valide</string>
     <string name="report_dialog_text">Sorry, the application crashed.</string>
     <string name="report_dialog_comment">Please describe what were you doing when the app crashed:</string>
+    <string name="tile_disabled">Disabled</string>
+    <string name="tile_enabled">Enabled</string>
+    <string name="tile_connected">Connected</string>
+    <string name="permission_notification_text">Permission is missing. Please grant it in order to receive notifications.</string>
+    <string name="channel_name">VPN Service</string>
+    <string name="channel_description">Main channel for foreground notification</string>
+    <string name="title_activity_peer_list">Select peers</string>
+    <string name="node_info_copied">copied</string>
+    <string name="peers">Peers</string>
+    <string name="contact_menu_edit">Edit</string>
+    <string name="is_calling">is calling</string>
+    <string name="contact_is_invalid">Contact is invalid</string>
+    <string name="add_contact_link_or_json">Enter contact link or contact JSON manually</string>
+    <string name="connect_as_public_peer">Connect as a Public Peer</string>
+    <string name="note_device_as_public_peer">Note: Connecting this device as a public peer may result in additional traffic utilization while it stays online. This may incur additional charges from your mobile operator.</string>
+    <string name="agree_to_connect1">I agree to connect this device</string>
+    <string name="settings_connect_as_public_peer">Connect as Public Peer</string>
+    <string name="qr_code_image">Contact QR code image</string>
+    <string name="port_status">Port status</string>
 </resources>

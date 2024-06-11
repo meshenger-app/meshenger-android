@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:background="@color/colorBackgroundDark">
+
+    <TextView
+        android:id="@+id/ChangeNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/name_text_size"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/startup_prompt_name"
+        android:paddingBottom="@dimen/padding_20"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/NameEditLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_20"
+        android:layout_marginEnd="@dimen/padding_20"
+        app:boxBackgroundMode="none"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textColorHint="@color/light_grey">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/settings_name"
+            android:paddingBottom="@dimen/padding_10"
+            android:gravity="center_horizontal"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions"
+            android:layout_weight="1"
+            android:textSize="@dimen/name_text_size"
+            android:textColor="@color/light_grey"
+            android:textCursorDrawable="@null"
+            style="@style/EditText.OutlinedBox"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

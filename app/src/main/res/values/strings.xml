@@ -10,10 +10,10 @@
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
     <string name="app_name" translatable="false">CupLink</string>
     <string name="app_website" translatable="false">https://github.com/RiV-chain/CupLink</string>
-    <string name="audio_device_auto">%1$s (auto)</string>
+    <string name="audio_device_auto">%s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Earpiece</string>
-    <string name="audio_device_fixed">%1$s (fixed)</string>
+    <string name="audio_device_fixed">%s (fixed)</string>
     <string name="audio_device_speakerphone">Speakerphone</string>
     <string name="audio_device_wired_headset">Wired Headset</string>
     <string name="button_abort">Abort</string>
@@ -32,7 +32,7 @@
     <string name="button_yes">Yes</string>
     <string name="call_authentication_failed">Authentication Failed</string>
     <string name="call_connected">Connected</string>
-    <string name="call_connecting">Calling…</string>
+    <string name="call_connecting">Calling</string>
     <string name="call_connection_failed">Connection Failed</string>
     <string name="call_denied">Declined</string>
     <string name="call_ended">Call Ended</string>
@@ -41,15 +41,14 @@
     <string name="call_error_not_listening">Error: No app running</string>
     <string name="call_error_unresolved_hostname">Error: Cannot resolve address</string>
     <string name="call_no_network">No network - enable Wi-Fi\?</string>
-    <string name="call_ringing">Ringing…</string>
-    <string name="call_start_or_abort">Start or Abort Call</string>
-    <string name="call_waiting">Waiting…</string>
+    <string name="call_ringing">Ringing</string>
+    <string name="call_waiting">Waiting</string>
     <string name="camera_back">Back</string>
     <string name="camera_front">Front</string>
     <string name="capture_format_change_text">Slide to change capture format</string>
     <string name="clear_events">Clear Events</string>
-    <string name="connected_to_address">(to %1$s)</string>
-    <string name="connecting_to_address">Connecting to %1$s</string>
+    <string name="connected_to_address">(to %s)</string>
+    <string name="connecting_to_address">Connecting to %s</string>
     <string name="contact_address_input">Address</string>
     <string name="contact_address_list">Addresses</string>
     <string name="contact_blocked">Blocked</string>
@@ -72,7 +71,7 @@
     <string name="contact_public_key_invalid">Contact public key is invalid.</string>´
     <string name="custom_address">CUSTOM ADDRESS</string>
     <string name="dialog_title_delete_contact">Delete Contact?</string>
-    <string name="dialog_title_import_backup">Import Backup?</string>
+    <string name="dialog_title_import_backup">Import Backup</string>
     <string name="done">Done</string>
     <string name="empty_list_item">Empty</string>
     <string name="enter_contact_name">Change Name</string>
@@ -83,18 +82,16 @@
     <string name="error_address_invalid">Address invalid</string>
     <string name="error_address_multicast_not_supported">Multicast address not supported</string>
     <string name="failed_to_export_database">Failed to export database</string>
-    <string name="import_dialog">Import new settings and add %1$d contacts and %2$d events?</string>
     <string name="invalid_name">Invalid Name</string>
-    <string name="invalid_number">Invalid Value (must be %1$d..%2$d)</string>
+    <string name="invalid_number">Invalid Value (must be %d..%d)</string>
     <string name="invalid_qr">Invalid QR code</string>
     <string name="invalid_qr_code_data">Invalid data</string>
-    <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="menu_about">About</string>
     <string name="menu_backup">Backup</string>
     <string name="menu_exit">Exit</string>
     <string name="menu_license">License</string>
     <string name="menu_settings">Settings</string>
-    <string name="missed_call_from">Missed call from %1$s (%2$d)</string>
+    <string name="missed_call_from">Missed call from %s (%d)</string>
     <string name="missing_bluetooth_permission">Missing permission. Bluetooth not available.</string>
     <string name="missing_camera_permission">Missing permission. Camera not available.</string>
     <string name="missing_microphone_permission">Missing permission. Microphone not available.</string>
@@ -103,7 +100,7 @@
     <string name="password_title">Password</string>
     <string name="paste_qr_code_data">Paste Contact JSON Here</string>
     <string name="ping_all_contacts">Ping All Contacts</string>
-    <string name="ping_contact">Ping %1$s</string>
+    <string name="ping_contact">Ping %s</string>
     <string name="remove_all_events">Remove all events?</string>
     <string name="setting_read_only">Read Only</string>
     <string name="settings_addresses">Addresses</string>
@@ -116,7 +113,6 @@
     <string name="settings_connect_timeout">Connect Timeout (ms)</string>
     <string name="settings_database_password">Startup Password</string>
     <string name="settings_disable_audio_processing">Disable Audio Processing</string>
-    <string name="settings_disable_call_history">Disable Call History</string>
     <string name="settings_disable_cpu_overuse_detection">Disable CPU Overuse Detection</string>
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
     <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
@@ -137,7 +133,6 @@
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>
     <string name="setup_address">Setup Address</string>
     <string name="setup_no_address_found">Could not find the MAC address of your Wi-Fi card. Enable Wi-Fi now (no Internet needed) or skip to configure later.</string>
-    <string name="startup_hello">Hello!</string>
     <string name="startup_name_prefix">User</string>
     <string name="startup_prompt_name">What should be your name?</string>
     <string name="state_app_not_running">App Not Running</string>
@@ -159,4 +154,23 @@
     <string name="wrong_password">Wrong password</string>
     <string name="report_dialog_text">Sorry, the application crashed.</string>
     <string name="report_dialog_comment">Please describe what were you doing when the app crashed:</string>
+    <string name="tile_disabled">Disabled</string>
+    <string name="tile_enabled">Enabled</string>
+    <string name="tile_connected">Connected</string>
+    <string name="permission_notification_text">Permission is missing. Please grant it in order to receive notifications.</string>
+    <string name="channel_name">VPN Service</string>
+    <string name="channel_description">Main channel for foreground notification</string>
+    <string name="title_activity_peer_list">Select peers</string>
+    <string name="node_info_copied">copied</string>
+    <string name="peers">Peers</string>
+    <string name="cuplink_call" translatable="false">CupLink call</string>
+    <string name="is_calling">Calling</string>
+    <string name="contact_is_invalid">Contact is invalid</string>
+    <string name="add_contact_link_or_json">Enter contact link or contact JSON manually</string>
+    <string name="connect_as_public_peer">Connect as a Public Peer</string>
+    <string name="note_device_as_public_peer">Note: Connecting this device as a public peer may result in additional traffic utilization while it stays online. This may incur additional charges from your mobile operator.</string>
+    <string name="agree_to_connect1">I agree to connect this device as a public peer.</string>
+    <string name="settings_connect_as_public_peer">Connect as Public Peer</string>
+    <string name="qr_code_image">Contact QR code image</string>
+    <string name="port_status">Port status</string>
 </resources>

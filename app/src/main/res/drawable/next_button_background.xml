@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="125dp"
-    android:height="50dp"
-    android:viewportWidth="125"
-    android:viewportHeight="50"
-    >
-
-    <group>
-
-        <clip-path
-            android:pathData="M10 0H115C120.523 0 125 4.47715 125 10V40C125 45.5228 120.523 50 115 50H10C4.47715 50 0 45.5228 0 40V10C0 4.47715 4.47715 0 10 0Z"
-            />
-
-        <path
-            android:pathData="M0 0V50H125V0"
-            android:fillColor="#009688"
-            />
-
-    </group>
-
-</vector>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/cardview_corner_radius" /> <!-- Rounded corners with 3px radius -->
+    <gradient
+        android:startColor="@color/selectedColor"
+        android:endColor="@color/selectedColor" />
+</shape>

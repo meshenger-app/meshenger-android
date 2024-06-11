@@ -10,16 +10,17 @@ import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
-import org.rivchain.cuplink.Log
-import org.rivchain.cuplink.Utils
-import java.util.*
+import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.Utils
 
 /**
  * RTCAudioManager manages all audio related parts.
  */
 class RTCAudioManager(contextArg: Context) {
     enum class SpeakerphoneMode {
-        AUTO, ON, OFF
+        AUTO,
+        //ON,
+        OFF
     }
 
     enum class AudioDevice {
@@ -241,7 +242,7 @@ class RTCAudioManager(contextArg: Context) {
         val isBluetoothConnected = bluetoothManager.isBluetoothHeadsetConnected()
         isSpeakerphoneOn = when (speakerphoneMode) {
             SpeakerphoneMode.AUTO -> (!isProximityNear && !isBluetoothConnected)
-            SpeakerphoneMode.ON -> true
+            //SpeakerphoneMode.ON -> true
             SpeakerphoneMode.OFF -> false
         }
 

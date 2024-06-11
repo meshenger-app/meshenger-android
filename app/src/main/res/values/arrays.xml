@@ -99,4 +99,11 @@
         <item>5</item>
         <item>1</item>
     </string-array>
+
+    <string-array name="schemas">
+        <item>TCP</item>
+        <item>TLS</item>
+        <item>SCTP</item>
+        <item>MPATH</item>
+    </string-array>
 </resources>

@@ -2,24 +2,23 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryDark">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:windowBackground"
-        >
+        android:background="@color/colorPrimaryDark"
+        android:layout_marginTop="30dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-            android:layout_height="?attr/actionBarSize"
-            >
+            android:layout_height="?attr/actionBarSize">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -38,186 +37,193 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_margin="12dp"
-        android:gravity="center_vertical" >
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="50dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/padding_20"
+            android:layout_marginEnd="@dimen/padding_20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar">
+
+        <TextView
             android:id="@+id/contactNameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/settings_name"
+            android:textSize="@dimen/title_text_size"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/padding_20" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/lato_bold"
-                android:text="@string/contact_name"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="@dimen/title_text_size" />
+        <TextView
+            android:id="@+id/contactNameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:fontFamily="@font/poppins_regular"
+            android:textSize="@dimen/options_text_size"
+            app:layout_constraintEnd_toEndOf="@id/contactNameLayout"
+            app:layout_constraintTop_toTopOf="@id/contactNameLayout"
+            app:layout_constraintBottom_toBottomOf="@id/contactNameLayout"/>
 
-            <TextView
-                android:id="@+id/contactNameTv"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:paddingEnd="10dp"
-                android:fontFamily="@font/lato_regular"
-                android:textColor="?android:textColorSecondary"
-                android:textSize="@dimen/title_text_size"
-                tools:ignore="RtlHardcoded,RtlSymmetry" />
 
-        </LinearLayout>
-
-        <com.google.android.material.divider.MaterialDivider
+        <TextView
+            android:id="@+id/blocked"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:dividerColor="@color/light_grey" />
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/contact_blocked"
+            android:textSize="@dimen/title_text_size"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contactNameTv"
+            android:layout_marginTop="@dimen/padding_40" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/contactBlockedSwitch"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            >
+            android:minWidth="48dp"
+            android:theme="@style/SwitchTheme"
+            android:contentDescription="@string/contact_blocked"
+            app:layout_constraintEnd_toEndOf="@id/blocked"
+            app:layout_constraintTop_toTopOf="@id/blocked"
+            app:layout_constraintBottom_toBottomOf="@id/blocked"
+            app:thumbTint="@color/light_light_grey" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerInParent="true"
-                android:layout_toStartOf="@+id/contactBlockedSwitch"
-                android:fontFamily="@font/lato_bold"
-                android:text="@string/contact_blocked"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="@dimen/title_text_size" />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/contactBlockedSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_margin="5dp"
-                app:thumbTint="@color/selectedColor" />
-
-        </RelativeLayout>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:dividerColor="@color/light_grey" />
-
-        <LinearLayout
+        <TextView
             android:id="@+id/contactPublicKeyLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/lato_bold"
-                android:text="@string/contact_public_key"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="@dimen/title_text_size" />
-
-            <TextView
-                android:id="@+id/contactPublicKeyTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:paddingEnd="10dp"
-                android:fontFamily="@font/lato_regular"
-                android:textColor="?android:textColorSecondary"
-                android:textSize="@dimen/options_text_size"
-                tools:ignore="RtlSymmetry" />
-
-        </LinearLayout>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:dividerColor="@color/light_grey" />
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/contact_public_key"
+            android:textSize="@dimen/title_text_size"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contactBlockedSwitch"
+            android:layout_marginTop="@dimen/padding_40" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/contactPublicKeyTv"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/lato_bold"
+            android:fontFamily="@font/poppins_regular"
+            android:textIsSelectable="true"
+            android:text=""
+            android:textSize="@dimen/options_text_size"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contactPublicKeyLayout" />
+
+        <TextView
+            android:id="@+id/addresses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_regular"
             android:text="@string/contact_address_list"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="@dimen/title_text_size" />
+            android:textSize="@dimen/title_text_size"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contactPublicKeyTv"
+            android:layout_marginTop="@dimen/padding_30" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ListView
             android:id="@+id/AddressListView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/padding_20"
+            android:layout_marginEnd="@dimen/padding_20"/>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:layout_marginStart="@dimen/padding_20"
+            android:layout_marginEnd="@dimen/padding_20">
 
-            <EditText
-                android:id="@+id/AddressEditText"
-                android:layout_width="fill_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/AddressEdit"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:hint="@string/contact_address_input"
-                android:importantForAutofill="no"
-                android:gravity="center_horizontal"
-                android:inputType="textNoSuggestions"
-                android:layout_weight="1"
-                android:textSize="16sp" />
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="@dimen/padding_10"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/AddAddressButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:boxBackgroundMode="none"
+                android:background="@drawable/edit_text_rounded_corner"
+                android:textColorHint="@color/light_grey">
 
-            <Button
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/AddressEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/contact_address_input"
+                    android:importantForAutofill="no"
+                    android:gravity="center_horizontal"
+                    android:inputType="textNoSuggestions"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:textColor="@color/light_grey"
+                    android:textCursorDrawable="@null"
+                    style="@style/EditText.OutlinedBox"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/AddAddressButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:background="@drawable/next_button_background"
                 android:text="@string/button_add"
-                android:layout_weight="0"
-                android:textColor="@color/white" />
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@null"
+                app:layout_constraintBottom_toBottomOf="@+id/AddressEdit"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/AddressEdit" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_10"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:background="@drawable/next_button_background"
+                app:backgroundTint="@null"
+                android:textAllCaps="false"
                 android:id="@+id/SaveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_50"
                 android:layout_marginEnd="@dimen/padding_20"
-                android:background="@drawable/next_button_background"
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_save"
-                android:layout_weight="1"
-                android:textAllCaps="false"
                 android:textColor="@color/white"
-                style="?android:attr/borderlessButtonStyle"/>
+                android:layout_marginTop="@dimen/padding_20"
+                app:layout_constraintStart_toStartOf="@+id/AddressEdit"
+                app:layout_constraintTop_toBottomOf="@+id/AddressEdit"
+                />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+
+                android:background="@drawable/next_button_background"
+                app:backgroundTint="@null"
+                android:textAllCaps="false"
                 android:id="@+id/ResetButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_50"
-                android:layout_weight="1"
-                android:background="@drawable/next_button_background"
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_reset"
-                android:textAllCaps="false"
                 android:textColor="@color/white"
-                style="?android:attr/borderlessButtonStyle"/>
+                android:layout_marginTop="@dimen/padding_20"
+                app:layout_constraintEnd_toEndOf="@+id/AddAddressButton"
+                app:layout_constraintTop_toBottomOf="@+id/AddressEdit"/>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
     </LinearLayout>
 

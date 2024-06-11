@@ -3,12 +3,24 @@
     <dimen name="call_button_size">60dp</dimen>
     <dimen name="call_button_image_padding">10dp</dimen>
 
+    <dimen name="padding_4">4dp</dimen>
+    <dimen name="padding_5">5dp</dimen>
     <dimen name="padding_10">10dp</dimen>
     <dimen name="padding_20">20dp</dimen>
     <dimen name="padding_25">25dp</dimen>
+    <dimen name="padding_30">30dp</dimen>
+    <dimen name="padding_40">40dp</dimen>
     <dimen name="padding_50">50dp</dimen>
 
     <dimen name="options_text_size">16sp</dimen>
     <dimen name="title_text_size">18sp</dimen>
     <dimen name="headline_text_size">18sp</dimen>
+    <dimen name="autocomplete_textview_padding">30dp</dimen>
+
+    <!-- Calls -->
+    <dimen name="cardview_corner_radius">8dp</dimen>
+    <dimen name="password_text_size">25sp</dimen>
+    <dimen name="name_text_size">20sp</dimen>
+
+    <dimen name="radio_button_margin_bottom">10dp</dimen>
 </resources>

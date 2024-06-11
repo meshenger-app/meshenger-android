@@ -1,0 +1,11 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="@dimen/options_text_size"
+    android:gravity="end"
+    android:textColor="@color/light_grey"
+    android:background="@color/colorPrimaryDark"
+    android:padding="@dimen/padding_5"
+    android:fontFamily="@font/poppins_regular"
+    android:textFontWeight="500"/>

@@ -1,17 +1,23 @@
 package org.rivchain.cuplink.call
 
+import android.app.PendingIntent
 import android.content.Intent
+import android.media.MediaPlayer
+import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
-import org.rivchain.cuplink.AddressUtils
 import org.rivchain.cuplink.CallActivity
-import org.rivchain.cuplink.Contact
+import org.rivchain.cuplink.CallService
 import org.rivchain.cuplink.Crypto
-import org.rivchain.cuplink.Log
 import org.rivchain.cuplink.MainActivity
 import org.rivchain.cuplink.MainService
-import org.rivchain.cuplink.Utils
+import org.rivchain.cuplink.R
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.Utils
 import java.io.IOException
 import java.lang.Integer.max
 import java.lang.Integer.min
@@ -25,13 +31,46 @@ import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
 abstract class RTCPeerConnection(
-    protected var binder: MainService.MainBinder,
+    var service: MainService,
     protected var contact: Contact,
     protected var commSocket: Socket?
 ) {
     protected var state = CallState.WAITING
     protected var callActivity: RTCCall.CallContext? = null
     private val executor = Executors.newSingleThreadExecutor()
+
+    private var mediaPlayer: MediaPlayer? = null
+
+    fun playTone(state: CallState) {
+        stopTone() // Stop any currently playing tone
+
+        val toneResId: Int = when (state) {
+            CallState.WAITING -> R.raw.waiting
+            CallState.CONNECTING -> R.raw.waiting
+            CallState.RINGING -> R.raw.ringing
+            CallState.DISMISSED -> R.raw.stop
+            CallState.ENDED -> R.raw.ended
+            CallState.CONNECTED -> R.raw.connected
+            CallState.ERROR_COMMUNICATION -> R.raw.stop
+            CallState.ERROR_AUTHENTICATION -> R.raw.stop
+            CallState.ERROR_DECRYPTION -> R.raw.stop
+            CallState.ERROR_CONNECT_PORT -> R.raw.stop
+            CallState.ERROR_UNKNOWN_HOST -> R.raw.stop
+            CallState.ERROR_NO_CONNECTION -> R.raw.stop
+            CallState.ERROR_NO_ADDRESSES -> R.raw.stop
+            CallState.ERROR_NO_NETWORK -> R.raw.stop
+        }
+
+        mediaPlayer = MediaPlayer.create(service, toneResId)
+        mediaPlayer?.isLooping = state == CallState.RINGING
+        mediaPlayer?.start()
+    }
+
+    private fun stopTone() {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
 
     abstract fun reportStateChange(state: CallState)
     abstract fun handleAnswer(remoteDesc: String)
@@ -46,6 +85,7 @@ abstract class RTCPeerConnection(
                 e.printStackTrace()
             }
             Log.d(this, "cleanup() executor end")
+            stopTone()
         }
 
         // wait for tasks to finish
@@ -68,7 +108,7 @@ abstract class RTCPeerConnection(
         }
 
         //val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
         val ownSecretKey = settings.secretKey
         val ownPublicKey = settings.publicKey
 
@@ -106,14 +146,11 @@ abstract class RTCPeerConnection(
         Log.d(this, "createOutgoingCallInternal()")
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
 
-        val socket = createCommSocket(contact)
-        if (socket == null) {
-            return
-        }
+        val socket = createCommSocket(contact) ?: return
 
         callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
         commSocket = socket
@@ -189,7 +226,7 @@ abstract class RTCPeerConnection(
         run {
             // remember latest working address and set state
             val workingAddress = InetSocketAddress(remoteAddress.address, MainService.serverPort)
-            val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
+            val storedContact = service.getContacts().getContactByPublicKey(contact.publicKey)
             if (storedContact != null) {
                 storedContact.lastWorkingAddress = workingAddress
             } else {
@@ -307,93 +344,94 @@ abstract class RTCPeerConnection(
         Log.d(this, "continueOnIncomingSocket()")
         Utils.checkIsNotOnMainThread()
 
-        val socket = commSocket
-        if (socket == null) {
-            throw IllegalStateException("commSocket not expected to be null")
-        }
+        val socket = commSocket ?: throw IllegalStateException("commSocket not expected to be null")
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
-        val pr = PacketReader(socket)
 
-        Log.d(this, "continueOnIncomingSocket() expected dismissed/keep_alive")
+        if (!socket.isClosed) {
+            Log.d(this, "continueOnIncomingSocket() expected dismissed/keep_alive")
+            val pr = PacketReader(socket)
 
-        var lastKeepAlive = System.currentTimeMillis()
+            var lastKeepAlive = System.currentTimeMillis()
 
-        // send keep alive to detect a broken connection
-        val writeExecutor = Executors.newSingleThreadExecutor()
-        writeExecutor?.execute {
-            val pw = PacketWriter(socket)
+            // send keep alive to detect a broken connection
+            val writeExecutor = Executors.newSingleThreadExecutor()
+            writeExecutor?.execute {
+                val pw = PacketWriter(socket)
 
-            Log.d(this, "continueOnIncomingSocket() start to send keep_alive")
-            while (!socket.isClosed) {
-                try {
-                    val obj = JSONObject()
-                    obj.put("action", "keep_alive")
-                    val encrypted = Crypto.encryptMessage(
-                        obj.toString(),
-                        contact.publicKey,
-                        ownPublicKey,
-                        ownSecretKey
-                    ) ?: break
-                    pw.writeMessage(encrypted)
-                    Thread.sleep(SOCKET_TIMEOUT_MS / 2)
-                    if ((System.currentTimeMillis() - lastKeepAlive) > SOCKET_TIMEOUT_MS) {
-                        Log.w(this, "continueOnIncomingSocket() keep_alive timeout => close socket")
+                Log.d(this, "continueOnIncomingSocket() start to send keep_alive")
+                while (!socket.isClosed) {
+                    try {
+                        val obj = JSONObject()
+                        obj.put("action", "keep_alive")
+                        val encrypted = Crypto.encryptMessage(
+                            obj.toString(),
+                            contact.publicKey,
+                            ownPublicKey,
+                            ownSecretKey
+                        ) ?: break
+                        pw.writeMessage(encrypted)
+                        Thread.sleep(SOCKET_TIMEOUT_MS / 2)
+                        if ((System.currentTimeMillis() - lastKeepAlive) > SOCKET_TIMEOUT_MS) {
+                            Log.w(this, "continueOnIncomingSocket() keep_alive timeout => close socket")
+                            closeSocket(socket)
+                        }
+                    } catch (e: Exception) {
+                        Log.w(this, "continueOnIncomingSocket() got $e => close socket")
                         closeSocket(socket)
+                        break
                     }
-                } catch (e: Exception) {
-                    Log.w(this, "continueOnIncomingSocket() got $e => close socket")
-                    closeSocket(socket)
+                }
+            }
+
+            while (!socket.isClosed) {
+                val response = pr.readMessage()
+                if (response == null) {
+                    Thread.sleep(SOCKET_TIMEOUT_MS / 10)
+                    Log.d(this, "continueOnIncomingSocket() response is null")
+                    continue
+                }
+
+                val decrypted = Crypto.decryptMessage(
+                    response,
+                    otherPublicKey,
+                    ownPublicKey,
+                    ownSecretKey
+                )
+
+                if (decrypted == null) {
+                    reportStateChange(CallState.ERROR_DECRYPTION)
+                    break
+                }
+
+                val obj = JSONObject(decrypted)
+                val action = obj.optString("action")
+                if (action == "dismissed") {
+                    Log.d(this, "continueOnIncomingSocket() received dismissed")
+                    reportStateChange(CallState.DISMISSED)
+                    declineOwnCall()
+                    break
+                } else if (action == "keep_alive") {
+                    // ignore, keeps the socket alive
+                    lastKeepAlive = System.currentTimeMillis()
+                } else {
+                    Log.e(this, "continueOnIncomingSocket() received unknown action reply: $action")
+                    reportStateChange(CallState.ERROR_COMMUNICATION)
                     break
                 }
             }
+
+
+            Log.d(this, "continueOnIncomingSocket() wait for writeExecutor")
+            writeExecutor.shutdown()
+            writeExecutor.awaitTermination(100L, TimeUnit.MILLISECONDS)
+
+            //Log.d(this, "continueOnIncomingSocket() dataChannel is null: ${dataChannel == null}")
+            closeSocket(socket)
         }
-
-        while (!socket.isClosed) {
-            val response = pr.readMessage()
-            if (response == null) {
-                Thread.sleep(SOCKET_TIMEOUT_MS / 10)
-                Log.d(this, "continueOnIncomingSocket() response is null")
-                continue
-            }
-
-            val decrypted = Crypto.decryptMessage(
-                response,
-                otherPublicKey,
-                ownPublicKey,
-                ownSecretKey
-            )
-
-            if (decrypted == null) {
-                reportStateChange(CallState.ERROR_DECRYPTION)
-                break
-            }
-
-            val obj = JSONObject(decrypted)
-            val action = obj.optString("action")
-            if (action == "dismissed") {
-                Log.d(this, "continueOnIncomingSocket() received dismissed")
-                reportStateChange(CallState.DISMISSED)
-                break
-            } else if (action == "keep_alive") {
-                // ignore, keeps the socket alive
-                lastKeepAlive = System.currentTimeMillis()
-            } else {
-                Log.e(this, "continueOnIncomingSocket() received unknown action reply: $action")
-                reportStateChange(CallState.ERROR_COMMUNICATION)
-                break
-            }
-        }
-
-        Log.d(this, "continueOnIncomingSocket() wait for writeExecutor")
-        writeExecutor.shutdown()
-        writeExecutor.awaitTermination(100L, TimeUnit.MILLISECONDS)
-
-        //Log.d(this, "continueOnIncomingSocket() dataChannel is null: ${dataChannel == null}")
-        closeSocket(socket)
 
         // detect broken initial connection
         if (isCallInit(state) && socket.isClosed) {
@@ -402,6 +440,24 @@ abstract class RTCPeerConnection(
         }
 
         Log.d(this, "continueOnIncomingSocket() finished")
+    }
+
+    protected fun declineOwnCall(){
+        // decline own call. call session has been started yet.
+        if(!CallActivity.isCallInProgress) {
+            Log.d(this, "decline() send broadcast to receiver")
+            PendingIntent.getBroadcast(
+                this.service,
+                0,
+                Intent().apply {
+                    setAction(CallService.DECLINE_CALL_ACTION)
+                },
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    PendingIntent.FLAG_IMMUTABLE
+                else
+                    0
+            ).send()
+        }
     }
 
     protected fun execute(r: Runnable) {
@@ -425,7 +481,7 @@ abstract class RTCPeerConnection(
         val socket = commSocket
         if (socket != null && !socket.isClosed) {
             val pw = PacketWriter(socket)
-            val settings = binder.getSettings()
+            val settings = service.getSettings()
             val ownPublicKey = settings.publicKey
             val ownSecretKey = settings.secretKey
 
@@ -468,7 +524,7 @@ abstract class RTCPeerConnection(
 
         Utils.checkIsNotOnMainThread()
 
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
         val useNeighborTable = settings.useNeighborTable
         val connectTimeout = settings.connectTimeout
         val connectRetries = settings.connectRetries
@@ -589,10 +645,10 @@ abstract class RTCPeerConnection(
             }
         }
 
-        fun createIncomingCall(binder: MainService.MainBinder, socket: Socket) {
+        fun createIncomingCall(service: MainService, socket: Socket) {
             Thread {
                 try {
-                    createIncomingCallInternal(binder, socket)
+                    createIncomingCallInternal(service, socket)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     //decline()
@@ -600,11 +656,11 @@ abstract class RTCPeerConnection(
             }.start()
         }
 
-        private fun createIncomingCallInternal(binder: MainService.MainBinder, socket: Socket) {
+        private fun createIncomingCallInternal(service: MainService, socket: Socket) {
             Log.d(this, "createIncomingCallInternal()")
 
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-            val settings = binder.getSettings()
+            val settings = service.getSettings()
             val blockUnknown = settings.blockUnknown
             val ownSecretKey = settings.secretKey
             val ownPublicKey = settings.publicKey
@@ -656,7 +712,7 @@ abstract class RTCPeerConnection(
 
             Log.d(this, "createIncomingCallInternal() request: $decrypted")
 
-            var contact = binder.getContacts().getContactByPublicKey(otherPublicKey)
+            var contact = service.getContacts().getContactByPublicKey(otherPublicKey)
             if (contact == null && blockUnknown) {
                 Log.d(this, "createIncomingCallInternal() block unknown contact => decline")
                 decline()
@@ -671,7 +727,7 @@ abstract class RTCPeerConnection(
 
             if (contact == null) {
                 // unknown caller
-                contact = Contact("", otherPublicKey.clone(), ArrayList())
+                contact = Contact("", otherPublicKey.clone(), listOf(remoteAddress.address.hostAddress!!))
             }
 
             // suspicious change of identity in during peerConnection...
@@ -690,7 +746,7 @@ abstract class RTCPeerConnection(
             when (action) {
                 "call" -> {
                     contact.state = Contact.State.CONTACT_ONLINE
-                    MainService.refreshContacts(binder.getService())
+                    MainService.refreshContacts(service)
 
                     if (CallActivity.isCallInProgress) {
                         Log.d(this, "createIncomingCallInternal() call in progress => decline")
@@ -725,23 +781,26 @@ abstract class RTCPeerConnection(
                     pw.writeMessage(encrypted)
 
                     incomingRTCCall?.cleanup() // just in case
-                    incomingRTCCall = RTCCall(binder, contact, socket, offer)
+                    incomingRTCCall = RTCCall(service, contact, socket, offer)
                     try {
-                        val activity = MainActivity.instance
-                        if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                            Log.d(this, "createIncomingCallInternal() start incoming call from stored MainActivity")
-                            val intent = Intent(activity, CallActivity::class.java)
-                            intent.action = "ACTION_INCOMING_CALL"
-                            intent.putExtra("EXTRA_CONTACT", contact)
-                            activity.startActivity(intent)
+                        // CallActivity accepts calls by default
+                        // CallActivity is being opened from a foreground notification below
+                        if (service.getSettings().autoAcceptCalls) {
+                                Log.d(
+                                    this,
+                                    "createIncomingCallInternal() start incoming call from Service"
+                                )
+                                val intent = Intent(service, CallActivity::class.java)
+                                intent.action = "ACTION_INCOMING_CALL"
+                                intent.putExtra("EXTRA_CONTACT", contact)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                service.startActivity(intent)
                         } else {
-                            Log.d(this, "createIncomingCallInternal() start incoming call from Service")
-                            val service = binder.getService()
-                            val intent = Intent(service, CallActivity::class.java)
-                            intent.action = "ACTION_INCOMING_CALL"
-                            intent.putExtra("EXTRA_CONTACT", contact)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            service.startActivity(intent)
+                            val intent = Intent(service, CallService::class.java)
+                                .putExtra(CallService.SERVICE_CONTACT_KEY,
+                                    contact)
+                            ContextCompat.startForegroundService(service, intent)
                         }
                     } catch (e: Exception) {
                         incomingRTCCall?.cleanup()
@@ -753,7 +812,7 @@ abstract class RTCPeerConnection(
                     Log.d(this, "createIncomingCallInternal() ping...")
                     // someone wants to know if we are online
                     contact.state = Contact.State.CONTACT_ONLINE
-                    MainService.refreshContacts(binder.getService())
+                    MainService.refreshContacts(service)
 
                     val encrypted = Crypto.encryptMessage(
                         "{\"action\":\"pong\"}",
@@ -774,7 +833,7 @@ abstract class RTCPeerConnection(
                     val status = obj.getString("status")
                     if (status == "offline") {
                         contact.state = Contact.State.CONTACT_OFFLINE
-                        MainService.refreshContacts(binder.getService())
+                        MainService.refreshContacts(service)
                     } else {
                         Log.d(this, "createIncomingCallInternal() received unknown status_change: $status")
                     }

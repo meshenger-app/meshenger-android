@@ -2,11 +2,11 @@ package org.rivchain.cuplink.call
 
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
-import org.rivchain.cuplink.AddressUtils
-import org.rivchain.cuplink.Contact
 import org.rivchain.cuplink.Crypto
-import org.rivchain.cuplink.Log
 import org.rivchain.cuplink.MainService
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.Log
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.net.ConnectException
@@ -15,12 +15,12 @@ import java.net.Socket
 /*
  * Checks if a contact is online.
 */
-class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : Runnable {
+class Pinger(val service: MainService, val contacts: List<Contact>) : Runnable {
     private fun pingContact(contact: Contact) : Contact.State {
         Log.d(this, "pingContact() contact: ${contact.name}")
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = service.getSettings()
         val useNeighborTable = settings.useNeighborTable
         val connectTimeout = settings.connectTimeout
         val ownPublicKey = settings.publicKey
@@ -127,13 +127,13 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
     override fun run() {
         // set all states to unknown
         for (contact in contacts) {
-            binder.getContacts()
+            service.getContacts()
                 .getContactByPublicKey(contact.publicKey)
                 ?.state = Contact.State.PENDING
         }
 
-        MainService.refreshContacts(binder.getService())
-        MainService.refreshEvents(binder.getService())
+        MainService.refreshContacts(service)
+        MainService.refreshEvents(service)
 
         // ping contacts
         for (contact in contacts) {
@@ -141,12 +141,12 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             Log.d(this, "contact state is $state")
 
             // set contact state
-            binder.getContacts()
+            service.getContacts()
                 .getContactByPublicKey(contact.publicKey)
                 ?.state = state
         }
 
-        MainService.refreshContacts(binder.getService())
-        MainService.refreshEvents(binder.getService())
+        MainService.refreshContacts(service)
+        MainService.refreshEvents(service)
     }
 }

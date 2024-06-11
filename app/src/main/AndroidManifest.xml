@@ -2,10 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true"/>
+
     <!-- Backup Import/Export -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-feature android:name="android.hardware.telephony"
+        android:required="false"/>
 
     <!-- Common permission for voice/video calls -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -21,16 +31,38 @@
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
+    <!-- android.permission-group.PHONE -->
+    <!-- Required to detect and hangup incoming regular calls -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
+
     <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL"/>
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
     <!-- Allow to start activity from background -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- Allow the app to start on device bootup -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Mesh specific permissions -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
+    <!-- Launcher shortcuts -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+
+    <!-- Huawei launcher badges -->
+    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE"/>
+    <uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS"/>
+
+    <!-- Sony launcher badges -->
+    <uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"/>
 
 
     <queries>
@@ -81,36 +113,134 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="false"
+        android:appCategory="social"
         tools:replace="android:allowBackup">
 
         <activity
-            android:name=".MainActivity" />
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:configChanges="uiMode"/>
 
         <activity
-            android:name=".QRShowActivity" />
+            android:name=".QRShowActivity"
+            android:noHistory="true"/>
 
         <activity
-            android:name=".QRScanActivity" />
+            android:name=".QRScanActivity"
+            android:noHistory="true"/>
+
+        <activity
+            android:name=".AddContactActivity"
+            android:noHistory="true"/>
+
+        <activity android:name=".rivmesh.TileServiceActivity" android:theme="@android:style/Theme.NoDisplay"
+            android:allowTaskReparenting="true"
+            android:alwaysRetainTaskState="false"
+            android:clearTaskOnLaunch="true"
+            android:enabled="true"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".rivmesh.SelectPeerActivity"
+            android:noHistory="true" />
+
+        <activity
+            android:name=".rivmesh.AutoSelectPeerActivity"
+            android:noHistory="true" />
+
+        <activity
+            android:name=".rivmesh.PeerListActivity"
+            android:label="@string/title_activity_peer_list"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity
+            android:name=".rivmesh.AutoTestPublicPeerActivity"
+            android:noHistory="true"/>
+
+        <activity
+            android:name=".rivmesh.ConfigurePublicPeerActivity"
+            android:noHistory="true"/>
+
+        <activity
+            android:name=".rivmesh.TestPortActivity"
+            android:noHistory="true"/>
 
         <service
             android:name=".MainService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync"/>
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="true"
+            android:foregroundServiceType="phoneCall"
+            tools:node="merge">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
+        <!--FIX me and add other foregroundServiceTypes below-->
+        <service android:name=".CallService"
+            android:enabled="true"
+            android:foregroundServiceType="phoneCall"/>
+
+        <service
+            android:name=".CarService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.CALLING"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="${applicationId}.car.SETTINGS" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".rivmesh.MeshTileService"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:foregroundServiceType="phoneCall"
+            tools:node="merge">
+            <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="true" />
+            <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE" android:value="true" />
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".StartActivity"
+            android:launchMode="singleTop"
+            android:configChanges="uiMode"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <!-- samsung multiwindow -->
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <activity
             android:name=".CallActivity"
             android:parentActivityName=".MainActivity"
-            android:configChanges="orientation|smallestScreenSize|screenSize|screenLayout"
-            android:screenOrientation="fullUser" />
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|touchscreen|uiMode|navigation"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:exported="true">
+            <intent-filter android:label="@string/cuplink_call">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".SettingsActivity"
@@ -118,7 +248,8 @@
 
         <activity
             android:name=".AboutActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:configChanges="uiMode"/>
 
         <activity
             android:name=".ContactDetailsActivity"
@@ -134,7 +265,21 @@
 
         <activity
             android:name=".LicenseActivity"
-            android:parentActivityName=".AboutActivity" />
+            android:parentActivityName=".AboutActivity"
+            android:configChanges="uiMode"/>
+
+        <activity android:name=".DeepLinkEntryActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.Light">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="cpl"
+                    android:host="localhost" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".BootUpReceiver"
@@ -145,5 +290,45 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+        <!-- samsung multiwindow -->
+        <uses-library
+            android:name="com.sec.android.app.multiwindow"
+            android:required="false"/>
+
+        <meta-data
+            android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
+            android:value="true"/>
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true"/>
+        <meta-data
+            android:name="com.samsung.android.keepalive.density"
+            android:value="true"/>
+        <!-- Android auto -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc"/>
+        <meta-data
+            android:name="androidx.car.app.TintableAttributionIcon"
+            android:resource="@drawable/ic_audio_device_phone"/>
+        <meta-data
+            android:name="com.google.android.gms.car.notification.SmallIcon"
+            android:resource="@drawable/cup_link_small"/>
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="3.0"/>
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="3" />
+
+        <meta-data android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+
+
     </application>
 </manifest>

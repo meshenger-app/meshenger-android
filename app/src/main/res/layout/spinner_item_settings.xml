@@ -4,4 +4,7 @@
     android:layout_height="wrap_content"
     android:textSize="@dimen/options_text_size"
     android:gravity="end"
-    android:textColor="?android:textColorSecondary" />
+    android:textColor="@color/light_grey"
+    android:background="@color/colorPrimaryDark"
+    android:padding="@dimen/padding_5"
+    android:fontFamily="@font/poppins_regular"/>

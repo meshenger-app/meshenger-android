@@ -1,27 +1,33 @@
 package org.rivchain.cuplink
 
 import android.app.Activity
-import android.app.Dialog
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
-import android.widget.EditText
+import com.google.android.material.textfield.TextInputEditText
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import com.google.android.material.switchmaterial.SwitchMaterial
 import org.libsodium.jni.Sodium
-import org.rivchain.cuplink.AddressUtils.AddressType
 import org.rivchain.cuplink.MainService.MainBinder
+import org.rivchain.cuplink.model.AddressEntry
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.AddressUtils.AddressType
+import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.Utils
 import java.util.Locale
 
 class ContactDetailsActivity : BaseActivity(), ServiceConnection {
@@ -30,12 +36,12 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
     private lateinit var contactNameEdit: TextView
     private lateinit var contactPublicKeyEdit: TextView
     private lateinit var contactBlockedSwitch : SwitchMaterial
-    private lateinit var addressEditText: EditText
+    private lateinit var addressEditText: TextInputEditText
 
     private lateinit var addressListView: ListView
     private lateinit var addressListViewAdapter: AddressListAdapter
 
-    private var binder: MainBinder? = null
+    private var service: MainService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,10 +77,10 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         try {
-            val mainBinder = iBinder as MainBinder
+            val mainService = (iBinder as MainBinder).getService()
             val publicKey = intent.extras!!["EXTRA_CONTACT_PUBLICKEY"] as ByteArray
-            val contact = mainBinder.getContacts().getContactByPublicKey(publicKey)!!
-            binder = mainBinder
+            val contact = mainService.getContacts().getContactByPublicKey(publicKey)!!
+            service = mainService
             updateContact(contact)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -144,7 +150,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
                 contact.addresses = addressListViewAdapter.getAddresses()
                 contact.publicKey = publicKey
 
-                binder!!.saveDatabase()
+                service!!.saveDatabase()
                 Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
@@ -163,7 +169,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     private fun getOriginalContact(): Contact? {
         return if (publicKey.size == Sodium.crypto_sign_publickeybytes()) {
-            binder!!.getContacts().getContactByPublicKey(publicKey)
+            service!!.getContacts().getContactByPublicKey(publicKey)
         } else {
             null
         }
@@ -171,12 +177,12 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     private fun showChangePublicKeyDialog() {
         Log.d(this, "showChangePublicKeyDialog()")
-
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_contact_change_public_key)
-        val publicKeyInput = dialog.findViewById<EditText>(R.id.PublicKeyEditText)
-        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
-        val okButton = dialog.findViewById<Button>(R.id.OkButton)
+        val view: View = LayoutInflater.from(this).inflate(R.layout.dialog_contact_change_public_key, null)
+        val b = AlertDialog.Builder(this, R.style.PPTCDialog)
+        val dialog = b.setView(view).create()
+        val publicKeyInput = view.findViewById<TextInputEditText>(R.id.PublicKeyEditText)
+        val cancelButton = view.findViewById<Button>(R.id.CancelButton)
+        val okButton = view.findViewById<Button>(R.id.OkButton)
 
         publicKeyInput.setText(contactPublicKeyEdit.text, TextView.BufferType.EDITABLE)
 
@@ -187,7 +193,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
             if (newPublicKey == null || (newPublicKey.size != Sodium.crypto_sign_publickeybytes())) {
                 Toast.makeText(this, R.string.contact_public_key_invalid, Toast.LENGTH_SHORT).show()
-            } else if (binder!!.getContacts().getContactByPublicKey(newPublicKey) != null) {
+            } else if (service!!.getContacts().getContactByPublicKey(newPublicKey) != null) {
                 Toast.makeText(this, R.string.contact_public_key_already_exists, Toast.LENGTH_LONG).show()
             } else {
                 contactPublicKeyEdit.text = Utils.byteArrayToHexString(newPublicKey)
@@ -204,18 +210,18 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     private fun showChangeNameDialog() {
         Log.d(this, "showChangeNameDialog()")
-
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_contact_change_name)
-        val nameEditText = dialog.findViewById<EditText>(R.id.NameEditText)
-        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
-        val okButton = dialog.findViewById<Button>(R.id.OkButton)
+        val view: View = LayoutInflater.from(this).inflate(R.layout.dialog_contact_change_name, null)
+        val b = AlertDialog.Builder(this, R.style.PPTCDialog)
+        val dialog = b.setView(view).create()
+        val nameEditText = view.findViewById<TextInputEditText>(R.id.NameEditText)
+        val cancelButton = view.findViewById<Button>(R.id.CancelButton)
+        val okButton = view.findViewById<Button>(R.id.OkButton)
 
         nameEditText.setText(contactNameEdit.text, TextView.BufferType.EDITABLE)
 
         okButton.setOnClickListener {
             val newName = nameEditText.text.toString().trim { it <= ' ' }
-            val existingContact = binder!!.getContacts().getContactByName(newName)
+            val existingContact = service!!.getContacts().getContactByName(newName)
 
             if (!Utils.isValidName(newName)) {
                 Toast.makeText(this, R.string.contact_name_invalid, Toast.LENGTH_SHORT).show()
@@ -236,7 +242,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (binder != null) {
+        if (service != null) {
             unbindService(this)
         }
     }

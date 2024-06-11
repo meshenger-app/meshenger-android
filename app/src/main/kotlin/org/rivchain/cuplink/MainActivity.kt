@@ -1,42 +1,44 @@
 package org.rivchain.cuplink
 
-import android.app.Activity
-import android.app.Dialog
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
+import com.google.android.material.textfield.TextInputEditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.rivchain.cuplink.MainService.MainBinder
+import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.PowerManager
 
 // the main view with tabs
 class MainActivity : BaseActivity(), ServiceConnection {
-    internal var binder: MainBinder? = null
+
+    private var service: MainService? = null
     private lateinit var viewPager: ViewPager2
 
     private fun initToolbar() {
@@ -55,22 +57,16 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(this, "onCreate()")
-
+        bindService(Intent(this, MainService::class.java), this, 0)
         // need to be called before super.onCreate()
         applyNightMode()
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initToolbar()
-        permissionToDrawOverlays()
-
-        instance = this
 
         viewPager = findViewById(R.id.container)
         viewPager.adapter = ViewPagerFragmentAdapter(this)
-
-        bindService(Intent(this, MainService::class.java), this, 0)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (PowerManager.needsFixing(this)) {
@@ -83,10 +79,22 @@ class MainActivity : BaseActivity(), ServiceConnection {
         } else {
             Log.d(this, "Power management fix skipped")
         }
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this.baseContext)
+        preferences.edit(commit = true) { putBoolean(PREF_KEY_ENABLED, true) }
     }
 
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        if (tabLayout.selectedTabPosition == 0) {
+            super.onBackPressedDispatcher.onBackPressed()
+            finish()
+        } else {
+            tabLayout.getTabAt(0)?.select()
+        }
+    }
     override fun onDestroy() {
-        instance = null
         super.onDestroy()
         unbindService(this)
     }
@@ -115,13 +123,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     private fun showInvalidAddressSettingsWarning() {
         Handler(Looper.getMainLooper()).postDelayed({
-            val localBinder = this@MainActivity.binder
-            if (localBinder == null) {
-                Log.w(this, "showInvalidAddressSettingsWarning() binder is null")
-                return@postDelayed
-            }
 
-            val storedAddresses = localBinder.getSettings().addresses
+            val storedAddresses = service!!.getSettings().addresses
             val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) || AddressUtils.isMACAddress(it) }
             if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
                 // ignore, we only have domains configured
@@ -141,30 +144,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }, 700)
     }
 
-    private fun permissionToDrawOverlays() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                requestDrawOverlaysPermissionLauncher.launch(intent)
-            }
-        }
-    }
-
-    private var requestDrawOverlaysPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode != Activity.RESULT_OK) {
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "onServiceConnected()")
-        binder = iBinder as MainBinder
+        val binder = iBinder as MainBinder
+        service = binder.getService()
 
-        val settings = binder!!.getSettings()
+        val settings = service!!.getSettings()
 
         // data source for the views was not ready before
         (viewPager.adapter as ViewPagerFragmentAdapter).let {
@@ -177,31 +162,30 @@ class MainActivity : BaseActivity(), ServiceConnection {
             tabLayout.visibility = View.GONE
         } else {
             // default
-            tabLayout.visibility = View.VISIBLE
+            //tabLayout.visibility = View.VISIBLE
+            tabLayout.visibility = View.GONE
         }
 
-        val toolbarLogo = findViewById<ImageView>(R.id.toolbar_logo)
         val toolbarLabel = findViewById<TextView>(R.id.toolbar_label)
         if (settings.showUsernameAsLogo) {
-            toolbarLogo.visibility = View.GONE
             toolbarLabel.visibility = View.VISIBLE
             toolbarLabel.text = settings.username
         } else {
             // default
-            toolbarLogo.visibility = View.VISIBLE
             toolbarLabel.visibility = View.GONE
         }
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
+            tab.contentDescription = when (position) {
                 0 -> getString(R.string.title_contacts)
                 else -> {
-                    val eventsMissed = binder!!.getEvents().eventsMissed
-                    if (eventsMissed == 0) {
-                        getString(R.string.title_calls)
-                    } else {
-                        String.format("%s (%d)", getString(R.string.title_calls), eventsMissed)
-                    }
+                    getString(R.string.title_calls)
+                }
+            }
+            tab.icon = when (position) {
+                0 -> resources.getDrawable(R.drawable.ic_contacts, theme)
+                else -> {
+                    resources.getDrawable(R.drawable.ic_call_accept, theme)
                 }
             }
         }.attach()
@@ -217,7 +201,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
-        // nothing to do
+
     }
 
     private fun menuAction(itemId: Int) {
@@ -232,7 +216,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 startActivity(Intent(this, AboutActivity::class.java))
             }
             R.id.action_exit -> {
-                MainService.stop(this)
+                MainService.stopPacketsStream(this)
                 finish()
             }
         }
@@ -240,14 +224,16 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     // request password for setting activity
     private fun showMenuPasswordDialog(itemId: Int, menuPassword: String) {
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_enter_database_password)
-        dialog.setCancelable(false)
+        val view: View = LayoutInflater.from(this).inflate(R.layout.dialog_enter_database_password, null)
+        val b = AlertDialog.Builder(this, R.style.PPTCDialog)
+        b.setView(view)
+        b.setCancelable(false)
+        val dialog = b.create()
         dialog.setCanceledOnTouchOutside(false)
 
-        val passwordEditText = dialog.findViewById<EditText>(R.id.change_password_edit_textview)
-        val exitButton = dialog.findViewById<Button>(R.id.change_password_cancel_button)
-        val okButton = dialog.findViewById<Button>(R.id.change_password_ok_button)
+        val passwordEditText = view.findViewById<TextInputEditText>(R.id.change_password_edit_textview)
+        val exitButton = view.findViewById<Button>(R.id.change_password_cancel_button)
+        val okButton = view.findViewById<Button>(R.id.change_password_ok_button)
         okButton.setOnClickListener {
             val password = passwordEditText.text.toString()
             if (menuPassword == password) {
@@ -265,21 +251,17 @@ class MainActivity : BaseActivity(), ServiceConnection {
             // close dialog
             dialog.dismiss()
         }
-
         dialog.show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.d(this, "onOptionsItemSelected()")
 
-        val binder = binder
-        if (binder != null) {
-            val settings = binder.getSettings()
-            if (settings.menuPassword.isEmpty()) {
-                menuAction(item.itemId)
-            } else {
-                showMenuPasswordDialog(item.itemId, settings.menuPassword)
-            }
+        val settings = service!!.getSettings()
+        if (settings.menuPassword.isEmpty()) {
+            menuAction(item.itemId)
+        } else {
+            showMenuPasswordDialog(item.itemId, settings.menuPassword)
         }
 
         return super.onOptionsItemSelected(item)
@@ -304,7 +286,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         return true
     }
 
-    class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
+    class ViewPagerFragmentAdapter(private val fm: FragmentActivity) : FragmentStateAdapter(fm) {
         var ready = false
 
         override fun getItemCount(): Int {
@@ -313,14 +295,47 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> ContactListFragment()
-                else -> EventListFragment()
+                0 -> {
+                    val fragment = ContactListFragment()
+                    fragment.setService((fm as MainActivity).service!!)
+                    fragment
+                }
+                else -> {
+                    val fragment = EventListFragment()
+                    fragment.setService((fm as MainActivity).service!!)
+                    fragment
+                }
             }
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDeeplinkIntent(intent)
+    }
+
+
+    private fun handleDeeplinkIntent(intent: Intent) {
+        val data = intent.data
+        if (data != null) {
+            AddContactActivity.handlePotentialCupLinkContactUrl(this, data.toString())
+        }
+    }
+
     companion object {
+
         private var addressWarningShown = false
-        var instance: MainActivity? = null
+
+        fun clearTop(context: Context): Intent {
+            val intent = Intent(context, MainActivity::class.java)
+
+            intent.setFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+            )
+
+            return intent
+        }
     }
 }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?android:windowBackground"
-    >
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:background="@drawable/dialog_rounded_corner">
 
     <TextView
         android:id="@+id/ChangeNameTextView"
@@ -13,63 +14,74 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/NameEditText"
+        app:layout_constraintBottom_toTopOf="@+id/NameEditLayout"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:textSize="23sp"
-        android:fontFamily="@font/lato_bold"
-        android:text="@string/enter_contact_name"
-        android:textColor="?android:textColorPrimary" />
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/enter_contact_name"/>
 
-    <EditText
-        android:id="@+id/NameEditText"
-        android:layout_width="match_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/NameEditLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ChangeNameTextView"
-        app:layout_constraintBottom_toTopOf="@+id/CancelButton"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="@dimen/padding_20"
-        android:layout_marginEnd="@dimen/padding_20"
-        android:textSize="23sp"
-        android:inputType="text"
-        android:text=""
-        android:maxLines="1"
-        android:scrollHorizontally="true"
-        android:textColor="?android:textColorPrimary" />
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textColorHint="@color/light_grey"
+        app:boxBackgroundMode="none"
+        app:layout_constraintBottom_toTopOf="@+id/CancelButton"
+        app:layout_constraintEnd_toEndOf="@+id/OkButton"
+        app:layout_constraintStart_toStartOf="@+id/CancelButton"
+        app:layout_constraintTop_toBottomOf="@+id/ChangeNameTextView">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/NameEditText"
+            style="@style/EditText.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:hint="@string/contact_name"
+            android:textSize="@dimen/name_text_size"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions"
+            android:textColor="@color/light_grey"
+            android:textCursorDrawable="@null"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:background="@drawable/next_button_background"
+        app:backgroundTint="@null"
+        android:textAllCaps="false"
         android:id="@+id/CancelButton"
         android:layout_width="125dp"
         android:layout_height="@dimen/padding_50"
         android:layout_marginStart="@dimen/padding_50"
         android:layout_marginTop="@dimen/padding_20"
-        app:layout_constraintTop_toBottomOf="@+id/NameEditText"
+        app:layout_constraintTop_toBottomOf="@+id/NameEditLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/OkButton"
-        android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_cancel"
-        android:textAllCaps="false"
         android:textColor="@color/white" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
+        android:background="@drawable/next_button_background"
+        app:backgroundTint="@null"
+        android:textAllCaps="false"
         android:id="@+id/OkButton"
         android:layout_width="125dp"
         android:layout_height="@dimen/padding_50"
         android:layout_marginStart="@dimen/padding_50"
         android:layout_marginEnd="@dimen/padding_50"
         android:layout_marginTop="@dimen/padding_20"
-        app:layout_constraintTop_toBottomOf="@+id/NameEditText"
+        app:layout_constraintTop_toBottomOf="@+id/NameEditLayout"
         app:layout_constraintStart_toEndOf="@+id/CancelButton"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/next_button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_ok"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:enabled="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

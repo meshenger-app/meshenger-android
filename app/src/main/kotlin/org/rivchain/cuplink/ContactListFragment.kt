@@ -7,29 +7,36 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.AnimationSet
 import android.view.animation.TranslateAnimation
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONException
+import org.rivchain.cuplink.adapter.ContactListAdapter
+import org.rivchain.cuplink.model.Contact
+import org.rivchain.cuplink.util.Log
 
-class ContactListFragment : Fragment() {
+class ContactListFragment() : Fragment() {
+    private lateinit var service: MainService
     private lateinit var contactListView: ListView
     private lateinit var fabScan: FloatingActionButton
     private lateinit var fabGen: FloatingActionButton
     private lateinit var fabPingAll: FloatingActionButton
     private lateinit var fab: FloatingActionButton
     private var fabExpanded = false
+
+    fun setService(service: MainService){
+        this.service = service
+    }
 
     private val onContactClickListener =
         AdapterView.OnItemClickListener { adapterView, _, i, _ ->
@@ -48,40 +55,50 @@ class ContactListFragment : Fragment() {
     }
 
     private val onContactLongClickListener =
-        AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
+        AdapterView.OnItemLongClickListener { adapterView, _, i, _ ->
             val contact = adapterView.adapter.getItem(i) as Contact
-            val menu = PopupMenu(activity, view)
-            val details = getString(R.string.contact_menu_details)
-            val delete = getString(R.string.contact_menu_delete)
-            val ping = getString(R.string.contact_menu_ping)
-            val share = getString(R.string.contact_menu_share)
-            val qrcode = getString(R.string.contact_menu_qrcode)
-            menu.menu.add(details)
-            menu.menu.add(delete)
-            menu.menu.add(ping)
-            menu.menu.add(share)
-            menu.menu.add(qrcode)
-            menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-                val title = menuItem.title.toString()
+            val options = listOf(
+                getString(R.string.contact_menu_details),
+                getString(R.string.contact_menu_delete),
+                getString(R.string.contact_menu_ping),
+                getString(R.string.contact_menu_share),
+                getString(R.string.contact_menu_qrcode)
+            )
+
+            val inflater = LayoutInflater.from(activity)
+            val dialogView = inflater.inflate(R.layout.dialog_select_one_listview_item, null)
+            val listViewContactOptions: ListView = dialogView.findViewById(R.id.listView)
+
+            val adapter = ArrayAdapter(this.requireContext(), R.layout.spinner_item, options)
+            listViewContactOptions.adapter = adapter
+
+            val dialog = AlertDialog.Builder(this.requireContext(), R.style.PPTCDialog)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create()
+
+            listViewContactOptions.setOnItemClickListener { _, _, position, _ ->
+                val selectedOption = options[position]
                 val publicKey = contact.publicKey
-                when (title) {
-                    details -> {
+                when (selectedOption) {
+                    getString(R.string.contact_menu_details) -> {
                         val intent = Intent(activity, ContactDetailsActivity::class.java)
                         intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
                         startActivity(intent)
                     }
-                    delete -> showDeleteDialog(publicKey, contact.name)
-                    ping -> pingContact(contact)
-                    share -> shareContact(contact)
-                    qrcode -> {
+                    getString(R.string.contact_menu_delete) -> showDeleteDialog(publicKey, contact.name)
+                    getString(R.string.contact_menu_ping) -> pingContact(contact)
+                    getString(R.string.contact_menu_share) -> shareContact(contact)
+                    getString(R.string.contact_menu_qrcode) -> {
                         val intent = Intent(activity, QRShowActivity::class.java)
                         intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
                         startActivity(intent)
                     }
                 }
-                false
+                dialog.dismiss()
             }
-            menu.show()
+
+            dialog.show()
             true
         }
 
@@ -108,12 +125,9 @@ class ContactListFragment : Fragment() {
         }
 
         fabGen.setOnClickListener {
-            val binder = (activity as MainActivity).binder
-            if (binder != null) {
-                val intent = Intent(activity, QRShowActivity::class.java)
-                intent.putExtra("EXTRA_CONTACT_PUBLICKEY", binder.getSettings().publicKey)
-                startActivity(intent)
-            }
+            val intent = Intent(activity, QRShowActivity::class.java)
+            intent.putExtra("EXTRA_CONTACT_PUBLICKEY", service.getSettings().publicKey)
+            startActivity(intent)
         }
 
         fabPingAll.setOnClickListener {
@@ -154,26 +168,16 @@ class ContactListFragment : Fragment() {
         Log.d(this, "onResume()")
         super.onResume()
 
-        val activity = requireActivity() as MainActivity
-        val binder = (activity as MainActivity).binder
-        if (binder != null) {
-            if (binder.getSettings().automaticStatusUpdates) {
-                // ping all contacts
-                binder.pingContacts(binder.getContacts().contactList)
-            }
+        if (service.getSettings().automaticStatusUpdates) {
+            // ping all contacts
+            service.pingContacts(service.getContacts().contactList)
         }
 
         MainService.refreshContacts(requireActivity())
     }
 
     private fun showPingAllButton(): Boolean {
-        val binder = (activity as MainActivity).binder
-        if (binder != null) {
-            return !binder.getSettings().automaticStatusUpdates
-        } else {
-            // it does not hurt to show the button
-            return true
-        }
+        return !service.getSettings().automaticStatusUpdates
     }
 
     private fun runFabAnimation(fab: View) {
@@ -195,18 +199,18 @@ class ContactListFragment : Fragment() {
             showAnimation = TranslateAnimation(0f, 0f, -distance * 3, 0f)
             alphaAnimation = AlphaAnimation(1.0f, 0.0f)
             (fab as FloatingActionButton).setImageResource(R.drawable.qr_glass)
-            fabGen.y = fabGen.y + distance * 1
-            fabScan.y = fabScan.y + distance * 2
-            fabPingAll.y = fabPingAll.y + distance * 3
+            fabGen.y += distance * 1
+            fabScan.y += distance * 2
+            fabPingAll.y += distance * 3
         } else {
             pingAnimation = TranslateAnimation(0f, 0f, distance * 1, 0f)
             scanAnimation = TranslateAnimation(0f, 0f, distance * 2, 0f)
             showAnimation = TranslateAnimation(0f, 0f, distance * 3, 0f)
             alphaAnimation = AlphaAnimation(0.0f, 1.0f)
             (fab as FloatingActionButton).setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-            fabGen.y = fabGen.y - distance * 1
-            fabScan.y = fabScan.y - distance * 2
-            fabPingAll.y = fabPingAll.y - distance * 3
+            fabGen.y -= distance * 1
+            fabScan.y -= distance * 2
+            fabPingAll.y -= distance * 3
         }
 
         scanSet.addAnimation(scanAnimation)
@@ -244,39 +248,35 @@ class ContactListFragment : Fragment() {
             fabGen.clearAnimation()
             fabPingAll.clearAnimation()
 
-            fabGen.y = fabGen.y + 200 * 1
-            fabScan.y = fabScan.y + 200 * 2
+            fabGen.y += 200 * 1
+            fabScan.y += 200 * 2
             if (showPingAllButton()) {
-                fabPingAll.y = fabPingAll.y + 200 * 3
+                fabPingAll.y += 200 * 3
             }
             fabExpanded = false
         }
     }
 
     private fun pingContact(contact: Contact) {
-        val binder = (activity as MainActivity).binder ?: return
-        binder.pingContacts(listOf(contact))
+        service.pingContacts(listOf(contact))
         val message = String.format(getString(R.string.ping_contact), contact.name)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun pingAllContacts() {
-        val binder = (activity as MainActivity).binder ?: return
-        binder.pingContacts(binder.getContacts().contactList)
+        service.pingContacts(service.getContacts().contactList)
         val message = String.format(getString(R.string.ping_all_contacts))
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showDeleteDialog(publicKey: ByteArray, name: String) {
         val activity = requireActivity()
-        val binder = (activity as MainActivity).binder ?: return
-
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(activity, R.style.FullPPTCDialog)
         builder.setTitle(R.string.dialog_title_delete_contact)
         builder.setMessage(name)
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->
-                binder.deleteContact(publicKey)
+                service.deleteContact(publicKey)
                 dialog.cancel()
             }
 
@@ -290,10 +290,8 @@ class ContactListFragment : Fragment() {
 
     private fun refreshContactList() {
         Log.d(this, "refreshContactList")
-
         val activity = requireActivity()
-        val binder = (activity as MainActivity).binder ?: return
-        val contacts = binder.getContacts().contactList
+        val contacts = service.getContacts().contactList
 
         activity.runOnUiThread {
             contactListView.adapter = ContactListAdapter(activity, R.layout.item_contact, contacts)

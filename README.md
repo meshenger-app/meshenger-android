@@ -1,21 +1,21 @@
 # CupLink
 
-Voice- and video calls without any server or Internet access. Simply scan each others QR-Code and call each other. This works in many local networks such as community mesh networks, company networks or at home.
+Voice and video calls without any server or Internet access. Simply scan each other's QR code and call each other. This works in many local networks such as community mesh networks, company networks, or at home. By default, CupLink uses the RiV mesh network for seamless connectivity, but it can also operate independently.
 
-Features:
+## Features
 
-- voice and video calls
-- no accounts or registration
-- encrypted communication
-- database backup and encryption
-- add custom addresses to reach contacts
+- Voice and video calls
+- No accounts or registration required
+- Encrypted communication
+- Database backup and encryption
+- Ability to add custom addresses to reach contacts
 
 ## Documentation
 
-CupLink exchanges the contact name and IP address via QR-Code. An IP address is sufficient to connect to clients. This does not even need a DHCP server. 
+CupLink exchanges the contact name and IP address via QR code. An IP address is sufficient to connect to clients, and there is no need for a DHCP server. CupLink utilizes RiV Mesh virtual static IPv6 addresses to establish connections.
 
-Details can be found in the [Documentation](docs/Documentation.md) or in the [FAQ](docs/faq.md).
+For comprehensive details, please refer to the [Documentation](docs/Documentation.md) or the [FAQ](docs/faq.md).
 
-## Build
+## Build Instructions
 
-Starting from version 0.4.6.x WebRTC library should be pre-built and places into app/libs directory. Corresponding instruction on how to build it can be found [here](https://dev.to/ethand91/webrtc-for-beginners-part-55-building-the-webrtc-android-library-e8l). Also 0.4.6.x migrated to [Unified Plan](https://www.callstats.io/blog/what-is-unified-plan-and-how-will-it-affect-your-webrtc-development).
+Starting from version 0.4.6.x, the WebRTC library must be pre-built and placed into the `app/libs` directory. Instructions for building the library can be found [here](https://dev.to/ethand91/webrtc-for-beginners-part-55-building-the-webrtc-android-library-e8l). Additionally, version 0.4.6.x has migrated to the [Unified Plan](https://www.callstats.io/blog/what-is-unified-plan-and-how-will-it-affect-your-webrtc-development).

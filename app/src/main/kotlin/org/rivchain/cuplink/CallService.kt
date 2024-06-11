@@ -363,7 +363,7 @@ class CallService : Service() {
         builder.extend(CarAppExtender.Builder()
             .setLargeIcon(AppCompatResources.getDrawable(service, R.drawable.cup_link)!!.toBitmap())
             .setImportance(NotificationManager.IMPORTANCE_HIGH)
-            .setSmallIcon(R.drawable.ccp_selectable_bg)
+            .setSmallIcon(R.drawable.dialog_rounded_corner)
             .addAction(R.drawable.ic_audio_device_phone, answerTitle, answerCarPendingIntent)
             .addAction(R.drawable.ic_close, endTitle, endPendingIntent)
             .build())

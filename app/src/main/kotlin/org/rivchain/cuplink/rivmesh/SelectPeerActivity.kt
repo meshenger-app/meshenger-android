@@ -8,7 +8,6 @@ import android.os.IBinder
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.hbb20.BuildConfig
 import com.hbb20.CCPCountry
 import com.vincentbrison.openlibraries.android.dualcache.Builder
 import com.vincentbrison.openlibraries.android.dualcache.JsonSerializer
@@ -19,6 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.rivchain.cuplink.BaseActivity
+import org.rivchain.cuplink.BuildConfig
 import org.rivchain.cuplink.MainService
 import org.rivchain.cuplink.rivmesh.models.PeerInfo
 import org.rivchain.cuplink.rivmesh.models.Status

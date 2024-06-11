@@ -12,3 +12,6 @@
 /mesh/build/
 /mesh/mesh.aar
 /mesh/mesh-sources.jar
+/app/release/*
+/app/debug/*
+/app/libs/*

@@ -12,8 +12,8 @@ android {
         minSdkVersion 21
         compileSdkVersion 34
         targetSdkVersion 34
-        versionCode 504
-        versionName "0.6.8.2"
+        versionCode 505
+        versionName "0.6.8.3"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -56,18 +56,18 @@ preBuild.doFirst {
 }
 
 dependencies {
-    implementation 'ch.acra:acra-core:5.9.6'
-    implementation 'ch.acra:acra-http:5.9.6'
-    implementation 'ch.acra:acra-dialog:5.9.6'
+    implementation 'ch.acra:acra-core:5.11.3'
+    implementation 'ch.acra:acra-http:5.11.3'
+    implementation 'ch.acra:acra-dialog:5.11.3'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(path: ':mesh')
     implementation 'com.android.support.constraint:constraint-layout:2.1.4'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
-    implementation 'com.google.zxing:core:3.3.3'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.hbb20:ccp:2.4.0'
+    implementation('com.journeyapps:zxing-android-embedded:4.3.0') { transitive = false }
+    implementation 'com.google.zxing:core:3.5.3'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.hbb20:ccp:2.7.3'
     implementation 'com.vincentbrison.openlibraries.android:dualcache:3.1.1'
     implementation 'com.vincentbrison.openlibraries.android:dualcache-jsonserializer:3.1.1'
 //    implementation 'org.webrtc:google-webrtc:1.0.24064'

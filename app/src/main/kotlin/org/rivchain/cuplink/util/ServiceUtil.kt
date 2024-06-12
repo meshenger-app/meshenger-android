@@ -15,8 +15,10 @@ import android.hardware.display.DisplayManager
 import android.location.LocationManager
 import android.media.AudioManager
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.PowerManager
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.os.storage.StorageManager
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
@@ -70,6 +72,11 @@ object ServiceUtil {
 
     fun getVibrator(context: Context): Vibrator {
         return context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun getVibratorService(context: Context): VibratorManager {
+        return context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
     }
 
     fun getDisplayManager(context: Context): DisplayManager {

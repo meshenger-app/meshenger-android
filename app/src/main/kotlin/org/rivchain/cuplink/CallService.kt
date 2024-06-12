@@ -22,7 +22,6 @@ import android.os.Build
 import android.os.IBinder
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.os.VibratorManager
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
@@ -40,6 +39,7 @@ import org.rivchain.cuplink.model.Contact
 import org.rivchain.cuplink.model.Event
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.RlpUtils
+import org.rivchain.cuplink.util.ServiceUtil
 import java.util.Date
 
 class CallService : Service() {
@@ -92,7 +92,7 @@ class CallService : Service() {
 
         // init vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibratorManager = ServiceUtil.getVibratorService(this)
             vibrator = vibratorManager.defaultVibrator
         } else {
             @Suppress("DEPRECATION")
@@ -102,7 +102,7 @@ class CallService : Service() {
 
     private fun startRinging() {
         Log.d(this, "startRinging()")
-        val ringerMode = (getSystemService(AUDIO_SERVICE) as AudioManager).ringerMode
+        val ringerMode = ServiceUtil.getAudioManager(this).ringerMode
         if (ringerMode == AudioManager.RINGER_MODE_SILENT) {
             return
         }

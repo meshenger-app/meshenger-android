@@ -3,7 +3,6 @@
  * The code was rewritten, but many comments remain.
  */
 package org.rivchain.cuplink.call
-//package org.appspot.apprtc;
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,12 +10,13 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
 import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.ServiceUtil
 import org.rivchain.cuplink.util.Utils
 
 /**
  * RTCAudioManager manages all audio related parts.
  */
-class RTCAudioManager(contextArg: Context) {
+class RTCAudioManager(private val context: Context) {
     enum class SpeakerphoneMode {
         AUTO,
         //ON,
@@ -34,7 +34,7 @@ class RTCAudioManager(contextArg: Context) {
         fun onAudioDeviceChanged(oldDevice: AudioDevice, newDevice: AudioDevice)
     }
 
-    private val audioManager = contextArg.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val audioManager = ServiceUtil.getAudioManager(context)
     private var audioManagerEvents: AudioManagerEvents? = null
     private var audioManagerInitialized = false
 
@@ -46,7 +46,7 @@ class RTCAudioManager(contextArg: Context) {
     private var isProximityNear = true // default to speaker turned off for AUTO 
     private var isSpeakerphoneOn = false
 
-    private val bluetoothManager = RTCBluetoothManager(contextArg, this)
+    private val bluetoothManager = RTCBluetoothManager(context, this)
     private var requestBluetoothPermissions = true
 
     /**
@@ -133,7 +133,6 @@ class RTCAudioManager(contextArg: Context) {
         savedAudioMode = audioManager.mode
         savedIsSpeakerPhoneOn = audioManager.isSpeakerphoneOn
         savedIsMicrophoneMute = audioManager.isMicrophoneMute
-
         bluetoothManager.start()
 
         // Create an AudioManager.OnAudioFocusChangeListener instance.
@@ -160,11 +159,8 @@ class RTCAudioManager(contextArg: Context) {
         }
 
         // Request audio playout focus (without ducking) and install listener for changes in focus.
-        val result = audioManager.requestAudioFocus(
-            audioFocusChangeListener,
-            AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-        )
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+        val result = AudioRecorderFocusManager.create(context, audioFocusChangeListener!!)
+        if (result.requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             Log.d(this, "start() Audio focus request granted for VOICE_CALL streams")
         } else {
             Log.w(this, "start() Audio focus request failed")

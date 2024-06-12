@@ -5,13 +5,11 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import org.rivchain.cuplink.CallActivity
 import org.rivchain.cuplink.CallService
 import org.rivchain.cuplink.Crypto
-import org.rivchain.cuplink.MainActivity
 import org.rivchain.cuplink.MainService
 import org.rivchain.cuplink.R
 import org.rivchain.cuplink.model.Contact
@@ -63,6 +61,7 @@ abstract class RTCPeerConnection(
 
         mediaPlayer = MediaPlayer.create(service, toneResId)
         mediaPlayer?.isLooping = state == CallState.RINGING
+        mediaPlayer?.setVolume(0.5f,0.5f)
         mediaPlayer?.start()
     }
 

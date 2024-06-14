@@ -13,7 +13,7 @@ import androidx.core.view.size
 import org.rivchain.cuplink.R
 import org.rivchain.cuplink.model.Contact
 import org.rivchain.cuplink.model.Event
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import java.text.DateFormat
 import kotlin.math.abs
@@ -113,7 +113,7 @@ internal class EventListAdapter(
         val addressTV = view.findViewById<TextView>(R.id.call_address)
         val address = eventGroup.lastOrNull { it.address != null } ?.address
 
-        val addressString = AddressUtils.inetSocketAddressToString(address)
+        val addressString = NetworkUtils.inetSocketAddressToString(address)
         if (addressString != null) {
             addressTV.text = addressString
         } else {

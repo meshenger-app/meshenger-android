@@ -13,7 +13,7 @@ import org.rivchain.cuplink.Crypto
 import org.rivchain.cuplink.MainService
 import org.rivchain.cuplink.R
 import org.rivchain.cuplink.model.Contact
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.Utils
 import java.io.IOException
@@ -533,7 +533,7 @@ abstract class RTCPeerConnection(
         var socketTimeoutException = false
         var exception = false
 
-        val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
+        val allGeneratedAddresses = NetworkUtils.getAllSocketAddresses(contact, useNeighborTable)
         Log.d(this, "createCommSocket() contact.addresses: ${contact.addresses}, allGeneratedAddresses: $allGeneratedAddresses")
 
         for (iteration in 0..max(0, min(connectRetries, 4))) {

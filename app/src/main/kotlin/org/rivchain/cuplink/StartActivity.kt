@@ -37,7 +37,7 @@ import org.rivchain.cuplink.model.AddressEntry
 import org.rivchain.cuplink.rivmesh.AutoSelectPeerActivity
 import org.rivchain.cuplink.rivmesh.AutoTestPublicPeerActivity
 import org.rivchain.cuplink.rivmesh.SelectPeerActivity
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.PermissionManager.haveCameraPermission
 import org.rivchain.cuplink.util.PermissionManager.haveMicrophonePermission
@@ -273,7 +273,7 @@ class StartActivity// to avoid "class has no zero argument constructor" on some 
     }
 
     private fun getDefaultAddress(): AddressEntry? {
-        val addresses = AddressUtils.collectAddresses()
+        val addresses = NetworkUtils.collectAddresses()
 
         // preferable, fc::/7
         val meshAddress = addresses.firstOrNull { it.address.startsWith("fc") }
@@ -281,7 +281,7 @@ class StartActivity// to avoid "class has no zero argument constructor" on some 
             return meshAddress
         }
         // since we can derive a fe80:: and other addresses from a MAC address
-        val macAddress = addresses.firstOrNull { it.device.startsWith("wlan") && AddressUtils.isMACAddress(it.address) }
+        val macAddress = addresses.firstOrNull { it.device.startsWith("wlan") && NetworkUtils.isMACAddress(it.address) }
         if (macAddress != null) {
             return macAddress
         }

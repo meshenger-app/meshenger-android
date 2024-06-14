@@ -24,8 +24,8 @@ import org.libsodium.jni.Sodium
 import org.rivchain.cuplink.MainService.MainBinder
 import org.rivchain.cuplink.model.AddressEntry
 import org.rivchain.cuplink.model.Contact
-import org.rivchain.cuplink.util.AddressUtils
-import org.rivchain.cuplink.util.AddressUtils.AddressType
+import org.rivchain.cuplink.util.NetworkUtils
+import org.rivchain.cuplink.util.NetworkUtils.AddressType
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.Utils
 import java.util.Locale
@@ -119,9 +119,9 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
         findViewById<Button>(R.id.AddAddressButton).setOnClickListener {
             var address = addressEditText.text!!.toString()
-            address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+            address = if (NetworkUtils.isIPAddress(address) || NetworkUtils.isDomain(address)) {
                 address.lowercase(Locale.ROOT)
-            } else if (AddressUtils.isMACAddress(address)) {
+            } else if (NetworkUtils.isMACAddress(address)) {
                 address.uppercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, R.string.error_address_invalid, Toast.LENGTH_SHORT).show()
@@ -129,7 +129,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
             }
 
             // multicast addresses are not supported yet
-            if (AddressUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
+            if (NetworkUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
                 Toast.makeText(this, R.string.error_address_multicast_not_supported, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -296,7 +296,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
                     info.add(ae.device)
                 }
 
-                when (AddressUtils.getAddressType(ae.address)) {
+                when (NetworkUtils.getAddressType(ae.address)) {
                     AddressType.GLOBAL_MAC -> info.add("<hardware>")
                     AddressType.MULTICAST_MAC,
                     AddressType.MULTICAST_IP -> info.add("<multicast>")

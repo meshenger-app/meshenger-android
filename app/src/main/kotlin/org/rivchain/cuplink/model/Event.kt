@@ -2,7 +2,7 @@ package org.rivchain.cuplink.model
 
 import org.json.JSONObject
 import org.rivchain.cuplink.MainService
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.Utils
 import java.net.InetSocketAddress
@@ -28,9 +28,9 @@ class Event(
         val address = address?.address
         if (address != null) {
             // extract MAC address if possible
-            val mac = AddressUtils.extractMAC(address)
-            if (mac != null && AddressUtils.isValidMAC(mac)) {
-                addresses.add(AddressUtils.formatMAC(mac))
+            val mac = NetworkUtils.extractMAC(address)
+            if (mac != null && NetworkUtils.isValidMAC(mac)) {
+                addresses.add(NetworkUtils.formatMAC(mac))
             } else {
                 addresses.add(address.toString().removePrefix("/"))
             }
@@ -70,7 +70,7 @@ class Event(
         fun toJSON(event: Event): JSONObject {
             val obj = JSONObject()
             obj.put("public_key", Utils.byteArrayToHexString(event.publicKey))
-            obj.put("address", AddressUtils.inetSocketAddressToString(event.address))
+            obj.put("address", NetworkUtils.inetSocketAddressToString(event.address))
             obj.put("type", eventTypeToString(event.type))
             obj.put("date", event.date.time.toString())
             return obj
@@ -78,7 +78,7 @@ class Event(
 
         fun fromJSON(obj: JSONObject): Event {
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
-            val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"),
+            val address = NetworkUtils.stringToInetSocketAddress(obj.optString("address"),
                 MainService.serverPort
             )
             val type = eventTypeFromString(obj.getString("type"))

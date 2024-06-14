@@ -5,7 +5,7 @@ import org.libsodium.jni.Sodium
 import org.rivchain.cuplink.Crypto
 import org.rivchain.cuplink.MainService
 import org.rivchain.cuplink.model.Contact
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import java.lang.Integer.max
 import java.lang.Integer.min
@@ -31,7 +31,7 @@ class Pinger(val service: MainService, val contacts: List<Contact>) : Runnable {
         var appNotRunning = false
 
         try {
-            val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
+            val allGeneratedAddresses = NetworkUtils.getAllSocketAddresses(contact, useNeighborTable)
             Log.d(this, "pingContact() connectTimeout: ${connectTimeout}, contact.addresses: ${contact.addresses}, allGeneratedAddresses: $allGeneratedAddresses")
 
             // try to connect

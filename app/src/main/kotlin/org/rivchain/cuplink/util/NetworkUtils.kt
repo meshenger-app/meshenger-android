@@ -17,9 +17,77 @@ import java.util.Collections
 import java.util.regex.Pattern
 import kotlin.experimental.and
 import kotlin.experimental.xor
+import net.mm2d.upnp.Device
 
-internal object AddressUtils
-{
+
+internal object NetworkUtils {
+
+    fun openPortWithUPnP(device: Device, internalIP: String, internalPort: Int, externalPort: Int) {
+        if (device.deviceType == "urn:schemas-upnp-org:device:InternetGatewayDevice:1") {
+            val wanDevice =
+                device.findDeviceByType("urn:schemas-upnp-org:device:WANDevice:1")
+            if (wanDevice != null) {
+                val wanConnectionDevice = wanDevice.findDeviceByType("urn:schemas-upnp-org:device:WANConnectionDevice:1")
+                if (wanConnectionDevice != null) {
+                    val service = wanConnectionDevice.findServiceByType("urn:schemas-upnp-org:service:WANIPConnection:1")
+                    if (service != null){
+                        val action = service.findAction("AddPortMapping")
+                        if (action != null) {
+                            val argumentValues = mutableMapOf<String, String>()
+                            argumentValues["NewRemoteHost"] = ""
+                            argumentValues["NewExternalPort"] = externalPort.toString()
+                            argumentValues["NewProtocol"] = "TCP"
+                            argumentValues["NewInternalPort"] = internalPort.toString()
+                            argumentValues["NewInternalClient"] = internalIP
+                            argumentValues["NewEnabled"] = "1"
+                            argumentValues["NewPortMappingDescription"] = "CupLink UPnP Port Mapping"
+                            argumentValues["NewLeaseDuration"] = "0"
+                            try {
+                                action.invoke(argumentValues)
+                                Log.d(this, "Port mapping added successfully.")
+                            } catch (e: Exception) {
+                                Log.d(this, "Failed to add port mapping: ${e.message}")
+                                e.printStackTrace()
+                            }
+                        } else
+                            Log.d(this, "AddPortMapping action not found.")
+                    } else
+                        Log.d(this, "WANIPConnection service not found.")
+                } else
+                    Log.d(this, "WANConnectionDevice not found.")
+            } else
+                Log.d(this, "WANDevice not found.")
+        } else
+            Log.d(this, "InternetGatewayDevice not found.")
+    }
+
+    fun getLocalInterfaceIPs(): List<String> {
+        val ipList = mutableListOf<String>()
+        try {
+            val networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
+            for (networkInterface in networkInterfaces) {
+                if (networkInterface.isUp && !networkInterface.isLoopback) {
+                    val inetAddresses = Collections.list(networkInterface.inetAddresses)
+                    for (inetAddress in inetAddresses) {
+                        val ip = inetAddress.hostAddress
+                        if (inetAddress is InetAddress && isPrivateIP(ip!!)) {
+                            ipList.add(ip)
+                        }
+                    }
+                }
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+        return ipList
+    }
+
+    fun isPrivateIP(ip: String): Boolean {
+        return ip.matches(Regex("^(10)(\\.([2]([0-5][0-5]|[01234][6-9])|[1][0-9][0-9]|[1-9][0-9]|[0-9])){3}\$")) ||
+                ip.matches(Regex("^(172)\\.(1[6-9]|2[0-9]|3[0-1])(\\.(2[0-4][0-9]|25[0-5]|[1][0-9][0-9]|[1-9][0-9]|[0-9])){2}$")) ||
+                ip.matches(Regex("^(192)\\.(168)(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])){2}$"))
+    }
+
     fun isLinkLocalAddress(address: String): Boolean {
         if (isIPAddress(address)) {
             // IPv4

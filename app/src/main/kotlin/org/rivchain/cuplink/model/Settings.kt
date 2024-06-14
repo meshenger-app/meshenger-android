@@ -2,7 +2,7 @@ package org.rivchain.cuplink.model
 
 import org.json.JSONArray
 import org.json.JSONObject
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.Utils
 import java.util.Locale
@@ -85,9 +85,9 @@ class Settings {
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
                 var address = array[i].toString()
-                if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+                if (NetworkUtils.isIPAddress(address) || NetworkUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
-                } else if (AddressUtils.isMACAddress(address)) {
+                } else if (NetworkUtils.isMACAddress(address)) {
                     address = address.uppercase(Locale.ROOT)
                 } else {
                     Log.d("Settings", "invalid address $address")

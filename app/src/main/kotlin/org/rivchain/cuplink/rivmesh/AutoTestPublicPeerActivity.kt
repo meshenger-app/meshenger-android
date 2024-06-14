@@ -1,7 +1,6 @@
 package org.rivchain.cuplink.rivmesh
 
 import android.content.ComponentName
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import org.rivchain.cuplink.BuildConfig
-import org.rivchain.cuplink.MainService
 import org.rivchain.cuplink.R
 import org.rivchain.cuplink.util.Utils.readResourceFile
 

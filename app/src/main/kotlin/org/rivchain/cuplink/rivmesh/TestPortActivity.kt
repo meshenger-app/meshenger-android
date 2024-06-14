@@ -68,9 +68,13 @@ open class TestPortActivity: AppCompatActivity(), ServiceConnection {
                 try {
                     val responseCode = sendGet(url)
                     if (responseCode == HttpURLConnection.HTTP_OK) {
-                        portOpen(port)
+                        runOnUiThread {
+                            portOpen(port)
+                        }
                     } else {
-                        portClosed(port)
+                        runOnUiThread {
+                            portClosed(port)
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

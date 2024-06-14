@@ -8,7 +8,6 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 package org.rivchain.cuplink.call
-//package org.appspot.apprtc;
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -16,6 +15,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.ServiceUtil
 import org.rivchain.cuplink.util.Utils
 import org.webrtc.ThreadUtils
 
@@ -33,7 +33,7 @@ class RTCProximitySensor(context: Context) : SensorEventListener {
     // the case. Only active when `DEBUG` is set to true.
     private val threadChecker: ThreadUtils.ThreadChecker = ThreadUtils.ThreadChecker()
     private var onSensorStateListeners = mutableSetOf<(Boolean) -> Unit>()
-    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorManager = ServiceUtil.getSensorManager(context)
     private var proximitySensor: Sensor? = null
     private var lastStateReportIsNear = false
 

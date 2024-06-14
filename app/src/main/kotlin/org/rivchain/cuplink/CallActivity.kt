@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.app.PendingIntent
-import android.app.PictureInPictureUiState
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -57,6 +56,7 @@ import org.rivchain.cuplink.rivmesh.AppStateReceiver
 import org.rivchain.cuplink.rivmesh.STATE_CALLING
 import org.rivchain.cuplink.rivmesh.STATE_CALL_ENDED
 import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.ServiceUtil
 import org.rivchain.cuplink.util.Utils
 import org.rivchain.cuplink.util.ViewUtil
 import org.webrtc.CameraEnumerationAndroid
@@ -67,7 +67,6 @@ import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
 import java.net.InetSocketAddress
 import java.util.Date
-
 
 class CallActivity : BaseActivity(), RTCCall.CallContext {
 
@@ -1244,7 +1243,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     private fun onProximitySensorToggleScreen(isProximityNear: Boolean) {
         Log.d(this, "onProximitySensorToggleScreen() isProximityNear=$isProximityNear")
 
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        val powerManager = ServiceUtil.getPowerManager(this)
 
         proximityScreenLock?.release()
 

@@ -40,7 +40,7 @@ import org.rivchain.cuplink.rivmesh.STATE_ENABLED
 import org.rivchain.cuplink.rivmesh.State
 import org.rivchain.cuplink.rivmesh.models.PeerInfo
 import org.rivchain.cuplink.rivmesh.util.Utils
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.Utils.readInternalFile
 import org.rivchain.cuplink.util.Utils.writeInternalFile
@@ -211,7 +211,7 @@ class MainService : VpnService() {
         val useNeighborTable = settings.useNeighborTable
         val connectTimeout = settings.connectTimeout
 
-        for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
+        for (address in NetworkUtils.getAllSocketAddresses(contact, useNeighborTable)) {
             Log.d(this, "try address: $address")
             val socket = Socket()
 

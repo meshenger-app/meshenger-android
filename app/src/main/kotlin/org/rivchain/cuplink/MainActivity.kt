@@ -31,7 +31,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.rivchain.cuplink.MainService.MainBinder
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Log
 import org.rivchain.cuplink.util.PowerManager
 
@@ -125,7 +125,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         Handler(Looper.getMainLooper()).postDelayed({
 
             val storedAddresses = service!!.getSettings().addresses
-            val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) || AddressUtils.isMACAddress(it) }
+            val storedIPAddresses = storedAddresses.filter { NetworkUtils.isIPAddress(it) || NetworkUtils.isMACAddress(it) }
             if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
                 // ignore, we only have domains configured
             } else if (storedAddresses.isEmpty()) {
@@ -133,7 +133,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 Toast.makeText(this, R.string.warning_no_addresses_configured, Toast.LENGTH_LONG).show()
             } else {
                 if (isWifiConnected()) {
-                    val systemAddresses = AddressUtils.collectAddresses().map { it.address }
+                    val systemAddresses = NetworkUtils.collectAddresses().map { it.address }
                     if (storedIPAddresses.intersect(systemAddresses.toSet()).isEmpty()) {
                         // none of the configured addresses are used in the system
                         // addresses might have changed!

@@ -78,6 +78,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/portStatus" />
 
+    <CheckBox
+        android:id="@+id/upnpCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enable UPnP port forwarding"
+        android:textColor="@color/light_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/portStatusText"/>
+
     <TextView
         android:id="@+id/noticeInfoText"
         android:layout_width="match_parent"
@@ -90,7 +100,7 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/portStatusText" />
+        app:layout_constraintTop_toBottomOf="@+id/upnpCheckBox" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/CancelButton"

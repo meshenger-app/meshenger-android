@@ -20,8 +20,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import org.rivchain.cuplink.MainService.MainBinder
 import org.rivchain.cuplink.model.AddressEntry
-import org.rivchain.cuplink.util.AddressUtils
-import org.rivchain.cuplink.util.AddressUtils.AddressType
+import org.rivchain.cuplink.util.NetworkUtils
+import org.rivchain.cuplink.util.NetworkUtils.AddressType
 import java.util.Locale
 
 class AddressManagementActivity : BaseActivity(), ServiceConnection {
@@ -58,7 +58,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         }
 
         customAddressTextEdit = findViewById(R.id.CustomAddressEditText)
-        systemAddresses = AddressUtils.collectAddresses().toMutableList()
+        systemAddresses = NetworkUtils.collectAddresses().toMutableList()
 
         bindService(Intent(this, MainService::class.java), this, 0)
     }
@@ -79,10 +79,10 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         }
 
         addButton.setOnClickListener {
-            var address = AddressUtils.stripInterface(customAddressTextEdit.text!!.toString())
-            address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+            var address = NetworkUtils.stripInterface(customAddressTextEdit.text!!.toString())
+            address = if (NetworkUtils.isIPAddress(address) || NetworkUtils.isDomain(address)) {
                 address.lowercase(Locale.ROOT)
-            } else if (AddressUtils.isMACAddress(address)) {
+            } else if (NetworkUtils.isMACAddress(address)) {
                 address.uppercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, R.string.error_address_invalid, Toast.LENGTH_SHORT).show()
@@ -90,7 +90,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
             }
 
             // multicast addresses are not supported yet
-            if (AddressUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
+            if (NetworkUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
                 Toast.makeText(this, R.string.error_address_multicast_not_supported, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -212,7 +212,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
                     info.add(ae.device)
                 }
 
-                when (AddressUtils.getAddressType(ae.address)) {
+                when (NetworkUtils.getAddressType(ae.address)) {
                     AddressType.GLOBAL_MAC -> info.add("<hardware>")
                     AddressType.MULTICAST_MAC,
                     AddressType.MULTICAST_IP -> info.add("<multicast>")

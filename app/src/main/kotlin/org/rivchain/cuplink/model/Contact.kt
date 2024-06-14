@@ -4,7 +4,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
-import org.rivchain.cuplink.util.AddressUtils
+import org.rivchain.cuplink.util.NetworkUtils
 import org.rivchain.cuplink.util.Utils
 import org.tdf.rlp.RLPIgnored
 import java.io.Serializable
@@ -46,7 +46,7 @@ class Contact(
             obj.put("name", contact.name)
             obj.put("public_key", Utils.byteArrayToHexString(contact.publicKey))
             for (address in contact.addresses) {
-                array.put(AddressUtils.stripInterface(address))
+                array.put(NetworkUtils.stripInterface(address))
             }
             obj.put("addresses", array)
             if (all && contact.blocked) {
@@ -69,10 +69,10 @@ class Contact(
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
-                var address = AddressUtils.stripInterface(array[i].toString())
-                if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+                var address = NetworkUtils.stripInterface(array[i].toString())
+                if (NetworkUtils.isIPAddress(address) || NetworkUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
-                } else if (AddressUtils.isMACAddress(address)) {
+                } else if (NetworkUtils.isMACAddress(address)) {
                     address = address.uppercase(Locale.ROOT)
                 } else {
                     throw JSONException("Invalid Address $address")

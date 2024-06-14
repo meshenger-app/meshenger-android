@@ -36,6 +36,7 @@ import org.rivchain.cuplink.rivmesh.SelectPeerActivity.Companion.PEER_LIST
 import org.rivchain.cuplink.rivmesh.models.PeerInfo
 import org.rivchain.cuplink.rivmesh.util.Utils.serializePeerInfoSet2StringList
 import org.rivchain.cuplink.util.Log
+import org.rivchain.cuplink.util.ServiceUtil
 import org.rivchain.cuplink.util.Utils
 import java.lang.Integer.parseInt
 
@@ -638,7 +639,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
 
     private fun getIgnoreBatteryOptimizations(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val pMgr = this.getSystemService(POWER_SERVICE) as PowerManager
+            val pMgr = ServiceUtil.getPowerManager(this)
             return pMgr.isIgnoringBatteryOptimizations(this.packageName)
         }
         return false

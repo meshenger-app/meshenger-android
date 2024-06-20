@@ -97,7 +97,7 @@ internal object AddressUtils
     }
 
     private fun ignoreDeviceByName(device: String): Boolean {
-        return device.contains("rmnet") || device.startsWith("dummy")
+        return device.startsWith("dummy")
     }
 
     fun formatMAC(mac: ByteArray): String {

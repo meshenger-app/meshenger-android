@@ -551,7 +551,7 @@ abstract class RTCPeerConnection(
     }
 
     companion object {
-        private const val SOCKET_TIMEOUT_MS = 3000L
+        private const val SOCKET_TIMEOUT_MS = 5000L
 
         // used to pass incoming RTCCall to CallActiviy
         public var incomingRTCCall: RTCCall? = null

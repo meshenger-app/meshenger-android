@@ -102,7 +102,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             }
 
             val storedAddresses = localBinder.getSettings().addresses
-            val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) || AddressUtils.isMACAddress(it) }
+            val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) }
             if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
                 // ignore, we only have domains configured
             } else if (storedAddresses.isEmpty()) {

@@ -81,7 +81,9 @@ class Settings {
                 if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
                 } else if (AddressUtils.isMACAddress(address)) {
-                    address = address.uppercase(Locale.ROOT)
+                    // wrap MAC address to EUI64 link local address
+                    // for backwards compatibility
+                    address = AddressUtils.getLinkLocalFromMAC(address)!!
                 } else {
                     Log.d("Settings", "invalid address $address")
                     continue

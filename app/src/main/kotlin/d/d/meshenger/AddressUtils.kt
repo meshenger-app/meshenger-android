@@ -54,34 +54,24 @@ internal object AddressUtils
         val ownInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
 
         for (address in contact.addresses) {
-            if (isMACAddress(address)) {
-                val mac = macAddressToBytes(address)
-                addresses.addAll(mapMACtoPrefixes(ownInterfaces, mac, port))
-                if (useNeighborTable && mac != null) {
-                    macs.add(formatMAC(mac))
+            val socketAddress = stringToInetSocketAddress(address, port) ?: continue
+
+            if (isLinkLocalAddress(socketAddress.hostString)) {
+                for (interfaceName in collectInterfaceNames(ownInterfaces)) {
+                    addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
                 }
             } else {
-                val socketAddress = stringToInetSocketAddress(address, port) ?: continue
+                addresses.add(socketAddress)
+            }
 
-                if (isLinkLocalAddress(socketAddress.hostString)) {
-                    for (interfaceName in collectInterfaceNames(ownInterfaces)) {
-                        addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
-                    }
-                } else {
-                    addresses.add(socketAddress)
-                }
-
-                // get MAC address from IPv6 EUI64 address
-                if (extractFE80MAC && isIPAddress(address)) {
-                    val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        InetAddresses.parseNumericAddress(address)
-                    } else {
-                        InetAddress.getByName(address)
-                    }
-                    val mac = extractMAC(inetAddress)
-                    addresses.addAll(mapMACtoPrefixes(ownInterfaces, mac, port))
-                    if (useNeighborTable && mac != null) {
-                        macs.add(formatMAC(mac))
+            // get MAC address from IPv6 EUI64 address
+            if (extractFE80MAC) {
+                val inetAddress = parseInetAddress(address)
+                val macAddress = extractMAC(inetAddress)
+                if (macAddress != null) {
+                    addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, port))
+                    if (useNeighborTable) {
+                        macs.add(formatMAC(macAddress))
                     }
                 }
             }
@@ -107,15 +97,12 @@ internal object AddressUtils
 
     private fun macAddressToBytes(macAddress: String): ByteArray? {
         if (isMACAddress(macAddress)) {
-            val elements = macAddress.split(":").toTypedArray()
-            val array = ByteArray(elements.size)
-            var i = 0
-            while (i < elements.size) {
-                array[i] = Integer.decode("0x" + elements[i]).toByte()
-                i += 1
-            }
-            if (isValidMAC(array)) {
-                return array
+            val bytes = macAddress
+                .split(":")
+                .map { it.toInt(16).toByte() }
+                .toByteArray()
+            if (isValidMAC(bytes)) {
+                return bytes
             }
         }
         return null
@@ -233,14 +220,8 @@ internal object AddressUtils
         return DOMAIN_PATTERN.matcher(address).matches()
     }
 
-    fun isAddress(address: String): Boolean {
-        return isIPAddress(address)
-            || isMACAddress(address)
-            || isDomain(address)
-    }
-
     fun stringToInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {
-        if (address == null || address.isEmpty()) {
+        if (address.isNullOrEmpty()) {
             return null
         } else if (address.startsWith("[")) {
             val end = address.lastIndexOf("]:")
@@ -262,10 +243,10 @@ internal object AddressUtils
                 val portPart = address.substring(end + 1)
                 val port = portPart.toUShortOrNull()?.toInt()
                 if (port != null) {
-                    if (isIPAddress(addressPart)) {
-                        return InetSocketAddress(addressPart, port)
+                    return if (isIPAddress(addressPart)) {
+                        InetSocketAddress(addressPart, port)
                     } else {
-                        return InetSocketAddress.createUnresolved(addressPart, port)
+                        InetSocketAddress.createUnresolved(addressPart, port)
                     }
                 }
             } else if (isIPAddress(address)) {
@@ -289,7 +270,7 @@ internal object AddressUtils
             return null
         } else if (address == null) {
             val host = socketAddress.hostString.trimStart('/')
-            if (isAddress(host)) {
+            if (isIPAddress(host) || isDomain(host)) {
                 return "$host:$port"
             } else {
                 return null
@@ -315,13 +296,16 @@ internal object AddressUtils
                     continue
                 }
 
+                /*
                 val hardwareMAC = nif.hardwareAddress
                 if (isValidMAC(hardwareMAC)) {
                     val macAddress = formatMAC(hardwareMAC)
-                    if (addressList.find { it.address == macAddress } == null) {
-                        addressList.add(AddressEntry(macAddress, nif.name))
+                    val ipAddress = getLinkLocalFromMAC(macAddress)
+                    if (ipAddress != null && addressList.find { it.address == ipAddress } == null) {
+                        addressList.add(AddressEntry(ipAddress, nif.name))
                     }
                 }
+                */
 
                 for (ia in nif.interfaceAddresses) {
                     if (ia.address.isLoopbackAddress) {
@@ -333,14 +317,17 @@ internal object AddressUtils
                         addressList.add(AddressEntry(stripInterface(hostAddress), nif.name))
                     }
 
+                    /*
                     // extract MAC address from fe80:: address
                     val softwareMAC = extractMAC(ia.address)
                     if (softwareMAC != null) {
                         val macAddress = formatMAC(softwareMAC)
-                        if (addressList.find { it.address == macAddress } == null) {
-                            addressList.add(AddressEntry(macAddress, nif.name))
+                        val ipAddress = getLinkLocalFromMAC(macAddress)
+                        if (ipAddress != null && addressList.find { it.address == ipAddress } == null) {
+                            addressList.add(AddressEntry(ipAddress, nif.name))
                         }
                     }
+                    */
                 }
             }
         } catch (ex: Exception) {
@@ -373,6 +360,19 @@ internal object AddressUtils
         } else {
             return null
         }
+    }
+
+    /*
+    * E.g. "11:22:33:44:55:66" => "fe80::1322:33ff:fe44:5566"
+    */
+    fun getLinkLocalFromMAC(macAddress: String): String? {
+        val bytes = macAddressToBytes(macAddress)
+        val inetAddress = parseInetAddress("fe80::")
+        if (bytes != null && inetAddress is Inet6Address) {
+            val inetAddressEUI64 = createEUI64Address(inetAddress, bytes)
+            return inetAddressEUI64.toString().substring(1)
+        }
+        return null
     }
 
     /*

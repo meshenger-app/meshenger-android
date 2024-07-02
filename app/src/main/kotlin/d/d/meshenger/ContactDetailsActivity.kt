@@ -108,8 +108,6 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
             var address = addressEditText.text!!.toString()
             address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                 address.lowercase(Locale.ROOT)
-            } else if (AddressUtils.isMACAddress(address)) {
-                address.uppercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, R.string.error_address_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -284,8 +282,8 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
                 }
 
                 when (AddressUtils.getAddressType(ae.address)) {
-                    AddressType.GLOBAL_MAC -> info.add("<hardware>")
-                    AddressType.MULTICAST_MAC,
+                    //AddressType.GLOBAL_MAC -> info.add("<hardware>")
+                    //AddressType.MULTICAST_MAC,
                     AddressType.MULTICAST_IP -> info.add("<multicast>")
                     else -> {}
                 }

@@ -64,10 +64,12 @@ class Contact(
                 if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
                 } else if (AddressUtils.isMACAddress(address)) {
-                    address = address.uppercase(Locale.ROOT)
+                    // for backwards compatibility
+                    address = AddressUtils.getLinkLocalFromMAC(address)!!
                 } else {
                     throw JSONException("Invalid Address $address")
                 }
+
                 if (address !in addresses) {
                     addresses.add(address)
                 }

@@ -75,8 +75,6 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
             var address = AddressUtils.stripInterface(customAddressTextEdit.text!!.toString())
             address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                 address.lowercase(Locale.ROOT)
-            } else if (AddressUtils.isMACAddress(address)) {
-                address.uppercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, R.string.error_address_invalid, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

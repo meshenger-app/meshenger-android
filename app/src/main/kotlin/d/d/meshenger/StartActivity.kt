@@ -169,16 +169,16 @@ class StartActivity : BaseActivity(), ServiceConnection {
     private fun getDefaultAddress(): AddressEntry? {
         val addresses = AddressUtils.collectAddresses()
 
-        // preferable, since we can derive a fe80:: and other addresses from a MAC address
-        val macAddress = addresses.firstOrNull { it.device.startsWith("wlan") && AddressUtils.isMACAddress(it.address) }
-        if (macAddress != null) {
-            return macAddress
+        // any EUI-64 address
+        val addressEUI64 = addresses.firstOrNull { it.device.startsWith("wlan") && it.address.contains(":fffe:") }
+        if (addressEUI64 != null) {
+            return addressEUI64
         }
 
-        // non EUI-64 fe80:: address
-        val fe80Address = addresses.firstOrNull { it.device.startsWith("wlan") && it.address.startsWith("fe80::") }
-        if (fe80Address != null) {
-            return fe80Address
+        // any IPv6 address
+        val addressLinkLocal = addresses.firstOrNull { it.device.startsWith("wlan") && it.address.contains(":") }
+        if (addressLinkLocal != null) {
+            return addressLinkLocal
         }
 
         return null

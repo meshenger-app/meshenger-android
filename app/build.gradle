@@ -28,13 +28,15 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    flavorDimensions "store"
+    flavorDimensions += "store"
 
     productFlavors {
         google {
+            dimension 'store'
             applicationId 'app.meshenger'
         }
         fdroid {
+            dimension 'store'
             applicationId 'd.d.meshenger'
         }
     }

@@ -5,7 +5,7 @@ android {
     }
     compileSdkVersion 33
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode 429
         versionName "4.2.9"
@@ -45,8 +45,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.3.3'
-//    implementation 'org.webrtc:google-webrtc:1.0.24064'
-    implementation 'dev.bargen:webrtc-android:115.0.0'
+    implementation 'ch.threema:webrtc-android:123.0.0'
     implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3'

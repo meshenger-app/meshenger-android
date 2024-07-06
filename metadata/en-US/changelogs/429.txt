@@ -1,0 +1,3 @@
+* store MAC addresses as IP addresses (EUI64)
+* show IP addresses of mobile data interfaces
+* update WebRTC 123 (Threema package) 

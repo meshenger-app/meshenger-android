@@ -14,6 +14,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import d.d.meshenger.MainService.MainBinder
 import d.d.meshenger.AddressUtils.AddressType
+import java.net.InetAddress
+import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -54,6 +56,21 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         systemAddresses = AddressUtils.collectAddresses().toMutableList()
 
         bindService(Intent(this, MainService::class.java), this, 0)
+    }
+
+    private class LookupHostnames(private val entries: List<AddressEntry>, private val callback: (String) -> Unit) : Runnable {
+        override fun run() {
+            for (entry in entries) {
+                try {
+                    val hostname = InetAddress.getByName(entry.address).getHostName()
+                    if (hostname != entry.address) {
+                        callback(hostname)
+                    }
+                } catch (e: UnknownHostException) {
+                    // ignore
+                }
+            }
+        }
     }
 
     private fun initViews() {
@@ -117,6 +134,21 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
 
         initAddressList()
         initViews()
+
+        // use network to lookup own hostname
+        // TODO: do not use network ...
+        Thread(
+            LookupHostnames(systemAddresses.toList()) { hostname ->
+                runOnUiThread {
+                    if (AddressUtils.isDomain(hostname)) {
+                        systemAddresses.add(AddressEntry(hostname, ""))
+                        initAddressList()
+                    } else {
+                        Log.w(this, "got invalid hostname ${hostname}?")
+                    }
+                }
+            }
+        ).start()
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

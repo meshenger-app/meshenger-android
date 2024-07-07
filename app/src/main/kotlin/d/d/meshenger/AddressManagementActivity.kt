@@ -115,17 +115,6 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         binder = iBinder as MainBinder
 
-        // add extra information to stored addresses from system addresses
-        val addresses = mutableListOf<AddressEntry>()
-        for (address in binder!!.getSettings().addresses) {
-            val ae = systemAddresses.firstOrNull { it.address == address }
-            if (ae != null) {
-                addresses.add(AddressEntry(address, ae.device))
-            } else {
-                addresses.add(AddressEntry(address, ""))
-            }
-        }
-
         initAddressList()
         initViews()
     }

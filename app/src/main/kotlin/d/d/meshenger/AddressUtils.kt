@@ -308,17 +308,6 @@ internal object AddressUtils
                     continue
                 }
 
-                /*
-                val hardwareMAC = nif.hardwareAddress
-                if (isValidMAC(hardwareMAC)) {
-                    val macAddress = formatMAC(hardwareMAC)
-                    val ipAddress = getLinkLocalFromMAC(macAddress)
-                    if (ipAddress != null && addressList.find { it.address == ipAddress } == null) {
-                        addressList.add(AddressEntry(ipAddress, nif.name))
-                    }
-                }
-                */
-
                 for (ia in nif.interfaceAddresses) {
                     if (ia.address.isLoopbackAddress) {
                         continue
@@ -328,18 +317,6 @@ internal object AddressUtils
                     if (hostAddress != null && addressList.find { it.address == hostAddress } == null) {
                         addressList.add(AddressEntry(stripInterface(hostAddress), nif.name))
                     }
-
-                    /*
-                    // extract MAC address from fe80:: address
-                    val softwareMAC = extractMAC(ia.address)
-                    if (softwareMAC != null) {
-                        val macAddress = formatMAC(softwareMAC)
-                        val ipAddress = getLinkLocalFromMAC(macAddress)
-                        if (ipAddress != null && addressList.find { it.address == ipAddress } == null) {
-                            addressList.add(AddressEntry(ipAddress, nif.name))
-                        }
-                    }
-                    */
                 }
             }
         } catch (ex: Exception) {

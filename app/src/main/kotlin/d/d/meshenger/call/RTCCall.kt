@@ -586,14 +586,13 @@ class RTCCall : RTCPeerConnection {
             statsTimer = Timer()
             statsTimer.schedule(object : TimerTask() {
                 override fun run() {
-                    execute {
-                        Log.d(this, "setStatsCollector() executor start")
-                        try {
-                            peerConnection!!.getStats(statsCollector)
-                        } catch (e: Exception) {
-                            Log.e(this, "Cannot schedule statistics timer $e")
-                        }
-                        Log.d(this, "setStatsCollector() executor end")
+                    val success = execute {
+                        peerConnection?.getStats(statsCollector)
+                    }
+                    if (!success || peerConnection == null) {
+                        Log.e(this, "Cannot schedule statistics timer")
+                        statsTimer.cancel()
+                        statsTimer.purge()
                     }
                 }
             }, 0L, StatsReportUtil.STATS_INTERVAL_MS)

@@ -392,18 +392,21 @@ abstract class RTCPeerConnection(
         Log.d(this, "continueOnIncomingSocket() finished")
     }
 
-    protected fun execute(r: Runnable) {
+    protected fun execute(r: Runnable): Boolean {
         try {
             executor.execute(r)
         } catch (e: RejectedExecutionException) {
             e.printStackTrace()
             // can happen when the executor has shut down
             Log.w(this, "execute() catched RejectedExecutionException")
+            return false
         } catch (e: Exception) {
             e.printStackTrace()
             Log.w(this, "execute() catched $e")
             reportStateChange(CallState.ERROR_COMMUNICATION)
+            return false
         }
+        return true
     }
 
     // send over initial socket when the call is not yet established

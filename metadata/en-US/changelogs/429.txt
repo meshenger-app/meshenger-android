@@ -1,3 +1,5 @@
 * store MAC addresses as IP addresses (EUI64)
 * show IP addresses of mobile data interfaces
-* update WebRTC 123 (Threema package) 
+* update WebRTC version 123 (Threema package)
+* fix hostname address lookup
+* add hostnames to address management selection

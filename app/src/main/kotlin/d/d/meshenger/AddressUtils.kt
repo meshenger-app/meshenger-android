@@ -60,6 +60,18 @@ internal object AddressUtils
                 for (interfaceName in collectInterfaceNames(ownInterfaces)) {
                     addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
                 }
+            } else if (socketAddress.isUnresolved) {
+                // resolve domain/hostname
+                try {
+                    for (resolved in InetAddress.getAllByName(socketAddress.hostString)) {
+                        addresses.add(
+                            InetSocketAddress(resolved, socketAddress.port)
+                        )
+                    }
+                } catch (e: UnknownHostException) {
+                    // ignore
+                    continue
+                }
             } else {
                 addresses.add(socketAddress)
             }

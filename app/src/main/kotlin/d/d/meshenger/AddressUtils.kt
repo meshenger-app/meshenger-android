@@ -187,7 +187,7 @@ internal object AddressUtils
                 && mac[5].toInt() != 0x0)
     }
 
-    private val DOMAIN_PATTERN = Pattern.compile("^([a-z0-9\\-_]{1,63}[.]){1,40}[a-z]{2,}$")
+    private val DOMAIN_PATTERN = Pattern.compile("^[a-zA-Z0-9\\-._]{1,255}$")
     private val MAC_PATTERN = Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$")
 
     private val DEVICE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{1,8}$")
@@ -230,6 +230,7 @@ internal object AddressUtils
 
     fun isDomain(address: String): Boolean {
         return DOMAIN_PATTERN.matcher(address).matches()
+            && !address.contains("..")
     }
 
     fun stringToInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {

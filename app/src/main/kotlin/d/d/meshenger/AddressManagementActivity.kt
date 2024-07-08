@@ -58,13 +58,13 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         bindService(Intent(this, MainService::class.java), this, 0)
     }
 
-    private class LookupHostnames(private val entries: List<AddressEntry>, private val callback: (String) -> Unit) : Runnable {
+    private class LookupHostnames(private val entries: List<AddressEntry>, private val callback: (String, String) -> Unit) : Runnable {
         override fun run() {
             for (entry in entries) {
                 try {
                     val hostname = InetAddress.getByName(entry.address).getHostName()
                     if (hostname != entry.address) {
-                        callback(hostname)
+                        callback(hostname, entry.device)
                     }
                 } catch (e: UnknownHostException) {
                     // ignore
@@ -138,11 +138,14 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         // use network to lookup own hostname
         // TODO: do not use network ...
         Thread(
-            LookupHostnames(systemAddresses.toList()) { hostname ->
+            LookupHostnames(systemAddresses.toList()) { hostname, device ->
                 runOnUiThread {
                     if (AddressUtils.isDomain(hostname)) {
-                        systemAddresses.add(AddressEntry(hostname, ""))
-                        initAddressList()
+                        val domain = hostname.lowercase(Locale.ROOT)
+                        if (!systemAddresses.any { it.address == domain }) {
+                            systemAddresses.add(AddressEntry(domain, device))
+                            initAddressList()
+                        }
                     } else {
                         Log.w(this, "got invalid hostname ${hostname}?")
                     }

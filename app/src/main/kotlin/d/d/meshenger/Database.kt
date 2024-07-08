@@ -334,7 +334,7 @@ class Database {
 
             if (newFrom == "4.2.8") {
                 // nothing to do
-                newFrom = "4.2.9"
+                newFrom = "4.3.0"
             }
 
             alignSettings(settings)

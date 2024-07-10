@@ -153,4 +153,5 @@
     <string name="enter_contact_public_key">更改公钥</string>
     <string name="contact_public_key_invalid">联系人公钥无效。</string>´
     <string name="dialog_title_import_backup">导入备份？</string>
+    <string name="state_contact_pending">待定</string>
 </resources>

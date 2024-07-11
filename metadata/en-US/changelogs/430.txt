@@ -6,3 +6,4 @@
 * add Traditional Chinese translation by hugoalh
 * update French translation by Miala
 * update Brazilian translation by Paulo Pereira
+* Android 6 or greater is required (because of WebRTC)

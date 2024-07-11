@@ -32,4 +32,5 @@
     <string name="button_no">لا</string>
     <string name="audio_device_bluetooth">البلوتوث</string>
     <string name="call_ringing">يرنّ…</string>
+    <string name="address_management_help_text">حدد عنوانًا واحدًا أو أكثر ليتم تضمينه في رمز الاستجابة السريعة الخاص بك من الأفكار الجيدة استخدام عنوان MAC الخاص بمحول Wi-Fi (wlan0) لكن انتبه إلى أن Android قد يغيره اعتمادًا على إعدادات النظام إذا لم يكن عنوان MAC مرئيًا فقم بتمكين شبكة Wi-Fi لديك</string>
 </resources>

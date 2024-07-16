@@ -25,23 +25,17 @@ For more information see the Android documentation on [MAC Randomization Behavio
 
 Community mesh networks might use DHCP servers to assign IPv6 addresses based on the MAC address (EUI-64), which then makes the whole approach work and stable when also the phone uses the hardware MAC address for that network.
 
-## WebRTC
+## Audio+Video / WebRTC
 
-Meshenger uses [WebRTC](https://webrtc.org/), a well known library for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger, because it is not needed.
+Meshenger [WebRTC](https://webrtc.org/), a well known library for video- and audio communication. It handles audio and video WebRTC also supports NAT traversal via ICE-Servers, but this feature has been turned off for Meshenger, because it is not needed. The special build of WebRTC adds a few patches from the Threema messenger and one own patch. See [here](/webrtc/README.md).
 
-Resources:
-
-- [WebRTC builds for Android](https://github.com/dbrgn/webrtc-android)
-   - used for Meshenger since the official WebRTC builds for Android are vastly outdated
-   - upladed to [Maven Central](https://mvnrepository.com/artifact/dev.bargen/webrtc-android)
-   - based on the builds for Threema
 - [Serverless WebRTC Android](https://github.com/wojta/serverless-webrtc-android) demo
 - [Real time communication with WebRTC on Android](https://hackernoon.com/real-time-communication-with-webrtc-on-android-f96cdcfc4771) documentation
 - [Getting Started with WebRTC for Android](https://vivekc.xyz/getting-started-with-webrtc-for-android-daab1e268ff4) blog post
 - [WebRTC for Android](https://www.amryousef.me/android-webrtc) blog post
 - [Android WebRTC](https://github.com/GleasonK/android-webrtc-tutorial) tutorial
 
-## Crypto
+## Crypto / libsodium
 
 [libsodium](https://github.com/jedisct1/libsodium) is used for the encryption and authentication of the initial TCP/IP connection (called signalling). After that, WebRTC is establishing a UDP connection for Audio/Video data. WebRTC uses it's own encryption.
 

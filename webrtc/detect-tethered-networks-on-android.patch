@@ -1,0 +1,201 @@
+diff --git a/sdk/android/api/org/webrtc/NetworkMonitorAutoDetect.java b/sdk/android/api/org/webrtc/NetworkMonitorAutoDetect.java
+index a6f24c2858..af21c775b3 100644
+--- a/sdk/android/api/org/webrtc/NetworkMonitorAutoDetect.java
++++ b/sdk/android/api/org/webrtc/NetworkMonitorAutoDetect.java
+@@ -38,8 +38,10 @@ import java.net.NetworkInterface;
+ import java.net.SocketException;
+ import java.util.ArrayList;
+ import java.util.Collections;
++import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.List;
++import java.util.Map;
+ import java.util.Set;
+ 
+ /**
+@@ -622,6 +624,146 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
+     }
+   }
+ 
++  static class TetheringDelegate extends BroadcastReceiver {
++    private static final String EXTRA_ACTIVE_TETHER =
++        android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? "tetherArray" : "activeArray";
++    private static final String EXTRA_ERRORED_TETHER = "erroredArray";
++    private static final String EXTRA_AVAILABLE_TETHER = "availableArray";
++    private static final String ACTION_TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED";
++
++    private static final int TETHERING_NETWORK_HANDLE = 0;
++
++    private final Context context;
++    private final NetworkChangeDetector.Observer observer;
++    private List<NetworkInformation> tetheringNetworkInfo;
++
++    private static class NetworkInformationDiff {
++        public List<String> added = new ArrayList<>();
++        public List<NetworkInformation> unChanged = new ArrayList<>();
++        public List<NetworkInformation> removed = new ArrayList<>();
++
++        public boolean isNoChange() {
++            return added.isEmpty() && removed.isEmpty();
++        }
++
++        private List<String> getIntfNames(List<NetworkInformation> netInfos) {
++            List<String> intfNames = new ArrayList<>();
++            for (NetworkInformation netInfo : netInfos) {
++                intfNames.add(netInfo.name);
++            }
++            return intfNames;
++        }
++    }
++
++    TetheringDelegate(NetworkChangeDetector.Observer observer, Context context) {
++        this.context = context;
++        this.observer = observer;
++        IntentFilter intentFilter = new IntentFilter();
++        intentFilter.addAction(ACTION_TETHER_STATE_CHANGED);
++        context.registerReceiver(this, intentFilter);
++    }
++
++    @Override
++    @SuppressLint("InlinedApi")
++    public void onReceive(Context context, Intent intent) {
++        if (ACTION_TETHER_STATE_CHANGED.equals(intent.getAction())) {
++            List<String> tetherIfNames = intent.getStringArrayListExtra(EXTRA_ACTIVE_TETHER);
++            List<String> erroredIfNames = intent.getStringArrayListExtra(EXTRA_ERRORED_TETHER);
++            List<String> availableIfNames = intent.getStringArrayListExtra(EXTRA_AVAILABLE_TETHER);
++            onTetheringStateChange(tetherIfNames, erroredIfNames, availableIfNames);
++        }
++    }
++
++    public void release() {
++        context.unregisterReceiver(this);
++    }
++
++    public List<NetworkInformation> getActiveNetworkList() {
++        return tetheringNetworkInfo != null ? tetheringNetworkInfo : Collections.emptyList();
++    }
++
++    private NetworkInformationDiff computeNetworkInfoDiff(List<String> newNetIntfs) {
++        Map<String, NetworkInformation> oldMap = new HashMap<>();
++        NetworkInformationDiff diff = new NetworkInformationDiff();
++        Set<String> newNetInfsSet = new HashSet<>(newNetIntfs);
++
++        if (tetheringNetworkInfo != null) {
++            for (NetworkInformation oldNetInfo : tetheringNetworkInfo) {
++                oldMap.put(oldNetInfo.name, oldNetInfo);
++            }
++        }
++
++        for (String oldNetInfoName : oldMap.keySet()) {
++            newNetInfsSet.remove(oldNetInfoName);
++        }
++
++        for (String newNetInfoName : newNetInfsSet) {
++            NetworkInformation unChanged = oldMap.remove(newNetInfoName);
++            if (unChanged != null) {
++                diff.unChanged.add(unChanged);
++            }
++        }
++
++        diff.added.addAll(newNetInfsSet);
++        diff.removed.addAll(oldMap.values());
++
++        return diff;
++    }
++
++    private void onTetheringStateChange(List<String> tetherIfNames,
++                                        List<String> erroredIfNames,
++                                        List<String> availableIfNames) {
++        //Logging.d(TAG, "onTetheringStateChange: "
++        //    + "tetherIfNames: " + String.join(", ", tetherIfNames)
++        //    + ", erroredIfNames: " + String.join(", ", erroredIfNames)
++        //    + ", availableIfNames: " + String.join(", ", availableIfNames));
++
++        NetworkInformationDiff diff = computeNetworkInfoDiff(tetherIfNames);
++
++        if (diff.isNoChange()) {
++            return;
++        }
++
++        List<NetworkInformation> netInfos = new ArrayList<>(diff.unChanged);
++        List<NetworkInformation> newNetInfos = new ArrayList<>();
++        for (String ifName : diff.added) {
++          try {
++            NetworkInterface intf = NetworkInterface.getByName(ifName);
++            if (intf == null) {
++                continue;
++            }
++
++            List<InetAddress> interfaceAddresses = Collections.list(intf.getInetAddresses());
++            IPAddress[] ipAddresses = new IPAddress[interfaceAddresses.size()];
++            for (int i = 0; i < interfaceAddresses.size(); ++i) {
++                InetAddress inetAddress = interfaceAddresses.get(i);
++                ipAddresses[i] = new IPAddress(inetAddress.getAddress());
++            }
++
++            NetworkInformation netInfo = new NetworkInformation(ifName,
++                    NetworkChangeDetector.ConnectionType.CONNECTION_ETHERNET,
++                    NetworkChangeDetector.ConnectionType.CONNECTION_NONE, TETHERING_NETWORK_HANDLE,
++                    ipAddresses);
++
++            newNetInfos.add(netInfo);
++          } catch (Exception e) {
++            Logging.e(TAG, "onTetheringStateChange() " + e.toString());
++          }
++        }
++
++        netInfos.addAll(newNetInfos);
++        tetheringNetworkInfo = netInfos;
++
++        for (NetworkInformation connNetInfo : newNetInfos) {
++            observer.onNetworkConnect(connNetInfo);
++        }
++
++        for (NetworkInformation discNetInfo : diff.removed) {
++            observer.onNetworkDisconnect(discNetInfo.handle);
++        }
++      }
++  }
++
+   private static final long INVALID_NET_ID = -1;
+   private static final String TAG = "NetworkMonitorAutoDetect";
+ 
+@@ -638,6 +780,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
+   private ConnectivityManagerDelegate connectivityManagerDelegate;
+   private WifiManagerDelegate wifiManagerDelegate;
+   private WifiDirectManagerDelegate wifiDirectManagerDelegate;
++  private TetheringDelegate tetheringDelegate;
+   private static boolean includeWifiDirect;
+ 
+   @GuardedBy("availableNetworks") final Set<Network> availableNetworks = new HashSet<>();
+@@ -664,6 +807,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
+     if (includeWifiDirect) {
+       wifiDirectManagerDelegate = new WifiDirectManagerDelegate(observer, context);
+     }
++    tetheringDelegate = new TetheringDelegate(observer, context);
+ 
+     registerReceiver();
+     if (connectivityManagerDelegate.supportNetworkCallback()) {
+@@ -730,6 +874,9 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
+     if (wifiDirectManagerDelegate != null) {
+       result.addAll(wifiDirectManagerDelegate.getActiveNetworkList());
+     }
++    if (tetheringDelegate != null) {
++      result.addAll(tetheringDelegate.getActiveNetworkList());
++    }
+     return result;
+   }
+ 
+@@ -744,6 +891,9 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
+     if (wifiDirectManagerDelegate != null) {
+       wifiDirectManagerDelegate.release();
+     }
++    if (tetheringDelegate != null) {
++      tetheringDelegate.release();
++    }
+     unregisterReceiver();
+   }
+ 
+-- 
+2.45.2
+

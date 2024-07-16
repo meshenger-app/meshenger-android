@@ -3,7 +3,6 @@ package d.d.meshenger
 import android.net.InetAddresses
 import android.os.Build
 import android.util.Patterns
-import java.io.*
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
@@ -14,7 +13,7 @@ internal object AddressUtils
 {
     fun isLinkLocalAddress(address: String): Boolean {
         if (isIPAddress(address)) {
-            // IPv4
+            // IPv4 (check for 169.254.0.0/16)
             if (address.startsWith("169.254.")) {
                 return true
             }
@@ -38,99 +37,21 @@ internal object AddressUtils
         return false
     }
 
-    fun getAllSocketAddresses(contact: Contact, useNeighborTable: Boolean = false): List<InetSocketAddress> {
-        val port = MainService.serverPort
-        val addresses = mutableListOf<InetSocketAddress>()
-        val macs = mutableSetOf<String>()
-        val extractFE80MAC = true
-
-        Utils.checkIsNotOnMainThread()
-
-        val lastWorkingAddress = contact.lastWorkingAddress
-        if (lastWorkingAddress != null) {
-            addresses.add(lastWorkingAddress)
+    fun closeSocket(socket: Socket?) {
+        try {
+            socket?.close()
+        } catch (_: Exception) {
+            // ignore
         }
-
-        val ownInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-
-        for (address in contact.addresses) {
-            val socketAddress = stringToInetSocketAddress(address, port) ?: continue
-
-            if (isLinkLocalAddress(socketAddress.hostString)) {
-                for (interfaceName in collectInterfaceNames(ownInterfaces)) {
-                    addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
-                }
-            } else if (socketAddress.isUnresolved) {
-                // resolve domain/hostname
-                try {
-                    for (resolved in InetAddress.getAllByName(socketAddress.hostString)) {
-                        addresses.add(
-                            InetSocketAddress(resolved, socketAddress.port)
-                        )
-                    }
-                } catch (e: UnknownHostException) {
-                    // ignore
-                    continue
-                }
-            } else {
-                addresses.add(socketAddress)
-            }
-
-            // get MAC address from IPv6 EUI64 address
-            if (extractFE80MAC) {
-                val inetAddress = parseInetAddress(address)
-                val macAddress = extractMAC(inetAddress)
-                if (macAddress != null) {
-                    addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, port))
-                    if (useNeighborTable) {
-                        macs.add(formatMAC(macAddress))
-                    }
-                }
-            }
-        }
-
-        if (useNeighborTable) {
-            addresses.addAll(
-                getAddressesFromNeighborTable(macs.toList(), port)
-            )
-        }
-
-        return addresses.distinct()
     }
 
-    private fun ignoreDeviceByName(device: String): Boolean {
+    fun ignoreDeviceByName(device: String): Boolean {
         return device.startsWith("dummy")
     }
 
     fun formatMAC(mac: ByteArray): String {
         return String.format("%02X:%02X:%02X:%02X:%02X:%02X",
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
-    }
-
-    private fun macAddressToBytes(macAddress: String): ByteArray? {
-        if (isMACAddress(macAddress)) {
-            val bytes = macAddress
-                .split(":")
-                .map { it.toInt(16).toByte() }
-                .toByteArray()
-            if (isValidMAC(bytes)) {
-                return bytes
-            }
-        }
-        return null
-    }
-
-    private fun parseInetAddress(address: String): InetAddress? {
-        if (isIPAddress(address)) {
-            val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                InetAddresses.parseNumericAddress(address)
-            } else {
-                InetAddress.getByName(address)
-            }
-            return inetAddress
-        }
-
-        return null
     }
 
     // remove interface from link local address
@@ -145,22 +66,23 @@ internal object AddressUtils
 
     // coarse address type distinction
     enum class AddressType {
-        GLOBAL_IP, GLOBAL_MAC, LOCAL_IP, LOCAL_MAC, MULTICAST_MAC, MULTICAST_IP, DOMAIN
+        GLOBAL_IP, LOCAL_IP, MULTICAST_IP, DOMAIN
+    }
+
+    fun parseInetAddress(address: String): InetAddress? {
+        if (isIPAddress(address)) {
+            val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                InetAddresses.parseNumericAddress(address)
+            } else {
+                InetAddress.getByName(address)
+            }
+            return inetAddress
+        }
+
+        return null
     }
 
     fun getAddressType(address: String): AddressType {
-        val macBytes = macAddressToBytes(address)
-        if (macBytes != null) {
-            if ((macBytes[0].toInt() and 1) != 0) {
-                return AddressType.MULTICAST_MAC
-            } else if ((macBytes[0].toInt() and 2) == 0) {
-                // globally administered MAC address
-                return AddressType.GLOBAL_MAC
-            } else {
-                return AddressType.LOCAL_MAC
-            }
-        }
-
         val ipAddress = parseInetAddress(address)
         if (ipAddress != null) {
             if (ipAddress.isMulticastAddress) {
@@ -176,7 +98,7 @@ internal object AddressUtils
         return AddressType.DOMAIN
     }
 
-    fun isValidMAC(mac: ByteArray?): Boolean {
+    private fun isValidMACBytes(mac: ByteArray?): Boolean {
         // we ignore the first byte (dummy mac addresses have the "local" bit set - resulting in 0x02)
         return (mac != null
                 && mac.size == 6
@@ -270,6 +192,7 @@ internal object AddressUtils
                 return InetSocketAddress.createUnresolved(address, defaultPort)
             }
         }
+
         return null
     }
 
@@ -335,21 +258,23 @@ internal object AddressUtils
         }
     }
 
-    // Check if the given MAC address is in the IPv6 address
-    private fun getEUI64MAC(address: Inet6Address): ByteArray? {
+    /*
+    * Replace the MAC address of an EUi64 scheme IPv6 address with another MAC address.
+    * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
+    */
+    fun createEUI64Address(address: Inet6Address, mac: ByteArray): Inet6Address {
+        // address is expected to be an EUI64 address
         val bytes = address.address
-        if (bytes.size == 16 && bytes[11] == 0xFF.toByte() && bytes[12] == 0xFE.toByte()) {
-            return byteArrayOf(
-                bytes[8] xor 2,
-                bytes[9],
-                bytes[10],
-                bytes[13],
-                bytes[14],
-                bytes[15]
-            )
-        } else {
-            return null
-        }
+        bytes[8] = (mac[0] xor 2)
+        bytes[9] = mac[1]
+        bytes[10] = mac[2]
+        // ff:fe may or mac not be already set
+        bytes[11] = 0xFF.toByte()
+        bytes[12] = 0xFE.toByte()
+        bytes[13] = mac[3]
+        bytes[14] = mac[4]
+        bytes[15] = mac[5]
+        return Inet6Address.getByAddress(null, bytes, address.scopeId)
     }
 
     /*
@@ -365,151 +290,16 @@ internal object AddressUtils
         return null
     }
 
-    /*
-    * Replace the MAC address of an EUi64 scheme IPv6 address with another MAC address.
-    * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
-    */
-    private fun createEUI64Address(address: Inet6Address, mac: ByteArray): Inet6Address {
-        // address is expected to be an EUI64 address
-        val bytes = address.address
-        bytes[8] = (mac[0] xor 2)
-        bytes[9] = mac[1]
-        bytes[10] = mac[2]
-        // ff:fe may or mac not be already set
-        bytes[11] = 0xFF.toByte()
-        bytes[12] = 0xFE.toByte()
-        bytes[13] = mac[3]
-        bytes[14] = mac[4]
-        bytes[15] = mac[5]
-        return Inet6Address.getByAddress(null, bytes, address.scopeId)
-    }
-
-    private fun collectInterfaceNames(networkInterfaces: List<NetworkInterface>): List<String> {
-        val ifNames = mutableSetOf<String>()
-        for (nif in networkInterfaces) {
-            if (nif.isLoopback) {
-                continue
+    fun macAddressToBytes(macAddress: String): ByteArray? {
+        if (isMACAddress(macAddress)) {
+            val bytes = macAddress
+                .split(":")
+                .map { it.toInt(16).toByte() }
+                .toByteArray()
+            if (isValidMACBytes(bytes)) {
+                return bytes
             }
-
-            if (ignoreDeviceByName(nif.name)) {
-                continue
-            }
-
-            ifNames.add(nif.name)
-        }
-
-        return ifNames.toList()
-    }
-
-    /*
-    * Duplicate own addresses that contain a MAC address with the given MAC address.
-    */
-    private fun mapMACtoPrefixes(networkInterfaces: List<NetworkInterface>, macAddress: ByteArray?, port: Int): List<InetSocketAddress> {
-        val addresses = ArrayList<InetSocketAddress>()
-
-        if (macAddress == null || macAddress.size != 6) {
-            return addresses
-        }
-
-        try {
-            for (nif in networkInterfaces) {
-                if (nif.isLoopback) {
-                    continue
-                }
-
-                if (ignoreDeviceByName(nif.name)) {
-                    continue
-                }
-
-                for (ia in nif.interfaceAddresses) {
-                    val address = ia.address
-
-                    if (address.isLoopbackAddress) {
-                        continue
-                    }
-
-                    if (address is Inet6Address) {
-                        if (getEUI64MAC(address) != null || address.isLinkLocalAddress) {
-                            // If a MAC address is embedded in the address from our own system (IPv6 + EUI-64)
-                            // => replace it by the target MAC address
-                            // If the address is fe80:: with a "random" MAC address (no "ff:fe" filler)
-                            // => replace it with the target MAC address anyway
-                            val newAddress = createEUI64Address(address, macAddress)
-                            addresses.add(InetSocketAddress(newAddress.hostAddress, port))
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return addresses
-    }
-
-    fun extractMAC(address: InetAddress?): ByteArray? {
-        if (address != null && address is Inet6Address) {
-            return getEUI64MAC(address)
         }
         return null
-    }
-
-    // experimental feature
-    private fun getAddressesFromNeighborTable(lookup_macs: List<String>, port: Int): List<InetSocketAddress> {
-        val addresses = mutableListOf<InetSocketAddress>()
-        try {
-            // get IPv4 and IPv6 entries
-            val pc = Runtime.getRuntime().exec("ip n l")
-            val rd = BufferedReader(
-                InputStreamReader(pc.inputStream, "UTF-8")
-            )
-            var line : String
-            while (rd.readLine().also { line = it } != null) {
-                val tokens = line.split("\\s+").toTypedArray()
-                // IPv4
-                if (tokens.size == 6) {
-                    val address = tokens[0]
-                    val device = tokens[2]
-                    val mac = tokens[4]
-                    val state = tokens[5]
-                    for (lookup_mac in lookup_macs) {
-                        if (lookup_mac.equals(mac, ignoreCase = true)
-                            && isIPAddress(address)
-                            && !state.equals("failed", ignoreCase = true)
-                        ) {
-                            if (isLinkLocalAddress(address)) {
-                                addresses.add(InetSocketAddress("$address%$device", port))
-                            } else {
-                                addresses.add(InetSocketAddress(address, port))
-                            }
-                        }
-                    }
-                }
-
-                // IPv6
-                if (tokens.size == 7) {
-                    val address = tokens[0]
-                    val device = tokens[2]
-                    val mac = tokens[4]
-                    val state = tokens[6]
-                    for (lookup_mac in lookup_macs) {
-                        if (lookup_mac.equals(mac, ignoreCase = true)
-                            && isIPAddress(address)
-                            && !state.equals("failed", ignoreCase = true)
-                        ) {
-                            if (isLinkLocalAddress(address)) {
-                                addresses.add(InetSocketAddress("$address%$device", port))
-                            } else {
-                                addresses.add(InetSocketAddress(address, port))
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            Log.d(this, e.toString())
-        }
-
-        return addresses
     }
 }

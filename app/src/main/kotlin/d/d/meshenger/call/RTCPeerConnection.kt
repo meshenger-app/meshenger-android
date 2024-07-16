@@ -1,5 +1,6 @@
 package d.d.meshenger.call
 
+import Connector
 import android.content.Intent
 import androidx.lifecycle.Lifecycle
 import d.d.meshenger.*
@@ -27,12 +28,7 @@ abstract class RTCPeerConnection(
     protected fun cleanupRTCPeerConnection() {
         execute {
             Log.d(this, "cleanup() executor start")
-            try {
-                Log.d(this, "cleanup() close socket")
-                commSocket?.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            AddressUtils.closeSocket(commSocket)
             Log.d(this, "cleanup() executor end")
         }
 
@@ -93,14 +89,47 @@ abstract class RTCPeerConnection(
     private fun createOutgoingCallInternal(contact: Contact, offer: String) {
         Log.d(this, "createOutgoingCallInternal()")
 
+        Utils.checkIsNotOnMainThread()
+
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val settings = binder.getSettings()
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
 
-        val socket = createCommSocket(contact)
+        val connector = Connector(
+            settings.connectTimeout,
+            settings.connectRetries,
+            settings.useNeighborTable
+        )
+
+        connector.addressTry = object : Connector.AddressTry {
+            override fun onAddressTry(address: InetSocketAddress) {
+                callActivity?.onRemoteAddressChange(address, false)
+            }
+        }
+
+        val socket = connector.connect(contact)
+
         if (socket == null) {
+            if (connector.connectException) {
+                reportStateChange(CallState.ERROR_CONNECT_PORT)
+            } else if (connector.unknownHostException) {
+                reportStateChange(CallState.ERROR_UNKNOWN_HOST)
+            } else if (connector.exception) {
+                reportStateChange(CallState.ERROR_COMMUNICATION)
+            } else if (connector.socketTimeoutException) {
+                reportStateChange(CallState.ERROR_NO_CONNECTION)
+            } else if (contact.addresses.isEmpty()) {
+                reportStateChange(CallState.ERROR_NO_ADDRESSES)
+            } else {
+                // No addresses were generated.
+                // This happens if MAC addresses were
+                // used and no network is available.
+                reportStateChange(CallState.ERROR_NO_NETWORK)
+            }
             return
+        } else {
+            reportStateChange(CallState.CONNECTING)
         }
 
         callActivity?.onRemoteAddressChange(socket.remoteSocketAddress as InetSocketAddress, true)
@@ -452,78 +481,6 @@ abstract class RTCPeerConnection(
             declineInternal()
             Log.d(this, "decline() executor end")
         }
-    }
-
-    private fun createCommSocket(contact: Contact): Socket? {
-        Log.d(this, "createCommSocket()")
-
-        Utils.checkIsNotOnMainThread()
-
-        val settings = binder.getSettings()
-        val useNeighborTable = settings.useNeighborTable
-        val connectTimeout = settings.connectTimeout
-        val connectRetries = settings.connectRetries
-
-        var unknownHostException = false
-        var connectException = false
-        var socketTimeoutException = false
-        var exception = false
-
-        val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
-        Log.d(this, "createCommSocket() contact.addresses: ${contact.addresses}, allGeneratedAddresses: $allGeneratedAddresses")
-
-        for (iteration in 0..max(0, min(connectRetries, 4))) {
-            Log.d(this, "createCommSocket() loop number $iteration")
-
-            for (address in allGeneratedAddresses) {
-                callActivity?.onRemoteAddressChange(address, false)
-                Log.d(this, "try address: $address")
-
-                val socket = Socket()
-
-                try {
-                    socket.connect(address, connectTimeout)
-                    reportStateChange(CallState.CONNECTING)
-                    return socket
-                } catch (e: SocketTimeoutException) {
-                    // no connection
-                    Log.d(this, "createCommSocket() socket has thrown SocketTimeoutException")
-                    socketTimeoutException = true
-                } catch (e: ConnectException) {
-                    // device is online, but does not listen on the given port
-                    Log.d(this, "createCommSocket() socket has thrown ConnectException")
-                    connectException = true
-                } catch (e: UnknownHostException) {
-                    // hostname did not resolve
-                    Log.d(this, "createCommSocket() socket has thrown UnknownHostException")
-                    unknownHostException = true
-                } catch (e: Exception) {
-                    Log.d(this, "createCommSocket() socket has thrown Exception")
-                    exception = true
-                }
-
-                closeSocket(socket)
-            }
-        }
-
-        if (connectException) {
-            reportStateChange(CallState.ERROR_CONNECT_PORT)
-        } else if (unknownHostException) {
-            reportStateChange(CallState.ERROR_UNKNOWN_HOST)
-        } else if (exception) {
-            reportStateChange(CallState.ERROR_COMMUNICATION)
-        } else if (socketTimeoutException) {
-            reportStateChange(CallState.ERROR_NO_CONNECTION)
-        } else if (contact.addresses.isEmpty()) {
-            reportStateChange(CallState.ERROR_NO_ADDRESSES)
-        } else {
-            // No addresses were generated.
-            // This happens if MAC addresses were
-            // used and no network is available.
-            reportStateChange(CallState.ERROR_NO_NETWORK)
-        }
-
-        return null
     }
 
     enum class CallState {

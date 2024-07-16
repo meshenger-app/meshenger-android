@@ -119,40 +119,6 @@ class MainService : Service(), Runnable {
         }
     }
 
-    private fun createCommSocket(contact: Contact): Socket? {
-        val settings = binder.getSettings()
-        val useNeighborTable = settings.useNeighborTable
-        val connectTimeout = settings.connectTimeout
-
-        for (address in AddressUtils.getAllSocketAddresses(contact, useNeighborTable)) {
-            Log.d(this, "try address: $address")
-            val socket = Socket()
-
-            try {
-                socket.connect(address, connectTimeout)
-                return socket
-            } catch (e: SocketTimeoutException) {
-                Log.d(this, "createCommSocket() SocketTimeoutException address=$address")
-            } catch (e: ConnectException) {
-                // device is online, but does not listen on the given port
-                Log.d(this, "createCommSocket() ConnectException address=$address")
-            } catch (e: UnknownHostException) {
-                // hostname did not resolve
-                Log.d(this, "createCommSocket() UnknownHostException address=$address")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            try {
-                socket.close()
-            } catch (e: Exception) {
-                // ignore
-            }
-        }
-
-        return null
-    }
-
     override fun onDestroy() {
         Log.d(this, "onDestroy()")
         isServerSocketRunning = false
@@ -171,21 +137,22 @@ class MainService : Service(), Runnable {
                     val encrypted = Crypto.encryptMessage(message, contact.publicKey, ownPublicKey, ownSecretKey) ?: continue
                     var socket: Socket? = null
                     try {
-                        socket = createCommSocket(contact)
+                        val settings = binder.getSettings()
+                        val connector = AddressUtils.Connector(
+                            settings.connectTimeout,
+                            1, // only try once, this is low priority
+                            settings.useNeighborTable
+                        )
+                        socket = connector.connect(contact)
                         if (socket == null) {
                             continue
                         }
                         val pw = PacketWriter(socket)
                         pw.writeMessage(encrypted)
-                        socket.close()
-                    } catch (e: Exception) {
-                        if (socket != null) {
-                            try {
-                                socket.close()
-                            } catch (ee: Exception) {
-                                // ignore
-                            }
-                        }
+                    } catch (_: Exception) {
+                        // ignore
+                    } finally {
+                        AddressUtils.closeSocket(socket)
                     }
                 }
             } catch (e: Exception) {

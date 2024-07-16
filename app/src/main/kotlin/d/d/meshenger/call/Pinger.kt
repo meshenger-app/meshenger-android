@@ -1,5 +1,6 @@
 package d.d.meshenger.call
 
+import Connector
 import d.d.meshenger.*
 import d.d.meshenger.AddressUtils
 import org.json.JSONObject
@@ -18,63 +19,32 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val settings = binder.getSettings()
-        val useNeighborTable = settings.useNeighborTable
-        val connectTimeout = settings.connectTimeout
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
-        val connectRetries = settings.connectRetries
-        var connectedSocket: Socket? = null
-        var networkNotReachable = false
-        var appNotRunning = false
+        var socket: Socket? = null
 
         try {
-            val allGeneratedAddresses = AddressUtils.getAllSocketAddresses(contact, useNeighborTable)
-            Log.d(this, "pingContact() connectTimeout: ${connectTimeout}, contact.addresses: ${contact.addresses}, allGeneratedAddresses: $allGeneratedAddresses")
+            val connector = Connector(
+                settings.connectTimeout,
+                settings.connectRetries,
+                settings.useNeighborTable
+            )
+            socket = connector.connect(contact)
 
-            // try to connect
-            for (iteration in 0..max(0, min(connectRetries, 4))) {
-                Log.d(this, "pingContact() loop number $iteration")
-                for (address in allGeneratedAddresses) {
-                    val socket = Socket()
-                    try {
-                        socket.connect(address, connectTimeout)
-                        connectedSocket = socket
-                        break
-                    } catch (e: ConnectException) {
-                        Log.d(this, "pingContact() $e, ${e.message}")
-                        if (" ENETUNREACH " in e.toString()) {
-                            networkNotReachable = true
-                        } else {
-                            appNotRunning = true
-                        }
-                    } catch (e: Exception) {
-                        // ignore
-                        Log.d(this, "pingContact() $e, ${e.message}")
-                    }
-
-                    closeSocket(socket)
-                }
-
-                // TCP/IP connection successfully
-                if (connectedSocket != null) {
-                    break
-                }
-            }
-
-            if (connectedSocket == null) {
-                return if (appNotRunning) {
+            if (socket == null) {
+                return if (connector.appNotRunning) {
                     Contact.State.APP_NOT_RUNNING
-                } else if (networkNotReachable) {
+                } else if (connector.networkNotReachable) {
                     Contact.State.NETWORK_UNREACHABLE
                 } else {
                     Contact.State.CONTACT_OFFLINE
                 }
             }
 
-            connectedSocket.soTimeout = 3000
+            socket.soTimeout = 3000
 
-            val pw = PacketWriter(connectedSocket)
-            val pr = PacketReader(connectedSocket)
+            val pw = PacketWriter(socket)
+            val pr = PacketReader(socket)
 
             Log.d(this, "pingContact() send ping to ${contact.name}")
             val encrypted = Crypto.encryptMessage(
@@ -109,15 +79,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             return Contact.State.COMMUNICATION_FAILED
         } finally {
             // make sure to close the socket
-            closeSocket(connectedSocket)
-        }
-    }
-
-    private fun closeSocket(socket: Socket?) {
-        try {
-            socket?.close()
-        } catch (_: Exception) {
-            // ignore
+            AddressUtils.closeSocket(socket)
         }
     }
 

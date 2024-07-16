@@ -23,13 +23,7 @@ class Event(
         val addresses = mutableListOf<String>()
         val address = address?.address
         if (address != null) {
-            // extract MAC address if possible
-            val mac = AddressUtils.extractMAC(address)
-            if (mac != null && AddressUtils.isValidMAC(mac)) {
-                addresses.add(AddressUtils.formatMAC(mac))
-            } else {
-                addresses.add(address.toString().removePrefix("/"))
-            }
+            addresses.add(address.toString().removePrefix("/"))
         }
         return Contact(name, publicKey, addresses)
     }

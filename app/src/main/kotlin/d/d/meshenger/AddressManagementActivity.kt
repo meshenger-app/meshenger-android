@@ -98,7 +98,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
             }
 
             // multicast addresses are not supported yet
-            if (AddressUtils.getAddressType(address) in listOf(AddressType.MULTICAST_MAC, AddressType.MULTICAST_IP)) {
+            if (AddressUtils.getAddressType(address) in listOf(AddressType.MULTICAST_IP)) {
                 Toast.makeText(this, R.string.error_address_multicast_not_supported, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -228,8 +228,6 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
                 }
 
                 when (AddressUtils.getAddressType(ae.address)) {
-                    AddressType.GLOBAL_MAC -> info.add("<hardware>")
-                    AddressType.MULTICAST_MAC,
                     AddressType.MULTICAST_IP -> info.add("<multicast>")
                     else -> {}
                 }

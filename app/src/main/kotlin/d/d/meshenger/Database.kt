@@ -286,22 +286,7 @@ class Database {
                 newFrom = "4.1.9"
             }
 
-            if (newFrom == "4.1.9") {
-                // nothing to do
-                newFrom = "4.2.0"
-            }
-
-            if (newFrom == "4.2.0") {
-                // nothing to do
-                newFrom = "4.2.1"
-            }
-
-            if (newFrom == "4.2.1") {
-                // nothing to do
-                newFrom = "4.2.2"
-            }
-
-            if (newFrom == "4.2.2") {
+            if (newFrom in listOf("4.1.9", "4.2.0", "4.2.1", "4.2.2")) {
                 // nothing to do
                 newFrom = "4.2.3"
             }
@@ -312,37 +297,7 @@ class Database {
                 newFrom = "4.2.4"
             }
 
-            if (newFrom == "4.2.4") {
-                // nothing to do
-                newFrom = "4.2.5"
-            }
-
-            if (newFrom == "4.2.5") {
-                // nothing to do
-                newFrom = "4.2.6"
-            }
-
-            if (newFrom == "4.2.6") {
-                // nothing to do
-                newFrom = "4.2.7"
-            }
-
-            if (newFrom == "4.2.7") {
-                // nothing to do
-                newFrom = "4.2.8"
-            }
-
-            if (newFrom == "4.2.8") {
-                // nothing to do
-                newFrom = "4.3.0"
-            }
-
-            if (newFrom == "4.3.0") {
-                // nothing to do
-                newFrom = "4.3.1"
-            }
-
-            if (newFrom == "4.3.1") {
+            if (newFrom in listOf("4.2.4", "4.2.5", "4.2.6", "4.2.7", "4.2.8", "4.3.0", "4.3.1")) {
                 // nothing to do
                 newFrom = "4.3.2"
             }

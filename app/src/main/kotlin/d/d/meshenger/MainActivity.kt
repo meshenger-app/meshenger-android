@@ -160,15 +160,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
             tabLayout.visibility = View.VISIBLE
         }
 
-        val toolbarLogo = findViewById<ImageView>(R.id.toolbar_logo)
         val toolbarLabel = findViewById<TextView>(R.id.toolbar_label)
         if (settings.showUsernameAsLogo) {
-            toolbarLogo.visibility = View.GONE
             toolbarLabel.visibility = View.VISIBLE
             toolbarLabel.text = settings.username
         } else {
             // default
-            toolbarLogo.visibility = View.VISIBLE
             toolbarLabel.visibility = View.GONE
         }
 

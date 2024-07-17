@@ -1,0 +1,1 @@
+* try a contacts addresses in the order from local to global

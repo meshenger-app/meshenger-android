@@ -79,11 +79,40 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
             )
         }
 
-        // TODO: sort by scope (link-local first, ... , global ip, hostname last)
-        //addresses.sortedBy { it.length }
+        // sort addresses by scope (link-local address, hostname, ... , global IP address, DNS domain)
+        val addressComparator = object : Comparator<InetSocketAddress> {
+            private fun getPriority(address: InetSocketAddress): Int {
+                if (lastWorkingAddress != null && lastWorkingAddress == address) {
+                    // try last working address first
+                    return 3
+                }
 
-        return addresses.distinct()
+                if (address.isUnresolved) {
+                    if (address.hostName.endsWith(".lan") || address.hostName.endsWith(".local") || !address.hostName.contains(".")) {
+                        // local domain or hostname
+                        return 1
+                    } else {
+                        return -1
+                    }
+                } else {
+                    if (address.address.isLinkLocalAddress) {
+                        return 2
+                    } else if (address.address.isAnyLocalAddress) {
+                        return 1
+                    } else {
+                        return -1
+                    }
+                }
+            }
+
+            override fun compare(address1: InetSocketAddress, address2: InetSocketAddress): Int {
+                return getPriority(address1) - getPriority(address2)
+            }
+        }
+
+        return addresses.distinct().sortedWith(addressComparator)
     }
+
 
     private fun createSocket(address: InetSocketAddress): Socket {
         val socket = Socket()

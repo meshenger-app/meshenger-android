@@ -15,10 +15,6 @@ Limitations:
 - no calls through firewalls / NAT borders
 - no calls after MAC / IP address change
 
-Known Issues:
-
-- calls via phone hotspot are [buggy](https://github.com/meshenger-app/meshenger-android/issues/133)
-
 ## Download
 
 [<img src="docs/fdroid.png" alt="Get it on F-Droid" height="90">](https://f-droid.org/packages/d.d.meshenger/)

@@ -34,7 +34,7 @@
     <string name="contact_name_conflict">Un contact ayant le même nom existe déjà.</string>
     <string name="contact_name_exists">Un contact ayant ce nom existe déjà.</string>
     <string name="contact_name_invalid">Le nom du contact est vide.</string>
-    <string name="dialog_title_delete_contact">Supprimer le contact \?</string>
+    <string name="dialog_title_delete_contact">Supprimer le contact ?</string>
     <string name="done">Terminé</string>
     <string name="empty_list_item">Vide</string>
     <string name="enter_contact_name">Modifier le nom du contact.</string>
@@ -58,7 +58,7 @@
     <string name="settings_name">Changer de nom</string>
     <string name="settings_nightmode">Mode nuit</string>
     <string name="startup_hello">Bonjour !</string>
-    <string name="startup_prompt_name">Quel devrait être votre nom \?</string>
+    <string name="startup_prompt_name">Quel devrait être votre nom ?</string>
     <string name="title_contacts">Contacts</string>
     <string name="title_scan_qr_code">Numérisation de code QR</string>
     <string name="title_settings">Paramètres</string>

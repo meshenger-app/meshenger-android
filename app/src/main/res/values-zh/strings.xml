@@ -35,7 +35,7 @@
     <string name="call_error_no_address">错误：没有地址</string>
     <string name="call_error_not_listening">错误：没有应用程序正在运行</string>
     <string name="call_error_unresolved_hostname">错误：无法解析地址</string>
-    <string name="call_no_network">没有网络-要打开Wi-Fi吗\?</string>
+    <string name="call_no_network">没有网络-要打开Wi-Fi吗?</string>
     <string name="call_ringing">响铃中…</string>
     <string name="call_start_or_abort">接听或者拒绝通话</string>
     <string name="call_waiting">等待中…</string>

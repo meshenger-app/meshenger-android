@@ -33,7 +33,7 @@
     <string name="call_error_no_address">Feil: Ingen adresse</string>
     <string name="call_error_not_listening">Feil: Program kjører ikke</string>
     <string name="call_error_unresolved_hostname">Feil: Kan ikke utlede adresse</string>
-    <string name="call_no_network">Mangler nettverk. Skru på Wi-Fi\?</string>
+    <string name="call_no_network">Mangler nettverk. Skru på Wi-Fi?</string>
     <string name="call_ringing">Ringer …</string>
     <string name="call_start_or_abort">Start eller avbryt samtale</string>
     <string name="call_waiting">Venter …</string>
@@ -52,7 +52,7 @@
     <string name="contact_name_conflict">En kontakt med samme navn finnes allerede:</string>
     <string name="contact_name_exists">En kontakt med det navnet finnes allerede:</string>
     <string name="custom_address">Egendefinert adresse</string>
-    <string name="dialog_title_delete_contact">Fjern kontakt\?</string>
+    <string name="dialog_title_delete_contact">Fjern kontakt?</string>
     <string name="done">Ferdig</string>
     <string name="empty_list_item">Tom</string>
     <string name="enter_contact_name">Skriv inn kontaktnavn:</string>
@@ -61,7 +61,7 @@
     <string name="error_address_exists">Denne adressen finnes allerede</string>
     <string name="error_address_invalid">Skriv inn en gyldig MAC/IP-adresse eller domenenavn</string>
     <string name="failed_to_export_database">Klarte ikke å eksportere database</string>
-    <string name="import_dialog">Importer nye innstillinger og legg til %1$d kontakter og %2$d begivenheter\?</string>
+    <string name="import_dialog">Importer nye innstillinger og legg til %1$d kontakter og %2$d begivenheter?</string>
     <string name="invalid_name">Ugyldig navn</string>
     <string name="invalid_number">Ugyldig verdi (må være %1$d..%2$d)</string>
     <string name="invalid_qr">Ugyldig QR-kode</string>
@@ -106,7 +106,7 @@
     <string name="setup_no_address_found">Fant ikke MAC-adressen tilhørende ditt Wi-Fi-kort. Skru på Wi-Fi nå (du trenger ikke Internett) eller hopp over for å sette opp senere.</string>
     <string name="startup_hello">Hei.</string>
     <string name="startup_name_prefix">Bruker</string>
-    <string name="startup_prompt_name">Hva vil du hete\?</string>
+    <string name="startup_prompt_name">Hva vil du hete?</string>
     <string name="state_app_not_running">Programmet kjører ikke</string>
     <string name="state_authentication_failed">Identitetsbekreftelse mislyktes</string>
     <string name="state_communication_failed">Kommunikasjon mislyktes</string>
@@ -119,6 +119,6 @@
     <string name="title_show_qr_code">Skann denne QR-koden</string>
     <string name="unknown_caller">Ukjent anrop</string>
     <string name="warning_no_addresses_configured">Ingen adresse for QR-kode oppsatt.</string>
-    <string name="warning_no_addresses_found">Fant ingen oppsatte adresser. Har nettverket endret seg\?</string>
+    <string name="warning_no_addresses_found">Fant ingen oppsatte adresser. Har nettverket endret seg?</string>
     <string name="wrong_password">Feil passord</string>
 </resources>

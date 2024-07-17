@@ -48,7 +48,7 @@
     <string name="enter_contact_name">Name des Kontaktes eingeben.</string>
     <string name="enter_password">Passwort eingeben</string>
     <string name="error">Fehler</string>
-    <string name="import_dialog">Import fortsetzen und %1$d Kontakte und %2$d Ereignisse hinzufügen\?</string>
+    <string name="import_dialog">Import fortsetzen und %1$d Kontakte und %2$d Ereignisse hinzufügen?</string>
     <string name="invalid_name">Ungültiger Name</string>
     <string name="invalid_qr">Ungültiger QR Code</string>
     <string name="invalid_qr_code_data">Ungültige Daten</string>
@@ -98,13 +98,13 @@
     <string name="title_show_qr_code">Diesen QR Code Scannen</string>
     <string name="unknown_caller">Unbekannter Anrufer Blocken</string>
     <string name="warning_no_addresses_configured">Keine Adresse für den QR Code konfiguriert.</string>
-    <string name="warning_no_addresses_found">Konfigurierte Adresse nicht gefunden. Hat sich das Netzwerk geändert\?</string>
+    <string name="warning_no_addresses_found">Konfigurierte Adresse nicht gefunden. Hat sich das Netzwerk geändert?</string>
     <string name="wrong_password">Falsches Passwort</string>
     <string name="button_rename">Umbenennen</string>
     <string name="button_add">Hinzufügen</string>
     <string name="call_error_no_address">Fehler: Keine Adresse</string>
     <string name="call_authentication_failed">Authentifizierung fehlgeschlagen</string>
-    <string name="call_no_network">Kein Netzwerk - WLAN aktivieren\?</string>
+    <string name="call_no_network">Kein Netzwerk - WLAN aktivieren?</string>
     <string name="button_reset">Zurücksetzen</string>
     <string name="call_connection_failed">Verbindung fehlgeschlagen</string>
     <string name="audio_device_fixed">%1$s (fest)</string>

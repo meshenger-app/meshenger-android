@@ -1,5 +1,6 @@
 package d.d.meshenger
 
+import Connector
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -138,7 +139,7 @@ class MainService : Service(), Runnable {
                     var socket: Socket? = null
                     try {
                         val settings = binder.getSettings()
-                        val connector = AddressUtils.Connector(
+                        val connector = Connector(
                             settings.connectTimeout,
                             1, // only try once, this is low priority
                             settings.useNeighborTable

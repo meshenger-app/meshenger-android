@@ -6,8 +6,6 @@ import d.d.meshenger.*
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import java.io.IOException
-import java.lang.Integer.max
-import java.lang.Integer.min
 import java.net.*
 import java.util.*
 import java.util.concurrent.*

@@ -16,7 +16,6 @@ import d.d.meshenger.Utils.readInternalFile
 import d.d.meshenger.Utils.writeInternalFile
 import d.d.meshenger.call.PacketWriter
 import d.d.meshenger.call.Pinger
-import d.d.meshenger.call.RTCCall
 import d.d.meshenger.call.RTCPeerConnection
 import java.io.File
 import java.io.IOException

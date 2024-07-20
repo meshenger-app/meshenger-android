@@ -4,9 +4,6 @@ import d.d.meshenger.*
 import d.d.meshenger.AddressUtils
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
-import java.lang.Integer.max
-import java.lang.Integer.min
-import java.net.ConnectException
 import java.net.Socket
 
 /*

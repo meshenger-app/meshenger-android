@@ -1,8 +1,5 @@
-import d.d.meshenger.AddressUtils
-import d.d.meshenger.Contact
-import d.d.meshenger.Log
-import d.d.meshenger.MainService
-import d.d.meshenger.Utils
+package d.d.meshenger
+
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -19,7 +16,6 @@ import java.util.Collections
 import kotlin.experimental.xor
 import kotlin.math.max
 import kotlin.math.min
-
 
 class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val useNeighborTable: Boolean = false) {
     var networkNotReachable = false
@@ -79,38 +75,7 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
             )
         }
 
-        // sort addresses by scope (link-local address, hostname, ... , global IP address, DNS domain)
-        val addressComparator = object : Comparator<InetSocketAddress> {
-            private fun getPriority(address: InetSocketAddress): Int {
-                if (lastWorkingAddress != null && lastWorkingAddress == address) {
-                    // try last working address first
-                    return 3
-                }
-
-                if (address.isUnresolved) {
-                    if (address.hostName.endsWith(".lan") || address.hostName.endsWith(".local") || !address.hostName.contains(".")) {
-                        // local domain or hostname
-                        return 1
-                    } else {
-                        return -1
-                    }
-                } else {
-                    if (address.address.isLinkLocalAddress) {
-                        return 2
-                    } else if (address.address.isAnyLocalAddress) {
-                        return 1
-                    } else {
-                        return -1
-                    }
-                }
-            }
-
-            override fun compare(address1: InetSocketAddress, address2: InetSocketAddress): Int {
-                return getPriority(address1) - getPriority(address2)
-            }
-        }
-
-        return addresses.distinct().sortedWith(addressComparator)
+        return addresses.distinct().sortedWith(InetSocketAddressComparator(lastWorkingAddress))
     }
 
 

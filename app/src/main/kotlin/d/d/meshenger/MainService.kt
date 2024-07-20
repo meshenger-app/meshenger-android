@@ -1,6 +1,5 @@
 package d.d.meshenger
 
-import Connector
 import android.app.*
 import android.content.Context
 import android.content.Intent

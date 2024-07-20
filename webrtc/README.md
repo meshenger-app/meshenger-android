@@ -13,9 +13,10 @@ Build instructions for WebRTC v123.0.0:
 git clone  https://github.com/threema-ch/webrtc-build-docker.git
 cd webrtc-build-docker
 git reset --hard 967efaeeb387ebdbf424a56a0a7bb1ab9ecccea6
+cp ~/meshenger-android/webrtc/detect-tethered-networks-on-android.patch patches/
 ./cli.sh build-tools
 ./cli.sh fetch 41b1493ddb5d98e9125d5cb002fd57ce76ebd8a7
-cd webrtc/src && patch -p1 < ~/meshenger-android/webrtc/detect-tethered-networks-on-android.patch && cd -
+./cli.sh patch
 docker run -it -v ${PWD}/webrtc:/webrtc threema/webrtc-build-tools:latest bash -c "
                 set -euo pipefail
                 cd src && ./tools_webrtc/android/build_aar.py && cd -

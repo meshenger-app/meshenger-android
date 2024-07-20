@@ -543,7 +543,13 @@ class RTCCall : RTCPeerConnection {
             createJavaAudioDevice()
         }
 
+        // Disable network monitor to enable
+        // connection through Androids own hotspot.
+        val options = PeerConnectionFactory.Options()
+        options.disableNetworkMonitor = true
+
         factory = PeerConnectionFactory.builder()
+            .setOptions(options)
             .setAudioDeviceModule(adm)
             .setVideoEncoderFactory(encoderFactory)
             .setVideoDecoderFactory(decoderFactory)

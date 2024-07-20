@@ -55,6 +55,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.google.android:flexbox:2.0.0'
+    implementation 'im.conversations.webrtc:webrtc-android:119.0.0'
     //implementation 'ch.threema:webrtc-android:123.0.0'
-    implementation files('../webrtc/libwebrtc-123.0.0.aar')
+    //implementation files('../webrtc/libwebrtc-123.0.0.aar')
 }

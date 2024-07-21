@@ -39,7 +39,6 @@
         android:orientation="vertical"
         android:layout_margin="5dp"
         android:paddingBottom="80dp"
-        android:scrollbarThumbVertical="@color/call_red"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appbar">
 

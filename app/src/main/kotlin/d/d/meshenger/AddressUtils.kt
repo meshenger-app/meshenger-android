@@ -212,7 +212,7 @@ internal object AddressUtils
                     }
 
                     val hostAddress = ia.address.hostAddress
-                    if (hostAddress != null && addressList.find { it.address == hostAddress } == null) {
+                    if (hostAddress != null) {
                         addressList.add(AddressEntry(stripInterface(hostAddress), nif.name))
                     }
                 }
@@ -221,7 +221,8 @@ internal object AddressUtils
             // ignore
             Log.d(this, "collectAddresses() error=$ex")
         }
-        return addressList
+
+        return addressList.distinct()
     }
 
     // list all IP/MAC addresses of running network interfaces - for debugging only

@@ -17,7 +17,7 @@ import kotlin.experimental.xor
 import kotlin.math.max
 import kotlin.math.min
 
-class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val useNeighborTable: Boolean = false) {
+class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val guessEUI64Address: Boolean = false, val useNeighborTable: Boolean = false) {
     var networkNotReachable = false
     var appNotRunning = false
 
@@ -33,14 +33,13 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
     var addressTry: AddressTry? = null
 
     private fun isLinkLocalAddress(address: String): Boolean {
-        return AddressUtils.isIPAddress(address) && InetAddress.getByName(address).isLinkLocalAddress
+        return AddressUtils.parseInetAddress(address)?.isLinkLocalAddress ?: false
     }
 
     private fun getAllSocketAddresses(contact: Contact): List<InetSocketAddress> {
         val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
-        val extractFE80MAC = true
 
         val lastWorkingAddress = contact.lastWorkingAddress
         if (lastWorkingAddress != null) {
@@ -61,11 +60,13 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
             }
 
             // get MAC address from IPv6 EUI64 address and construct new ones with own IPv6 prefixes
-            if (extractFE80MAC) {
+            if (guessEUI64Address || useNeighborTable) {
                 val inetAddress = AddressUtils.parseInetAddress(address)
                 val macAddress = extractMAC(inetAddress)
                 if (macAddress != null) {
-                    addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, port))
+                    if (guessEUI64Address) {
+                        addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, port))
+                    }
                     if (useNeighborTable) {
                         macs.add(AddressUtils.formatMAC(macAddress))
                     }

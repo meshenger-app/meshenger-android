@@ -223,6 +223,14 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 }
             })
 
+        findViewById<SwitchMaterial>(R.id.guessEUI64AddressSwitch).apply {
+            isChecked = settings.guessEUI64Address
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.guessEUI64Address = isChecked
+                binder.saveDatabase()
+            }
+        }
+
         findViewById<SwitchMaterial>(R.id.useNeighborTableSwitch).apply {
             isChecked = settings.useNeighborTable
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->

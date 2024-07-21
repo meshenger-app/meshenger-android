@@ -96,7 +96,8 @@ abstract class RTCPeerConnection(
         val connector = Connector(
             settings.connectTimeout,
             settings.connectRetries,
-            settings.useNeighborTable
+            settings.useNeighborTable,
+            settings.guessEUI64Address
         )
 
         connector.addressTry = object : Connector.AddressTry {

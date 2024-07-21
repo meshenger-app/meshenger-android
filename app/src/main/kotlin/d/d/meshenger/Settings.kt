@@ -12,6 +12,7 @@ class Settings {
     var speakerphoneMode = "auto" // on, off, auto
     var blockUnknown = false
     var useNeighborTable = false
+    var guessEUI64Address = true
     var promptOutgoingCalls = false
     var videoHardwareAcceleration = true
     var disableCallHistory = false
@@ -53,6 +54,7 @@ class Settings {
             s.speakerphoneMode = obj.getString("speakerphone_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")
             s.useNeighborTable = obj.getBoolean("use_neighbor_table")
+            s.guessEUI64Address = obj.getBoolean("guess_eui64_address")
             s.videoHardwareAcceleration = obj.getBoolean("video_hardware_acceleration")
             s.disableAudioProcessing = obj.getBoolean("disable_audio_processing")
             s.connectTimeout = obj.getInt("connect_timeout")
@@ -106,6 +108,7 @@ class Settings {
             obj.put("speakerphone_mode", s.speakerphoneMode)
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
+            obj.put("guess_eui64_address", s.guessEUI64Address)
             obj.put("connect_timeout", s.connectTimeout)
             obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
             obj.put("disable_audio_processing", s.disableAudioProcessing)

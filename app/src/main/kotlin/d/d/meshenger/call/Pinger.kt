@@ -23,7 +23,8 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             val connector = Connector(
                 settings.connectTimeout,
                 settings.connectRetries,
-                settings.useNeighborTable
+                settings.useNeighborTable,
+                settings.guessEUI64Address
             )
             socket = connector.connect(contact)
 

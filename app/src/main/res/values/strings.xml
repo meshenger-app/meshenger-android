@@ -132,6 +132,7 @@
     <string name="settings_show_username_as_logo">Show Username As Logo</string>
     <string name="settings_speakerphone_mode">Speakerphone</string>
     <string name="settings_start_on_bootup">Start On Bootup</string>
+    <string name="settings_guess_eui64_address">Guess IP address (EUI64)</string>
     <string name="settings_use_neighbor_table">Use Neighbor Table (ARP/ND)</string>
     <string name="settings_video_degradation_mode">Video Degradation</string>
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>

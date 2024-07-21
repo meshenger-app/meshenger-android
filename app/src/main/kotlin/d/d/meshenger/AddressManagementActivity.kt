@@ -172,6 +172,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
 
         fun init(systemAddresses: List<AddressEntry>, storedAddresses: List<AddressEntry>) {
             this.allAddresses = (storedAddresses + systemAddresses).distinct().toMutableList()
+            this.allAddresses.sortWith(compareBy({ it.device }, { it.address }))
             this.systemAddresses = ArrayList(systemAddresses)
             this.storedAddresses = ArrayList(storedAddresses)
         }

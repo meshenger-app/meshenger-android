@@ -290,6 +290,9 @@ internal object AddressUtils
         return null
     }
 
+    /*
+    * E.g. "11:22:33:44:55:66" => [0x11, 0x22, 0x33, 0x44, 0x55, 0x66]
+    */
     fun macAddressToBytes(macAddress: String): ByteArray? {
         if (isMACAddress(macAddress)) {
             val bytes = macAddress

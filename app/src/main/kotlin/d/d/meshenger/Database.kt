@@ -297,9 +297,9 @@ class Database {
                 newFrom = "4.2.4"
             }
 
-            if (newFrom in listOf("4.2.4", "4.2.5", "4.2.6", "4.2.7", "4.2.8", "4.3.0", "4.3.1")) {
+            if (newFrom in listOf("4.2.4", "4.2.5", "4.2.6", "4.2.7", "4.2.8", "4.3.0", "4.3.1", "4.3.2")) {
                 // nothing to do
-                newFrom = "4.3.2"
+                newFrom = "4.3.3"
             }
 
             alignSettings(settings)

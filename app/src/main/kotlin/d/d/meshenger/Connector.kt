@@ -17,7 +17,11 @@ import kotlin.experimental.xor
 import kotlin.math.max
 import kotlin.math.min
 
-class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val guessEUI64Address: Boolean = false, val useNeighborTable: Boolean = false) {
+class Connector(
+        private val connectTimeout: Int = 5000,
+        private val connectRetries: Int = 3,
+        private val guessEUI64Address: Boolean = false,
+        private val useNeighborTable: Boolean = false) {
     var networkNotReachable = false
     var appNotRunning = false
 

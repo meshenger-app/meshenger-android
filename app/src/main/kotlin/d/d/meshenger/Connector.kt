@@ -32,6 +32,10 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
 
     var addressTry: AddressTry? = null
 
+    private fun isLinkLocalAddress(address: String): Boolean {
+        return AddressUtils.isIPAddress(address) && InetAddress.getByName(address).isLinkLocalAddress
+    }
+
     private fun getAllSocketAddresses(contact: Contact): List<InetSocketAddress> {
         val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
@@ -48,7 +52,7 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
         for (address in contact.addresses) {
             val socketAddress = AddressUtils.stringToInetSocketAddress(address, port) ?: continue
 
-            if (AddressUtils.isLinkLocalAddress(socketAddress.hostString)) {
+            if (isLinkLocalAddress(socketAddress.hostString)) {
                 for (interfaceName in collectInterfaceNames(ownInterfaces)) {
                     addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
                 }
@@ -230,7 +234,7 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
                             && AddressUtils.isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)
                         ) {
-                            if (AddressUtils.isLinkLocalAddress(address)) {
+                            if (isLinkLocalAddress(address)) {
                                 addresses.add(InetSocketAddress("$address%$device", port))
                             } else {
                                 addresses.add(InetSocketAddress(address, port))
@@ -250,7 +254,7 @@ class Connector(val connectTimeout: Int = 5000, val connectRetries: Int = 3, val
                             && AddressUtils.isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)
                         ) {
-                            if (AddressUtils.isLinkLocalAddress(address)) {
+                            if (isLinkLocalAddress(address)) {
                                 addresses.add(InetSocketAddress("$address%$device", port))
                             } else {
                                 addresses.add(InetSocketAddress(address, port))

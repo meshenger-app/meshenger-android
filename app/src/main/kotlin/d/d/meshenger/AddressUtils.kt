@@ -11,32 +11,6 @@ import kotlin.experimental.xor
 
 internal object AddressUtils
 {
-    fun isLinkLocalAddress(address: String): Boolean {
-        if (isIPAddress(address)) {
-            // IPv4 (check for 169.254.0.0/16)
-            if (address.startsWith("169.254.")) {
-                return true
-            }
-
-            // IPv6 (check for fe80::/10)
-            if (address.startsWith("fe") && address.length >= 6) {
-                try {
-                    val idx = address.indexOf(":")
-                    if (idx != -1) {
-                        val secondByte = address.substring(2, idx).toLong(radix = 16)
-                        if ((secondByte.toByte().and(0xC0.toByte()) == 0x80.toByte())) {
-                            return true
-                        }
-                    }
-                } catch (nfe: NumberFormatException) {
-                    // ignore
-                }
-            }
-        }
-
-        return false
-    }
-
     fun closeSocket(socket: Socket?) {
         try {
             socket?.close()

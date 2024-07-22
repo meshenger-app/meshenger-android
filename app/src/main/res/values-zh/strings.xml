@@ -154,4 +154,5 @@
     <string name="contact_public_key_invalid">联系人公钥无效。</string>´
     <string name="dialog_title_import_backup">导入备份？</string>
     <string name="state_contact_pending">待定</string>
+    <string name="settings_guess_eui64_address">猜测 IP 地址（EUI64）</string>
 </resources>

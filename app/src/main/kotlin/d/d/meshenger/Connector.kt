@@ -217,7 +217,7 @@ class Connector(
     }
 
     // experimental feature
-    private fun getAddressesFromNeighborTable(lookup_macs: List<String>, port: Int): List<InetSocketAddress> {
+    private fun getAddressesFromNeighborTable(lookupMACs: List<String>, port: Int): List<InetSocketAddress> {
         val addresses = mutableListOf<InetSocketAddress>()
         try {
             // get IPv4 and IPv6 entries
@@ -234,8 +234,8 @@ class Connector(
                     val device = tokens[2]
                     val mac = tokens[4]
                     val state = tokens[5]
-                    for (lookup_mac in lookup_macs) {
-                        if (lookup_mac.equals(mac, ignoreCase = true)
+                    for (lookupMAC in lookupMACs) {
+                        if (lookupMAC.equals(mac, ignoreCase = true)
                             && AddressUtils.isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)
                         ) {
@@ -254,7 +254,7 @@ class Connector(
                     val device = tokens[2]
                     val mac = tokens[4]
                     val state = tokens[6]
-                    for (lookup_mac in lookup_macs) {
+                    for (lookup_mac in lookupMACs) {
                         if (lookup_mac.equals(mac, ignoreCase = true)
                             && AddressUtils.isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)

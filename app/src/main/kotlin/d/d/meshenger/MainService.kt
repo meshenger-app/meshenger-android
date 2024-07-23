@@ -140,8 +140,8 @@ class MainService : Service(), Runnable {
                         val connector = Connector(
                             settings.connectTimeout,
                             1, // only try once, this is low priority
-                            settings.useNeighborTable,
-                            settings.guessEUI64Address
+                            settings.guessEUI64Address,
+                            settings.useNeighborTable
                         )
                         socket = connector.connect(contact)
                         if (socket == null) {

@@ -5,13 +5,12 @@ import java.net.Socket
 /* Write the message header before the message is send */
 internal class PacketWriter(socket: Socket) {
     private val os = socket.getOutputStream()
-    private val header = ByteArray(4)
 
     fun writeMessage(message: ByteArray) {
-        writeMessageHeader(header, message.size)
-        // need to concatenate?
-        os.write(header)
-        os.write(message)
+        val buffer = ByteArray(4 + message.size)
+        writeMessageHeader(buffer, message.size)
+        message.copyInto(buffer, 4)
+        os.write(buffer)
     }
 
     companion object {

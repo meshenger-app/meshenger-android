@@ -77,34 +77,39 @@ internal object Utils {
     }
 
     // write file to external storage
-    fun writeExternalFile(filepath: String, data: ByteArray?) {
+    fun writeExternalFile(filepath: String, bytes: ByteArray?) {
         val file = File(filepath)
-        if (file.exists() && file.isFile) {
+        if (file.exists()) {
+            if (!file.isFile) {
+                throw IOException("Not a file: $filepath")
+            }
+
             if (!file.delete()) {
                 throw IOException("Failed to delete existing file: $filepath")
             }
         }
+
         file.createNewFile()
         val fos = FileOutputStream(file)
-        fos.write(data)
+        fos.write(bytes)
         fos.close()
     }
 
     // read file from external storage
     fun readExternalFile(filepath: String): ByteArray {
         val file = File(filepath)
-        if (!file.exists() || !file.isFile) {
+        if (!file.exists()) {
             throw IOException("File does not exist: $filepath")
         }
-        val fis = FileInputStream(file)
-        var nRead: Int
-        val data = ByteArray(16384)
-        val buffer = ByteArrayOutputStream()
-        while (fis.read(data, 0, data.size).also { nRead = it } != -1) {
-            buffer.write(data, 0, nRead)
+
+        if (!file.isFile) {
+             throw IOException("Not a file: $filepath")
         }
+
+        val fis = FileInputStream(file)
+        val bytes = fis.readAllBytes()
         fis.close()
-        return buffer.toByteArray()
+        return bytes
     }
 
    fun getExternalFileSize(ctx: Context, uri: Uri?): Long {

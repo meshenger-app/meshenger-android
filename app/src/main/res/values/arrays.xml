@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="themeNameLabels">
+        <item>Fire Red</item>
+        <item>Sky Blue</item>
+        <item>Night Grey</item>
+    </string-array>
+
+    <string-array name="themeNameValues">
+        <item>fire_red</item>
+        <item>sky_blue</item>
+        <item>night_grey</item>
+    </string-array>
+
     <string-array name="nightModeLabels">
         <item>System (default)</item>
         <item>On</item>

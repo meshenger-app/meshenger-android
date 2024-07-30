@@ -52,8 +52,7 @@
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_cancel"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textAllCaps="false" />
 
     <Button
         android:id="@+id/OkButton"
@@ -69,7 +68,6 @@
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_ok"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textAllCaps="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

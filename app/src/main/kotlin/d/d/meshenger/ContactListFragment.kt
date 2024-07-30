@@ -264,7 +264,7 @@ class ContactListFragment : Fragment() {
         val activity = requireActivity()
         val binder = (activity as MainActivity).binder ?: return
 
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(activity, R.style.AlertDialogTheme)
         builder.setTitle(R.string.dialog_title_delete_contact)
         builder.setMessage(name)
         builder.setCancelable(false) // prevent key shortcut to cancel dialog

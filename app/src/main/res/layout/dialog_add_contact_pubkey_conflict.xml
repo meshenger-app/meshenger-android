@@ -19,7 +19,7 @@
         android:textSize="23sp"
         android:fontFamily="@font/lato_bold"
         android:text="@string/contact_key_conflict"
-        android:textColor="@color/black" />
+        android:textColor="?android:textColorPrimary" />
 
     <TextView
         android:id="@+id/public_key_conflicting_contact_textview"
@@ -35,7 +35,7 @@
         android:textSize="23sp"
         android:text="TestUser"
         android:gravity="center"
-        android:textColor="@color/black" />
+        android:textColor="?android:textColorPrimary" />
 
     <Button
         android:id="@+id/public_key_conflict_abort_button"
@@ -50,8 +50,7 @@
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_abort"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textAllCaps="false" />
 
     <Button
         android:id="@+id/public_key_conflict_replace_button"
@@ -67,7 +66,6 @@
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_replace"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textAllCaps="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

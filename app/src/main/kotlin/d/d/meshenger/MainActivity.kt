@@ -6,23 +6,27 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import d.d.meshenger.MainService.MainBinder
 
@@ -47,9 +51,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(this, "onCreate()")
-
-        // need to be called before super.onCreate()
-        applyNightMode()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -140,6 +141,13 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }
     }
 
+    private fun getColorDrawable(attr: Int): Drawable {
+        val typedValue = TypedValue()
+        val theme = this@MainActivity.getTheme()
+        theme.resolveAttribute(attr, typedValue, true)
+        return ColorDrawable(typedValue.data)
+    }
+
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "onServiceConnected()")
         binder = iBinder as MainBinder
@@ -152,13 +160,44 @@ class MainActivity : BaseActivity(), ServiceConnection {
             it.notifyDataSetChanged()
         }
 
-        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        val tabLayout = findViewById<TabLayout>(R.id.TabLayout)
         if (settings.disableCallHistory) {
             tabLayout.visibility = View.GONE
         } else {
             // default
             tabLayout.visibility = View.VISIBLE
         }
+
+        // workaround since TabLayout with app:tabBackground and xml with
+        // selected/unselected themeable tab colors create an exception.
+        tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            init {
+                resetBackgroundColor()
+            }
+
+            private fun resetBackgroundColor() {
+                Log.d(this, "resetBackgroundColor ${tabLayout.size}")
+                for (i in 0..tabLayout.size) {
+                    val tab = tabLayout.getTabAt(i)
+                    if (tab != null) {
+                        tab.view.background = getColorDrawable(R.attr.tabColor)
+                    }
+                }
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                resetBackgroundColor()
+                tab.view.background = getColorDrawable(R.attr.tabSelectedColor)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                tab.view.background = getColorDrawable(R.attr.tabColor)
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // nothing to do
+            }
+        })
 
         val toolbarLabel = findViewById<TextView>(R.id.toolbar_label)
         if (settings.showUsernameAsLogo) {

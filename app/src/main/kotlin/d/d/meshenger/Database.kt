@@ -305,6 +305,7 @@ class Database {
             if (newFrom == "4.3.2") {
                 // make option configurable, was enabled by default before
                 settings.put("guess_eui64_address", true)
+                settings.put("theme_name", "fire_red")
                 newFrom = "4.3.3"
             }
 

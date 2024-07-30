@@ -97,7 +97,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="5dp"
-                app:thumbTint="@color/selectedColor" />
+                app:thumbTint="?attr/selectedColor" />
 
         </RelativeLayout>
 
@@ -178,8 +178,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_background"
                 android:text="@string/button_add"
-                android:layout_weight="0"
-                android:textColor="@color/white" />
+                android:layout_weight="0" />
 
         </LinearLayout>
 
@@ -199,8 +198,7 @@
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_save"
                 android:layout_weight="1"
-                android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textAllCaps="false" />
 
             <Button
                 android:id="@+id/ResetButton"
@@ -210,8 +208,7 @@
                 android:background="@drawable/button_background"
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_reset"
-                android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textAllCaps="false" />
 
         </LinearLayout>
 

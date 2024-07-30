@@ -55,8 +55,7 @@
             android:layout_weight="0.5"
             android:background="@drawable/button_background"
             android:fontFamily="@font/lato_bold"
-            android:text="@string/button_import"
-            android:textColor="@color/white" />
+            android:text="@string/button_import" />
 
         <Button
             android:id="@+id/ExportButton"
@@ -66,8 +65,7 @@
             android:layout_weight="0.5"
             android:background="@drawable/button_background"
             android:fontFamily="@font/lato_bold"
-            android:text="@string/button_export"
-            android:textColor="@color/white" />
+            android:text="@string/button_export" />
 
     </LinearLayout>
 
@@ -86,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:textSize="16sp"
+            android:textSize="20sp"
             android:fontFamily="@font/lato_bold"
             android:textColor="?android:textColorPrimary"
             android:text="@string/password_title" />
@@ -96,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/selectedColor"
+            app:passwordToggleTint="?attr/selectedColor"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -107,7 +105,7 @@
                 android:textColor="?android:textColorSecondary"
                 android:textAlignment="textStart"
                 android:maxLines="1"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:scrollHorizontally="true"
                 android:paddingStart="@dimen/padding_10"
                 android:paddingEnd="@dimen/padding_10"

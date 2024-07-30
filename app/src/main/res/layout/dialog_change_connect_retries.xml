@@ -50,10 +50,8 @@
         app:layout_constraintEnd_toStartOf="@+id/OkButton"
         android:background="@drawable/button_background"
         android:fontFamily="@font/lato_bold"
-        android:textSize="18sp"
         android:text="@string/button_cancel"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textAllCaps="false" />
 
     <Button
         android:id="@+id/OkButton"
@@ -67,9 +65,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/button_background"
         android:fontFamily="@font/lato_bold"
-        android:textSize="18sp"
         android:text="@string/button_ok"
-        android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textAllCaps="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

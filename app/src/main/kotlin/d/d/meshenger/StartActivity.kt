@@ -116,6 +116,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 // set in case we just updated the app
                 BootUpReceiver.setEnabled(this, settings.startOnBootup)
 
+                // set theme
+                setDefaultThemeName(settings.themeName)
+
                 // set night mode
                 setDefaultNightMode(settings.nightMode)
 
@@ -187,7 +190,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
     private fun showMissingAddressDialog() {
         val defaultAddress = getDefaultAddress()
         if (defaultAddress == null) {
-            val builder = AlertDialog.Builder(this)
+            val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
             builder.setTitle(getString(R.string.setup_address))
             builder.setMessage(getString(R.string.setup_no_address_found))
             builder.setPositiveButton(R.string.button_ok) { dialog: DialogInterface, _: Int ->
@@ -233,7 +236,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
         layout.addView(et)
         layout.setPadding(40, 80, 40, 40)
 
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         builder.setTitle(R.string.startup_hello)
         builder.setView(layout)
         builder.setNegativeButton(R.string.button_skip) { dialog: DialogInterface?, _: Int ->

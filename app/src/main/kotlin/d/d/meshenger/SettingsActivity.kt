@@ -99,7 +99,22 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                         settings.nightMode = newValue
                         binder.saveDatabase()
                         setDefaultNightMode(newValue)
-                        applyNightMode()
+                        startActivity(Intent(this@SettingsActivity, SettingsActivity::class.java))
+                        finish()
+                    }
+                }
+            })
+
+        setupSpinner(settings.themeName,
+            R.id.themeName,
+            R.array.themeNameLabels,
+            R.array.themeNameValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    if (newValue != null) {
+                        settings.themeName = newValue
+                        binder.saveDatabase()
+                        setDefaultThemeName(newValue)
                         startActivity(Intent(this@SettingsActivity, SettingsActivity::class.java))
                         finish()
                     }

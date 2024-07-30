@@ -1,25 +1,33 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:dropDownListViewStyle">@style/MySpinner</item>
-        <item name="android:textColorSecondary">@color/colorAccent</item>
+    <style name="ButtonColorFireRed" parent="@android:style/Widget.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:backgroundTint">#FFEC3E3E</item>
+        <item name="android:textSize">20sp</item>
     </style>
+
+   <style name="ButtonColorSkyBlue" parent="@android:style/Widget.Button">
+       <item name="android:textColor">@color/white</item>
+       <item name="android:backgroundTint">#1C6FB7</item>
+       <item name="android:textSize">20sp</item>
+    </style>
+
+   <style name="ButtonColorNightGrey" parent="@android:style/Widget.Button">
+       <item name="android:textColor">@color/light_grey</item>
+       <item name="android:backgroundTint">@color/dark_grey</item>
+       <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="CurvedImageViewStyle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10%</item>
     </style>
-    <style name="CustomTabLayoutStyle" parent="Widget.Design.TabLayout">
-        <item name="tabIndicator">@null</item>
-        <item name="tabSelectedTextColor">@color/white</item>
-        <item name="tabTextColor">@color/selectedColor</item>
-    </style>
+
     <style name="CustomTabTextStyle" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">@dimen/headline_text_size</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+         <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="MySpinner" parent="Theme.AppCompat.Light.DarkActionBar">

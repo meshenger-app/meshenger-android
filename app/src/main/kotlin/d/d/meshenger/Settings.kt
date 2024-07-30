@@ -33,6 +33,7 @@ class Settings {
     var cameraResolution = "auto"
     var cameraFramerate = "auto"
     var automaticStatusUpdates = true
+    var themeName = "sky_blue"
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -75,6 +76,7 @@ class Settings {
             s.cameraResolution = obj.getString("camera_resolution")
             s.cameraFramerate = obj.getString("camera_framerate")
             s.automaticStatusUpdates = obj.getBoolean("automatic_status_updates")
+            s.themeName = obj.getString("theme_name")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -129,6 +131,7 @@ class Settings {
             obj.put("camera_resolution", s.cameraResolution)
             obj.put("camera_framerate", s.cameraFramerate)
             obj.put("automatic_status_updates", s.automaticStatusUpdates)
+            obj.put("theme_name", s.themeName)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

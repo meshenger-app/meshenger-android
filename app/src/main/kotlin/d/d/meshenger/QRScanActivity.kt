@@ -161,7 +161,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
     private fun startManualInput() {
         barcodeView.pause()
-        val b = AlertDialog.Builder(this)
+        val b = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         val et = EditText(this)
         b.setTitle(R.string.paste_qr_code_data)
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->

@@ -48,7 +48,10 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="@dimen/padding_10"
             android:layout_marginBottom="@dimen/padding_10"
-            app:srcCompat="@drawable/ic_baseline_share_24" />
+            app:srcCompat="@drawable/ic_baseline_share_24"
+            android:contentDescription="Share Contact"
+            app:backgroundTint="?android:colorPrimary"
+            app:backgroundTintMode="add" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabPresenter"
@@ -60,7 +63,10 @@
             android:layout_marginTop="@dimen/padding_10"
             android:layout_marginBottom="@dimen/padding_10"
             android:layout_toEndOf="@id/fabShare"
-            app:srcCompat="@drawable/qr_glass" />
+            android:contentDescription="Show QR Code"
+            app:srcCompat="@drawable/qr_glass"
+            app:backgroundTint="?android:colorPrimary"
+            app:backgroundTintMode="add" />
 
     </RelativeLayout>
 </ScrollView>

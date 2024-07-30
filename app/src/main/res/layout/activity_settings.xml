@@ -132,6 +132,38 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_theme_name"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <Spinner
+                        android:id="@+id/themeName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:textSize="@dimen/options_text_size" />
+
+                </RelativeLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    app:dividerColor="@color/light_grey" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/lato_bold"
                         android:text="@string/settings_block_unknown"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="@dimen/title_text_size" />
@@ -143,7 +175,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -212,7 +244,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -245,7 +277,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        app:thumbTint="@color/selectedColor"
+                        app:thumbTint="?attr/selectedColor"
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>
@@ -290,7 +322,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -323,7 +355,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -356,7 +388,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -389,7 +421,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -522,7 +554,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -555,7 +587,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -588,7 +620,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -620,7 +652,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        app:thumbTint="@color/selectedColor"
+                        app:thumbTint="?attr/selectedColor"
                         android:textSize="@dimen/options_text_size" />
 
                 </RelativeLayout>
@@ -720,7 +752,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -753,7 +785,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -797,7 +829,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -830,7 +862,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -898,7 +930,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -931,7 +963,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -1030,7 +1062,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 
@@ -1063,7 +1095,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="5dp"
-                        app:thumbTint="@color/selectedColor" />
+                        app:thumbTint="?android:textColorSecondary" />
 
                 </RelativeLayout>
 

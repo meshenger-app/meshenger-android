@@ -17,7 +17,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="Ping All Contacts"
         app:srcCompat="@drawable/ping"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add"
         android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -26,7 +29,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="Scan QR Code"
         app:srcCompat="@drawable/qr_glass"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add"
         android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -35,7 +41,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="Show QR Code"
         app:srcCompat="@drawable/qr_code"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add"
         android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,6 +53,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add"
+        android:contentDescription="Contact Actions"
         app:srcCompat="@drawable/qr_glass" />
 
 </FrameLayout>

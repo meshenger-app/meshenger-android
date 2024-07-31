@@ -135,12 +135,12 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             })
 
         findViewById<TextView>(R.id.connectRetriesTv)
-            .text = "${settings.connectRetries}"
+            .text = settings.connectRetries.toString()
         findViewById<View>(R.id.connectRetriesLayout)
             .setOnClickListener { showChangeConnectRetriesDialog() }
 
         findViewById<TextView>(R.id.connectTimeoutTv)
-            .text = "${settings.connectTimeout}"
+            .text = settings.connectTimeout.toString()
         findViewById<View>(R.id.connectTimeoutLayout)
             .setOnClickListener { showChangeConnectTimeoutDialog() }
 

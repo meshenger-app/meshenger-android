@@ -181,7 +181,7 @@ class Connector(
                     }
 
                     if (address is Inet6Address) {
-                        if (getEUI64MAC(address) != null || address.isLinkLocalAddress) {
+                        if (extractMAC(address) != null || address.isLinkLocalAddress) {
                             // If a MAC address is embedded in the address from our own system (IPv6 + EUI-64)
                             // => replace it by the target MAC address
                             // If the address is fe80:: with a "random" MAC address (no "ff:fe" filler)
@@ -275,10 +275,10 @@ class Connector(
         return addresses
     }
 
-    // Check if the given MAC address is in the IPv6 address
-    private fun getEUI64MAC(address: Inet6Address): ByteArray? {
-        val bytes = address.address
-        if (bytes.size == 16 && bytes[11] == 0xFF.toByte() && bytes[12] == 0xFE.toByte()) {
+    // Extract a MAC address from an IPv6 (EUI64) address
+    private fun extractMAC(address: InetAddress?): ByteArray? {
+        val bytes = address?.address
+        if (bytes != null && bytes.size == 16 && bytes[11] == 0xFF.toByte() && bytes[12] == 0xFE.toByte()) {
             return byteArrayOf(
                 bytes[8] xor 2,
                 bytes[9],
@@ -287,14 +287,6 @@ class Connector(
                 bytes[14],
                 bytes[15]
             )
-        } else {
-            return null
-        }
-    }
-
-    fun extractMAC(address: InetAddress?): ByteArray? {
-        if (address != null && address is Inet6Address) {
-            return getEUI64MAC(address)
         }
         return null
     }

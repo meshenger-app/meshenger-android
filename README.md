@@ -13,7 +13,7 @@ Features:
 Limitations:
 
 - no calls through firewalls / NAT borders
-- no calls after MAC / IP address change
+- IP address change requires manual contact update
 
 ## Download
 

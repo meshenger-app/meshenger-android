@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatDelegate
  * Base class for every Activity
 */
 open class BaseActivity : AppCompatActivity() {
+    private var currentTheme = R.style.AppTheme_SkyBlue
+
     fun setDefaultNightMode(nightMode: String) {
         defaultNightMode = when (nightMode) {
             "on" -> AppCompatDelegate.MODE_NIGHT_YES
@@ -35,14 +37,25 @@ open class BaseActivity : AppCompatActivity() {
             "night_grey" -> R.style.AppTheme_NightGrey
             else -> {
                 Log.e(this, "Unknown theme name: $themeName")
-                return
+                R.style.AppTheme_SkyBlue
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (currentTheme != defaultThemeName) {
+            currentTheme = defaultThemeName
+            recreate()
         }
     }
 
     // set theme and night mode
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(defaultThemeName)
+        if (currentTheme != defaultThemeName) {
+            currentTheme = defaultThemeName
+            setTheme(defaultThemeName)
+        }
 
         if (defaultNightMode != AppCompatDelegate.getDefaultNightMode()) {
             Log.d(this, "Change night mode to $defaultNightMode")

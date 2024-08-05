@@ -99,8 +99,13 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                         settings.nightMode = newValue
                         binder.saveDatabase()
                         setDefaultNightMode(newValue)
-                        startActivity(Intent(this@SettingsActivity, SettingsActivity::class.java))
+
+                        // reload activity
+                        val intent = Intent(this@SettingsActivity, SettingsActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                         finish()
+                        overridePendingTransition(0, 0)
+                        startActivity(intent)
                     }
                 }
             })
@@ -115,8 +120,13 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                         settings.themeName = newValue
                         binder.saveDatabase()
                         setDefaultThemeName(newValue)
-                        startActivity(Intent(this@SettingsActivity, SettingsActivity::class.java))
+
+                        // reload activity
+                        val intent = Intent(this@SettingsActivity, SettingsActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                         finish()
+                        overridePendingTransition(0, 0)
+                        startActivity(intent)
                     }
                 }
             })

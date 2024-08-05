@@ -177,6 +177,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_background"
+                android:padding="15sp"
+                android:layout_marginEnd="10sp"
                 android:text="@string/button_add"
                 android:layout_weight="0" />
 

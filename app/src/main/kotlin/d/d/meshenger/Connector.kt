@@ -254,8 +254,8 @@ class Connector(
                     val device = tokens[2]
                     val mac = tokens[4]
                     val state = tokens[6]
-                    for (lookup_mac in lookupMACs) {
-                        if (lookup_mac.equals(mac, ignoreCase = true)
+                    for (lookupMAC in lookupMACs) {
+                        if (lookupMAC.equals(mac, ignoreCase = true)
                             && AddressUtils.isIPAddress(address)
                             && !state.equals("failed", ignoreCase = true)
                         ) {

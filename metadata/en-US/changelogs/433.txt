@@ -1,0 +1,3 @@
+* add setting to select a theme ("Fire Red", "Sky Blue", "Night Grey")
+* expose setting to guess EUI64 IP addresses
+* sort addresses in address management

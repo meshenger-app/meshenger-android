@@ -1,0 +1,2 @@
+* improve switching between themes
+* fix "add" button style in contact details

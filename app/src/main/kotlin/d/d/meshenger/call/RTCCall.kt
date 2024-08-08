@@ -276,7 +276,7 @@ class RTCCall : RTCPeerConnection {
                         IceConnectionState.CONNECTED -> reportStateChange(CallState.CONNECTED)
                         else -> return
                     }
-                    closeSocket(commSocket!!)
+                    AddressUtils.closeSocket(commSocket)
                 }
 
                 override fun onConnectionChange(state: PeerConnectionState) {
@@ -656,7 +656,7 @@ class RTCCall : RTCPeerConnection {
                             e.printStackTrace()
                             reportStateChange(CallState.ERROR_COMMUNICATION)
                         }
-                        closeSocket(commSocket!!)
+                        AddressUtils.closeSocket(commSocket)
                     }
                 }
 
@@ -669,7 +669,7 @@ class RTCCall : RTCPeerConnection {
                         IceConnectionState.CONNECTED -> reportStateChange(CallState.CONNECTED)
                         else -> return
                     }
-                    closeSocket(commSocket!!)
+                    AddressUtils.closeSocket(commSocket)
                 }
 
                 override fun onConnectionChange(state: PeerConnectionState) {

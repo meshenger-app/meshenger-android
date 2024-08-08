@@ -234,12 +234,12 @@ abstract class RTCPeerConnection(
                     Thread.sleep(SOCKET_TIMEOUT_MS / 2)
                     if ((System.currentTimeMillis() - lastKeepAlive) > SOCKET_TIMEOUT_MS) {
                         Log.w(this, "createOutgoingCallInternal() keep_alive timeout => close socket")
-                        closeSocket(socket)
+                        AddressUtils.closeSocket(socket)
                     }
 
                 } catch (e: Exception) {
                     Log.w(this, "createOutgoingCallInternal() got $e => close socket")
-                    closeSocket(socket)
+                    AddressUtils.closeSocket(socket)
                     break
                 }
             }
@@ -300,7 +300,7 @@ abstract class RTCPeerConnection(
         }
 
         Log.d(this, "createOutgoingCallInternal() close socket")
-        closeSocket(socket)
+        AddressUtils.closeSocket(socket)
         //Log.d(this, "createOutgoingCallInternal() dataChannel is null: ${dataChannel == null}")
 
         Log.d(this, "createOutgoingCallInternal() wait for writeExecutor")
@@ -357,11 +357,11 @@ abstract class RTCPeerConnection(
                     Thread.sleep(SOCKET_TIMEOUT_MS / 2)
                     if ((System.currentTimeMillis() - lastKeepAlive) > SOCKET_TIMEOUT_MS) {
                         Log.w(this, "continueOnIncomingSocket() keep_alive timeout => close socket")
-                        closeSocket(socket)
+                        AddressUtils.closeSocket(socket)
                     }
                 } catch (e: Exception) {
                     Log.w(this, "continueOnIncomingSocket() got $e => close socket")
-                    closeSocket(socket)
+                    AddressUtils.closeSocket(socket)
                     break
                 }
             }
@@ -408,7 +408,7 @@ abstract class RTCPeerConnection(
         writeExecutor.awaitTermination(100L, TimeUnit.MILLISECONDS)
 
         //Log.d(this, "continueOnIncomingSocket() dataChannel is null: ${dataChannel == null}")
-        closeSocket(socket)
+        AddressUtils.closeSocket(socket)
 
         // detect broken initial connection
         if (isCallInit(state) && socket.isClosed) {
@@ -527,14 +527,6 @@ abstract class RTCPeerConnection(
         }
 */
 
-        fun closeSocket(socket: Socket?) {
-            try {
-                socket?.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
         fun createIncomingCall(binder: MainService.MainBinder, socket: Socket) {
             Thread {
                 try {
@@ -573,7 +565,7 @@ abstract class RTCPeerConnection(
 
                     socket.close()
                 } catch (e: Exception) {
-                    closeSocket(socket)
+                    AddressUtils.closeSocket(socket)
                 }
             }
 

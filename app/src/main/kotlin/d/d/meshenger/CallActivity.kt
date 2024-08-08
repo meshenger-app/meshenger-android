@@ -213,7 +213,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             remoteProxyVideoSink.setTarget(pipRenderer)
 
             pipRenderer.setMirror(false)
-            fullscreenRenderer.setMirror(!frontCameraEnabled)
+            fullscreenRenderer.setMirror(false)
 
             showPipView(isRemoteVideoAvailable && showPipEnabled)
             showFullscreenView(isLocalVideoAvailable)
@@ -225,7 +225,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             localProxyVideoSink.setTarget(pipRenderer)
             remoteProxyVideoSink.setTarget(fullscreenRenderer)
 
-            pipRenderer.setMirror(!frontCameraEnabled)
+            pipRenderer.setMirror(false)
             fullscreenRenderer.setMirror(false)
 
             showPipView(isLocalVideoAvailable && showPipEnabled)

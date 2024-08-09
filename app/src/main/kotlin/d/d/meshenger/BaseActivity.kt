@@ -33,6 +33,7 @@ open class BaseActivity : AppCompatActivity() {
     fun setDefaultThemeName(themeName: String) {
         defaultThemeName = when (themeName) {
             "fire_red" -> R.style.AppTheme_FireRed
+            "grass_green" -> R.style.AppTheme_GrassGreen
             "sky_blue" -> R.style.AppTheme_SkyBlue
             "night_grey" -> R.style.AppTheme_NightGrey
             else -> {

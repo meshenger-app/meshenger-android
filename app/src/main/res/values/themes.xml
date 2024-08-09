@@ -28,6 +28,25 @@
         <item name="tabSelectedTextColor">@color/white</item>
     </style>
 
+    <style name="AppTheme.GrassGreen" parent="AppThemeBase">
+        <item name="android:colorPrimary">#8BC34A</item>
+        <item name="android:colorPrimaryDark">#3C983F</item>
+        <item name="android:colorAccent">#8BC34A</item>
+        <item name="android:textColorSecondary">#3C983F</item>
+        <item name="android:buttonStyle">@style/ButtonColorGrassGreen</item>
+
+        <item name="selectedColor">#8BC34A</item>
+        <item name="unselectedColor">#3C983F</item>
+
+        <item name="callButtonBackgroundColor">#4C9C4E</item>
+
+        <!-- main activity tabs (contacts/calls) -->
+        <item name="tabColor">#D5FFA7</item>
+        <item name="tabTextColor">#3C983F</item>
+        <item name="tabSelectedColor">#8BC34A</item>
+        <item name="tabSelectedTextColor">#202D11</item>
+    </style>
+
     <style name="AppTheme.SkyBlue" parent="AppThemeBase">
         <item name="android:colorPrimary">#1C5DCC</item>
         <item name="android:colorPrimaryDark">#1C6FB7</item>

@@ -2,12 +2,14 @@
 <resources>
     <string-array name="themeNameLabels">
         <item>Fire Red</item>
+        <item>Grass Green</item>
         <item>Sky Blue</item>
         <item>Night Grey</item>
     </string-array>
 
     <string-array name="themeNameValues">
         <item>fire_red</item>
+        <item>grass_green</item>
         <item>sky_blue</item>
         <item>night_grey</item>
     </string-array>

@@ -65,7 +65,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         try {
             val mainBinder = iBinder as MainBinder
-            val publicKey = intent.extras!!["EXTRA_CONTACT_PUBLICKEY"] as ByteArray
+            val publicKey = Utils.hexStringToByteArray(intent.extras!!.getString("EXTRA_CONTACT_PUBLICKEY"))
             val contact = mainBinder.getContacts().getContactByPublicKey(publicKey)!!
             binder = mainBinder
             updateContact(contact)
@@ -176,7 +176,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
                 publicKeyInput.text.toString()
             )
 
-            if (newPublicKey == null || (newPublicKey.size != Sodium.crypto_sign_publickeybytes())) {
+            if (newPublicKey.size != Sodium.crypto_sign_publickeybytes()) {
                 Toast.makeText(this, R.string.contact_public_key_invalid, Toast.LENGTH_SHORT).show()
             } else if (binder!!.getContacts().getContactByPublicKey(newPublicKey) != null) {
                 Toast.makeText(this, R.string.contact_public_key_already_exists, Toast.LENGTH_LONG).show()

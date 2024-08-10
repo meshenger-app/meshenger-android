@@ -60,7 +60,7 @@ class ContactListFragment : Fragment() {
                 when (title) {
                     details -> {
                         val intent = Intent(activity, ContactDetailsActivity::class.java)
-                        intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
+                        intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(contact.publicKey))
                         startActivity(intent)
                     }
                     delete -> showDeleteDialog(publicKey, contact.name)
@@ -68,7 +68,7 @@ class ContactListFragment : Fragment() {
                     share -> shareContact(contact)
                     qrcode -> {
                         val intent = Intent(activity, QRShowActivity::class.java)
-                        intent.putExtra("EXTRA_CONTACT_PUBLICKEY", contact.publicKey)
+                        intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(contact.publicKey))
                         startActivity(intent)
                     }
                 }
@@ -104,7 +104,7 @@ class ContactListFragment : Fragment() {
             val binder = (activity as MainActivity).binder
             if (binder != null) {
                 val intent = Intent(activity, QRShowActivity::class.java)
-                intent.putExtra("EXTRA_CONTACT_PUBLICKEY", binder.getSettings().publicKey)
+                intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder.getSettings().publicKey))
                 startActivity(intent)
             }
         }

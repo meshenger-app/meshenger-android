@@ -20,8 +20,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrshow)
 
-        publicKey = intent.extras!!["EXTRA_CONTACT_PUBLICKEY"] as ByteArray
-
+        publicKey = Utils.hexStringToByteArray(intent.extras!!.getString("EXTRA_CONTACT_PUBLICKEY"))
         title = getString(R.string.title_show_qr_code)
 
         bindService(Intent(this, MainService::class.java), this, 0)

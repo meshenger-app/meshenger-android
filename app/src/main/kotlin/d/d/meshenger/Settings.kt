@@ -49,8 +49,8 @@ class Settings {
         fun fromJSON(obj: JSONObject): Settings {
             val s = Settings()
             s.username = obj.getString("username")
-            s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))!!
-            s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
+            s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))
+            s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
             s.nightMode = obj.getString("night_mode")
             s.speakerphoneMode = obj.getString("speakerphone_mode")
             s.blockUnknown = obj.getBoolean("block_unknown")

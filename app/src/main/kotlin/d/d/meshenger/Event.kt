@@ -67,7 +67,7 @@ class Event(
         }
 
         fun fromJSON(obj: JSONObject): Event {
-            val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))!!
+            val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
             val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"), MainService.serverPort)
             val type = eventTypeFromString(obj.getString("type"))
             val date = Date(obj.getString("date").toLong(10))

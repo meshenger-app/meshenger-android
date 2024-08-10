@@ -66,9 +66,9 @@ internal object Utils {
         }
     }
 
-    fun hexStringToByteArray(str: String?): ByteArray? {
+    fun hexStringToByteArray(str: String?): ByteArray {
         if (str == null || (str.length % 2) != 0 || !str.all { it in '0'..'9' || it in 'a'..'f' || it in 'A' .. 'F' }) {
-            return null
+            return ByteArray(0)
         }
 
         return str.chunked(2)

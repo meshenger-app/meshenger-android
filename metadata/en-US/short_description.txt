@@ -1,1 +1,1 @@
-True P2P voice- and video phone App.
+Voice- and video phone App for off-the-grid scenarios.

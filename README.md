@@ -1,14 +1,14 @@
 # Meshenger
 
-True P2P voice- and video phone calls without the need for accounts or access to the Internet. There is no discovery mechanism, no meshing and no servers. Just scan each others QR-Code that will contain the contacts IP address. This works in many off-the-grid networks such as community mesh networks but also in company networks or at home.
+Direct voice- and video phone calls. No need for accounts or access to the Internet. Just scan each others QR-Code that will contain the contacts IP address. This works at home or company networks but also in many off-the-grid networks such as community mesh networks.
 
 Features:
 
 - voice and video calls
-- no accounts or registration
 - encrypted communication
-- database backup and encryption
+- no accounts, no registration, no adds
 - add custom addresses to reach contacts
+
 
 Limitations:
 

@@ -1,25 +1,25 @@
 <resources>
     <style name="ButtonColorFireRed" parent="@android:style/Widget.Button">
         <item name="android:textColor">@color/white</item>
-        <item name="android:backgroundTint">#FFEC3E3E</item>
+        <item name="android:background">#FFEC3E3E</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="ButtonColorGrassGreen" parent="@android:style/Widget.Button">
         <item name="android:textColor">#E2FFC1</item>
-        <item name="android:backgroundTint">#3C983F</item>
+        <item name="android:background">#3C983F</item>
         <item name="android:textSize">20sp</item>
     </style>
 
    <style name="ButtonColorSkyBlue" parent="@android:style/Widget.Button">
        <item name="android:textColor">@color/white</item>
-       <item name="android:backgroundTint">#1C6FB7</item>
+       <item name="android:background">#1C6FB7</item>
        <item name="android:textSize">20sp</item>
     </style>
 
    <style name="ButtonColorNightGrey" parent="@android:style/Widget.Button">
        <item name="android:textColor">@color/light_grey</item>
-       <item name="android:backgroundTint">@color/dark_grey</item>
+       <item name="android:background">@color/dark_grey</item>
        <item name="android:textSize">20sp</item>
     </style>
 

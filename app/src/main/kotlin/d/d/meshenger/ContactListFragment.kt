@@ -148,7 +148,7 @@ class ContactListFragment : Fragment() {
         super.onResume()
 
         val activity = requireActivity() as MainActivity
-        val binder = (activity as MainActivity).binder
+        val binder = activity.binder
         if (binder != null) {
             if (binder.getSettings().automaticStatusUpdates) {
                 // ping all contacts

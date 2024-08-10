@@ -80,7 +80,6 @@
                 android:layout_height="wrap_content"
                 android:padding="15sp"
                 android:layout_marginEnd="10sp"
-                android:background="@drawable/button_background"
                 android:text="@string/contact_menu_add"
                 android:layout_weight="0" />
 
@@ -107,24 +106,20 @@
 
             <Button
                 android:id="@+id/save_button"
-                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_50"
                 android:layout_marginEnd="@dimen/padding_20"
                 android:fontFamily="@font/lato_bold"
-                android:background="@drawable/button_background"
                 android:text="@string/button_save"
                 android:layout_weight="1"
                 android:textAllCaps="false" />
 
             <Button
                 android:id="@+id/reset_button"
-                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_50"
                 android:layout_weight="1"
                 android:fontFamily="@font/lato_bold"
-                android:background="@drawable/button_background"
                 android:text="@string/button_reset"
                 android:textAllCaps="false" />
 

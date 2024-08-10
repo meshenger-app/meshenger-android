@@ -48,8 +48,6 @@
         app:layout_constraintTop_toBottomOf="@+id/NameEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/OkButton"
-        android:background="@drawable/button_background"
-        android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_cancel" />
 
@@ -63,8 +61,6 @@
         app:layout_constraintTop_toBottomOf="@+id/NameEditText"
         app:layout_constraintStart_toEndOf="@+id/CancelButton"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/button_background"
-        android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
         android:text="@string/button_ok" />
 

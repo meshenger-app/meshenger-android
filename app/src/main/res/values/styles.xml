@@ -1,26 +1,28 @@
 <resources>
-    <style name="ButtonColorFireRed" parent="@android:style/Widget.Button">
+    <style name="ButtonStyle" parent="@android:style/Widget.Button">
+        <item name="android:textSize">20sp</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:fontFamily">@font/lato_bold</item>
+    </style>
+
+    <style name="ButtonColorFireRed" parent="ButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:backgroundTint">#FFEC3E3E</item>
-        <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="ButtonColorGrassGreen" parent="@android:style/Widget.Button">
+    <style name="ButtonColorGrassGreen" parent="ButtonStyle">
         <item name="android:textColor">#E2FFC1</item>
         <item name="android:backgroundTint">#3C983F</item>
-        <item name="android:textSize">20sp</item>
     </style>
 
-   <style name="ButtonColorSkyBlue" parent="@android:style/Widget.Button">
+    <style name="ButtonColorSkyBlue" parent="ButtonStyle">
        <item name="android:textColor">@color/white</item>
        <item name="android:backgroundTint">#1C6FB7</item>
-       <item name="android:textSize">20sp</item>
     </style>
 
-   <style name="ButtonColorNightGrey" parent="@android:style/Widget.Button">
+    <style name="ButtonColorNightGrey" parent="ButtonStyle">
        <item name="android:textColor">@color/light_grey</item>
        <item name="android:backgroundTint">@color/dark_grey</item>
-       <item name="android:textSize">20sp</item>
     </style>
 
     <style name="CurvedImageViewStyle" parent="">

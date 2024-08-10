@@ -176,7 +176,6 @@
                 android:id="@+id/AddAddressButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_background"
                 android:padding="15sp"
                 android:layout_marginEnd="10sp"
                 android:text="@string/button_add"
@@ -196,8 +195,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_50"
                 android:layout_marginEnd="@dimen/padding_20"
-                android:background="@drawable/button_background"
-                android:fontFamily="@font/lato_bold"
                 android:text="@string/button_save"
                 android:layout_weight="1" />
 
@@ -206,8 +203,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/padding_50"
                 android:layout_weight="1"
-                android:background="@drawable/button_background"
-                android:fontFamily="@font/lato_bold"
                 android:text="@string/button_reset" />
 
         </LinearLayout>

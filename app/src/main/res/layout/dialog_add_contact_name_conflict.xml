@@ -47,8 +47,6 @@
         app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/conflict_contact_replace_button"
-        android:background="@drawable/button_background"
-        android:fontFamily="@font/lato_bold"
         android:text="@string/button_abort" />
 
     <Button
@@ -60,8 +58,6 @@
         app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
         app:layout_constraintStart_toEndOf="@+id/conflict_contact_abort_button"
         app:layout_constraintEnd_toStartOf="@+id/conflict_contact_rename_button"
-        android:background="@drawable/button_background"
-        android:fontFamily="@font/lato_bold"
         android:text="@string/button_replace" />
 
     <Button
@@ -73,8 +69,6 @@
         app:layout_constraintTop_toBottomOf="@+id/conflict_contact_edit_textview"
         app:layout_constraintStart_toEndOf="@+id/conflict_contact_replace_button"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/button_background"
-        android:fontFamily="@font/lato_bold"
         android:text="@string/button_rename" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

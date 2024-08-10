@@ -157,6 +157,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         // data source for the views was not ready before
         (viewPager.adapter as ViewPagerFragmentAdapter).let {
             it.ready = true
+            it.disableCallHistory = settings.disableCallHistory
             it.notifyDataSetChanged()
         }
 
@@ -322,9 +323,18 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     class ViewPagerFragmentAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
         var ready = false
+        var disableCallHistory = false
 
         override fun getItemCount(): Int {
-            return if (ready) 2 else 0
+            return if (ready) {
+                if (disableCallHistory) {
+                    1
+                } else {
+                    2
+                }
+            } else {
+                0
+            }
         }
 
         override fun createFragment(position: Int): Fragment {

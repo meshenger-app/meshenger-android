@@ -199,8 +199,7 @@
                 android:background="@drawable/button_background"
                 android:fontFamily="@font/lato_bold"
                 android:text="@string/button_save"
-                android:layout_weight="1"
-                android:textAllCaps="false" />
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/ResetButton"
@@ -209,8 +208,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_background"
                 android:fontFamily="@font/lato_bold"
-                android:text="@string/button_reset"
-                android:textAllCaps="false" />
+                android:text="@string/button_reset" />
 
         </LinearLayout>
 

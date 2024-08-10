@@ -49,8 +49,7 @@
         android:background="@drawable/button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
-        android:text="@string/button_abort"
-        android:textAllCaps="false" />
+        android:text="@string/button_abort" />
 
     <Button
         android:id="@+id/public_key_conflict_replace_button"
@@ -65,7 +64,6 @@
         android:background="@drawable/button_background"
         android:fontFamily="@font/lato_bold"
         android:textSize="18sp"
-        android:text="@string/button_replace"
-        android:textAllCaps="false" />
+        android:text="@string/button_replace" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,4 @@
+* add support for SDK version 34 / Android 14
+* add new theme "Grass Green"
+* fix video screen mirroring
+* fix some button styles

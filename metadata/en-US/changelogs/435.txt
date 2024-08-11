@@ -2,3 +2,6 @@
 * add new theme "Grass Green"
 * fix video screen mirroring
 * fix some button styles
+* fix disable call history
+* remove "app not running" error for now
+* fix hangup/decline button icon

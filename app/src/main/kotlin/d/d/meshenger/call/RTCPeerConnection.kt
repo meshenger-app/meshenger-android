@@ -84,7 +84,7 @@ abstract class RTCPeerConnection(
     }
 
     private fun createOutgoingCallInternal(contact: Contact, offer: String) {
-        Log.d(this, "createOutgoingCallInternal()")
+        Log.d(this, "createOutgoingCallInternal() contact: ${contact.name}, offer: $offer")
 
         Utils.checkIsNotOnMainThread()
 
@@ -645,6 +645,8 @@ abstract class RTCPeerConnection(
                         decline()
                         return
                     }
+
+                    Log.d(this, "createIncomingCallInternal() offer: $offer")
 
                     // respond that we accept the call (our phone is ringing)
                     val encrypted = Crypto.encryptMessage(

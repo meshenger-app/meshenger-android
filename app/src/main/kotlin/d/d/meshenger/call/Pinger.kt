@@ -29,9 +29,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             socket = connector.connect(contact)
 
             if (socket == null) {
-                return if (connector.appNotRunning) {
-                    Contact.State.APP_NOT_RUNNING
-                } else if (connector.networkNotReachable) {
+                return if (connector.networkNotReachable) {
                     Contact.State.NETWORK_UNREACHABLE
                 } else {
                     Contact.State.CONTACT_OFFLINE

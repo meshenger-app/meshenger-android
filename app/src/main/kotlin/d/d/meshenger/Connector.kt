@@ -23,7 +23,6 @@ class Connector(
         private val guessEUI64Address: Boolean = false,
         private val useNeighborTable: Boolean = false) {
     var networkNotReachable = false
-    var appNotRunning = false
 
     var unknownHostException = false
     var connectException = false
@@ -103,7 +102,6 @@ class Connector(
         Utils.checkIsNotOnMainThread()
 
         networkNotReachable = false
-        appNotRunning = false
         unknownHostException = false
         connectException = false
         socketTimeoutException = false
@@ -132,12 +130,11 @@ class Connector(
                 } catch (e: ConnectException) {
                     // device is online, but does not listen on the given port
                     Log.d(this, "connect() socket has thrown ConnectException for address=$address")
-                    connectException = true
 
                     if (" ENETUNREACH " in e.toString()) {
                         networkNotReachable = true
                     } else {
-                        appNotRunning = true
+                        connectException = true
                     }
                 } catch (e: UnknownHostException) {
                     // hostname did not resolve

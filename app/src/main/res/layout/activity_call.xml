@@ -176,7 +176,7 @@
                 android:background="@drawable/ic_button_background"
                 android:padding="@dimen/call_button_image_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_call_decline"
+                android:src="@drawable/ic_call_hangup"
                 android:contentDescription="decline call" />
 
             <ImageButton

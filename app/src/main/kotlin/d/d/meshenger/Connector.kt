@@ -83,7 +83,7 @@ class Connector(
             )
         }
 
-        return addresses.distinct().sortedWith(InetSocketAddressComparator(lastWorkingAddress))
+        return addresses.distinctBy { it.hostString }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
     }
 
 

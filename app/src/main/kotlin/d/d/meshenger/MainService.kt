@@ -184,9 +184,9 @@ class MainService : Service(), Runnable {
             val message = resources.getText(R.string.listen_for_incoming_calls).toString()
             val notification = createNotification(message, false)
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                    startForeground(NOTIFICATION_ID, notification)
+                startForeground(NOTIFICATION_ID, notification)
             } else {
-                    startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+                startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
             }
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "onStartCommand() Received Stop Foreground Intent")

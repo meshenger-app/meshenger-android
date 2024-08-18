@@ -7,23 +7,21 @@ Currently, the market of VoIP software is dominated by software owned by big com
 
 ## Finding Contacts
 
-Meshenger has no discovery mechanism by design. Contacts are shared via QR-Code or text blob.
+Meshenger has no discovery mechanism by design. Contacts are shared via QR-Code or text blob in JSON.
 
 ## How It Connects
 
-Connections are established via the addresses that are part of a contact. by default this is only the generated MAC address of the WiFi adapter. The MAC address will be used to generate IPv6 link local and other addresses depending on the current IPv6 prefixes. The addresses in the contact can also be list of IPv4/IPv6 addresses or even domain names. This can be configured manually in the settings.
+Connections are established via the addresses that are part of a contact. By default this is the link local address of the WiFi adapter. But the addresses in the contact can also contain other IPv4/IPv6 addresses or even domain names. This can be configured manually in the settings.
 
-## Randomised MAC Addresses
+If any of the contacts IPv6 address and any of the own phones IPv6 address contains a MAC address, then Meshenger will also try to transplant the MAC address from one address to another to generate more possible callee addresses. All taraget addresses are tried on after another to contact the callee.
 
-By default, Meshenger puts the MAC address of the WiFi interface in the QR-code that others will use to call. But if the MAC address changes, other Meshenger instances won't be able to reach the local Meshenger instance. This behavior is defined by internal settings and settings available to the user:
+## Communication Setup
 
-<img src="mac-randomization-menu.png" height="200">
+A call first starts on the caller side by creating a WebRTC offer. This a string that contains what video/audio codecs the phone supports and what IP addresses it has (ICE candidates). The offer is send via an initial TCP/IP connection to the callee by trying several IP addresses one ofter another.
 
-But, if the MAC address is used that was given by the hardware manufacturer, then Android might not use that in the link local address (fe80::\*), which makes Meshenger not work, since others cannot create this IP address from that MAC address only. On the other hand, it then depends on the router to assign an IP address that is based on the MAC address (EUI-64).
+This initial connection is encrypted with the public key of the callee and signed by the private key of the caller.
 
-For more information see the Android documentation on [MAC Randomization Behavior](https://source.android.com/docs/core/connect/wifi-mac-randomization-behavior).
-
-Community mesh networks might use DHCP servers to assign IPv6 addresses based on the MAC address (EUI-64), which then makes the whole approach work and stable when also the phone uses the hardware MAC address for that network.
+When the offer is received on the callee side, it is feed to WebRTC which then establishes a UDP connection to the caller using the IP address and encryption key in the WebRTC offer. The initial connection will then be closed and the call connection is established.
 
 ## Audio+Video / WebRTC
 

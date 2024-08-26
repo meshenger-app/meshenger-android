@@ -518,6 +518,7 @@ class RTCCall : RTCPeerConnection {
         // must be created in Main/GUI Thread!
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(callActivity!!.getContext())
+                .setFieldTrials("WebRTC-H264HighProfile/Enabled/")
                 .setEnableInternalTracer(true)
                 .createInitializationOptions()
         )

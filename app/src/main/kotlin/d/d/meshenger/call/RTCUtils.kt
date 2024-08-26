@@ -59,7 +59,7 @@ internal object RTCUtils
         }
 
         // 192.168.1.45, 2a02:8109::7cc5, fe80::1234%wlan0 (WebRTC does not accept link local addresses..)
-        val remoteAddressString = AddressUtils.stripHost(remoteAddress)
+        val remoteAddressString = AddressUtils.stripHost(remoteAddress.toString())
 
         //a=candidate:<foundation> <component> <protocol> <priority> <public-ip-here> <port> typ host
         val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.serverPort + 1} typ host"

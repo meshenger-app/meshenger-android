@@ -29,6 +29,7 @@ internal object AddressUtils
     }
 
     // remove interface from link local address
+    // fe80::1%wlan0 => fe80::1
     fun stripInterface(address: String): String {
         val pc = address.indexOf('%')
         return if (pc == -1) {
@@ -36,6 +37,15 @@ internal object AddressUtils
         } else {
             address.substring(0, pc)
         }
+    }
+
+    // strip first entry, e.g.:
+    // /1.2.3.4 => 1.2.3.4
+    // google.com/1.2.3.4 => 1.2.3.4
+    // google.com => google.com
+    fun stripHost(address: String): String {
+        val pos = address.indexOf('/')
+        return address.substring(pos + 1)
     }
 
     // coarse address type distinction
@@ -186,10 +196,10 @@ internal object AddressUtils
                 return null
             }
         } else if (address is Inet6Address) {
-            val str = address.toString().trimStart('/')
+            val str = stripHost(address.toString())
             return "[$str]:$port"
         } else {
-            val str = address.toString().trimStart('/')
+            val str = stripHost(address.toString())
             return "$str:$port"
         }
     }

@@ -141,9 +141,11 @@ abstract class RTCPeerConnection(
         reportStateChange(CallState.CONNECTING)
         run {
             Log.d(this, "createOutgoingCallInternal() outgoing call: send call")
+            val filteredOffer = RTCUtils.filterOfferBeforeSend(offer, remoteAddress.address)
+
             val obj = JSONObject()
             obj.put("action", "call")
-            obj.put("offer", offer) // WebRTC offer!
+            obj.put("offer", filteredOffer)
             val encrypted = Crypto.encryptMessage(
                 obj.toString(),
                 contact.publicKey,
@@ -646,7 +648,10 @@ abstract class RTCPeerConnection(
                         return
                     }
 
-                    Log.d(this, "createIncomingCallInternal() offer: $offer")
+                    // Add sender address as ICE candidate
+                    val completeOffer = RTCUtils.completeOfferAfterReception(offer, remoteAddress.address)
+
+                    Log.d(this, "createIncomingCallInternal() completeOffer: $completeOffer")
 
                     // respond that we accept the call (our phone is ringing)
                     val encrypted = Crypto.encryptMessage(
@@ -665,7 +670,7 @@ abstract class RTCPeerConnection(
                     pw.writeMessage(encrypted)
 
                     incomingRTCCall?.cleanup() // just in case
-                    incomingRTCCall = RTCCall(binder, contact, socket, offer)
+                    incomingRTCCall = RTCCall(binder, contact, socket, completeOffer)
                     try {
                         val activity = MainActivity.instance
                         if (activity != null && activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {

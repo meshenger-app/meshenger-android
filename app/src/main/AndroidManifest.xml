@@ -6,7 +6,8 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
 
     <!-- Backup Import/Export -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -56,7 +57,7 @@
         <service
             android:name=".MainService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
+            android:foregroundServiceType="camera|microphone" />
 
         <activity
             android:name=".StartActivity"

@@ -132,8 +132,10 @@ internal object Utils {
         val buffer = ByteArrayOutputStream()
         var nRead = 0
         val dataArray = ByteArray(size)
-        while (isstream != null && isstream.read(dataArray, 0, dataArray.size).also { nRead = it } != -1) {
-            buffer.write(dataArray, 0, nRead)
+        if (isstream != null) {
+            while (isstream.read(dataArray, 0, dataArray.size).also { nRead = it } != -1 && nRead > 0) {
+                buffer.write(dataArray, 0, nRead)
+            }
         }
         isstream?.close()
         return dataArray

@@ -19,12 +19,13 @@ class Database {
         events.destroy()
     }
 
-    class WrongPasswordException() : Exception()
+    class WrongPasswordException() : Exception("wrong password")
+    class InvalidDataException() : Exception("invalid data")
 
     companion object {
-        fun fromData(db_data: ByteArray, password: String?): Database {
+        fun fromData(db_data: ByteArray, password: String): Database {
             // encrypt database
-            val stringData = if (password != null && password.isNotEmpty()) {
+            val stringData = if (password.isNotEmpty()) {
                 Log.d(this, "Decrypt database")
                 val encrypted = decryptDatabase(db_data, password.toByteArray())
                 if (encrypted == null) {
@@ -32,10 +33,15 @@ class Database {
                 }
                 encrypted
             } else {
-                if (db_data.isNotEmpty() && db_data[0] != '{'.code.toByte()) {
-                    throw WrongPasswordException()
-                }
                 db_data
+            }
+
+            if (stringData == null || stringData.isEmpty()) {
+                throw InvalidDataException()
+            }
+
+            if (stringData[0] != '{'.code.toByte()) {
+                throw WrongPasswordException()
             }
 
             val obj = JSONObject(

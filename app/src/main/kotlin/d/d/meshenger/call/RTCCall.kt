@@ -631,12 +631,14 @@ class RTCCall : RTCPeerConnection {
 
                     if (iceGatheringState == IceGatheringState.COMPLETE) {
                         try {
+                            val socket = commSocket!!
                             val ownPublicKey = settings.publicKey
                             val ownSecretKey = settings.secretKey
-                            val pw = PacketWriter(commSocket!!)
+                            val answer = peerConnection!!.localDescription.description
+                            val pw = PacketWriter(socket)
                             val obj = JSONObject()
                             obj.put("action", "connected")
-                            obj.put("answer", peerConnection!!.localDescription.description)
+                            obj.put("answer", RTCUtils.filterAnswerBeforeSend(answer, socket.remoteSocketAddress as InetSocketAddress))
                             val encrypted = Crypto.encryptMessage(
                                 obj.toString(),
                                 contact.publicKey,

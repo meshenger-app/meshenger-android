@@ -1,6 +1,7 @@
 package d.d.meshenger.call
 
 import d.d.meshenger.AddressUtils
+import d.d.meshenger.Log
 import d.d.meshenger.MainService
 import java.net.*
 
@@ -23,8 +24,8 @@ internal object RTCUtils
     * We instead let the receiver insert the senders/remote IP address,
     * see filterOfferAfterReception().
     */
-    fun filterOfferBeforeSend(offer: String, remoteAddress: InetAddress): String {
-        if (remoteAddress.isLinkLocalAddress) {
+    fun filterOfferBeforeSend(offer: String, remoteAddress: InetSocketAddress): String {
+        if (remoteAddress.address.isLinkLocalAddress) {
             // link-local IP addresses are not supported by WebRTC
             return offer
         }
@@ -52,14 +53,14 @@ internal object RTCUtils
      *
      * See also filterOfferBeforeSend().
     */
-    fun completeOfferAfterReception(offer: String, remoteAddress: InetAddress): String {
-        if (remoteAddress.isLinkLocalAddress) {
+    fun completeOfferAfterReception(offer: String, remoteAddress: InetSocketAddress): String {
+        if (remoteAddress.address.isLinkLocalAddress) {
             // link-local IP addresses are not supported by WebRTC
             return offer
         }
 
         // 192.168.1.45, 2a02:8109::7cc5, fe80::1234%wlan0 (WebRTC does not accept link local addresses..)
-        val remoteAddressString = AddressUtils.stripHost(remoteAddress.toString())
+        val remoteAddressString = AddressUtils.stripHost(remoteAddress.address.toString())
 
         //a=candidate:<foundation> <component> <protocol> <priority> <public-ip-here> <port> typ host
         val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.serverPort + 1} typ host"
@@ -69,7 +70,7 @@ internal object RTCUtils
         //Log.d(this, "iceTcp: $iceTcp")
 
         // use non-route-able "connection line" entry => force use of ICE candidate entries
-        val c = if (remoteAddress is Inet6Address) {
+        val c = if (remoteAddress.address is Inet6Address) {
             "c=IN IP6 0.0.0.0"
         } else {
             "c=IN IP4 0.0.0.0"
@@ -78,9 +79,19 @@ internal object RTCUtils
         val nl =  if (offer.endsWith("\n")) {
             ""
         } else {
-            "\r\n"
+            "\n"
         }
 
-        return "${offer}${nl}${iceUdp}\r\n${iceTcp}\r\n${c}\r\n"
+        return "${offer}${nl}${iceUdp}\n${iceTcp}\n${c}\n"
+    }
+
+    fun filterAnswerBeforeSend(answer: String, remoteAddress: InetSocketAddress): String {
+        // TODO
+        return answer
+    }
+
+    fun completeAnswerAfterReception(answer: String, remoteAddress: InetSocketAddress): String {
+        // TODO
+        return answer
     }
 }

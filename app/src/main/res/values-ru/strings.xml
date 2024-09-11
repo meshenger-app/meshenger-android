@@ -37,7 +37,7 @@
     <string name="dialog_title_delete_contact">Удалить контакт?</string>
     <string name="done">Готово</string>
     <string name="empty_list_item">Пусто</string>
-    <string name="enter_contact_name">Изменить имя</string>
+    <string name="enter_contact_name">Изменить Имя</string>
     <string name="enter_password">Введите пароль</string>
     <string name="error">Ошибка</string>
     <string name="invalid_name">Недействительное имя</string>
@@ -55,7 +55,7 @@
     <string name="settings_addresses">Изменить адрес*</string>
     <string name="settings_block_unknown">Блокировать неизвестных абонентов</string>
     <string name="settings_database_password">Изменить пароль</string>
-    <string name="settings_name">Изменить имя</string>
+    <string name="settings_name">Имя</string>
     <string name="settings_nightmode">Ночной режим</string>
     <string name="startup_hello">Привет!</string>
     <string name="startup_prompt_name">Каким должно быть ваше имя?</string>
@@ -153,4 +153,7 @@
     <string name="state_authentication_failed">Аутентификация не удалась</string>
     <string name="contact_menu_qrcode">QR код</string>
     <string name="failed_to_export_database">Не удалось экспортировать базу данных</string>
+    <string name="settings_guess_eui64_address">Узнать IP-адрес (EUI64)</string>
+    <string name="settings_theme_name">Тема</string>
+    <string name="state_contact_pending">Ожидание</string>
 </resources>

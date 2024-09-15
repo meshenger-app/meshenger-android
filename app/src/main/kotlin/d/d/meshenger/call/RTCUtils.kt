@@ -15,6 +15,8 @@ import java.net.*
 
 internal object RTCUtils
 {
+    const val disableFilter = true
+
     /*
     * Remove ICE candidate and connection line entries.
     *
@@ -25,6 +27,10 @@ internal object RTCUtils
     * see filterOfferAfterReception().
     */
     fun filterOfferBeforeSend(offer: String, remoteAddress: InetSocketAddress): String {
+        if (disableFilter) {
+            return offer
+        }
+
         if (remoteAddress.address.isLinkLocalAddress) {
             // link-local IP addresses are not supported by WebRTC
             return offer
@@ -54,6 +60,10 @@ internal object RTCUtils
      * See also filterOfferBeforeSend().
     */
     fun completeOfferAfterReception(offer: String, remoteAddress: InetSocketAddress): String {
+        if (disableFilter) {
+            return offer
+        }
+
         if (remoteAddress.address.isLinkLocalAddress) {
             // link-local IP addresses are not supported by WebRTC
             return offer
@@ -86,11 +96,19 @@ internal object RTCUtils
     }
 
     fun filterAnswerBeforeSend(answer: String, remoteAddress: InetSocketAddress): String {
+        if (disableFilter) {
+            return answer
+        }
+
         // TODO
         return answer
     }
 
     fun completeAnswerAfterReception(answer: String, remoteAddress: InetSocketAddress): String {
+        if (disableFilter) {
+            return answer
+        }
+
         // TODO
         return answer
     }

@@ -1,0 +1,4 @@
+* allow EUI64 addresses for the WebRTC connection
+* fix text color of alert dialogs
+* fix crash in setting when screen orientation changes
+* fix crash when reading an empty backup file

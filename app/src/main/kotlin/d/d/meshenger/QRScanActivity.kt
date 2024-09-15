@@ -16,12 +16,12 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.google.zxing.ResultPoint
 import com.google.zxing.BarcodeFormat
 import android.content.ComponentName
-import android.app.AlertDialog
 import android.app.Dialog
 import android.os.IBinder
 import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import org.json.JSONException
 
 class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {

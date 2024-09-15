@@ -4,9 +4,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:dropDownListViewStyle">@style/MySpinner</item>
-
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textColorPrimary">@color/black</item>
     </style>
 
     <style name="AppTheme.FireRed" parent="AppThemeBase">
@@ -85,4 +82,7 @@
         <item name="tabSelectedTextColor">@color/black</item>
     </style>
 
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <!-- Nothing to do for now -->
+    </style>
 </resources>

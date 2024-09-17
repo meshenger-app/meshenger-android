@@ -1,0 +1,2 @@
+* update Russian translation (thanks gfbdrgng)
+* update Spanish translation (thanks gallegonovato)

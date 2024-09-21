@@ -35,10 +35,10 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
             try {
                 val contact = binder!!.getContactOrOwn(publicKey)!!
                 val data = Contact.toJSON(contact, false).toString()
-                val i = Intent(Intent.ACTION_SEND)
-                i.putExtra(Intent.EXTRA_TEXT, data)
-                i.type = "text/plain"
-                startActivity(i)
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.putExtra(Intent.EXTRA_TEXT, data)
+                intent.type = "text/plain"
+                startActivity(intent)
                 finish()
             } catch (e: Exception) {
                 // ignore

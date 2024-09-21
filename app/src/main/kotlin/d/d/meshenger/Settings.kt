@@ -18,7 +18,7 @@ class Settings {
     var disableCallHistory = false
     var disableProximitySensor = false
     var disableAudioProcessing = false
-    var showUsernameAsLogo = false
+    var showUsernameAsLogo = true
     var pushToTalk = false
     var startOnBootup = false
     var connectRetries = 1

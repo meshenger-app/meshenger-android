@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import d.d.meshenger.MainService.MainBinder
@@ -57,8 +58,9 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
             .text = contact.name
 
         val data = Contact.toJSON(contact, false).toString()
+        val hints =  mapOf(EncodeHintType.CHARACTER_SET to "utf-8")
         val multiFormatWriter = MultiFormatWriter()
-        val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080)
+        val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 1080, 1080, hints)
         val barcodeEncoder = BarcodeEncoder()
         val bitmap = barcodeEncoder.createBitmap(bitMatrix)
         findViewById<ImageView>(R.id.QRView).setImageBitmap(bitmap)

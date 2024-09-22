@@ -1,2 +1,4 @@
 * update Russian translation (thanks gfbdrgng)
 * update Spanish translation (thanks gallegonovato)
+* fix QR code for UTF-8 characters
+* show username as logo by default

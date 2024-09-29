@@ -60,7 +60,7 @@
     <string name="settings_name">Nombre</string>
     <string name="settings_nightmode">Modo Nocturno</string>
     <string name="startup_hello">¡Hola!</string>
-    <string name="startup_prompt_name">¿Cual debería de ser tu nombre?</string>
+    <string name="startup_prompt_name">¿Cuál debería de ser tu nombre?</string>
     <string name="title_contacts">Contactos</string>
     <string name="title_scan_qr_code">Escaneando código QR</string>
     <string name="title_settings">Ajustes</string>
@@ -72,7 +72,7 @@
     <string name="audio_device_speakerphone">Altavoz</string>
     <string name="call_authentication_failed">Error de autenticación</string>
     <string name="button_reset">Reiniciar</string>
-    <string name="call_connection_failed">Error de conección</string>
+    <string name="call_connection_failed">Error de conexión</string>
     <string name="audio_device_auto">%1$s (automático)</string>
     <string name="connected_to_address">(a %1$s)</string>
     <string name="capture_format_change_text">Desliza para cambiar el formato de captura</string>

@@ -19,7 +19,7 @@
     <string name="button_replace">Reemplazar</string>
     <string name="button_save">Guardar</string>
     <string name="button_skip">Omitir</string>
-    <string name="button_yes">Si</string>
+    <string name="button_yes">Sí</string>
     <string name="call_connected">Conectad@</string>
     <string name="call_connecting">Llamando…</string>
     <string name="call_denied">Rechazado</string>
@@ -136,7 +136,7 @@
     <string name="settings_video_degradation_mode">Degradación del vídeo</string>
     <string name="settings_video_hardware_acceleration">Aceleración de vídeo por hardware</string>
     <string name="warning_no_addresses_found">No se encontró la dirección configurada. ¿Ha cambiado la red?</string>
-    <string name="setup_no_address_found">No se ha podido encontrar la dirección MAC de su tarjeta WiFi. Habilite WiFi ahora (no necesita Internet) o omitase para configurarlo más tarde.</string>
+    <string name="setup_no_address_found">No se ha podido encontrar la dirección MAC de su tarjeta WiFi. Habilite WiFi ahora (no necesita Internet) u omitase para configurarlo más tarde.</string>
     <string name="startup_name_prefix">Usuari@</string>
     <string name="state_communication_failed">Llamada fallida</string>
     <string name="state_contact_network_unreachable">Sin red</string>

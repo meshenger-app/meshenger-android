@@ -66,7 +66,7 @@ internal object Utils {
     // Check for a name that has no funny unicode characters
     // and to not let them look to much like other names.
     fun isValidName(name: String?): Boolean {
-        if (name == null || name.isEmpty()) {
+        if (name.isNullOrEmpty()) {
             return false
         }
         return NAME_PATTERN.matcher(name).matches()
@@ -92,7 +92,7 @@ internal object Utils {
             .toByteArray()
     }
 
-   fun getExternalFileSize(ctx: Context, uri: Uri?): Long {
+   private fun getExternalFileSize(ctx: Context, uri: Uri?): Long {
         val cursor = ctx.contentResolver.query(uri!!, null, null, null, null)
         cursor!!.moveToFirst()
         val index = cursor.getColumnIndex(OpenableColumns.SIZE)
@@ -112,7 +112,7 @@ internal object Utils {
         val buffer = ByteArrayOutputStream()
         var nRead = 0
         val dataArray = ByteArray(size)
-        if (isstream != null) {
+        if (isstream != null && size > 0) {
             while (isstream.read(dataArray, 0, dataArray.size).also { nRead = it } != -1 && nRead > 0) {
                 buffer.write(dataArray, 0, nRead)
             }

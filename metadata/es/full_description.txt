@@ -2,7 +2,7 @@ Llamadas de voz y vídeo en redes locales.
 
 Llamadas directas de voz y vídeo sin necesidad de cuenta de usuario ni acceso a la Internet.
 No hay mecanismo de descubrimiento, ni «meshing» ni ningún servidor. Cada uno escanea el código QR del dispositivo del otro, que contiene la dirección IP.
-Esto funciona en las redes de casa o la empresa, pero también en muchas redes autónomas e independientes, como redes «mesh» comunitarias.
+Esto funciona en las redes de casa o la empresa, pero también en muchas redes autónomas e independientes, como redes malla comunitarias.
 
 * Llamadas de voz y vídeo.
 * Comunicaciones cifradas.

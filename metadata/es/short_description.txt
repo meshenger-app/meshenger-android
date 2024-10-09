@@ -1,1 +1,1 @@
-Mensajería P2P open source
+Aplicación de comunicación de voz y vídeo para redes independientes.

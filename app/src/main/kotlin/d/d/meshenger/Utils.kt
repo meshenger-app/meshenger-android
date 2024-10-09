@@ -1,10 +1,13 @@
 package d.d.meshenger
 
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.TypedArray
 import android.net.Uri
 import android.os.Looper
 import android.provider.OpenableColumns
+import android.util.TypedValue
 import androidx.core.content.ContextCompat
 import java.io.*
 import java.util.regex.Pattern
@@ -39,6 +42,19 @@ internal object Utils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun resolveColor(context: Activity, colorAttribute: Int): Int {
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(colorAttribute, typedValue, true)
+        val arr: TypedArray =
+            context.obtainStyledAttributes(
+                typedValue.data,
+                intArrayOf(colorAttribute)
+            )
+        val primaryColor = arr.getColor(0, -1)
+        arr.recycle()
+        return primaryColor
     }
 
     fun hasPermission(context: Context, permission: String): Boolean {

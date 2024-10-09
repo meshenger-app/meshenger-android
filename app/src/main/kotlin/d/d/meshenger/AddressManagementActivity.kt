@@ -159,9 +159,8 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
     }
 
     inner class AddressListAdapter(private val context: Activity): BaseAdapter() {
-        // hack, we want android:textColorPrimary
-        private val defaultColor = Color.parseColor(if (isNightmodeEnabled(context)) "#EC3E3E" else "#000000")
-        private val markColor = Color.parseColor("#39b300")
+        private val defaultColor = Utils.resolveColor(context, android.R.attr.textColorPrimary)
+        private val markColor = Color.parseColor("#39b300") // green
         var allAddresses = mutableListOf<AddressEntry>()
         private var systemAddresses = mutableListOf<AddressEntry>()
         var storedAddresses = mutableListOf<AddressEntry>()

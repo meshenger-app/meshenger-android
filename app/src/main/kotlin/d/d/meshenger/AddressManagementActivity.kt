@@ -135,8 +135,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         initAddressList()
         initViews()
 
-        // use network to lookup own hostname
-        // TODO: do not use network ...
+        // Use network for reverse hostname lookup and add hostnames to address list.
         Thread(
             LookupHostnames(systemAddresses.toList()) { hostname, device ->
                 runOnUiThread {

@@ -5,7 +5,7 @@
     <string name="about_app_version">Versión de la app:</string>
     <string name="about_app_website">Código fuente:</string>
     <string name="address_management">Gestión de dirección</string>
-    <string name="address_management_help_text">Seleccione una o más direcciones que se incluirán en su código QR. Una buena idea es usar la dirección MAC del adaptador WiFi (wlan0). Pero tenga en cuenta que está vinculado al hardware de su dispositivo. Si no hay una dirección MAC visible, habilite su WiFi.</string>
+    <string name="address_management_help_text">Selecciona una o varias direcciones que se incluirán en tu código QR. Una buena idea es utilizar la dirección MAC del adaptador Wi-Fi (wlan0). Pero ten en cuenta que Android podría cambiarla dependiendo de la configuración del sistema. Si no aparece ninguna dirección MAC, habilita tu WiFi.</string>
     <string name="app_description">Permite la comunicación por voz y video sin necesidad de servidores ni acceso a Internet. Simplemente escanea el código QR de contacto de cada uno y llamaos. Esto funciona en la mayoría de las redes, por ejemplo, en casa, en redes comunitarias o en el trabajo.</string>
     <string name="audio_device_earpiece">Auricular</string>
     <string name="audio_device_wired_headset">Auricular con cable</string>

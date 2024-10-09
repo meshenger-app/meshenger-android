@@ -116,4 +116,5 @@
     <string name="state_app_not_running">L\'aplicació no s\'està executant</string>
     <string name="title_settings">Configuració</string>
     <string name="warning_no_addresses_found">No s\'han trobat les adreces configurades. Potser heu canviat de xarxa?</string>
+    <string name="address_management_help_text">Seleccioneu una o més adreces a incloure en el codi QR. Una bona idea és utilitzar l\'adreça MAC de la targeta WiFi (wlan0), però tingueu en compte que l\'Android pot modificar-la segons la configuració que tingueu del sistema. En cas de no haver cap adreça MAC visible, activeu la WiFi.</string>
 </resources>

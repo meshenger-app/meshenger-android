@@ -1,1 +1,1 @@
-Una aplicació de trucades de veu i vídeo per a xarxes autònomes i independents.
+Una aplicació de trucades de veu i vídeo per a xarxes independents.

@@ -1,0 +1,10 @@
+Trucades de veu i vídeo en xarxes locals.
+
+Trucades directes de veu i vídeo sense necessitat de cap compte ni accés a la Internet.
+No hi ha cap mecanisme de descoberta, de «meshing» ni cap servidor. Cadascú escaneja el codi QR de l'altre dispositiu, que conté l'adreça IP del contacte.
+This works at home or company networks but also in many off-the-grid networks such as community mesh networks.
+
+* Trucades de veu i vídeo.
+* Comunicació xifrada.
+* Sense comptes, haver de registrar-se ni anuncis.
+* Podeu afegir adreces personalitzades per a connectar amb els contactes

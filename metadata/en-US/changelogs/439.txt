@@ -1,0 +1,5 @@
+* fix crash when default ringtone cannot be access
+  this affects Samsung phones
+* add Catalan translation (thanks trikaphundo)
+* update Spanish translation (thanks trikaphundo)
+* update French translation (thanks J'informatique)

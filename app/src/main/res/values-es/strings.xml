@@ -5,7 +5,7 @@
     <string name="about_app_version">Versión de la app:</string>
     <string name="about_app_website">Código fuente:</string>
     <string name="address_management">Gestión de dirección</string>
-    <string name="address_management_help_text">Selecciona una o varias direcciones que se incluirán en su código QR. Una buena idea es utilizar la dirección MAC del adaptador WiFi (wlan0). Pero ten en cuenta que Android podría cambiarla dependiendo de la configuración del sistema. Si no aparece ninguna dirección MAC, habilite su WiFi.</string>
+    <string name="address_management_help_text">Selecciona una o varias direcciones que se incluirán en tu código QR. Una buena idea es utilizar la dirección MAC del adaptador Wi-Fi (wlan0). Pero ten en cuenta que Android podría cambiarla dependiendo de la configuración del sistema. Si no aparece ninguna dirección MAC, habilita tu WiFi.</string>
     <string name="app_description">Permite la comunicación por voz y video sin necesidad de servidores ni acceso a Internet. Simplemente escanea el código QR de contacto de cada uno y llamaos. Esto funciona en la mayoría de las redes, por ejemplo, en casa, en redes comunitarias o en el trabajo.</string>
     <string name="audio_device_earpiece">Auricular</string>
     <string name="audio_device_wired_headset">Auricular con cable</string>
@@ -44,8 +44,8 @@
     <string name="error">Error</string>
     <string name="invalid_name">Nombre no válido</string>
     <string name="invalid_qr">Código QR no válido</string>
-    <string name="invalid_qr_code_data">Dato no válido</string>
-    <string name="listen_for_incoming_calls">Escuchar las llamadas entrantes.</string>
+    <string name="invalid_qr_code_data">Datos no válidos</string>
+    <string name="listen_for_incoming_calls">A la espera de llamadas entrantes.</string>
     <string name="menu_about">Acerca de</string>
     <string name="menu_backup">Copia de seguridad</string>
     <string name="menu_exit">Salir</string>
@@ -54,7 +54,7 @@
     <string name="no_value">Nada</string>
     <string name="password_title">Contraseña</string>
     <string name="paste_qr_code_data">Pega los datos aquí</string>
-    <string name="settings_addresses">Dirección*</string>
+    <string name="settings_addresses">Direcciones*</string>
     <string name="settings_block_unknown">Bloquear llamadas desconocidas</string>
     <string name="settings_database_password">Contraseña de inicio</string>
     <string name="settings_name">Nombre</string>

@@ -6,6 +6,7 @@ import android.content.*
 import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.*
 import android.os.PowerManager.WakeLock
 import android.text.Layout
@@ -809,13 +810,21 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         Log.d(this, "initRinging")
 
         // init ringtone
-        ringtone = RingtoneManager.getRingtone(
-            this,
+        ringtone = try {
+            RingtoneManager.getRingtone(this,
             RingtoneManager.getActualDefaultRingtoneUri(
                 applicationContext,
                 RingtoneManager.TYPE_RINGTONE
-            )
-        )
+            ))
+        } catch (e: SecurityException) {
+            Log.w(this, "Cannot get default ringtone, use fallback ringtone: $e")
+            showTextMessage("Failed to get default ringtone.")
+            // Use orion ringtone from LineageOS as fallback.
+            // Some Samsung phones call setRingtonesAsInitValue() and throw a SecurityException
+            // because android.permission.WRITE_SETTINGS is not granted
+            val uri = Uri.parse("android.resource://${packageName}/${R.raw.orion}")
+            RingtoneManager.getRingtone(this, uri)
+        }
 
         // init vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

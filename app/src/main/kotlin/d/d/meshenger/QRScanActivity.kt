@@ -86,7 +86,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         }
     }
 
-    private fun showPubkeyConflictDialog(newContact: Contact, other_contact: Contact) {
+    private fun showPubkeyConflictDialog(newContact: Contact, otherContact: Contact) {
         barcodeView.pause()
 
         val dialog = Dialog(this)
@@ -95,9 +95,9 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
             dialog.findViewById<TextView>(R.id.public_key_conflicting_contact_textview)
         val abortButton = dialog.findViewById<Button>(R.id.public_key_conflict_abort_button)
         val replaceButton = dialog.findViewById<Button>(R.id.public_key_conflict_replace_button)
-        nameTextView.text = other_contact.name
+        nameTextView.text = otherContact.name
         replaceButton.setOnClickListener {
-            binder!!.deleteContact(other_contact.publicKey)
+            binder!!.deleteContact(otherContact.publicKey)
             binder!!.addContact(newContact)
 
             // done

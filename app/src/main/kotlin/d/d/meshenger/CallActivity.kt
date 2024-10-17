@@ -9,13 +9,11 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.*
 import android.os.PowerManager.WakeLock
-import android.text.Layout
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager.LayoutParams
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import d.d.meshenger.call.*
 import d.d.meshenger.call.RTCPeerConnection.CallState

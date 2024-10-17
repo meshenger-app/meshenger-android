@@ -39,9 +39,7 @@ Details can be found in the [Documentation](docs/documentation.md) or in the [FA
 
 This list only contains Open Source projects.
 
-* [linphone](https://linphone.org/) - many features, uses SIP, can use IP addresses, but not easy to use
-* [Keet](https://keet.io) - many features, uses a DHT, Bitcoin payments (might not be Open Source)
-* [Briar](https://briarproject.org/) - text messages only, for the Internet the Tor network is used
-* [Jami](https://jami.net/) - many features, but might not work in mesh or local networks
+* [pion offline](https://github.com/pion/offline-browser-communication) - Offline WebRTC demo
+* [linphone](https://linphone.org/) - uses SIP, can use IP addresses, but not easy to use
 * [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE
-* [Qaul](https://qaul.net/) - many features, interlinked P2P mesh via BLE, Wifi & Internet-overlay
+* [Qaul](https://qaul.net/) - text messages only, interlinked P2P mesh via BLE, Wifi & Internet-overlay

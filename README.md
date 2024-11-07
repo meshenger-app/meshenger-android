@@ -31,7 +31,7 @@ Visit [weblate.org](https://hosted.weblate.org/engage/meshenger/) to contribute 
 
 ## Documentation
 
-Meshenger connects to IP addresses in a true P2P fashion. Contacts are shared via QR-Code. They contain a name, a public key and a list of IP addresses or domain names. Also IPv6 link local addresses are supported, which would not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can transmit voice and video.
+Meshenger connects to IP addresses in a true P2P fashion. Contacts are encoded in a text blob that can be exchanged via QR-Code, picture or copy&paste. They contain a name, a public key and a list of IP addresses or domain names. Also IPv6 link local addresses are supported, which would not even need a DHCP server. The exchanged public key is used to authenticate/encrypt signaling data to establish a [WebRTC](https://webrtc.org/) session that can transmit voice and video.
 
 Details can be found in the [Documentation](docs/documentation.md) or in the [FAQ](docs/faq.md).
 

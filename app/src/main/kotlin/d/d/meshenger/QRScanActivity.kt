@@ -1,28 +1,36 @@
 package d.d.meshenger
 
 import android.Manifest
-import android.content.ServiceConnection
-import android.os.Bundle
-import org.json.JSONObject
-import android.widget.Toast
-import android.widget.TextView
-import android.widget.EditText
-import android.content.Intent
-import android.content.DialogInterface
-import com.journeyapps.barcodescanner.BarcodeCallback
-import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import com.journeyapps.barcodescanner.BarcodeResult
-import com.journeyapps.barcodescanner.DefaultDecoderFactory
-import com.google.zxing.ResultPoint
-import com.google.zxing.BarcodeFormat
-import android.content.ComponentName
 import android.app.Dialog
+import android.content.ComponentName
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.ServiceConnection
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.MultiFormatReader
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.ResultPoint
+import com.google.zxing.common.HybridBinarizer
+import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import org.json.JSONException
+import org.json.JSONObject
+import kotlin.math.floor
 
 class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
     private lateinit var barcodeView: DecoratedBarcodeView
@@ -38,15 +46,18 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         bindService(Intent(this, MainService::class.java), this, 0)
 
         // qr show button
-        findViewById<View>(R.id.fabScan).setOnClickListener {
+        findViewById<View>(R.id.fabCameraInput).setOnClickListener {
             val intent = Intent(this, QRShowActivity::class.java)
             intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder!!.getSettings().publicKey))
             startActivity(intent)
             finish()
         }
 
-        // manual input button
+        // button for manual input
         findViewById<View>(R.id.fabManualInput).setOnClickListener { startManualInput() }
+
+        // button to get qr-code from image
+        findViewById<View>(R.id.fabImageInput).setOnClickListener { startImageInput() }
 
         if (!Utils.hasPermission(this, Manifest.permission.CAMERA)) {
             enabledCameraForResult.launch(Manifest.permission.CAMERA)
@@ -179,6 +190,77 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
             }
             .setView(et)
         b.show()
+    }
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        if (it != null) try {
+            val bitmap = getThumbnail(it, 800)
+            val reader = MultiFormatReader()
+            val result = reader.decode(convertToBinaryBitmap(bitmap))
+            addContact(result.text)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, R.string.invalid_qr_code_data, Toast.LENGTH_SHORT).show()
+        }
+
+        barcodeView.resume()
+    }
+
+    // make image smaller for less resource use
+    private fun getThumbnail(uri: Uri, size: Int): Bitmap {
+        // open image stream to get size
+        val input = this.contentResolver.openInputStream(uri)
+        if (input == null) {
+            throw Exception("Cannot open picture")
+        }
+
+        val onlyBoundsOptions = BitmapFactory.Options()
+        onlyBoundsOptions.inJustDecodeBounds = true
+        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888 // optional
+        BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
+        input.close()
+
+        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1)) {
+            throw Exception("Internal error")
+        }
+
+        fun getPowerOfTwoForSampleRatio(ratio: Double): Int {
+            val k = Integer.highestOneBit(floor(ratio).toInt())
+            return if (k == 0) 1 else k
+        }
+
+        val originalSize =
+            if ((onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth)) onlyBoundsOptions.outHeight else onlyBoundsOptions.outWidth
+
+        val ratio = if ((originalSize > size)) (originalSize / size.toDouble()) else 1.0
+
+        val bitmapOptions = BitmapFactory.Options()
+        bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio)
+        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888
+
+        // open image stream to resize while decoding
+        val stream = this.contentResolver.openInputStream(uri)
+        if (stream == null) {
+            throw Exception("Cannot open stream")
+        }
+        val bitmap = BitmapFactory.decodeStream(stream, null, bitmapOptions)
+        stream.close()
+        if (bitmap == null) {
+            throw Exception("Cannot decode bitmap")
+        }
+        return bitmap
+    }
+
+    private fun convertToBinaryBitmap(bitmap: Bitmap): BinaryBitmap {
+        val intArray = IntArray(bitmap.width * bitmap.height)
+        bitmap.getPixels(intArray, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        val source = RGBLuminanceSource(bitmap.width, bitmap.height, intArray)
+        return BinaryBitmap(HybridBinarizer(source))
+    }
+
+    private fun startImageInput() {
+        barcodeView.pause()
+        galleryLauncher.launch("image/*")
     }
 
     override fun barcodeResult(result: BarcodeResult) {

@@ -21,6 +21,7 @@
             android:fontFamily="@font/lato_bold"
             android:gravity="center"
             android:textSize="18sp"
+            android:textColor="@android:color/black"
             android:text="@string/title_show_qr_code" />
 
         <ImageView
@@ -37,6 +38,7 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="@font/lato_bold"
             android:gravity="center"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:layout_below="@id/QRView" />
 

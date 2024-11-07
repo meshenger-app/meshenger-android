@@ -1,0 +1,2 @@
+* allow to scan qr-code from image
+* fix qr-scan text color for dark mode

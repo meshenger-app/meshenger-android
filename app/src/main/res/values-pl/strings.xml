@@ -1,2 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="about_app_version">Wersja:</string>
+    <string name="about_app_website">Strona internetowa:</string>
+    <string name="audio_device_bluetooth">Bluetooth</string>
+    <string name="button_abort">Anuluj</string>
+    <string name="button_add">Dodaj</string>
+    <string name="button_cancel">Anuluj</string>
+    <string name="button_export">Eksportuj</string>
+    <string name="button_import">Importuj</string>
+    <string name="button_ok">OK</string>
+    <string name="button_rename">Zmień nazwę</string>
+    <string name="call_connected">Połączono</string>
+    <string name="call_error">Błąd</string>
+    <string name="call_waiting">Oczekiwanie…</string>
+    <string name="camera_back">Tylna</string>
+    <string name="camera_front">Przednia</string>
+    <string name="contact_menu_add">Dodaj</string>
+    <string name="contact_menu_block">Zablokuj</string>
+    <string name="contact_menu_delete">Usuń</string>
+    <string name="contact_menu_details">Szczegóły</string>
+    <string name="done">Gotowe</string>
+    <string name="menu_about">Informacje</string>
+    <string name="menu_license">Licencja</string>
+    <string name="menu_settings">Ustawienia</string>
+    <string name="settings_theme_name">Motyw</string>
+    <string name="settings_addresses">Adresy*</string>
+    <string name="settings_name">Nazwa</string>
+    <string name="button_save">Zapisz</string>
+    <string name="button_reset">Zresetuj</string>
+    <string name="button_skip">Pomiń</string>
+    <string name="contact_address_list">Adresy</string>
+    <string name="about_app_description">Opis:</string>
+    <string name="about_app_license">Licencja:</string>
+    <string name="button_no">Nie</string>
+    <string name="button_next">dalej</string>
+    <string name="button_yes">Tak</string>
+    <string name="contact_address_input">Adres</string>
+    <string name="contact_menu_share">Udostępnij</string>
+    <string name="contact_blocked">Zablokowano</string>
+    <string name="contact_menu_unblock">Odblokuj</string>
+    <string name="contact_name">Nazwa</string>
+    <string name="error">Błąd</string>
+    <string name="menu_backup">Kopia zapasowa</string>
+    <string name="empty_list_item">Puste</string>
+    <string name="menu_exit">Wyjdź</string>
+    <string name="no_value">Brak</string>
+    <string name="password_title">Hasło</string>
+</resources>

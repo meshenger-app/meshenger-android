@@ -36,7 +36,7 @@ class Database {
                 db_data
             }
 
-            if (stringData == null || stringData.isEmpty()) {
+            if (stringData.isEmpty()) {
                 throw InvalidDataException()
             }
 

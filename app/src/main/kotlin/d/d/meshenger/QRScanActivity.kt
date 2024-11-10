@@ -1,8 +1,10 @@
 package d.d.meshenger
 
 import android.Manifest
+import android.app.Activity
 import android.app.Dialog
 import android.content.ComponentName
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
@@ -45,7 +47,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
         bindService(Intent(this, MainService::class.java), this, 0)
 
-        // qr show button
+        // button to show QR-Code
         findViewById<View>(R.id.fabCameraInput).setOnClickListener {
             val intent = Intent(this, QRShowActivity::class.java)
             intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder!!.getSettings().publicKey))
@@ -56,7 +58,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         // button for manual input
         findViewById<View>(R.id.fabManualInput).setOnClickListener { startManualInput() }
 
-        // button to get qr-code from image
+        // button to get QR-Code from image
         findViewById<View>(R.id.fabImageInput).setOnClickListener { startImageInput() }
 
         if (!Utils.hasPermission(this, Manifest.permission.CAMERA)) {
@@ -192,75 +194,27 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         b.show()
     }
 
-    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        if (it != null) try {
-            val bitmap = getThumbnail(it, 800)
-            val reader = MultiFormatReader()
-            val result = reader.decode(convertToBinaryBitmap(bitmap))
-            addContact(result.text)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.invalid_qr_code_data, Toast.LENGTH_SHORT).show()
+    private var importFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.data ?: return@registerForActivityResult
+            try {
+                val bitmap = getThumbnail(applicationContext, uri, 800)
+                val reader = MultiFormatReader()
+                val qrResult = reader.decode(convertToBinaryBitmap(bitmap))
+                addContact(qrResult.text)
+                barcodeView.resume()
+            } catch (e: Exception) {
+                Toast.makeText(this, R.string.invalid_qr_code_data, Toast.LENGTH_SHORT).show()
+            }
         }
-
-        barcodeView.resume()
-    }
-
-    // make image smaller for less resource use
-    private fun getThumbnail(uri: Uri, size: Int): Bitmap {
-        // open image stream to get size
-        val input = this.contentResolver.openInputStream(uri)
-        if (input == null) {
-            throw Exception("Cannot open picture")
-        }
-
-        val onlyBoundsOptions = BitmapFactory.Options()
-        onlyBoundsOptions.inJustDecodeBounds = true
-        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888 // optional
-        BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
-        input.close()
-
-        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1)) {
-            throw Exception("Internal error")
-        }
-
-        fun getPowerOfTwoForSampleRatio(ratio: Double): Int {
-            val k = Integer.highestOneBit(floor(ratio).toInt())
-            return if (k == 0) 1 else k
-        }
-
-        val originalSize =
-            if ((onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth)) onlyBoundsOptions.outHeight else onlyBoundsOptions.outWidth
-
-        val ratio = if ((originalSize > size)) (originalSize / size.toDouble()) else 1.0
-
-        val bitmapOptions = BitmapFactory.Options()
-        bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio)
-        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888
-
-        // open image stream to resize while decoding
-        val stream = this.contentResolver.openInputStream(uri)
-        if (stream == null) {
-            throw Exception("Cannot open stream")
-        }
-        val bitmap = BitmapFactory.decodeStream(stream, null, bitmapOptions)
-        stream.close()
-        if (bitmap == null) {
-            throw Exception("Cannot decode bitmap")
-        }
-        return bitmap
-    }
-
-    private fun convertToBinaryBitmap(bitmap: Bitmap): BinaryBitmap {
-        val intArray = IntArray(bitmap.width * bitmap.height)
-        bitmap.getPixels(intArray, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
-        val source = RGBLuminanceSource(bitmap.width, bitmap.height, intArray)
-        return BinaryBitmap(HybridBinarizer(source))
     }
 
     private fun startImageInput() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "image/*"
+        importFileLauncher.launch(intent)
         barcodeView.pause()
-        galleryLauncher.launch("image/*")
     }
 
     override fun barcodeResult(result: BarcodeResult) {
@@ -312,5 +266,59 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
 
     override fun onServiceDisconnected(componentName: ComponentName) {
         // nothing to do
+    }
+
+    companion object {
+        // make image smaller for less resource use
+        private fun getThumbnail(ctx: Context, uri: Uri, size: Int): Bitmap {
+            // open image stream to get size
+            val input = ctx.contentResolver.openInputStream(uri)
+            if (input == null) {
+                throw Exception("Cannot open picture")
+            }
+
+            val onlyBoundsOptions = BitmapFactory.Options()
+            onlyBoundsOptions.inJustDecodeBounds = true
+            onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888 // optional
+            BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
+            input.close()
+
+            if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1)) {
+                throw Exception("Internal error")
+            }
+
+            fun getPowerOfTwoForSampleRatio(ratio: Double): Int {
+                val k = Integer.highestOneBit(floor(ratio).toInt())
+                return if (k == 0) 1 else k
+            }
+
+            val originalSize =
+                if ((onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth)) onlyBoundsOptions.outHeight else onlyBoundsOptions.outWidth
+
+            val ratio = if ((originalSize > size)) (originalSize / size.toDouble()) else 1.0
+
+            val bitmapOptions = BitmapFactory.Options()
+            bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio)
+            bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888
+
+            // open image stream to resize while decoding
+            val stream = ctx.contentResolver.openInputStream(uri)
+            if (stream == null) {
+                throw Exception("Cannot open stream")
+            }
+            val bitmap = BitmapFactory.decodeStream(stream, null, bitmapOptions)
+            stream.close()
+            if (bitmap == null) {
+                throw Exception("Cannot decode bitmap")
+            }
+            return bitmap
+        }
+
+        private fun convertToBinaryBitmap(bitmap: Bitmap): BinaryBitmap {
+            val intArray = IntArray(bitmap.width * bitmap.height)
+            bitmap.getPixels(intArray, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+            val source = RGBLuminanceSource(bitmap.width, bitmap.height, intArray)
+            return BinaryBitmap(HybridBinarizer(source))
+        }
     }
 }

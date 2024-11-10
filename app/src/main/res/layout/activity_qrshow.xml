@@ -1,74 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".QRShowActivity">
 
-    <RelativeLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <TextView
+        android:id="@+id/scan_invite_tv"
         android:layout_width="wrap_content"
-        android:padding="@dimen/padding_20"
         android:layout_height="wrap_content"
-        android:background="@drawable/qrscan_background">
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/lato_bold"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@android:color/black"
+        android:text="@string/title_show_qr_code" />
 
-        <TextView
-            android:id="@+id/scan_invite_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/lato_bold"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:text="@string/title_show_qr_code" />
+    <ImageView
+        android:id="@+id/QRView"
+        android:layout_below="@id/scan_invite_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="The QR-Code" />
 
-        <ImageView
-            android:id="@+id/QRView"
-            android:layout_below="@id/scan_invite_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/contact_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/lato_bold"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:text="Contact-Name"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/QRView" />
 
-        <TextView
-            android:id="@+id/contact_name_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/lato_bold"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:layout_below="@id/QRView" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/fabSave"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="15dp"
+        app:srcCompat="@drawable/ic_baseline_share_24"
+        android:contentDescription="Share Contact"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabShare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/contact_name_tv"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/padding_10"
-            android:layout_marginBottom="@dimen/padding_10"
-            app:srcCompat="@drawable/ic_baseline_share_24"
-            android:contentDescription="Share Contact"
-            app:backgroundTint="?android:colorPrimary"
-            app:backgroundTintMode="add" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/fabScan"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="15dp"
+        app:srcCompat="@drawable/qr_code_image_export"
+        android:contentDescription="Save QR-Code"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabPresenter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/contact_name_tv"
-            android:layout_marginStart="@dimen/padding_20"
-            android:layout_marginTop="@dimen/padding_10"
-            android:layout_marginBottom="@dimen/padding_10"
-            android:layout_toEndOf="@id/fabShare"
-            android:contentDescription="Show QR Code"
-            app:srcCompat="@drawable/qr_glass"
-            app:backgroundTint="?android:colorPrimary"
-            app:backgroundTintMode="add" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabScan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        app:srcCompat="@drawable/qr_glass"
+        android:contentDescription="Show QR-Code"
+        app:backgroundTint="?android:colorPrimary"
+        app:backgroundTintMode="add" />
 
-    </RelativeLayout>
-</ScrollView>
+</RelativeLayout>

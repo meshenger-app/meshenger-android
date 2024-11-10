@@ -98,16 +98,14 @@ class BackupActivity : BaseActivity(), ServiceConnection {
 
     private var importFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data ?: return@registerForActivityResult
-            val uri = intent.data ?: return@registerForActivityResult
+            val uri = result.data?.data ?: return@registerForActivityResult
             importDatabase(uri)
         }
     }
 
     private var exportFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data ?: return@registerForActivityResult
-            val uri: Uri = intent.data ?: return@registerForActivityResult
+            val uri = result.data?.data ?: return@registerForActivityResult
             exportDatabase(uri)
         }
     }

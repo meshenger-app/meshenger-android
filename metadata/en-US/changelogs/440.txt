@@ -1,2 +1,3 @@
-* allow to scan qr-code from image
-* fix qr-scan text color for dark mode
+* allow to import contact from image with QR-Code
+* allow to export image with QR-Code of contact
+* fix QR-code view text color for dark mode

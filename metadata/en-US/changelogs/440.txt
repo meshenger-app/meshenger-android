@@ -1,4 +1,4 @@
-* allow to import contact from image with QR-Code
-* allow to export image with QR-Code of contact
+* allow to import a contact via image of a QR-Code
+* allow to export an image with the QR-Code of a contact
 * fix QR-code view text color for dark mode
 * added Polish translation (thanks Eryk Michalak)

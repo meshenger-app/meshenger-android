@@ -5,8 +5,8 @@
     <string name="about_app_version">Versão:</string>
     <string name="about_app_website">Site:</string>
     <string name="address_management">Gerenciar endereço</string>
-    <string name="address_management_help_text">Selecione um ou mais endereços que serão incluídos no seu código QR. É recomendado usar o endereço MAC do adaptador WiFi (wlan0). Mas tem cuidado porque ele é vinculado ao hardware do seu dispositivo. Se nenhum endereço MAC estiver visível, então ative seu WiFi.</string>
-    <string name="app_description">Permite uma comunicação de voz e vídeo sem nenhum servidor ou conexão à internet. Basta escanear código QR de contatos participantes e efetuar ligação. Funciona na maioria dos tipos de redes, p.ex., de casa, em redes comunitárias ou de trabalho.</string>
+    <string name="address_management_help_text">Selecione um ou mais endereços que serão incluídos no seu código QR. É recomendado usar o endereço MAC do adaptador WiFi (wlan0). Mas tenha cuidado porque o Android pode mudá-lo dependendo das configurações do sistema. Se nenhum endereço MAC estiver visível, então ative seu WiFi.</string>
+    <string name="app_description">Permite uma comunicação por voz e vídeo sem nenhum servidor ou conexão com a internet. Basta escanear código QR de contatos participantes e efetuar ligação. Funciona na maioria dos tipos de redes, p.ex., de casa, em redes comunitárias ou de trabalho.</string>
     <string name="button_abort">Cancelar</string>
     <string name="button_cancel">Cancelar</string>
     <string name="button_export">Exportar</string>
@@ -80,4 +80,5 @@
     <string name="button_add">Adicionar</string>
     <string name="button_rename">Renomear</string>
     <string name="call_authentication_failed">Autenticação falhou</string>
+    <string name="audio_device_bluetooth">Bluetooth</string>
 </resources>

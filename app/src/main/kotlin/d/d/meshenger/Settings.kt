@@ -34,6 +34,7 @@ class Settings {
     var cameraFramerate = "auto"
     var automaticStatusUpdates = true
     var themeName = "sky_blue"
+    var ignoreOverlayPermission = false
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -77,6 +78,7 @@ class Settings {
             s.cameraFramerate = obj.getString("camera_framerate")
             s.automaticStatusUpdates = obj.getBoolean("automatic_status_updates")
             s.themeName = obj.getString("theme_name")
+            s.ignoreOverlayPermission = obj.getBoolean("ignore_overlay_permission")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -132,6 +134,7 @@ class Settings {
             obj.put("camera_framerate", s.cameraFramerate)
             obj.put("automatic_status_updates", s.automaticStatusUpdates)
             obj.put("theme_name", s.themeName)
+            obj.put("ignore_overlay_permission", s.ignoreOverlayPermission)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

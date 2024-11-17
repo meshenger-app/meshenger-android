@@ -122,6 +122,7 @@
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
     <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
+    <string name="settings_ignore_overlay_permission">Ignore Overlay Permission</string>
     <string name="settings_menu_password">Menu Password</string>
     <string name="settings_name">Name</string>
     <string name="settings_nightmode">Night Mode</string>

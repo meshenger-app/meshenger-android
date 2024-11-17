@@ -56,7 +56,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
         setContentView(R.layout.activity_main)
 
         initToolbar()
-        permissionToDrawOverlays()
 
         instance = this
 
@@ -122,7 +121,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }, 700)
     }
 
-    private fun permissionToDrawOverlays() {
+    // permission is needed to bring incoming calls to the foreground
+    private fun checkPermissionToDrawOverlays() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(this)) {
                 val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
@@ -231,6 +231,10 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         MainService.refreshEvents(this)
         MainService.refreshContacts(this)
+
+        if (!settings.ignoreOverlayPermission) {
+            checkPermissionToDrawOverlays()
+        }
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

@@ -320,6 +320,11 @@ class Database {
                 newFrom = "4.4.0"
             }
 
+            if (newFrom == "4.4.0") {
+                settings.put("ignore_overlay_permission", false)
+                newFrom = "4.4.1"
+            }
+
             alignSettings(settings)
 
             db.put("version", newFrom)

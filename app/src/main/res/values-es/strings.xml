@@ -156,4 +156,5 @@
     <string name="settings_disable_cpu_overuse_detection">Desactivar la detección de uso excesivo de la CPU</string>
     <string name="missed_call_from">Llamada perdida de %1$s (%2$d)</string>
     <string name="settings_menu_password">Contraseña del menú</string>
+    <string name="settings_ignore_overlay_permission">Ignorar permiso de superposición</string>
 </resources>

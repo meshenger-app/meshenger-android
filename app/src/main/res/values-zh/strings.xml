@@ -156,4 +156,5 @@
     <string name="state_contact_pending">待定</string>
     <string name="settings_guess_eui64_address">猜测 IP 地址（EUI64）</string>
     <string name="settings_theme_name">主题</string>
+    <string name="settings_ignore_overlay_permission">忽略遮盖权限</string>
 </resources>

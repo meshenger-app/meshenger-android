@@ -43,3 +43,7 @@ This list only contains Open Source projects.
 * [linphone](https://linphone.org/) - uses SIP, can use IP addresses, but not easy to use
 * [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE
 * [Qaul](https://qaul.net/) - text messages only, interlinked P2P mesh via BLE, Wifi & Internet-overlay
+
+* [SideBand](https://github.com/markqvist/Sideband) - [LXMF](https://github.com/markqvist/lxmf) client
+* [MeshChat](https://github.com/liamcottle/reticulum-meshchat) - [LXMF](https://github.com/markqvist/lxmf) client
+  

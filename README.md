@@ -39,7 +39,7 @@ Details can be found in the [Documentation](docs/documentation.md) or in the [FA
 
 This list only contains Open Source projects.
 
-* [pion offline](https://github.com/pion/offline-browser-communication) - Offline WebRTC demo
 * [linphone](https://linphone.org/) - uses SIP, can use IP addresses, but not easy to use
-* [Berty](https://berty.tech/) - text messages only, uses Bluetooth LE
+* [pion offline](https://github.com/pion/offline-browser-communication) - Offline WebRTC demo
+* [SideBand](https://github.com/markqvist/Sideband) - Chat app based on the Reiculum network
 * [Qaul](https://qaul.net/) - text messages only, interlinked P2P mesh via BLE, Wifi & Internet-overlay

@@ -2,6 +2,7 @@ package d.d.meshenger
 
 import android.app.Activity
 import android.app.Dialog
+import android.Manifest.permission
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -234,6 +235,24 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         if (!settings.ignoreOverlayPermission) {
             checkPermissionToDrawOverlays()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!Utils.hasPermission(this, permission.POST_NOTIFICATIONS)) {
+                activityResultLauncher.launch(permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted -> if (isGranted) {
+            // start notification
+            binder!!.updateNotification()
+        } else {
+            Toast.makeText(this, R.string.missing_notification_permission, Toast.LENGTH_LONG).show()
+            // cannot run foreground service (needed to receive calls) => exit
+            binder!!.shutdown()
+            finish()
         }
     }
 

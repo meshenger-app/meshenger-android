@@ -98,6 +98,7 @@
     <string name="missing_bluetooth_permission">Missing permission. Bluetooth not available.</string>
     <string name="missing_camera_permission">Missing permission. Camera not available.</string>
     <string name="missing_microphone_permission">Missing permission. Microphone not available.</string>
+    <string name="missing_notification_permission">Missing permission. Notification not available but needed to run.</string>
     <string name="no_value">None</string>
     <string name="overlay_permission_missing">Overlay permission missing. Won\'t be able to receive calls while in background!</string>
     <string name="password_title">Password</string>

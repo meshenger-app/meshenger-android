@@ -23,7 +23,12 @@ class AboutActivity : BaseActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        findViewById<TextView>(R.id.versionTv).text = BuildConfig.VERSION_NAME
+        findViewById<TextView>(R.id.versionTv).text = if (BuildConfig.DEBUG) {
+            BuildConfig.VERSION_NAME + " (debug)"
+        } else {
+            BuildConfig.VERSION_NAME
+        }
+
         findViewById<TextView>(R.id.licenseTV).setOnClickListener {
             val intent = Intent(this, LicenseActivity::class.java)
             startActivity(intent)

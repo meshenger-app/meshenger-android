@@ -67,6 +67,16 @@ On Linux based systems:
 
 Android Studio works as well.
 
+### Get Debug Output
+
+Sometimes it is neccessary to look at the debug output to find out why something does not work. For this you need to install a debug build of Meshenger, enable the developer mode on Android and connect the phone via cable to your cmputer (there are other ways, but this might be the simplest one). Then execute this on the terminal of your computer:
+
+```
+sudo adb kill-server
+sudo adb start-server
+sudo adb logcat | grep `adb shell ps | grep d.d.meshenger | awk '{print($2)}'`
+```
+
 ### First Phase
 
 This project was sponsored by the [Google Summer of Code](https://summerofcode.withgoogle.com/) 2018 as part of the [Freifunk](https://freifunk.net) organization to make local community networks more attractive.

@@ -157,4 +157,5 @@
     <string name="settings_guess_eui64_address">猜测 IP 地址（EUI64）</string>
     <string name="settings_theme_name">主题</string>
     <string name="settings_ignore_overlay_permission">忽略遮盖权限</string>
+    <string name="missing_notification_permission">缺少权限。没有通知权限，但必须有该权限才能运行。</string>
 </resources>

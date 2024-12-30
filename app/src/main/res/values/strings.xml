@@ -5,7 +5,7 @@
     <string name="about_app_version">Version:</string>
     <string name="about_app_website">Website:</string>
     <string name="address_management">Address Management</string>
-    <string name="address_management_help_text">Select one address or more that will be included in your QR code. A good idea is to use the MAC address of the Wi-Fi adapter (wlan0). But be aware that Android might change it depending on the system settings. If no MAC address is visible, then enable your Wi-Fi.</string>
+    <string name="address_management_help_text">Select one or more IP addresses that will be included in the QR code you can will share. These addresses will be used by others to reach you. Be aware that the IP address change depending on the network. Enable your WLAN if no IP address is visible.</string>
     <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
     <string name="app_name" translatable="false">Meshenger</string>
@@ -140,7 +140,7 @@
     <string name="settings_video_degradation_mode">Video Degradation</string>
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>
     <string name="setup_address">Setup Address</string>
-    <string name="setup_no_address_found">Could not find the MAC address of your Wi-Fi card. Enable Wi-Fi now (no Internet needed) or skip to configure later.</string>
+    <string name="setup_no_address_found">No address configured. Please enable you WLAN and select one or more in the Settings.</string>
     <string name="startup_hello">Hello!</string>
     <string name="startup_name_prefix">User</string>
     <string name="startup_prompt_name">What should be your name?</string>

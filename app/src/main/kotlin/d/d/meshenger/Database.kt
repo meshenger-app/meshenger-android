@@ -61,7 +61,7 @@ class Database {
             var dbdata : ByteArray? = obj.toString().toByteArray()
 
             // encrypt database
-            if (password != null && password.isNotEmpty()) {
+            if (!password.isNullOrEmpty()) {
                 Log.d(this, "Encrypt database")
                 dbdata = encryptDatabase(dbdata, password.toByteArray())
             }

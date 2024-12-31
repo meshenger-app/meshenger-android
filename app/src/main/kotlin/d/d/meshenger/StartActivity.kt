@@ -252,7 +252,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
         }
         builder.setPositiveButton(R.string.button_next) { dialog: DialogInterface?, _: Int ->
-            val username = et.text.toString()
+            val username = et.text.toString().trim { it <= ' ' }
             if (Utils.isValidName(username)) {
                 binder!!.getSettings().username = username
                 binder!!.saveDatabase()
@@ -286,8 +286,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
                     // nothing to do
                 }
 
-                override fun afterTextChanged(editable: Editable) {
-                    val ok = Utils.isValidName(editable.toString())
+                override fun afterTextChanged(et: Editable) {
+                    val username = et.toString().trim { it <= ' ' }
+                    val ok = Utils.isValidName(username)
                     okButton.isClickable = ok
                     okButton.alpha = if (ok) 1.0f else 0.5f
                 }

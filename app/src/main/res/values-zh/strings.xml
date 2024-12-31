@@ -5,7 +5,7 @@
     <string name="about_app_version">版本：</string>
     <string name="about_app_website">网站：</string>
     <string name="address_management">地址管理</string>
-    <string name="address_management_help_text">选择一个或多个将包含在你的二维码中的地址。 建议使用 Wi-Fi 适配器的 MAC 地址(wlan0)。但要注意，它是绑定设备硬件的。如果没有可见的 MAC 地址，那么开启你的 Wi-Fi。</string>
+    <string name="address_management_help_text">选择一个或多个将被包含在你可以/将要分享的二维码中的 IP 地址。这些地址将被其他人用来和你联系。请注意 IP 地址根据网络变化。如果 IP 地址不可见，请开启你的 WLAN。</string>
     <string name="app_description">无需服务器或互联网访问进行语音和视频通信。只需和联系人互扫二维码即可开始互相呼叫。 适用于多数网络，包括家庭网络、社区网络和公司网络。</string>
     <string name="audio_device_auto">%1$s (自动切换)</string>
     <string name="audio_device_bluetooth">蓝牙</string>
@@ -121,7 +121,7 @@
     <string name="settings_video_degradation_mode">视频降级</string>
     <string name="settings_video_hardware_acceleration">硬件视频加速</string>
     <string name="setup_address">设置地址</string>
-    <string name="setup_no_address_found">找不到你无线网卡的地址。 立即启用 WiFi （无需互联网）或跳过此步以后再做配置。</string>
+    <string name="setup_no_address_found">未配置地址。请启用 WLAN 并在设置中选中一个或多个地址。</string>
     <string name="startup_hello">你好！</string>
     <string name="startup_name_prefix">用户</string>
     <string name="startup_prompt_name">该怎么称呼你？</string>

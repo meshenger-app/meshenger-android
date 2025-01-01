@@ -1,0 +1,4 @@
+* update help texts
+* ignore white spaces from startup name dialog
+* add explicit screen to ask and explain overlay permission
+ 

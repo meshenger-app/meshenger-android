@@ -158,4 +158,6 @@
     <string name="settings_theme_name">主题</string>
     <string name="settings_ignore_overlay_permission">忽略遮盖权限</string>
     <string name="missing_notification_permission">缺少权限。没有通知权限，但必须有该权限才能运行。</string>
+    <string name="button_ask">询问</string>
+    <string name="explain_need_for_overlay_permission">Meshenger 需要能显示在其他应用上方将来电带到前台。 请立即询问并授予此权限。</string>
 </resources>

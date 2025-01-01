@@ -122,26 +122,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
         }, 700)
     }
 
-    // permission is needed to bring incoming calls to the foreground
-    private fun checkPermissionToDrawOverlays() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                requestDrawOverlaysPermissionLauncher.launch(intent)
-            }
-        }
-    }
-
-    private var requestDrawOverlaysPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode != Activity.RESULT_OK) {
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-
     private fun getColorDrawable(attr: Int): Drawable {
         val typedValue = TypedValue()
         val theme = this@MainActivity.getTheme()
@@ -234,7 +214,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
         MainService.refreshContacts(this)
 
         if (!settings.ignoreOverlayPermission) {
-            checkPermissionToDrawOverlays()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    val intent = Intent(applicationContext, AskForOverlayPermissionActivity::class.java)
+                    startActivity(intent)
+                }
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

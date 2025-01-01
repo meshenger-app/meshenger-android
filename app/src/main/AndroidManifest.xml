@@ -97,6 +97,10 @@
             android:name=".LicenseActivity"
             android:parentActivityName=".AboutActivity" />
 
+        <activity
+            android:name=".AskForOverlayPermissionActivity"
+            android:parentActivityName=".MainActivity" />
+
         <receiver
             android:name=".BootUpReceiver"
             android:enabled="false"

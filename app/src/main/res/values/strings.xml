@@ -83,7 +83,7 @@
     <string name="error_address_exists">Address exists</string>
     <string name="error_address_invalid">Address invalid</string>
     <string name="error_address_multicast_not_supported">Multicast address not supported</string>
-    <string name="explain_need_for_overlay_permission">Meshenger needs to display over other apps to bring incoming calls to the foreground. Please ask and granted this permission now.</string>
+    <string name="explain_need_for_overlay_permission">Meshenger needs to display over other apps to bring incoming calls to the foreground. Please ask and grant this permission now.</string>
     <string name="failed_to_export_database">Failed to export database</string>
     <string name="import_dialog">Import new settings and add %1$d contacts and %2$d events?</string>
     <string name="invalid_name">Invalid Name</string>

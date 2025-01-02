@@ -12,7 +12,7 @@
         android:id="@+id/QuestionTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/lato_bold"
+        android:fontFamily="@font/lato_regular"
         android:text="@string/explain_need_for_overlay_permission"
         android:textColor="?android:textColorPrimary"
         android:textSize="23sp"

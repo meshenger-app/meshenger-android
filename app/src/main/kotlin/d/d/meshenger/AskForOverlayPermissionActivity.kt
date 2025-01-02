@@ -31,8 +31,10 @@ class AskForOverlayPermissionActivity : BaseActivity() {
     }
 
     private var requestDrawOverlaysPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (!Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_LONG).show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, R.string.overlay_permission_missing, Toast.LENGTH_LONG).show()
+            }
         }
         finish()
     }

@@ -65,12 +65,11 @@
     <string name="contact_menu_share">Share</string>
     <string name="contact_menu_unblock">Unblock</string>
     <string name="contact_name">Name</string>
-    <string name="contact_name_conflict">A contact with the same name exists.</string>
     <string name="contact_name_exists">A contact with that name exists already.</string>
     <string name="contact_name_invalid">Contact name is invalid.</string>
     <string name="contact_public_key">Public Key</string>
     <string name="contact_public_key_already_exists">Contact public key already exists.</string>
-    <string name="contact_public_key_invalid">Contact public key is invalid.</string>´
+    <string name="contact_public_key_invalid">Contact public key is invalid.</string>
     <string name="custom_address">CUSTOM ADDRESS</string>
     <string name="dialog_title_delete_contact">Delete Contact?</string>
     <string name="dialog_title_import_backup">Import Backup?</string>
@@ -109,7 +108,6 @@
     <string name="ping_contact">Ping %1$s</string>
     <string name="remove_all_events">Remove all events?</string>
     <string name="setting_read_only">Read Only</string>
-    <string name="settings_theme_name">Theme</string>
     <string name="settings_addresses">Addresses*</string>
     <string name="settings_auto_accept_calls">Auto Accept Calls</string>
     <string name="settings_automatic_status_updates">Automatic Contact Updates</string>
@@ -125,6 +123,7 @@
     <string name="settings_disable_proximity_sensor">Disable Proximity Sensor</string>
     <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
+    <string name="settings_guess_eui64_address">Guess IP address (EUI64)</string>
     <string name="settings_ignore_overlay_permission">Ignore Overlay Permission</string>
     <string name="settings_menu_password">Menu Password</string>
     <string name="settings_name">Name</string>
@@ -137,7 +136,7 @@
     <string name="settings_show_username_as_logo">Show Username As Logo</string>
     <string name="settings_speakerphone_mode">Speakerphone</string>
     <string name="settings_start_on_bootup">Start On Bootup</string>
-    <string name="settings_guess_eui64_address">Guess IP address (EUI64)</string>
+    <string name="settings_theme_name">Theme</string>
     <string name="settings_use_neighbor_table">Use Neighbor Table (ARP/ND)</string>
     <string name="settings_video_degradation_mode">Video Degradation</string>
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>

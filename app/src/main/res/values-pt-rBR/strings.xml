@@ -7,18 +7,22 @@
     <string name="address_management">Gerenciar endereço</string>
     <string name="address_management_help_text">Selecione um ou mais endereços que serão incluídos no seu código QR. É recomendado usar o endereço MAC do adaptador WiFi (wlan0). Mas tenha cuidado porque o Android pode mudá-lo dependendo das configurações do sistema. Se nenhum endereço MAC estiver visível, então ative seu WiFi.</string>
     <string name="app_description">Permite uma comunicação por voz e vídeo sem nenhum servidor ou conexão com a internet. Basta escanear código QR de contatos participantes e efetuar ligação. Funciona na maioria dos tipos de redes, p.ex., de casa, em redes comunitárias ou de trabalho.</string>
+    <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="button_abort">Cancelar</string>
+    <string name="button_add">Adicionar</string>
     <string name="button_cancel">Cancelar</string>
     <string name="button_export">Exportar</string>
     <string name="button_import">Importar</string>
     <string name="button_next">próximo</string>
     <string name="button_no">Não</string>
     <string name="button_ok">OK</string>
+    <string name="button_rename">Renomear</string>
     <string name="button_replace">Substituir</string>
     <string name="button_reset">Resetar</string>
     <string name="button_save">Salvar</string>
     <string name="button_skip">Pular</string>
     <string name="button_yes">Sim</string>
+    <string name="call_authentication_failed">Autenticação falhou</string>
     <string name="call_connected">Conectado</string>
     <string name="call_connecting">Chamando…</string>
     <string name="call_denied">Rejeitado</string>
@@ -77,8 +81,4 @@
     <string name="warning_no_addresses_configured">Nenhum endereço para o código QR está definido.</string>
     <string name="warning_no_addresses_found">Endereços configurados não encontrados. A rede foi alterada?</string>
     <string name="wrong_password">Senha incorreta</string>
-    <string name="button_add">Adicionar</string>
-    <string name="button_rename">Renomear</string>
-    <string name="call_authentication_failed">Autenticação falhou</string>
-    <string name="audio_device_bluetooth">Bluetooth</string>
 </resources>

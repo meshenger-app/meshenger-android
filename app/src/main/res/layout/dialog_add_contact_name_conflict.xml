@@ -18,7 +18,7 @@
         android:layout_marginTop="10dp"
         android:textSize="23sp"
         android:fontFamily="@font/lato_bold"
-        android:text="@string/contact_name_conflict"
+        android:text="@string/contact_name_exists"
         android:textColor="?android:textColorPrimary" />
 
     <EditText

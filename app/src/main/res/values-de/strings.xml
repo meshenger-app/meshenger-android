@@ -113,10 +113,10 @@
     <string name="settings_connect_retries">Verbindungsversuche</string>
     <string name="settings_connect_timeout">Verbindungs Timeout (ms)</string>
     <string name="settings_database_password">Start Passwort</string>
-    <string name="settings_disable_audio_processing">Tonverarbeitung Deaktivieren</string>
-    <string name="settings_disable_call_history">Anrufliste Deaktivieren</string>
-    <string name="settings_disable_cpu_overuse_detection">CPU Überlasterkennung Deaktivieren</string>
-    <string name="settings_disable_proximity_sensor">Annäherungssensor Deaktivieren</string>
+    <string name="settings_disable_audio_processing">Tonverarbeitung Aus</string>
+    <string name="settings_disable_call_history">Anrufliste Aus</string>
+    <string name="settings_disable_cpu_overuse_detection">CPU Überlasterkennung Aus</string>
+    <string name="settings_disable_proximity_sensor">Annäherungssensor Aus</string>
     <string name="settings_enable_camera_by_default">Kamera Per Default Akivieren</string>
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
     <string name="settings_guess_eui64_address">IP Adresse Raten (EUI64)</string>
@@ -131,9 +131,9 @@
     <string name="settings_settings_mode">Einstellungsmodus</string>
     <string name="settings_show_username_as_logo">Nutzername Als Logo Anzeigen</string>
     <string name="settings_speakerphone_mode">Toneinstellung</string>
-    <string name="settings_start_on_bootup">Beim Starten Mit Dem Telefon</string>
+    <string name="settings_start_on_bootup">Starten bei Systemstart</string>
     <string name="settings_theme_name">Farbschema</string>
-    <string name="settings_use_neighbor_table">Neighbor Table Nutzen (ARP/ND)</string>
+    <string name="settings_use_neighbor_table">Lokale Neighbor Table (ARP/ND)</string>
     <string name="settings_video_degradation_mode">Video Herabsetzung</string>
     <string name="settings_video_hardware_acceleration">Video Hardware Beschleunigung</string>
     <string name="setup_address">Adresse Auswählen</string>

@@ -4,6 +4,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:dropDownListViewStyle">@style/MySpinner</item>
+
+        <!-- make the screen not overlap with the system bars -->
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="AppTheme.FireRed" parent="AppThemeBase">

@@ -1,0 +1,2 @@
+* fix toobar and system status bar overlap (Android 15)
+* minor improvement of translation to German

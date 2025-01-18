@@ -10,6 +10,11 @@
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
     <string name="app_name" translatable="false">Meshenger</string>
     <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
+    <string name="ask_for_draw_overlay_permission">Missing permission to draw on top. Needed to bring incoming calls to the foreground.</string>
+    <string name="ask_for_post_notification_permission">Missing permission to post notifications. This is needed to listen for calls in the background.</string>
+    <string name="ask_for_record_audio_permission">Give permission to use the microphone now or wait until you use it.</string>
+    <string name="ask_for_camera_permission">Give permission to use the camera now or wait until you use it.</string>
+    <string name="ask_for_bluetooth_connect_permission">Give permission to use a Bluetooth headset now or wait until you use it.</string>
     <string name="audio_device_auto">%1$s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Earpiece</string>
@@ -99,9 +104,9 @@
     <string name="missing_bluetooth_permission">Missing permission. Bluetooth not available.</string>
     <string name="missing_camera_permission">Missing permission. Camera not available.</string>
     <string name="missing_microphone_permission">Missing permission. Microphone not available.</string>
-    <string name="missing_notification_permission">Missing permission. Notification not available but needed to run.</string>
+    <string name="missing_permissions">Missing Permissions</string>
+    <string name="missing_required_permissions">Cannot run without required permission.</string>
     <string name="no_value">None</string>
-    <string name="overlay_permission_missing">Overlay permission missing. Won\'t be able to receive calls while in background!</string>
     <string name="password_title">Password</string>
     <string name="paste_qr_code_data">Paste Contact JSON Here</string>
     <string name="ping_all_contacts">Ping All Contacts</string>

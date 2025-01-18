@@ -95,7 +95,6 @@
     <string name="missing_bluetooth_permission">Fehlende Erlaubnisse. Bluetooth ist nicht verfügbar.</string>
     <string name="missing_camera_permission">Fehlende Erlaubisse. Die Kamera ist nicht verfügbar.</string>
     <string name="missing_microphone_permission">Fehlende Erlaubnisse. Das Mikrophon ist nicht verfügbar.</string>
-    <string name="missing_notification_permission">Fehlende Erlaubnisse. Benachrichtigungsanzeige nicht verfügbar, aber wird zum Betrieb benötigt.</string>
     <string name="no_value">Keine</string>
     <string name="overlay_permission_missing">Overlay Erlaubnisse fehlen. Anrufe im Hintergrund werden nicht empfangen!</string>
     <string name="password_title">Passwort</string>

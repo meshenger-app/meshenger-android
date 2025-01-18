@@ -97,7 +97,6 @@
     <string name="missing_bluetooth_permission">缺少蓝牙权限，蓝牙无法使用。</string>
     <string name="missing_camera_permission">缺少相机权限，相机无法使用。</string>
     <string name="missing_microphone_permission">缺少录音权限，麦克风无法使用。</string>
-    <string name="missing_notification_permission">缺少权限。没有通知权限，但必须有该权限才能运行。</string>
     <string name="no_value">无</string>
     <string name="overlay_permission_missing">缺少显示在应用上层权限。将无法在后台接听电话!</string>
     <string name="password_title">密码</string>

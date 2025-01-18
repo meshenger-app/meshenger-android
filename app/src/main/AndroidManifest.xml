@@ -98,7 +98,7 @@
             android:parentActivityName=".AboutActivity" />
 
         <activity
-            android:name=".AskForOverlayPermissionActivity"
+            android:name=".AskForMissingPermissionsActivity"
             android:parentActivityName=".MainActivity" />
 
         <receiver

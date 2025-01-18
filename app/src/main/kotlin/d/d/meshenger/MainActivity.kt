@@ -212,33 +212,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         MainService.refreshEvents(this)
         MainService.refreshContacts(this)
-
-        if (!settings.ignoreOverlayPermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this)) {
-                    val intent = Intent(applicationContext, AskForOverlayPermissionActivity::class.java)
-                    startActivity(intent)
-                }
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (!Utils.hasPermission(this, permission.POST_NOTIFICATIONS)) {
-                activityResultLauncher.launch(permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
-
-    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        isGranted -> if (isGranted) {
-            // start notification
-            binder!!.updateNotification()
-        } else {
-            Toast.makeText(this, R.string.missing_notification_permission, Toast.LENGTH_LONG).show()
-            // cannot run foreground service (needed to receive calls) => exit
-            binder!!.shutdown()
-            finish()
-        }
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {

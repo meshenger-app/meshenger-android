@@ -131,7 +131,12 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 setDefaultNightMode(settings.nightMode)
 
                 if (!isStartOnBootup) {
-                    startActivity(Intent(this, MainActivity::class.java))
+                    if (AskForMissingPermissionsActivity.countRequiredPermissions(applicationContext, settings) == 0) {
+                        startActivity(Intent(this, MainActivity::class.java))
+                    } else {
+                        // ask for permissions first
+                        startActivity(Intent(this, AskForMissingPermissionsActivity::class.java))
+                    }
                 }
 
                 finish()

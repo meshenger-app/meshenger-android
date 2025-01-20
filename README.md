@@ -6,7 +6,7 @@ Features:
 
 - voice and video calls
 - encrypted communication
-- no accounts, no registration, no adds
+- no accounts, no registration, no servers
 - add custom addresses to reach contacts
 
 

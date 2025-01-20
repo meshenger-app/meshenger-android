@@ -6,5 +6,5 @@ This works at home or company networks but also in many off-the-grid networks su
 
 * voice and video calls
 * encrypted communication
-* no accounts, no registration, no adds
+* no accounts, no registration, no servers
 * add custom addresses to reach contacts

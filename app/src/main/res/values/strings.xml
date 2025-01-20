@@ -10,11 +10,11 @@
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
     <string name="app_name" translatable="false">Meshenger</string>
     <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
+    <string name="ask_for_bluetooth_connect_permission">Give permission to use a Bluetooth headset now or wait until you use it.</string>
+    <string name="ask_for_camera_permission">Give permission to use the camera now or wait until you use it.</string>
     <string name="ask_for_draw_overlay_permission">Missing permission to draw on top. Needed to bring incoming calls to the foreground.</string>
     <string name="ask_for_post_notification_permission">Missing permission to post notifications. This is needed to listen for calls in the background.</string>
     <string name="ask_for_record_audio_permission">Give permission to use the microphone now or wait until you use it.</string>
-    <string name="ask_for_camera_permission">Give permission to use the camera now or wait until you use it.</string>
-    <string name="ask_for_bluetooth_connect_permission">Give permission to use a Bluetooth headset now or wait until you use it.</string>
     <string name="audio_device_auto">%1$s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Earpiece</string>
@@ -97,9 +97,9 @@
     <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="menu_about">About</string>
     <string name="menu_backup">Backup</string>
-    <string name="menu_shutdown">Shutdown</string>
     <string name="menu_license">License</string>
     <string name="menu_settings">Settings</string>
+    <string name="menu_shutdown">Shutdown</string>
     <string name="missed_call_from">Missed call from %1$s (%2$d)</string>
     <string name="missing_bluetooth_permission">Missing permission. Bluetooth not available.</string>
     <string name="missing_camera_permission">Missing permission. Camera not available.</string>

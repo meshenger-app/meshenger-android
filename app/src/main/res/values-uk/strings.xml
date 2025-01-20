@@ -67,9 +67,9 @@
     <string name="listen_for_incoming_calls">Слухати вхідні дзвінки.</string>
     <string name="menu_about">Про</string>
     <string name="menu_backup">Резервна копія</string>
-    <string name="menu_shutdown">Вийти</string>
     <string name="menu_license">Ліцензія</string>
     <string name="menu_settings">Параметри</string>
+    <string name="menu_shutdown">Вийти</string>
     <string name="missed_call_from">Пропущений дзвінок від %1$s (%2$d)</string>
     <string name="missing_bluetooth_permission">Відсутній дозвіл. Bluetooth недоступний.</string>
     <string name="missing_camera_permission">Відсутній дозвіл. Камера недоступна.</string>

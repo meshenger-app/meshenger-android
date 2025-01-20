@@ -85,9 +85,9 @@
     <string name="invalid_qr_code_data">無效數據</string>
     <string name="menu_about">關於</string>
     <string name="menu_backup">備份</string>
-    <string name="menu_shutdown">離開</string>
     <string name="menu_license">許可證</string>
     <string name="menu_settings">設定</string>
+    <string name="menu_shutdown">離開</string>
     <string name="missed_call_from">來自 %1$s（%2$d）的未接來電</string>
     <string name="missing_bluetooth_permission">缺少權限。藍牙無法使用。</string>
     <string name="missing_camera_permission">缺少權限。相機無法使用。</string>

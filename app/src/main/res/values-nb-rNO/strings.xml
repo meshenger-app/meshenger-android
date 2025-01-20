@@ -69,9 +69,9 @@
     <string name="listen_for_incoming_calls">Lytt etter innkommende anrop</string>
     <string name="menu_about">Om</string>
     <string name="menu_backup">Sikkerhetskopi</string>
-    <string name="menu_shutdown">Avslutt</string>
     <string name="menu_license">Lisens</string>
     <string name="menu_settings">Innstillinger</string>
+    <string name="menu_shutdown">Avslutt</string>
     <string name="missed_call_from">Tapt anrop fra %1$s (%2$d)</string>
     <string name="missing_bluetooth_permission">Manglende tilgang. Blåtann er ikke tilgjengelig.</string>
     <string name="missing_camera_permission">Manglende tilgang. Kameraet er ikke tilgjengelig.</string>

@@ -119,7 +119,6 @@
     <string name="settings_enable_camera_by_default">இயல்பாக கேமராவை இயக்கவும்</string>
     <string name="settings_enable_microphone_by_default">இயல்பாக மைக்ரோஃபோனை இயக்கவும்</string>
     <string name="settings_guess_eui64_address">ஐபி முகவரி (EUI64) யூகிக்கவும்</string>
-    <string name="settings_ignore_overlay_permission">மேலடுக்கு அனுமதியை புறக்கணிக்கவும்</string>
     <string name="settings_menu_password">பட்டி கடவுச்சொல்</string>
     <string name="settings_name">பெயர்</string>
     <string name="settings_nightmode">இரவு முறை</string>

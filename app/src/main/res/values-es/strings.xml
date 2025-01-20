@@ -117,7 +117,6 @@
     <string name="settings_enable_camera_by_default">Activar cámara por defecto</string>
     <string name="settings_enable_microphone_by_default">Activar el micrófono por defecto</string>
     <string name="settings_guess_eui64_address">Adivinar dirección IP (EUI64)</string>
-    <string name="settings_ignore_overlay_permission">Ignorar permiso de superposición</string>
     <string name="settings_menu_password">Contraseña del menú</string>
     <string name="settings_name">Nombre</string>
     <string name="settings_nightmode">Modo Nocturno</string>

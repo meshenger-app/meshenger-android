@@ -336,10 +336,10 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
-        findViewById<SwitchMaterial>(R.id.ignoreOverlayPermissionSwitch).apply {
-            isChecked = settings.ignoreOverlayPermission
+        findViewById<SwitchMaterial>(R.id.skipStartupPermissionCheckSwitch).apply {
+            isChecked = settings.skipStartupPermissionCheck
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-                settings.ignoreOverlayPermission = isChecked
+                settings.skipStartupPermissionCheck = isChecked
                 binder.saveDatabase()
             }
         }

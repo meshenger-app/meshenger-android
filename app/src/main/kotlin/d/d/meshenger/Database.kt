@@ -325,8 +325,16 @@ class Database {
                 newFrom = "4.4.1"
             }
 
-            if (newFrom in listOf("4.4.1", "4.4.2")) {
+            if (newFrom == "4.4.1") {
                 // nothing to do
+                newFrom = "4.4.2"
+            }
+
+            if (newFrom == "4.4.2") {
+                // replace setting 'ignore_overlay_permission' to 'skip_startup_permission_check'
+                val ignore = settings.getBoolean("ignore_overlay_permission")
+                settings.remove("ignore_overlay_permission")
+                settings.put("skip_startup_permission_check", ignore)
                 newFrom = "4.4.3"
             }
 

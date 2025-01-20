@@ -119,7 +119,6 @@
     <string name="settings_enable_camera_by_default">默认开启摄像头</string>
     <string name="settings_enable_microphone_by_default">默认开启麦克风</string>
     <string name="settings_guess_eui64_address">猜测 IP 地址（EUI64）</string>
-    <string name="settings_ignore_overlay_permission">忽略遮盖权限</string>
     <string name="settings_menu_password">菜单密码</string>
     <string name="settings_name">昵称</string>
     <string name="settings_nightmode">夜间模式</string>

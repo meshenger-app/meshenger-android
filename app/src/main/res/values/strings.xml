@@ -129,7 +129,6 @@
     <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
     <string name="settings_guess_eui64_address">Guess IP address (EUI64)</string>
-    <string name="settings_ignore_overlay_permission">Ignore Overlay Permission</string>
     <string name="settings_menu_password">Menu Password</string>
     <string name="settings_name">Name</string>
     <string name="settings_nightmode">Night Mode</string>
@@ -139,6 +138,7 @@
     <string name="settings_select_front_camera_by_default">Use Front Camera By Default</string>
     <string name="settings_settings_mode">Settings Mode</string>
     <string name="settings_show_username_as_logo">Show Username As Logo</string>
+    <string name="settings_skip_startup_permission_check">Skip Startup Permission Check</string>
     <string name="settings_speakerphone_mode">Speakerphone</string>
     <string name="settings_start_on_bootup">Start On Bootup</string>
     <string name="settings_theme_name">Theme</string>

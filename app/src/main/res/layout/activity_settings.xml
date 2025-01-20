@@ -854,12 +854,12 @@
                         android:layout_alignParentStart="true"
                         android:layout_centerInParent="true"
                         android:fontFamily="@font/lato_bold"
-                        android:text="@string/settings_ignore_overlay_permission"
+                        android:text="@string/settings_skip_startup_permission_check"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="@dimen/title_text_size" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/ignoreOverlayPermissionSwitch"
+                        android:id="@+id/skipStartupPermissionCheckSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"

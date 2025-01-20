@@ -78,10 +78,8 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
 
         val settings = binder.getSettings()
 
-        questionsToAsk = countRequiredPermissions(applicationContext, settings) +
+        questionsToAsk = countRequiredPermissions(applicationContext) +
                 countOptionalPermissions(applicationContext)
-
-        doAskOverlayPermission = !settings.ignoreOverlayPermission
 
         // start questions
         continueQuestions()
@@ -94,7 +92,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     @SuppressLint("InlinedApi")
     private fun askDrawOverlayPermission() {
         updateProgressLabel()
-        skipButton.visibility = View.GONE
+        skipButton.visibility = View.VISIBLE
         questionTextView.text = getString(R.string.ask_for_draw_overlay_permission)
         askButton.setOnClickListener {
             val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
@@ -105,7 +103,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     @SuppressLint("InlinedApi")
     private fun askNotificationPermission() {
         updateProgressLabel()
-        skipButton.visibility = View.GONE
+        skipButton.visibility = View.VISIBLE
         questionTextView.text = getString(R.string.ask_for_post_notification_permission)
         askButton.setOnClickListener {
             requestPostNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -175,7 +173,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
             continueQuestions()
         } else {
             Toast.makeText(this, R.string.missing_required_permissions, Toast.LENGTH_LONG).show()
-            finish()
+            continueQuestions()
         }
     }
 
@@ -184,7 +182,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
             continueQuestions()
         } else {
             Toast.makeText(this, R.string.missing_required_permissions, Toast.LENGTH_LONG).show()
-            finish()
+            continueQuestions()
         }
     }
 
@@ -249,13 +247,11 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     }
 
     companion object {
-        fun countRequiredPermissions(context: Context, settings: Settings): Int {
+        fun countRequiredPermissions(context: Context): Int {
             var missing = 0
 
-            if (!settings.ignoreOverlayPermission) {
-                if (!hasDrawOverlayPermission(context)) {
-                    missing += 1
-                }
+            if (!hasDrawOverlayPermission(context)) {
+                missing += 1
             }
 
             if (!hasPostNotificationPermission(context)) {

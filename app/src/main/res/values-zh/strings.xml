@@ -62,7 +62,6 @@
     <string name="contact_menu_share">分享</string>
     <string name="contact_menu_unblock">取消拦截</string>
     <string name="contact_name">名称</string>
-    <string name="contact_name_conflict">存在同名联系人。</string>
     <string name="contact_name_exists">已经存在同名联系人。</string>
     <string name="contact_name_invalid">联系人名称无效。</string>
     <string name="contact_public_key">公钥</string>
@@ -98,7 +97,6 @@
     <string name="missing_camera_permission">缺少相机权限，相机无法使用。</string>
     <string name="missing_microphone_permission">缺少录音权限，麦克风无法使用。</string>
     <string name="no_value">无</string>
-    <string name="overlay_permission_missing">缺少显示在应用上层权限。将无法在后台接听电话!</string>
     <string name="password_title">密码</string>
     <string name="paste_qr_code_data">将数据粘贴在这里</string>
     <string name="ping_all_contacts">Ping所有联系人</string>

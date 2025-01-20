@@ -95,7 +95,6 @@
     <string name="missing_camera_permission">La càmera no està disponible perquè en manca el permís.</string>
     <string name="missing_microphone_permission">El micròfon no està disponible perquè en manca el permís.</string>
     <string name="no_value">Cap</string>
-    <string name="overlay_permission_missing">El Meshenger no té el permís per a superposar-se a altres aplicacions: no podreu rebre trucades en segon pla.</string>
     <string name="password_title">Contrasenya</string>
     <string name="paste_qr_code_data">Enganxeu dades del contacte JSON</string>
     <string name="ping_all_contacts">Fes ping a tots els contactes</string>

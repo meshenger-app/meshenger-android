@@ -61,7 +61,6 @@
     <string name="contact_menu_share">Поделиться</string>
     <string name="contact_menu_unblock">Разблокировать</string>
     <string name="contact_name">Имя</string>
-    <string name="contact_name_conflict">Контакт с таким же именем уже существует.</string>
     <string name="contact_name_exists">Контакт с таким именем уже существует.</string>
     <string name="contact_name_invalid">Имя контакта пустое.</string>
     <string name="contact_public_key">Публичный Ключ</string>
@@ -96,7 +95,6 @@
     <string name="missing_camera_permission">Отсутствует разрешение. Камера недоступна.</string>
     <string name="missing_microphone_permission">Отсутствует разрешение. Микрофон недоступен.</string>
     <string name="no_value">Никакой</string>
-    <string name="overlay_permission_missing">Разрешение поверх окон недоступно. Вы не сможете принимать звонки в фоновом режиме!</string>
     <string name="password_title">Пароль</string>
     <string name="paste_qr_code_data">Вставьте данные здесь</string>
     <string name="ping_all_contacts">Пинг всех контактов</string>

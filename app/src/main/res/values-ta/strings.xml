@@ -96,9 +96,7 @@
     <string name="missing_bluetooth_permission">இசைவு இல்லை. ஊடலை கிடைக்கவில்லை.</string>
     <string name="missing_camera_permission">இசைவு இல்லை. கேமரா கிடைக்கவில்லை.</string>
     <string name="missing_microphone_permission">இசைவு இல்லை. மைக்ரோஃபோன் கிடைக்கவில்லை.</string>
-    <string name="missing_notification_permission">இசைவு இல்லை. அறிவிப்பு கிடைக்கவில்லை, ஆனால் இயங்க வேண்டும்.</string>
     <string name="no_value">எதுவுமில்லை</string>
-    <string name="overlay_permission_missing">மேலடுக்கு இசைவு இல்லை. பின்னணியில் இருக்கும்போது அழைப்புகளைப் பெற முடியாது!</string>
     <string name="password_title">கடவுச்சொல்</string>
     <string name="paste_qr_code_data">இங்கே சாதொபொகு ஐ தொடர்பு கொள்ளவும்</string>
     <string name="ping_all_contacts">அனைத்து தொடர்புகளையும் பிங்</string>

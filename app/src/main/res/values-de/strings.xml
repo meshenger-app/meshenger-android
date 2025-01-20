@@ -96,7 +96,6 @@
     <string name="missing_camera_permission">Fehlende Erlaubisse. Die Kamera ist nicht verfügbar.</string>
     <string name="missing_microphone_permission">Fehlende Erlaubnisse. Das Mikrophon ist nicht verfügbar.</string>
     <string name="no_value">Keine</string>
-    <string name="overlay_permission_missing">Overlay Erlaubnisse fehlen. Anrufe im Hintergrund werden nicht empfangen!</string>
     <string name="password_title">Passwort</string>
     <string name="paste_qr_code_data">Kontakt JSON hier einfügen</string>
     <string name="ping_all_contacts">Alle Kontakt anpingen</string>

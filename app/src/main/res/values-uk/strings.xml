@@ -48,7 +48,6 @@
     <string name="contact_menu_qrcode">QR-код</string>
     <string name="contact_menu_share">Поділитися</string>
     <string name="contact_menu_unblock">Розблокувати</string>
-    <string name="contact_name_conflict">Контакт з таким іменем існує:</string>
     <string name="contact_name_exists">Контакт із таким іменем уже існує:</string>
     <string name="contact_name_invalid">Ім\'я контакту пусте.</string>
     <string name="custom_address">СПЕЦІАЛЬНА АДРЕСА</string>
@@ -75,7 +74,6 @@
     <string name="missing_camera_permission">Відсутній дозвіл. Камера недоступна.</string>
     <string name="missing_microphone_permission">Відсутній дозвіл. Мікрофон недоступний.</string>
     <string name="no_value">Нема</string>
-    <string name="overlay_permission_missing">Відсутній дозвіл поверх всіх вікон. Ви не зможете приймати дзвінки у фоновому режимі!</string>
     <string name="password_title">Пароль</string>
     <string name="paste_qr_code_data">Вставте сюди контактні дані</string>
     <string name="setting_read_only">Лише читання</string>

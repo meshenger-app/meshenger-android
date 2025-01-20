@@ -61,7 +61,6 @@
     <string name="contact_menu_share">Partager</string>
     <string name="contact_menu_unblock">Débloquer</string>
     <string name="contact_name">Nom</string>
-    <string name="contact_name_conflict">Un contact ayant le même nom existe déjà.</string>
     <string name="contact_name_exists">Un contact ayant ce nom existe déjà.</string>
     <string name="contact_name_invalid">Le nom du contact est vide.</string>
     <string name="contact_public_key">Clé publique</string>
@@ -96,7 +95,6 @@
     <string name="missing_camera_permission">Permissions manquantes. Caméra indisponible.</string>
     <string name="missing_microphone_permission">Permissions manquantes. Microphone indisponible.</string>
     <string name="no_value">Aucun</string>
-    <string name="overlay_permission_missing">Permission \"Afficher les fenêtres contextuelles\" manquante. Impossible de recevoir des appels en arrière-plan !</string>
     <string name="password_title">Mot de passe</string>
     <string name="paste_qr_code_data">Collez les données ici</string>
     <string name="ping_all_contacts">Envoi de ping à tous les contacts</string>

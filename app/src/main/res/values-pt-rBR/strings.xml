@@ -37,7 +37,6 @@
     <string name="contact_menu_qrcode">Código QR</string>
     <string name="contact_menu_share">Compartilhe</string>
     <string name="contact_menu_unblock">Desbloquear</string>
-    <string name="contact_name_conflict">Já existe um contato com o mesmo nome:</string>
     <string name="contact_name_exists">Já existe um contato com esse nome:</string>
     <string name="contact_name_invalid">Contato sem nome.</string>
     <string name="dialog_title_delete_contact">Apagar contato?</string>

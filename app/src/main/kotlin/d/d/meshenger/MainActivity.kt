@@ -256,7 +256,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             R.id.action_about -> {
                 startActivity(Intent(this, AboutActivity::class.java))
             }
-            R.id.action_exit -> {
+            R.id.action_shutdown -> {
                 MainService.stop(this)
                 finish()
             }

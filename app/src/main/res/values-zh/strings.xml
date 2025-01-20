@@ -90,7 +90,7 @@
     <string name="listen_for_incoming_calls">等待来电。</string>
     <string name="menu_about">关于</string>
     <string name="menu_backup">备份</string>
-    <string name="menu_exit">退出</string>
+    <string name="menu_shutdown">退出</string>
     <string name="menu_license">许可证</string>
     <string name="menu_settings">设置</string>
     <string name="missed_call_from">来自 %1$s的 (%2$d)未接来电</string>

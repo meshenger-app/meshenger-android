@@ -88,7 +88,7 @@
     <string name="listen_for_incoming_calls">Höre auf eingehende Anrufe.</string>
     <string name="menu_about">Über</string>
     <string name="menu_backup">Backup</string>
-    <string name="menu_exit">Beenden</string>
+    <string name="menu_shutdown">Beenden</string>
     <string name="menu_license">Lizenz</string>
     <string name="menu_settings">Einstellungen</string>
     <string name="missed_call_from">Verpasster Anruf von %1$s (%2$d)</string>

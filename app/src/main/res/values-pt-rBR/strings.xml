@@ -54,7 +54,7 @@
     <string name="listen_for_incoming_calls">Esperando novas ligações de entrada.</string>
     <string name="menu_about">Sobre</string>
     <string name="menu_backup">Backup</string>
-    <string name="menu_exit">Sair</string>
+    <string name="menu_shutdown">Sair</string>
     <string name="menu_license">Licença</string>
     <string name="menu_settings">Configurações</string>
     <string name="missing_camera_permission">Permissão não concedida. Câmera desativada.</string>

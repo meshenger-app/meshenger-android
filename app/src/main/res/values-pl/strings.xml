@@ -38,7 +38,7 @@
     <string name="error">Błąd</string>
     <string name="menu_about">Informacje</string>
     <string name="menu_backup">Kopia zapasowa</string>
-    <string name="menu_exit">Wyjdź</string>
+    <string name="menu_shutdown">Wyjdź</string>
     <string name="menu_license">Licencja</string>
     <string name="menu_settings">Ustawienia</string>
     <string name="no_value">Brak</string>

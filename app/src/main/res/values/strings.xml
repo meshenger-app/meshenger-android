@@ -92,7 +92,7 @@
     <string name="listen_for_incoming_calls">Listen for incoming calls.</string>
     <string name="menu_about">About</string>
     <string name="menu_backup">Backup</string>
-    <string name="menu_exit">Exit</string>
+    <string name="menu_shutdown">Shutdown</string>
     <string name="menu_license">License</string>
     <string name="menu_settings">Settings</string>
     <string name="missed_call_from">Missed call from %1$s (%2$d)</string>

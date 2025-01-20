@@ -6,17 +6,25 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Typeface
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import d.d.meshenger.MainService.MainBinder
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
-import java.util.*
+import java.util.UUID
 
 /*
  * Show splash screen, name setup dialog, database password dialog and

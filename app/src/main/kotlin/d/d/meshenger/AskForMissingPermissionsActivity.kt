@@ -32,9 +32,9 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     private var doAskPostNotificationPermission = true
 
     // optional
-    private var doAskCameraPermission = true
-    private var doAskRecordAudioPermission = true
-    private var doAskBluetoothConnectPermission = true
+    private var doAskCameraPermission = false
+    private var doAskRecordAudioPermission = false
+    private var doAskBluetoothConnectPermission = false
 
     private var questionCounter = 0
     private var questionsToAsk = 0
@@ -76,7 +76,12 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
         Log.d(this, "onServiceConnected()")
         val binder = iBinder as MainBinder
 
-        val settings = binder.getSettings()
+        // ask optional permission on first startup only
+        if (binder.getService().firstStart) {
+            doAskCameraPermission = true
+            doAskRecordAudioPermission = true
+            doAskBluetoothConnectPermission = true
+        }
 
         questionsToAsk = countRequiredPermissions(applicationContext) +
                 countOptionalPermissions(applicationContext)

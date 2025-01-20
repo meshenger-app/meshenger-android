@@ -1,2 +1,4 @@
 * fix toobar and system status bar overlap (Android 15)
+* add startup permission check 
 * minor improvement of translation to German
+* Tamil translation added by anishprabu.t@gmail.com

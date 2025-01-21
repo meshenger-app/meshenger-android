@@ -156,4 +156,12 @@
     <string name="warning_no_addresses_configured">QR குறியீட்டிற்கான முகவரி எதுவும் கட்டமைக்கப்படவில்லை.</string>
     <string name="warning_no_addresses_found">கட்டமைக்கப்பட்ட முகவரிகள் காணப்படவில்லை. பிணையம் மாறியதா?</string>
     <string name="wrong_password">தவறான கடவுச்சொல்</string>
+    <string name="ask_for_bluetooth_connect_permission">இப்போது ஊடலை எட்செட்டைப் பயன்படுத்த இசைவு கொடுங்கள் அல்லது நீங்கள் அதைப் பயன்படுத்தும் வரை காத்திருங்கள்.</string>
+    <string name="ask_for_camera_permission">கேமராவை இப்போது பயன்படுத்த இசைவு கொடுங்கள் அல்லது நீங்கள் அதைப் பயன்படுத்தும் வரை காத்திருங்கள்.</string>
+    <string name="ask_for_draw_overlay_permission">மேலே வரைய இசைவு இல்லை. உள்வரும் அழைப்புகளை முன்புறத்திற்கு கொண்டு வர வேண்டும்.</string>
+    <string name="ask_for_post_notification_permission">அறிவிப்புகளை இடுகையிட இசைவு இல்லை. பின்னணியில் அழைப்புகளைக் கேட்க இது தேவை.</string>
+    <string name="ask_for_record_audio_permission">மைக்ரோஃபோனைப் பயன்படுத்த இசைவு கொடுங்கள் அல்லது நீங்கள் அதைப் பயன்படுத்தும் வரை காத்திருங்கள்.</string>
+    <string name="missing_permissions">அனுமதிகள் இல்லை</string>
+    <string name="missing_required_permissions">தேவையான அனுமதியின்றி இயங்க முடியாது.</string>
+    <string name="settings_skip_startup_permission_check">தொடக்க இசைவு காசோலையைத் தவிர்க்கவும்</string>
 </resources>

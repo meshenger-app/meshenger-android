@@ -156,4 +156,12 @@
     <string name="warning_no_addresses_configured">未配置二维码地址。</string>
     <string name="warning_no_addresses_found">未找到配置的地址。是网络发生变化了吗？</string>
     <string name="wrong_password">密码错误</string>
+    <string name="ask_for_camera_permission">现在授予使用相机的权限或等到你使用它的时候再授予。</string>
+    <string name="ask_for_draw_overlay_permission">缺少显示在其他应用上方的权限。应用需要该权限把来电带到前台。</string>
+    <string name="ask_for_post_notification_permission">缺少发出通知的权限。需要此权限才能在后台获取通话。</string>
+    <string name="ask_for_record_audio_permission">现在授予使用麦克风的权限或等到你使用它的时候再授予。</string>
+    <string name="ask_for_bluetooth_connect_permission">现在授予使用蓝牙耳机的权限或等你使用它的时候再授予。</string>
+    <string name="missing_permissions">缺少权限</string>
+    <string name="missing_required_permissions">没有必需的权限无法运行。</string>
+    <string name="settings_skip_startup_permission_check">启动应用时跳过权限检查</string>
 </resources>

@@ -131,8 +131,9 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 setDefaultNightMode(settings.nightMode)
 
                 if (!isStartOnBootup) {
-                    val missingPermissions = AskForMissingPermissionsActivity.countRequiredPermissions(applicationContext)
-                    if (settings.skipStartupPermissionCheck || missingPermissions == 0) {
+                    val firstStart = binder!!.getService().firstStart
+                    val permissionsToAsk = AskForMissingPermissionsActivity.permissionsToAsk(applicationContext, firstStart)
+                    if (settings.skipStartupPermissionCheck || !permissionsToAsk) {
                         startActivity(Intent(this, MainActivity::class.java))
                     } else {
                         // ask for permissions first

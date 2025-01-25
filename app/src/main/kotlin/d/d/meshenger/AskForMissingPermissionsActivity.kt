@@ -27,14 +27,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     private lateinit var askButton: Button
     private lateinit var skipButton: Button
 
-    // required
-    private var doAskOverlayPermission = true
-    private var doAskPostNotificationPermission = true
-
-    // optional
-    private var doAskCameraPermission = false
-    private var doAskRecordAudioPermission = false
-    private var doAskBluetoothConnectPermission = false
+    private lateinit var permissions: AskPermissions
 
     private var questionCounter = 0
     private var questionsToAsk = 0
@@ -72,19 +65,59 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
         bindService(Intent(this, MainService::class.java), this, 0)
     }
 
+    private class AskPermissions(context: Context, firstStart: Boolean) {
+        // required
+        var doAskOverlayPermission = true
+        var doAskPostNotificationPermission = true
+
+        // optional
+        var doAskCameraPermission = false
+        var doAskRecordAudioPermission = false
+        var doAskBluetoothConnectPermission = false
+
+        // helper to convert Boolean to Int
+        private val Boolean.int
+            get() = if (this) 1 else 0
+
+        fun getQuestionCount(): Int {
+            return (doAskOverlayPermission.int
+                + doAskPostNotificationPermission.int
+                + doAskCameraPermission.int
+                + doAskRecordAudioPermission.int
+                + doAskBluetoothConnectPermission.int)
+        }
+
+        init {
+            if (firstStart) {
+                // ask these optional permissions on first start anyway
+                doAskCameraPermission = true
+                doAskRecordAudioPermission = true
+                doAskBluetoothConnectPermission = true
+            }
+            if (doAskCameraPermission) {
+                doAskCameraPermission = !hasCameraPermission(context)
+            }
+            if (doAskRecordAudioPermission) {
+                doAskRecordAudioPermission = !hasRecordAudioPermission(context)
+            }
+            if (doAskBluetoothConnectPermission) {
+                doAskBluetoothConnectPermission = !hasBluetoothConnectPermission(context)
+            }
+            if (doAskOverlayPermission) {
+                doAskOverlayPermission = !hasDrawOverlayPermission(context)
+            }
+            if (doAskPostNotificationPermission) {
+                doAskPostNotificationPermission = !hasPostNotificationPermission(context)
+            }
+        }
+    }
+
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "onServiceConnected()")
         val binder = iBinder as MainBinder
 
-        // ask optional permission on first startup only
-        if (binder.getService().firstStart) {
-            doAskCameraPermission = true
-            doAskRecordAudioPermission = true
-            doAskBluetoothConnectPermission = true
-        }
-
-        questionsToAsk = countRequiredPermissions(applicationContext) +
-                countOptionalPermissions(applicationContext)
+        permissions = AskPermissions(applicationContext, binder.getService().firstStart)
+        questionsToAsk = permissions.getQuestionCount()
 
         // start questions
         continueQuestions()
@@ -199,49 +232,38 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     private fun continueQuestions() {
         Log.d(this ,"continueQuestions")
 
-        if (doAskOverlayPermission) {
-            doAskOverlayPermission = false
-            if (!hasDrawOverlayPermission(applicationContext)) {
-                questionCounter += 1
-                askDrawOverlayPermission()
-                return
-            }
+        if (permissions.doAskOverlayPermission) {
+            permissions.doAskOverlayPermission = false
+            questionCounter += 1
+            askDrawOverlayPermission()
+            return
         }
 
-        if (doAskPostNotificationPermission) {
-            doAskPostNotificationPermission = false
-            if (!hasPostNotificationPermission(applicationContext)) {
-                questionCounter += 1
-                askNotificationPermission()
-                return
-            }
+        if (permissions.doAskPostNotificationPermission) {
+            permissions.doAskPostNotificationPermission = false
+            questionCounter += 1
+            askNotificationPermission()
+            return
         }
 
-        if (doAskCameraPermission) {
-            doAskCameraPermission = false
-            if (!hasCameraPermission(applicationContext)) {
-                questionCounter += 1
-                askCameraPermission()
-                return
-            }
+        if (permissions.doAskCameraPermission) {
+            permissions.doAskCameraPermission = false
+            questionCounter += 1
+            askCameraPermission()
         }
 
-        if (doAskRecordAudioPermission) {
-            doAskRecordAudioPermission = false
-            if (!hasRecordAudioPermission(applicationContext)) {
-                questionCounter += 1
-                askRecordAudioPermission()
-                return
-            }
+        if (permissions.doAskRecordAudioPermission) {
+            permissions.doAskRecordAudioPermission = false
+            questionCounter += 1
+            askRecordAudioPermission()
+            return
         }
 
-        if (doAskBluetoothConnectPermission) {
-            doAskBluetoothConnectPermission = false
-            if (!hasBluetoothConnectPermission(applicationContext)) {
-                questionCounter += 1
-                askRecordBluetoothConnectPermission()
-                return
-            }
+        if (permissions.doAskBluetoothConnectPermission) {
+            permissions.doAskBluetoothConnectPermission = false
+            questionCounter += 1
+            askRecordBluetoothConnectPermission()
+            return
         }
 
         Toast.makeText(this, R.string.done, Toast.LENGTH_LONG).show()
@@ -252,36 +274,8 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
     }
 
     companion object {
-        fun countRequiredPermissions(context: Context): Int {
-            var missing = 0
-
-            if (!hasDrawOverlayPermission(context)) {
-                missing += 1
-            }
-
-            if (!hasPostNotificationPermission(context)) {
-                missing += 1
-            }
-
-            return missing
-        }
-
-        private fun countOptionalPermissions(context: Context): Int {
-            var missing = 0
-
-            if (!hasRecordAudioPermission(context)) {
-                missing += 1
-            }
-
-            if (!hasCameraPermission(context)) {
-                missing += 1
-            }
-
-            if (!hasBluetoothConnectPermission(context)) {
-                missing += 1
-            }
-
-            return missing
+        fun permissionsToAsk(context: Context, firstStart: Boolean): Boolean {
+            return AskPermissions(context, firstStart).getQuestionCount() > 0
         }
 
         private fun hasDrawOverlayPermission(context: Context): Boolean {

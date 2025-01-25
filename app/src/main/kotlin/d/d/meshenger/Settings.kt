@@ -35,6 +35,8 @@ class Settings {
     var automaticStatusUpdates = true
     var themeName = "sky_blue"
     var skipStartupPermissionCheck = false
+    var audioBitrateMax = "auto" // not used yet
+    var videoBitrateMax = "auto" // not used yet
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -79,6 +81,8 @@ class Settings {
             s.automaticStatusUpdates = obj.getBoolean("automatic_status_updates")
             s.themeName = obj.getString("theme_name")
             s.skipStartupPermissionCheck = obj.getBoolean("skip_startup_permission_check")
+            s.audioBitrateMax = obj.getString("audio_bitrate_max")
+            s.videoBitrateMax = obj.getString("video_bitrate_max")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -135,6 +139,8 @@ class Settings {
             obj.put("automatic_status_updates", s.automaticStatusUpdates)
             obj.put("theme_name", s.themeName)
             obj.put("skip_startup_permission_check", s.skipStartupPermissionCheck)
+            obj.put("audio_bitrate_max", s.audioBitrateMax)
+            obj.put("video_bitrate_max", s.videoBitrateMax)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

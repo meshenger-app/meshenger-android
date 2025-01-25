@@ -113,4 +113,50 @@
         <item>5</item>
         <item>1</item>
     </string-array>
+
+    <string-array name="audioBitrateMaxLabels">
+        <item>Auto</item>
+        <item>256 kbps</item>
+        <item>128 kbps</item>
+        <item>64 kbps</item>
+        <item>40 kbps</item>
+        <item>20 kbps</item>
+        <item>12 kbps</item>
+        <item>8 kbps</item>
+    </string-array>
+
+    <string-array name="audioBitrateMaxValues">
+        <item>auto</item>
+        <item>256</item>
+        <item>128</item>
+        <item>64</item>
+        <item>40</item>
+        <item>20</item>
+        <item>12</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="videoBitrateMaxLabels">
+        <item>Auto</item>
+        <item>20 Mbps</item>
+        <item>10 Mbps</item>
+        <item>5 Mbps</item>
+        <item>2 Mbps</item>
+        <item>1 Mbps</item>
+        <item>0.5 Mbps</item>
+        <item>0.2 Mbps</item>
+        <item>0.01 Mbps</item>
+    </string-array>
+
+    <string-array name="videoBitrateMaxValues">
+        <item>auto</item>
+        <item>20000</item>
+        <item>10000</item>
+        <item>5000</item>
+        <item>2000</item>
+        <item>1000</item>
+        <item>500</item>
+        <item>200</item>
+        <item>10</item>
+    </string-array>
 </resources>

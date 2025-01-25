@@ -335,6 +335,10 @@ class Database {
                 val ignore = settings.getBoolean("ignore_overlay_permission")
                 settings.remove("ignore_overlay_permission")
                 settings.put("skip_startup_permission_check", ignore)
+
+                settings.put("audio_bitrate_max", "auto")
+                settings.put("video_bitrate_max", "auto")
+
                 newFrom = "4.4.3"
             }
 

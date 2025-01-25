@@ -344,6 +344,32 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        setupSpinner(settings.audioBitrateMax,
+            R.id.spinnerAudioBitrateMax,
+            R.array.audioBitrateMaxLabels,
+            R.array.audioBitrateMaxValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    if (newValue != null) {
+                        settings.audioBitrateMax = newValue
+                        binder.saveDatabase()
+                    }
+                }
+            })
+
+        setupSpinner(settings.videoBitrateMax,
+            R.id.spinnerVideoBitrateMax,
+            R.array.videoBitrateMaxLabels,
+            R.array.videoBitrateMaxValues,
+            object : SpinnerItemSelected {
+                override fun call(newValue: String?) {
+                    if (newValue != null) {
+                        settings.videoBitrateMax = newValue
+                        binder.saveDatabase()
+                    }
+                }
+            })
+
         val menuPassword = settings.menuPassword
         findViewById<TextView>(R.id.menuPasswordTv)
             .text = if (menuPassword.isEmpty()) getString(R.string.no_value) else "*".repeat(menuPassword.length)

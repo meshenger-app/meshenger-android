@@ -114,6 +114,7 @@
     <string name="remove_all_events">Remove all events?</string>
     <string name="setting_read_only">Read Only</string>
     <string name="settings_addresses">Addresses*</string>
+    <string name="settings_audio_bitrate_max">Maximum Audio Bitrate</string>
     <string name="settings_auto_accept_calls">Auto Accept Calls</string>
     <string name="settings_automatic_status_updates">Automatic Contact Updates</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
@@ -143,6 +144,7 @@
     <string name="settings_start_on_bootup">Start On Bootup</string>
     <string name="settings_theme_name">Theme</string>
     <string name="settings_use_neighbor_table">Use Neighbor Table (ARP/ND)</string>
+    <string name="settings_video_bitrate_max">Maximum Video Bitrate</string>
     <string name="settings_video_degradation_mode">Video Degradation</string>
     <string name="settings_video_hardware_acceleration">Video Hardware Acceleration</string>
     <string name="setup_address">Setup Address</string>

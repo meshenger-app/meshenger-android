@@ -141,7 +141,7 @@ abstract class RTCPeerConnection(
         reportStateChange(CallState.CONNECTING)
         run {
             Log.d(this, "createOutgoingCallInternal() outgoing call: send call")
-            val filteredOffer = RTCUtils.filterOfferBeforeSend(offer, remoteAddress)
+            val filteredOffer = RTCUtils.filterOfferBeforeSend(offer, remoteAddress, settings)
 
             val obj = JSONObject()
             obj.put("action", "call")
@@ -281,7 +281,7 @@ abstract class RTCPeerConnection(
                 reportStateChange(CallState.CONNECTED)
                 val answer = obj.optString("answer")
                 if (answer.isNotEmpty()) {
-                    handleAnswer(RTCUtils.completeAnswerAfterReception(answer, socket.remoteSocketAddress as InetSocketAddress))
+                    handleAnswer(RTCUtils.completeAnswerAfterReception(answer, socket.remoteSocketAddress as InetSocketAddress, settings))
                 } else {
                     reportStateChange(CallState.ERROR_COMMUNICATION)
                 }
@@ -649,7 +649,7 @@ abstract class RTCPeerConnection(
                     }
 
                     // Add sender address as ICE candidate
-                    val completeOffer = RTCUtils.completeOfferAfterReception(offer, remoteAddress)
+                    val completeOffer = RTCUtils.completeOfferAfterReception(offer, remoteAddress, settings)
 
                     Log.d(this, "createIncomingCallInternal() completeOffer: $completeOffer")
 

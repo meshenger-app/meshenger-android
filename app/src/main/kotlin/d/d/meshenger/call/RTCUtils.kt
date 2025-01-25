@@ -3,6 +3,7 @@ package d.d.meshenger.call
 import d.d.meshenger.AddressUtils
 import d.d.meshenger.Log
 import d.d.meshenger.MainService
+import d.d.meshenger.Settings
 import java.net.*
 
 /*
@@ -26,7 +27,7 @@ internal object RTCUtils
     * We instead let the receiver insert the senders/remote IP address,
     * see filterOfferAfterReception().
     */
-    fun filterOfferBeforeSend(offer: String, remoteAddress: InetSocketAddress): String {
+    fun filterOfferBeforeSend(offer: String, remoteAddress: InetSocketAddress, settings: Settings): String {
         if (disableFilter) {
             return offer
         }
@@ -59,7 +60,7 @@ internal object RTCUtils
      *
      * See also filterOfferBeforeSend().
     */
-    fun completeOfferAfterReception(offer: String, remoteAddress: InetSocketAddress): String {
+    fun completeOfferAfterReception(offer: String, remoteAddress: InetSocketAddress, settings: Settings): String {
         if (disableFilter) {
             return offer
         }
@@ -95,7 +96,7 @@ internal object RTCUtils
         return "${offer}${nl}${iceUdp}\n${iceTcp}\n${c}\n"
     }
 
-    fun filterAnswerBeforeSend(answer: String, remoteAddress: InetSocketAddress): String {
+    fun filterAnswerBeforeSend(answer: String, remoteAddress: InetSocketAddress, settings: Settings): String {
         if (disableFilter) {
             return answer
         }
@@ -104,7 +105,7 @@ internal object RTCUtils
         return answer
     }
 
-    fun completeAnswerAfterReception(answer: String, remoteAddress: InetSocketAddress): String {
+    fun completeAnswerAfterReception(answer: String, remoteAddress: InetSocketAddress, settings: Settings): String {
         if (disableFilter) {
             return answer
         }

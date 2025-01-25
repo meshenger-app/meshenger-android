@@ -638,7 +638,7 @@ class RTCCall : RTCPeerConnection {
                             val pw = PacketWriter(socket)
                             val obj = JSONObject()
                             obj.put("action", "connected")
-                            obj.put("answer", RTCUtils.filterAnswerBeforeSend(answer, socket.remoteSocketAddress as InetSocketAddress))
+                            obj.put("answer", RTCUtils.filterAnswerBeforeSend(answer, socket.remoteSocketAddress as InetSocketAddress, settings))
                             val encrypted = Crypto.encryptMessage(
                                 obj.toString(),
                                 contact.publicKey,

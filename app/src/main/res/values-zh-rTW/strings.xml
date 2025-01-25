@@ -59,7 +59,6 @@
     <string name="contact_menu_share">分享</string>
     <string name="contact_menu_unblock">取消封鎖</string>
     <string name="contact_name">名稱</string>
-    <string name="contact_name_conflict">存在相同名稱的聯絡人。</string>
     <string name="contact_name_exists">存在相同名稱的聯絡人。</string>
     <string name="contact_name_invalid">聯絡人名稱無效。</string>
     <string name="contact_public_key">公鑰</string>
@@ -93,7 +92,6 @@
     <string name="missing_camera_permission">缺少權限。相機無法使用。</string>
     <string name="missing_microphone_permission">缺少權限。麥克風無法使用。</string>
     <string name="no_value">無</string>
-    <string name="overlay_permission_missing">缺少在其他應用程式上面顯示權限。將無法在背景時接聽電話！</string>
     <string name="password_title">密碼</string>
     <string name="paste_qr_code_data">在此處貼上聯絡人 JSON</string>
     <string name="ping_all_contacts">Ping 所有聯絡人</string>

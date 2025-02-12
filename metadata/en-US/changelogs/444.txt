@@ -1,1 +1,2 @@
 * add bottom margin to dialogs
+* add Turkish translation, thanks Bora Atıcı

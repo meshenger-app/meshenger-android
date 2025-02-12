@@ -12,7 +12,7 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-        resourceConfigurations += ['ar', 'ca', 'de', 'en', 'es', 'fa', 'fr', 'nb-rNO', 'pl', 'pt-rBR', 'ru', 'ta', 'uk', 'zh', 'zh-rTW']
+        resourceConfigurations += ['ar', 'ca', 'de', 'en', 'es', 'fa', 'fr', 'nb-rNO', 'pl', 'pt-rBR', 'ru', 'ta', 'tr', 'uk', 'zh', 'zh-rTW']
     }
     buildTypes {
         release {

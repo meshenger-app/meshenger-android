@@ -1,4 +1,4 @@
-* fix toobar and system status bar overlap (Android 15)
+* fix toolbar and system status bar overlap (Android 15)
 * add startup permission check
 * Tamil translation added by தமிழ்நேரம
 * Persian translation added by Ehsan M.A

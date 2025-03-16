@@ -181,6 +181,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
 
     private val requestRecordAudioPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted -> if (isGranted) {
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             continueQuestions()
         } else {
             // this is an optional permission
@@ -190,6 +191,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
 
     private val requestCameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted -> if (isGranted) {
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             continueQuestions()
         } else {
             // this is an optional permission
@@ -199,6 +201,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
 
     private val requestBluetoothConnectPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted -> if (isGranted) {
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             continueQuestions()
         } else {
             // this is an optional permission
@@ -208,6 +211,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
 
     private val requestPostNotificationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted -> if (isGranted) {
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             continueQuestions()
         } else {
             Toast.makeText(this, R.string.missing_required_permissions, Toast.LENGTH_LONG).show()
@@ -217,6 +221,7 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
 
     private var requestDrawOverlaysPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (hasDrawOverlayPermission(applicationContext)) {
+            Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             continueQuestions()
         } else {
             Toast.makeText(this, R.string.missing_required_permissions, Toast.LENGTH_LONG).show()
@@ -265,8 +270,6 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
             askRecordBluetoothConnectPermission()
             return
         }
-
-        Toast.makeText(this, R.string.done, Toast.LENGTH_LONG).show()
 
         // switch to MainActivity
         startActivity(Intent(this, MainActivity::class.java))

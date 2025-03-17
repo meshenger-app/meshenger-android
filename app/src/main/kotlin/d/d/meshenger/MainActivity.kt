@@ -301,9 +301,14 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         Log.d(this, "onCreateOptionsMenu()")
 
-        val titles = mutableListOf(
-            R.string.menu_settings, R.string.menu_backup,
-            R.string.menu_about, R.string.menu_shutdown)
+        val hideMenus = binder!!.getSettings().hideMenus
+        val titles =  if (hideMenus) {
+            mutableListOf(R.string.menu_settings)
+        } else {
+            mutableListOf(
+                R.string.menu_settings, R.string.menu_backup,
+                R.string.menu_about, R.string.menu_shutdown)
+        }
 
         for (title in titles) {
             menu.add(0, title, 0, title)

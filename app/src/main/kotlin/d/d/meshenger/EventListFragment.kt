@@ -116,7 +116,11 @@ class EventListFragment : Fragment() {
         eventListAdapter = EventListAdapter(activity, R.layout.item_event, emptyList(), emptyList())
         eventListView.adapter = eventListAdapter
         eventListView.onItemClickListener = onEventClickListener
-        eventListView.onItemLongClickListener = onEventLongClickListener
+
+        val binder = (activity as MainActivity).binder!!
+        if (!binder.getSettings().hideMenus) {
+            eventListView.onItemLongClickListener = onEventLongClickListener
+        }
 
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(refreshEventListReceiver, IntentFilter("refresh_event_list"))

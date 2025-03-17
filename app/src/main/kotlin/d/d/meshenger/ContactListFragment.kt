@@ -98,7 +98,12 @@ class ContactListFragment : Fragment() {
         fabPingAll = view.findViewById(R.id.fabPing)
         contactListView = view.findViewById(R.id.contactList)
         contactListView.onItemClickListener = onContactClickListener
-        contactListView.onItemLongClickListener = onContactLongClickListener
+
+        val binder = (activity as MainActivity).binder!!
+        if (binder.getSettings().hideMenus) {
+            contactListView.onItemLongClickListener = onContactLongClickListener
+            fab.visibility = View.GONE
+        }
 
         val activity = requireActivity()
         fabScan.setOnClickListener {

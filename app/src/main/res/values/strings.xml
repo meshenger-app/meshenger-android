@@ -130,6 +130,7 @@
     <string name="settings_enable_camera_by_default">Enable Camera By Default</string>
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
     <string name="settings_guess_eui64_address">Guess IP address (EUI64)</string>
+    <string name="settings_hide_menus">Hide Menus</string>
     <string name="settings_menu_password">Menu Password</string>
     <string name="settings_name">Name</string>
     <string name="settings_nightmode">Night Mode</string>

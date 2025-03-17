@@ -344,6 +344,17 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             }
         }
 
+        findViewById<SwitchMaterial>(R.id.hideMenusSwitch).apply {
+            isChecked = settings.hideMenus
+            setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settings.hideMenus = isChecked
+                if (isChecked) {
+                    binder.clearEvents()
+                }
+                binder.saveDatabase()
+            }
+        }
+
         setupSpinner(settings.audioBitrateMax,
             R.id.spinnerAudioBitrateMax,
             R.array.audioBitrateMaxLabels,

@@ -29,6 +29,7 @@ class Settings {
     var disableCpuOveruseDetection = false
     var autoAcceptCalls = false
     var menuPassword = ""
+    var hideMenus = false
     var videoDegradationMode = "balanced"
     var cameraResolution = "auto"
     var cameraFramerate = "auto"
@@ -83,6 +84,7 @@ class Settings {
             s.skipStartupPermissionCheck = obj.getBoolean("skip_startup_permission_check")
             s.audioBitrateMax = obj.getString("audio_bitrate_max")
             s.videoBitrateMax = obj.getString("video_bitrate_max")
+            s.hideMenus = obj.getBoolean("hide_menus")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -141,6 +143,7 @@ class Settings {
             obj.put("skip_startup_permission_check", s.skipStartupPermissionCheck)
             obj.put("audio_bitrate_max", s.audioBitrateMax)
             obj.put("video_bitrate_max", s.videoBitrateMax)
+            obj.put("hide_menus", s.hideMenus)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

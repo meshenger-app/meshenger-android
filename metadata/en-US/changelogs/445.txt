@@ -1,0 +1,2 @@
+* add Hebrew translation, thanks Eldar yiftach
+* add option to hide menus

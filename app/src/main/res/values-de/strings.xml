@@ -118,6 +118,7 @@
     <string name="settings_enable_camera_by_default">Kamera Per Default Akivieren</string>
     <string name="settings_enable_microphone_by_default">Enable Microphone By Default</string>
     <string name="settings_guess_eui64_address">IP Adresse Raten (EUI64)</string>
+    <string name="settings_hide_menus">Menüs Verstecken</string>
     <string name="settings_menu_password">Menü Passwort</string>
     <string name="settings_name">Name</string>
     <string name="settings_nightmode">Nachtmodus</string>

@@ -130,6 +130,7 @@
     <string name="settings_enable_camera_by_default">הפעל מצלמה כברירת מחדל</string>
     <string name="settings_enable_microphone_by_default">הפעל מיקרופון כברירת מחדל</string>
     <string name="settings_guess_eui64_address">נחש כתובת IP (EUI64)</string>
+    <string name="settings_hide_menus">הסתר תפריט</string>
     <string name="settings_menu_password">סיסמת תפריט</string>
     <string name="settings_name">שם</string>
     <string name="settings_nightmode">מצב לילה</string>

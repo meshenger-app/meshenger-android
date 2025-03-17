@@ -6,7 +6,6 @@ import android.util.Patterns
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.experimental.and
 import kotlin.experimental.xor
 
 internal object AddressUtils

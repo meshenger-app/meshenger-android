@@ -53,45 +53,46 @@ class EventListFragment : Fragment() {
         val eventGroup = eventListAdapter.getItem(i)
         val latestEvent = eventGroup.last()
         val menu = PopupMenu(activity, view)
-        val res = resources
-        val add = res.getString(R.string.contact_menu_add)
-        val delete = res.getString(R.string.contact_menu_delete)
-        val block = res.getString(R.string.contact_menu_block)
-        val unblock = res.getString(R.string.contact_menu_unblock)
         val contact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
+        val titles = mutableListOf<Int>()
 
         // allow to add unknown caller
         if (contact == null) {
-            menu.menu.add(add)
+            titles.add(R.string.contact_menu_add)
         }
 
         if (contact != null) {
             if (contact.blocked) {
-                menu.menu.add(unblock)
+                titles.add(R.string.contact_menu_unblock)
             } else {
-                menu.menu.add(block)
+                titles.add(R.string.contact_menu_block)
             }
         }
 
-        menu.menu.add(delete)
+        titles.add(R.string.contact_menu_delete)
+
+        for (title in titles) {
+            menu.menu.add(0, title, 0, title)
+        }
 
         menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            when (menuItem.title.toString()) {
-                add -> {
+            when (menuItem.itemId) {
+                R.string.contact_menu_add -> {
                     showAddDialog(eventGroup)
                 }
-                block -> {
+                R.string.contact_menu_block -> {
                     setBlocked(latestEvent, true)
                 }
-                unblock -> {
+                R.string.contact_menu_unblock -> {
                     setBlocked(latestEvent, false)
                 }
-                delete -> {
+                R.string.contact_menu_delete -> {
                     deleteEventGroup(eventGroup)
                 }
             }
             false
         }
+
         menu.show()
         true
     }

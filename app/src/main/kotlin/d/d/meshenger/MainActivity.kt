@@ -1,8 +1,6 @@
 package d.d.meshenger
 
-import android.app.Activity
 import android.app.Dialog
-import android.Manifest.permission
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,15 +9,19 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.Uri
-import android.os.*
-import android.provider.Settings
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
@@ -220,16 +222,16 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     private fun menuAction(itemId: Int) {
         when (itemId) {
-            R.id.action_settings -> {
+            R.string.menu_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }
-            R.id.action_backup -> {
+            R.string.menu_backup -> {
                 startActivity(Intent(this, BackupActivity::class.java))
             }
-            R.id.action_about -> {
+            R.string.menu_about -> {
                 startActivity(Intent(this, AboutActivity::class.java))
             }
-            R.id.action_shutdown -> {
+            R.string.menu_shutdown -> {
                 MainService.stop(this)
                 finish()
             }
@@ -298,7 +300,15 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         Log.d(this, "onCreateOptionsMenu()")
-        menuInflater.inflate(R.menu.menu_main_activity, menu)
+
+        val titles = mutableListOf(
+            R.string.menu_settings, R.string.menu_backup,
+            R.string.menu_about, R.string.menu_shutdown)
+
+        for (title in titles) {
+            menu.add(0, title, 0, title)
+        }
+
         return true
     }
 

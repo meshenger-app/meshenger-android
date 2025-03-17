@@ -1,6 +1,10 @@
 package d.d.meshenger
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -9,7 +13,10 @@ import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.AnimationSet
 import android.view.animation.TranslateAnimation
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ListView
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -44,29 +51,28 @@ class ContactListFragment : Fragment() {
         AdapterView.OnItemLongClickListener { adapterView, view, i, _ ->
             val contact = adapterView.adapter.getItem(i) as Contact
             val menu = PopupMenu(activity, view)
-            val details = getString(R.string.contact_menu_details)
-            val delete = getString(R.string.contact_menu_delete)
-            val ping = getString(R.string.contact_menu_ping)
-            val share = getString(R.string.contact_menu_share)
-            val qrcode = getString(R.string.contact_menu_qrcode)
-            menu.menu.add(details)
-            menu.menu.add(delete)
-            menu.menu.add(ping)
-            menu.menu.add(share)
-            menu.menu.add(qrcode)
+            // menu items
+            val titles = intArrayOf(
+                R.string.contact_menu_details, R.string.contact_menu_delete,
+                R.string.contact_menu_ping, R.string.contact_menu_share,
+                R.string.contact_menu_qrcode, R.string.contact_menu_details)
+
+            for (titleRes in titles) {
+                menu.menu.add(0, titleRes,0, titleRes)
+            }
+
             menu.setOnMenuItemClickListener { menuItem: MenuItem ->
-                val title = menuItem.title.toString()
                 val publicKey = contact.publicKey
-                when (title) {
-                    details -> {
+                when (menuItem.itemId) {
+                    R.string.contact_menu_details -> {
                         val intent = Intent(activity, ContactDetailsActivity::class.java)
                         intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(contact.publicKey))
                         startActivity(intent)
                     }
-                    delete -> showDeleteDialog(publicKey, contact.name)
-                    ping -> pingContact(contact)
-                    share -> shareContact(contact)
-                    qrcode -> {
+                    R.string.contact_menu_delete -> showDeleteDialog(publicKey, contact.name)
+                    R.string.contact_menu_ping -> pingContact(contact)
+                    R.string.contact_menu_share -> shareContact(contact)
+                    R.string.contact_menu_qrcode -> {
                         val intent = Intent(activity, QRShowActivity::class.java)
                         intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(contact.publicKey))
                         startActivity(intent)

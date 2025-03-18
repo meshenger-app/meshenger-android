@@ -1,2 +1,3 @@
 * add Hebrew translation, thanks Eldar yiftach
 * add option to hide menus
+* add more missing buttom margins for dialogs

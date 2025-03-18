@@ -32,6 +32,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import d.d.meshenger.MainService.MainBinder
+import java.util.Locale
 
 // the main view with tabs
 class MainActivity : BaseActivity(), ServiceConnection {
@@ -200,7 +201,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
                     if (eventsMissed == 0) {
                         getString(R.string.title_calls)
                     } else {
-                        String.format("%s (%d)", getString(R.string.title_calls), eventsMissed)
+                        String.format(Locale.getDefault(), "%s (%d)", getString(R.string.title_calls), eventsMissed)
                     }
                 }
             }

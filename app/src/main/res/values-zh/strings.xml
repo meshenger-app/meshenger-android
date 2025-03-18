@@ -166,4 +166,5 @@
     <string name="settings_skip_startup_permission_check">启动应用时跳过权限检查</string>
     <string name="settings_audio_bitrate_max">最大音频比特率</string>
     <string name="settings_video_bitrate_max">最大视频比特率</string>
+    <string name="settings_hide_menus">隐藏菜单</string>
 </resources>

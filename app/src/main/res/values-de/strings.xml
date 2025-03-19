@@ -40,7 +40,7 @@
     <string name="call_error_unresolved_hostname">Fehler: Kann Adresse nicht auflösen</string>
     <string name="call_no_network">Kein Netzwerk - Ist das WLAN aktiviert\?</string>
     <string name="call_ringing">Klingel…</string>
-    <string name="call_start_or_abort">Anruf starten oder Abbruch</string>
+    <string name="call_start_or_abort">Anruf starten oder abbruch</string>
     <string name="call_waiting">Warte…</string>
     <string name="camera_back">Zurück</string>
     <string name="camera_front">Vorderseite</string>

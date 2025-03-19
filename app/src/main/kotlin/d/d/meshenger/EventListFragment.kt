@@ -118,7 +118,9 @@ class EventListFragment : Fragment() {
         eventListView.onItemClickListener = onEventClickListener
 
         val binder = (activity as MainActivity).binder!!
-        if (!binder.getSettings().hideMenus) {
+        if (binder.getSettings().hideMenus) {
+            eventListView.onItemLongClickListener = null
+        } else {
             eventListView.onItemLongClickListener = onEventLongClickListener
         }
 

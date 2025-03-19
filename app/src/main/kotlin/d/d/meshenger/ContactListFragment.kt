@@ -101,8 +101,11 @@ class ContactListFragment : Fragment() {
 
         val binder = (activity as MainActivity).binder!!
         if (binder.getSettings().hideMenus) {
-            contactListView.onItemLongClickListener = onContactLongClickListener
             fab.visibility = View.GONE
+            contactListView.onItemLongClickListener = null
+        } else {
+            fab.visibility = View.VISIBLE
+            contactListView.onItemLongClickListener = onContactLongClickListener
         }
 
         val activity = requireActivity()

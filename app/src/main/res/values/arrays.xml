@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="themeNameLabels">
-        <item>Fire Red</item>
-        <item>Grass Green</item>
-        <item>Sky Blue</item>
-        <item>Night Grey</item>
+        <item>@string/theme_label_fire_red</item>
+        <item>@string/theme_label_grass_green</item>
+        <item>@string/theme_label_sky_blue</item>
+        <item>@string/theme_label_night_grey</item>
     </string-array>
 
     <string-array name="themeNameValues">
@@ -15,9 +15,9 @@
     </string-array>
 
     <string-array name="nightModeLabels">
-        <item>System (default)</item>
-        <item>On</item>
-        <item>Off</item>
+        <item>@string/night_mode_label_system</item>
+        <item>@string/night_mode_label_on</item>
+        <item>@string/night_mode_label_off</item>
     </string-array>
 
     <string-array name="nightModeValues">
@@ -27,9 +27,9 @@
     </string-array>
 
     <string-array name="speakerphoneModeLabels">
-        <item>Auto (default)</item>
-        <item>Enabled</item>
-        <item>Disabled</item>
+        <item>@string/speakerphone_mode_label_auto</item>
+        <item>@string/speakerphone_mode_label_enabled</item>
+        <item>@string/speakerphone_mode_label_disabled</item>
     </string-array>
 
     <string-array name="speakerphoneModeValues">
@@ -39,9 +39,9 @@
     </string-array>
 
     <string-array name="settingsModeLabels">
-        <item>Basic (default)</item>
-        <item>Advanced</item>
-        <item>Expert</item>
+        <item>@string/settings_mode_label_basic</item>
+        <item>@string/settings_mode_label_advanced</item>
+        <item>@string/settings_mode_label_expert</item>
     </string-array>
 
     <string-array name="settingsModeValues">
@@ -51,10 +51,10 @@
     </string-array>
 
     <string-array name="videoDegradationModeLabels">
-        <item>Balanced (default)</item>
-        <item>Maintain Resolution</item>
-        <item>Maintain Framerate</item>
-        <item>Disabled</item>
+        <item>@string/settings_video_degradation_mode_label_balanced</item>
+        <item>@string/settings_video_degradation_mode_label_maintain_resolution</item>
+        <item>@string/settings_video_degradation_mode_label_maintain_framerate</item>
+        <item>@string/settings_video_degradation_mode_label_disabled</item>
     </string-array>
 
     <string-array name="videoDegradationModeValues">
@@ -65,7 +65,7 @@
     </string-array>
 
     <string-array name="cameraResolutionLabels">
-        <item>Auto</item>
+        <item>@string/settings_camera_resolution_auto</item>
         <item>3840x2160</item>
         <item>2560x1440</item>
         <item>1920x1080</item>
@@ -89,7 +89,7 @@
     </string-array>
 
     <string-array name="cameraFramerateLabels">
-        <item>Auto</item>
+        <item>@string/settings_camera_framerate_auto</item>
         <item>60 fps</item>
         <item>50 fps</item>
         <item>40 fps</item>
@@ -115,7 +115,7 @@
     </string-array>
 
     <string-array name="audioBitrateMaxLabels">
-        <item>Auto</item>
+        <item>@string/settings_audio_bitrate_max_auto</item>
         <item>256 kbps</item>
         <item>128 kbps</item>
         <item>64 kbps</item>
@@ -137,7 +137,7 @@
     </string-array>
 
     <string-array name="videoBitrateMaxLabels">
-        <item>Auto</item>
+        <item>@string/settings_video_bitrate_max_auto</item>
         <item>20 Mbps</item>
         <item>10 Mbps</item>
         <item>5 Mbps</item>

@@ -73,6 +73,9 @@
     <string name="missing_bluetooth_permission">Відсутній дозвіл. Bluetooth недоступний.</string>
     <string name="missing_camera_permission">Відсутній дозвіл. Камера недоступна.</string>
     <string name="missing_microphone_permission">Відсутній дозвіл. Мікрофон недоступний.</string>
+    <string name="night_mode_label_off">ВИМК</string>
+    <string name="night_mode_label_on">ВВІМК</string>
+    <string name="night_mode_label_system">Авто</string>
     <string name="no_value">Нема</string>
     <string name="password_title">Пароль</string>
     <string name="paste_qr_code_data">Вставте сюди контактні дані</string>
@@ -85,6 +88,9 @@
     <string name="settings_disable_audio_processing">Вимкнути обробку звуку</string>
     <string name="settings_disable_call_history">Відключити історію викликів</string>
     <string name="settings_disable_proximity_sensor">Вимкнути датчик наближення</string>
+    <string name="settings_mode_label_advanced">Розширені</string>
+    <string name="settings_mode_label_basic">Основні</string>
+    <string name="settings_mode_label_expert">Експерт</string>
     <string name="settings_name">Ім\'я</string>
     <string name="settings_nightmode">Нічний режим</string>
     <string name="settings_prompt_outgoing_calls">Швидкі вихідні дзвінки</string>
@@ -97,6 +103,9 @@
     <string name="settings_video_hardware_acceleration">Апаратне прискорення відео</string>
     <string name="setup_address">Налаштування Адреси</string>
     <string name="setup_no_address_found">Не знайдено адресу WiFi карти. Увімкніть WiFi зараз (Інтернет не потрібен) або перейдіть до налаштування пізніше.</string>
+    <string name="speakerphone_mode_label_auto">Автоматично</string>
+    <string name="speakerphone_mode_label_disabled">Вимкнений</string>
+    <string name="speakerphone_mode_label_enabled">Ввімкнений</string>
     <string name="startup_hello">Привіт!</string>
     <string name="startup_name_prefix">Користувач</string>
     <string name="startup_prompt_name">Як вас звати?</string>

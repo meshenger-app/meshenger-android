@@ -167,4 +167,25 @@
     <string name="settings_audio_bitrate_max">最大音频比特率</string>
     <string name="settings_video_bitrate_max">最大视频比特率</string>
     <string name="settings_hide_menus">隐藏菜单</string>
+    <string name="night_mode_label_system">系统（默认）</string>
+    <string name="settings_audio_bitrate_max_auto">自动</string>
+    <string name="settings_camera_framerate_auto">自动</string>
+    <string name="settings_mode_label_basic">基础（默认）</string>
+    <string name="settings_video_bitrate_max_auto">自动</string>
+    <string name="settings_video_degradation_mode_label_maintain_resolution">保持分辨率</string>
+    <string name="speakerphone_mode_label_auto">自动（默认）</string>
+    <string name="speakerphone_mode_label_disabled">已停用</string>
+    <string name="speakerphone_mode_label_enabled">已开启</string>
+    <string name="theme_label_grass_green">草绿</string>
+    <string name="theme_label_night_grey">夜灰</string>
+    <string name="theme_label_sky_blue">天蓝</string>
+    <string name="settings_camera_resolution_auto">自动</string>
+    <string name="theme_label_fire_red">火红</string>
+    <string name="settings_mode_label_advanced">高级</string>
+    <string name="night_mode_label_off">关</string>
+    <string name="settings_mode_label_expert">专家</string>
+    <string name="settings_video_degradation_mode_label_balanced">平衡（默认）</string>
+    <string name="night_mode_label_on">开</string>
+    <string name="settings_video_degradation_mode_label_disabled">已停用</string>
+    <string name="settings_video_degradation_mode_label_maintain_framerate">保持帧率</string>
 </resources>

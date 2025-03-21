@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/app_license"
-                android:textColor="#3F51B5"
+                android:textColor="?android:textColorLink"
                 android:textSize="13sp" />
 
         </LinearLayout>

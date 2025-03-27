@@ -343,7 +343,7 @@ class Database {
             }
 
             if (newFrom in listOf("4.4.3", "4.4.4")) {
-                settings.put("hide_menus", "false")
+                settings.put("hide_menus", false)
 
                 newFrom = "4.4.5"
             }

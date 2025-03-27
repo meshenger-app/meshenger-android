@@ -19,8 +19,8 @@ class Database {
         events.destroy()
     }
 
-    class WrongPasswordException() : Exception("wrong password")
-    class InvalidDataException() : Exception("invalid data")
+    class WrongPasswordException : Exception("wrong password")
+    class InvalidDataException : Exception("invalid data")
 
     companion object {
         fun fromData(db_data: ByteArray, password: String): Database {

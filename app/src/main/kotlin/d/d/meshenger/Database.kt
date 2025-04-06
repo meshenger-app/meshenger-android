@@ -342,9 +342,13 @@ class Database {
                 newFrom = "4.4.3"
             }
 
-            if (newFrom in listOf("4.4.3", "4.4.4")) {
+            if (newFrom == "4.4.3") {
                 settings.put("hide_menus", false)
+                newFrom = "4.4.4"
+            }
 
+            if (newFrom == "4.4.4") {
+                // nothing to do
                 newFrom = "4.4.5"
             }
 

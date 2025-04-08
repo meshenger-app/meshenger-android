@@ -23,7 +23,7 @@ Limitations:
 
 ## Screenshots
 
-<img src="graphical-assets/phone-screenshots/logo_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/hello_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/qrcode_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/contacts_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/ringing_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/video_call_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/settings_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/address_management_4.0.4.png" width="170">
+<img src="graphical-assets/phone-screenshots/01_logo_4.4.5.png" width="170"> <img src="graphical-assets/phone-screenshots/02_contacts_4.4.5.png" width="170"> <img src="graphical-assets/phone-screenshots/03_ringing.png" width="170"> <img src="graphical-assets/phone-screenshots/04_call_4.4.5.png" width="170"> <img src="graphical-assets/phone-screenshots/05_qrcode_4.4.5.png" width="170"> <img src="graphical-assets/phone-screenshots/06_settings_4.4.5.png" width="170"> <img src="graphical-assets/phone-screenshots/07_address_management_4.4.5.png" width="170"> <img src="graphical-assets/phone-screenshots/08_history_4.4.5.png" width="170">
 
 ## Translations
 

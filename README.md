@@ -39,7 +39,8 @@ Details can be found in the [Documentation](docs/documentation.md) or in the [FA
 
 This list only contains Open Source projects.
 
-* [linphone](https://linphone.org/) - uses SIP, can use IP addresses, but not easy to use
-* [pion offline](https://github.com/pion/offline-browser-communication) - Offline WebRTC demo
-* [SideBand](https://github.com/markqvist/Sideband) - Chat app based on the Reiculum network
-* [Qaul](https://qaul.net/) - text messages only, interlinked P2P mesh via BLE, Wifi & Internet-overlay
+* [linphone](https://linphone.org/) - VoIP, SIP, Video telephone app.
+* [Jami](https://jami.net/) - Multiplatform Chat and Video messenger, uses a DHT.
+* [Briar](https://briarproject.org/) - Censorship-resistant P2P messaging. Connect via Bluetooth, Wi-Fi or Tor. Privacy orientated.
+* [Qaul](https://qaul.net/) - Internet independent wireless mesh text messenger. Uses BLE, Wifi & Internet-overlay.
+* [pion offline](https://github.com/pion/offline-browser-communication) - Offline WebRTC demo.

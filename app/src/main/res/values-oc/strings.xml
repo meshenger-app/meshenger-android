@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="audio_device_bluetooth">Bluetooth</string>
+    <string name="about_app_version">Version :</string>
+    <string name="about_app_website">Site Web :</string>
+    <string name="address_management">Gestion d\'adreças</string>
+    <string name="about_app_license">Licéncia :</string>
+    <string name="about_app_description">Descripcion :</string>
+</resources>

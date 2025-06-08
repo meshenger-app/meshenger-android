@@ -6,4 +6,23 @@
     <string name="address_management">Gestion d\'adreças</string>
     <string name="about_app_license">Licéncia :</string>
     <string name="about_app_description">Descripcion :</string>
+    <string name="button_ask">Demandar</string>
+    <string name="button_skip">Passar</string>
+    <string name="button_yes">Òc</string>
+    <string name="call_authentication_failed">Error d\'autenticacion</string>
+    <string name="call_connecting">Sonada…</string>
+    <string name="button_cancel">Anullar</string>
+    <string name="button_export">Exportar</string>
+    <string name="button_import">Importar</string>
+    <string name="button_next">Seguent</string>
+    <string name="button_no">Non</string>
+    <string name="call_connected">Connectat</string>
+    <string name="call_connection_failed">Fracàs de la connexion</string>
+    <string name="call_error">Error</string>
+    <string name="button_add">Apondre</string>
+    <string name="button_ok">D\'acòrdi</string>
+    <string name="button_rename">Renomenar</string>
+    <string name="button_replace">Remplaçar</string>
+    <string name="button_save">Salvar</string>
+    <string name="contact_address_input">Adreça</string>
 </resources>

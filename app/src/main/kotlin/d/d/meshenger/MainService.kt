@@ -74,6 +74,7 @@ class MainService : Service(), Runnable {
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setContentText(text)
+            .setContentTitle(applicationContext.getString(R.string.app_name))
             .setContentIntent(pendingNotificationIntent)
             .build()
     }

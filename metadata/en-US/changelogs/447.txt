@@ -1,0 +1,1 @@
+* add notification title for Android 6

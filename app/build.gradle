@@ -8,7 +8,7 @@ android {
         targetSdkVersion 35
         compileSdk 34
         versionCode 446
-        versionName "4.4.6"
+        versionName "4.4.7"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

@@ -33,6 +33,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import d.d.meshenger.MainService.MainBinder
 import java.util.Locale
+import androidx.core.graphics.drawable.toDrawable
 
 // the main view with tabs
 class MainActivity : BaseActivity(), ServiceConnection {
@@ -129,7 +130,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
         val typedValue = TypedValue()
         val theme = this@MainActivity.getTheme()
         theme.resolveAttribute(attr, typedValue, true)
-        return ColorDrawable(typedValue.data)
+        return typedValue.data.toDrawable()
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {

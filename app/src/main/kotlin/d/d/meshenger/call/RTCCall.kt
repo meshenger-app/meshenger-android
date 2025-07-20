@@ -579,7 +579,7 @@ class RTCCall : RTCPeerConnection {
         Log.d(this, "reportStateChange() state=$state")
 
         this.state = state
-        callActivity!!.onStateChange(state)
+        callActivity?.onStateChange(state)
     }
 
     fun setStatsCollector(statsCollector: RTCStatsCollectorCallback?) {

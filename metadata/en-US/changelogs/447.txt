@@ -1,1 +1,2 @@
 * add notification title for Android 6
+* fix crash when canceling an outgoing call

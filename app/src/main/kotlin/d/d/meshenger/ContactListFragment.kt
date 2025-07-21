@@ -23,7 +23,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONException
 
-class ContactListFragment : Fragment() {
+class ContactListFragment() : Fragment() {
+    private var binder: MainService.MainBinder = MainActivity.binder!!
     private lateinit var contactListView: ListView
     private lateinit var fabScan: FloatingActionButton
     private lateinit var fabGen: FloatingActionButton
@@ -89,7 +90,7 @@ class ContactListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d(this, "onCreateView")
+        Log.d(this, "onCreateView()")
         val view: View = inflater.inflate(R.layout.fragment_contact_list, container, false)
 
         fab = view.findViewById(R.id.fab)
@@ -99,7 +100,6 @@ class ContactListFragment : Fragment() {
         contactListView = view.findViewById(R.id.contactList)
         contactListView.onItemClickListener = onContactClickListener
 
-        val binder = (activity as MainActivity).binder!!
         if (binder.getSettings().hideMenus) {
             fab.visibility = View.GONE
             contactListView.onItemLongClickListener = null
@@ -108,19 +108,15 @@ class ContactListFragment : Fragment() {
             contactListView.onItemLongClickListener = onContactLongClickListener
         }
 
-        val activity = requireActivity()
         fabScan.setOnClickListener {
             val intent = Intent(activity, QRScanActivity::class.java)
             startActivity(intent)
         }
 
         fabGen.setOnClickListener {
-            val binder = (activity as MainActivity).binder
-            if (binder != null) {
-                val intent = Intent(activity, QRShowActivity::class.java)
-                intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder.getSettings().publicKey))
-                startActivity(intent)
-            }
+            val intent = Intent(requireContext(), QRShowActivity::class.java)
+            intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder.getSettings().publicKey))
+            startActivity(intent)
         }
 
         fabPingAll.setOnClickListener {
@@ -161,26 +157,16 @@ class ContactListFragment : Fragment() {
         Log.d(this, "onResume()")
         super.onResume()
 
-        val activity = requireActivity() as MainActivity
-        val binder = activity.binder
-        if (binder != null) {
-            if (binder.getSettings().automaticStatusUpdates) {
-                // ping all contacts
-                binder.pingContacts(binder.getContacts().contactList)
-            }
+        if (binder.getSettings().automaticStatusUpdates) {
+            // ping all contacts
+            binder.pingContacts(binder.getContacts().contactList)
         }
 
         MainService.refreshContacts(requireActivity())
     }
 
     private fun showPingAllButton(): Boolean {
-        val binder = (activity as MainActivity).binder
-        if (binder != null) {
-            return !binder.getSettings().automaticStatusUpdates
-        } else {
-            // it does not hurt to show the button
-            return true
-        }
+        return !binder.getSettings().automaticStatusUpdates
     }
 
     private fun runFabAnimation(fab: View) {
@@ -261,24 +247,19 @@ class ContactListFragment : Fragment() {
     }
 
     private fun pingContact(contact: Contact) {
-        val binder = (activity as MainActivity).binder ?: return
         binder.pingContacts(listOf(contact))
         val message = String.format(getString(R.string.ping_contact), contact.name)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun pingAllContacts() {
-        val binder = (activity as MainActivity).binder ?: return
         binder.pingContacts(binder.getContacts().contactList)
         val message = String.format(getString(R.string.ping_all_contacts))
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showDeleteDialog(publicKey: ByteArray, name: String) {
-        val activity = requireActivity()
-        val binder = (activity as MainActivity).binder ?: return
-
-        val builder = AlertDialog.Builder(activity, R.style.AlertDialogTheme)
+        val builder = AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
         builder.setTitle(R.string.dialog_title_delete_contact)
         builder.setMessage(name)
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
@@ -298,9 +279,8 @@ class ContactListFragment : Fragment() {
     private fun refreshContactList() {
         Log.d(this, "refreshContactList")
 
-        val activity = requireActivity()
-        val binder = (activity as MainActivity).binder ?: return
         val contacts = binder.getContacts().contactList
+        val activity = requireActivity()
 
         activity.runOnUiThread {
             contactListView.adapter = ContactListAdapter(activity, R.layout.item_contact, contacts)

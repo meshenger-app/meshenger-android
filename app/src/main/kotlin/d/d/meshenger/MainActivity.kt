@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -37,7 +36,7 @@ import androidx.core.graphics.drawable.toDrawable
 
 // the main view with tabs
 class MainActivity : BaseActivity(), ServiceConnection {
-    internal var binder: MainBinder? = null
+    internal lateinit var binder: MainBinder
     private lateinit var viewPager: ViewPager2
 
     private fun initToolbar() {
@@ -65,7 +64,6 @@ class MainActivity : BaseActivity(), ServiceConnection {
         instance = this
 
         viewPager = findViewById(R.id.container)
-        viewPager.adapter = ViewPagerFragmentAdapter(this)
 
         bindService(Intent(this, MainService::class.java), this, 0)
     }
@@ -100,13 +98,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     private fun showInvalidAddressSettingsWarning() {
         Handler(Looper.getMainLooper()).postDelayed({
-            val localBinder = this@MainActivity.binder
-            if (localBinder == null) {
-                Log.w(this, "showInvalidAddressSettingsWarning() binder is null")
-                return@postDelayed
-            }
-
-            val storedAddresses = localBinder.getSettings().addresses
+            val storedAddresses = binder.getSettings().addresses
             val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) }
             if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
                 // ignore, we only have domains configured
@@ -135,12 +127,17 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         Log.d(this, "onServiceConnected()")
-        binder = iBinder as MainBinder
+        this.binder = iBinder as MainBinder
+        MainActivity.binder = this.binder
 
-        val settings = binder!!.getSettings()
+        val adapter = ViewPagerFragmentAdapter(this)
+
+        this.viewPager.adapter = adapter
+
+        val settings = binder.getSettings()
 
         // data source for the views was not ready before
-        (viewPager.adapter as ViewPagerFragmentAdapter).let {
+        adapter.let {
             it.ready = true
             it.disableCallHistory = settings.disableCallHistory
             it.notifyDataSetChanged()
@@ -198,7 +195,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             tab.text = when (position) {
                 0 -> getString(R.string.title_contacts)
                 else -> {
-                    val eventsMissed = binder!!.getEvents().eventsMissed
+                    val eventsMissed = binder.getEvents().eventsMissed
                     if (eventsMissed == 0) {
                         getString(R.string.title_calls)
                     } else {
@@ -274,14 +271,11 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.d(this, "onOptionsItemSelected()")
 
-        val binder = binder
-        if (binder != null) {
-            val settings = binder.getSettings()
-            if (settings.menuPassword.isEmpty()) {
-                menuAction(item.itemId)
-            } else {
-                showMenuPasswordDialog(item.itemId, settings.menuPassword)
-            }
+        val settings = binder.getSettings()
+        if (settings.menuPassword.isEmpty()) {
+            menuAction(item.itemId)
+        } else {
+            showMenuPasswordDialog(item.itemId, settings.menuPassword)
         }
 
         return super.onOptionsItemSelected(item)
@@ -303,7 +297,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         Log.d(this, "onCreateOptionsMenu()")
 
-        val hideMenus = binder!!.getSettings().hideMenus
+        val hideMenus = binder.getSettings().hideMenus
         val titles =  if (hideMenus) {
             mutableListOf(R.string.menu_settings)
         } else {
@@ -346,5 +340,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     companion object {
         private var addressWarningShown = false
         var instance: MainActivity? = null
+        // to be used by the fragments
+        var binder: MainBinder? = null
     }
 }

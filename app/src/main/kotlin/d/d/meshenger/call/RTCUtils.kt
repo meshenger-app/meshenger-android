@@ -74,8 +74,8 @@ internal object RTCUtils
         val remoteAddressString = AddressUtils.stripHost(remoteAddress.address.toString())
 
         //a=candidate:<foundation> <component> <protocol> <priority> <public-ip-here> <port> typ host
-        val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.serverPort + 1} typ host"
-        val iceTcp = "a=candidate:4444444444 2 tcp 1111111111 $remoteAddressString ${MainService.serverPort + 1} typ host"
+        val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.SERVER_PORT + 1} typ host"
+        val iceTcp = "a=candidate:4444444444 2 tcp 1111111111 $remoteAddressString ${MainService.SERVER_PORT + 1} typ host"
 
         //Log.d(this, "iceUdp: $iceUdp")
         //Log.d(this, "iceTcp: $iceTcp")

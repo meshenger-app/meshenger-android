@@ -40,7 +40,7 @@ class Connector(
     }
 
     private fun getAllSocketAddresses(contact: Contact): List<InetSocketAddress> {
-        val port = MainService.serverPort
+        val port = MainService.SERVER_PORT
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
 

@@ -206,7 +206,7 @@ class MainService : Service(), Runnable {
                     break
                 }
             }
-            serverSocket = ServerSocket(serverPort)
+            serverSocket = ServerSocket(SERVER_PORT)
             while (isServerSocketRunning) {
                 try {
                     val socket = serverSocket!!.accept()
@@ -371,7 +371,7 @@ class MainService : Service(), Runnable {
     }
 
     companion object {
-        const val serverPort = 10001
+        const val SERVER_PORT = 10001
         private const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
         private const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
         private const val NOTIFICATION_ID = 42

@@ -1,8 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 android {
-    signingConfigs {
-    }
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 35
@@ -22,9 +20,11 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
     buildFeatures {
         buildConfig = true
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -49,6 +49,7 @@ android {
             applicationId 'd.d.meshenger'
         }
     }
+
     namespace 'd.d.meshenger'
 }
 

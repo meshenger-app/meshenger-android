@@ -1,2 +1,5 @@
 * add notification title for Android 6
 * fix crash when canceling an outgoing call
+* fix crash on screen rotation
+* add Japanese translation, thank you jg3hlx
+* avoid "weird stuff" included in APK signing blocks

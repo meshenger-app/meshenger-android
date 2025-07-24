@@ -1,3 +1,8 @@
+/*
+* Copyright (C) 2025 Meshenger Contributors
+* SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
 package d.d.meshenger
 
 import android.util.Log

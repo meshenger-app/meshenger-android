@@ -35,6 +35,10 @@ Meshenger connects to IP addresses in a true P2P fashion. Contacts are encoded i
 
 Details can be found in the [Documentation](docs/documentation.md) or in the [FAQ](docs/faq.md).
 
+## License
+
+GNU GENERAL PUBLIC LICENSE 3.0 or later, see [license text](LICENSE) or on [spdx.org](https://spdx.org/licenses/GPL-3.0-or-later.html).
+
 ## Similar Projects
 
 This list only contains Open Source projects.

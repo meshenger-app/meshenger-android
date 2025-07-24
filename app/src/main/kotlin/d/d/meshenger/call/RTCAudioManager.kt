@@ -1,7 +1,12 @@
 /*
- * This file originates from the WebRTC project that is governed by a BSD-style license.
- * The code was rewritten, but many comments remain.
- */
+* Copyright (C) 2025 Meshenger Contributors
+* SPDX-License-Identifier: GPL-3.0-or-later
+*
+* Originally "Copyright 2014 The WebRTC Project Authors",
+* based on BSD-style license, but now the code has been
+* completely rewritten.
+*/
+
 package d.d.meshenger.call
 //package org.appspot.apprtc;
 

@@ -13,15 +13,26 @@ Meshenger has no discovery mechanism by design. Contacts are shared via QR-Code 
 
 Connections are established via the addresses that are part of a contact. By default this is the link local address of the WiFi adapter. But the addresses in the contact can also contain other IPv4/IPv6 addresses or even domain names. This can be configured manually in the settings.
 
-If any of the contacts IPv6 address and any of the own phones IPv6 address contains a MAC address, then Meshenger will also try to transplant the MAC address from one address to another to generate more possible callee addresses. All taraget addresses are tried on after another to contact the callee.
+There are options to guess IPv6 addresses based on MAC addresses. But does not work if the MAC addresses of the WLAN device change, see [MAC Randomization Behavior](https://source.android.com/docs/core/connect/wifi-mac-randomization-behavior).
+
+
+### Guess IP Address (EUI64)
+
+If the contacts address list contains an address that has a MAC address in it (like `fe80:1122:33ff:fe44:5566/64` contains the MAC address `11:22:33:44:55:66`), then extract the MAC address and add it to all of the IPv6 prefixes of the WLAN device. This new addresses are then also used to reach your contact. This works in scenarios when both participants both move from one network to another and the MAC address stays the same. This is rare due to todays Android security mechanisms, but might work for Freifunk networks that use the same SSID but different IPv6 prefixes.
+
+### Use Neighbor Table (ARP/ND)
+
+Similar to "Guess IP Address", this mechanism looks for MAC addresses in a contacts address list and then tries to map the MAC to IPv4/IPv6 addresses that are stored in the local neighbor tables. These table are part of the systems IP mechanism to map IP addresses to a MAC address. But to parse this table is kind of implementation dependent, so it can break easily and is not recommended.
 
 ## Communication Setup
 
-A call first starts on the caller side by creating a WebRTC offer. This a string that contains what video/audio codecs the phone supports and what IP addresses it has (ICE candidates). The offer is send via an initial TCP/IP connection to the callee by trying several IP addresses one ofter another.
+A call first starts on the caller side by creating a WebRTC offer. This a string that contains what video/audio codecs the phone supports and what IP addresses it has (ICE candidates). The offer is send via an initial TCP/IP connection to the callee by trying several of the contacts IP addresses one ofter another.
 
 This initial connection is encrypted with the public key of the callee and signed by the private key of the caller.
 
-When the offer is received on the callee side, it is feed to WebRTC which then establishes a UDP connection to the caller using the IP address and encryption key in the WebRTC offer. The initial connection will then be closed and the call connection is established.
+When the packet with the offer is received on the callee side, it is passed to WebRTC which then establishes a UDP connection to the caller using the IP address and encryption key in the WebRTC offer. The initial connection will then be closed and the call connection is established.
+
+Ideally, the offer being send should contain no IP addresses on send for privacy reasons and the caller address should be added on the receiving end before passing it to WebRTC. This is still a TODO (see filterOfferBeforeSend/completeOfferAfterReception methods in the source code).
 
 ## Audio+Video / WebRTC
 

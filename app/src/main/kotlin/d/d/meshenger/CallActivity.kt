@@ -502,47 +502,6 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun initOutgoingCall() {
-        connection = object : ServiceConnection {
-            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                Log.d(this@CallActivity, "onServiceConnected")
-                binder = iBinder as MainService.MainBinder
-                currentCall = RTCCall(binder!!, contact)
-                currentCall.setCallContext(this@CallActivity)
-
-                captureQualityController.initFromSettings(binder!!.getSettings())
-
-                updateControlDisplay()
-                updateVideoDisplay()
-
-                continueCallSetup()
-
-                if (!binder!!.getSettings().promptOutgoingCalls) {
-                    // start outgoing call immediately
-                    acceptButton.performClick()
-                }
-            }
-
-            override fun onServiceDisconnected(componentName: ComponentName) {
-                // nothing to do
-            }
-        }
-
-        bindService(Intent(this, MainService::class.java), connection, 0)
-
-        val declineListener = View.OnClickListener {
-            Log.d(this, "decline call...")
-            if (!this::currentCall.isInitialized) {
-                Log.d(this, "currentCall not set")
-                return@OnClickListener
-            }
-
-            if (callWasStarted) {
-                currentCall.hangup()
-            } else {
-                currentCall.decline()
-            }
-        }
-
         val startCallListener = View.OnClickListener {
             Log.d(this, "start call...")
             if (!this::currentCall.isInitialized) {
@@ -564,11 +523,52 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             initCall()
         }
 
-        acceptButton.visibility = View.VISIBLE
-        declineButton.visibility = View.VISIBLE
+        val declineListener = View.OnClickListener {
+            Log.d(this, "decline call...")
+            if (!this::currentCall.isInitialized) {
+                Log.d(this, "currentCall not set")
+                return@OnClickListener
+            }
 
-        acceptButton.setOnClickListener(startCallListener)
-        declineButton.setOnClickListener(declineListener)
+            if (callWasStarted) {
+                currentCall.hangup()
+            } else {
+                currentCall.decline()
+            }
+        }
+
+        connection = object : ServiceConnection {
+            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+                Log.d(this@CallActivity, "onServiceConnected")
+                binder = iBinder as MainService.MainBinder
+                currentCall = RTCCall(binder!!, contact)
+                currentCall.setCallContext(this@CallActivity)
+
+                captureQualityController.initFromSettings(binder!!.getSettings())
+
+                updateControlDisplay()
+                updateVideoDisplay()
+
+                continueCallSetup()
+
+                acceptButton.visibility = View.VISIBLE
+                declineButton.visibility = View.VISIBLE
+
+                acceptButton.setOnClickListener(startCallListener)
+                declineButton.setOnClickListener(declineListener)
+
+                if (!binder!!.getSettings().promptOutgoingCalls) {
+                    // start outgoing call immediately
+                    acceptButton.performClick()
+                }
+            }
+
+            override fun onServiceDisconnected(componentName: ComponentName) {
+                // nothing to do
+            }
+        }
+
+        bindService(Intent(this, MainService::class.java), connection, 0)
     }
 
     private fun initIncomingCall() {

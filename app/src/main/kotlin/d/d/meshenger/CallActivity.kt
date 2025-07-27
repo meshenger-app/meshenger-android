@@ -474,6 +474,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         showPipView(false)
         showFullscreenView(false)
 
+        // hide by default
         acceptButton.visibility = View.GONE
         declineButton.visibility = View.GONE
         toggleMicButton.visibility = View.GONE
@@ -687,6 +688,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
 
         changeUiButton.setOnClickListener {
+            // uiModes cycles through the debug window/call information window/button panel
             uiMode = (uiMode + 1) % 3
             updateControlDisplay()
         }

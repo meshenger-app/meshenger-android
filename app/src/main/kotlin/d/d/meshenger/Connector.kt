@@ -16,7 +16,6 @@ import java.net.NetworkInterface
 import java.net.Socket
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.ArrayList
 import java.util.Collections
 import kotlin.experimental.xor
 import kotlin.math.max
@@ -222,11 +221,27 @@ class Connector(
     private fun getAddressesFromNeighborTable(lookupMACs: List<String>, port: Int): List<InetSocketAddress> {
         val addresses = mutableListOf<InetSocketAddress>()
         try {
+            val command = "ip n l"
             // get IPv4 and IPv6 entries
-            val pc = Runtime.getRuntime().exec("ip n l")
+            val pc = Runtime.getRuntime().exec(command)
+            val rc = pc.waitFor()
+            if (rc != 0) {
+                // print error
+                val rd = BufferedReader(InputStreamReader(pc.errorStream))
+                var line : String
+                if (rd.readLine().also { line = it } != null) {
+                    Log.w(this, line)
+                }
+
+                Log.w(this, "Command '$command' failed with return code $rc")
+                // command failed
+                return addresses
+            }
+
             val rd = BufferedReader(
                 InputStreamReader(pc.inputStream, "UTF-8")
             )
+
             var line : String
             while (rd.readLine().also { line = it } != null) {
                 val tokens = line.split("\\s+").toTypedArray()

@@ -28,6 +28,8 @@
 
     <!-- Run server socket as foreground service. As such we must display a notification (sdk-28) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Allow to start activity from background -->
@@ -56,7 +58,8 @@
         <service
             android:name=".MainService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
+            android:foregroundServiceType="mediaPlayback|microphone|camera"
+             />
 
         <activity
             android:name=".StartActivity"

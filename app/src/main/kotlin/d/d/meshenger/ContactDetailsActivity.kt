@@ -69,10 +69,9 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
         try {
-            val mainBinder = iBinder as MainBinder
+            binder = iBinder as MainBinder
             val publicKey = Utils.hexStringToByteArray(intent.extras!!.getString("EXTRA_CONTACT_PUBLICKEY"))
-            val contact = mainBinder.getContacts().getContactByPublicKey(publicKey)!!
-            binder = mainBinder
+            val contact = Database.getContacts().getContactByPublicKey(publicKey)!!
             updateContact(contact)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -140,7 +139,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
                 contact.addresses = addressListViewAdapter.getAddresses()
                 contact.publicKey = publicKey
 
-                binder!!.saveDatabase()
+                Database.saveDatabase()
                 Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
@@ -159,7 +158,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
     private fun getOriginalContact(): Contact? {
         return if (publicKey.size == Sodium.crypto_sign_publickeybytes()) {
-            binder!!.getContacts().getContactByPublicKey(publicKey)
+            Database.getContacts().getContactByPublicKey(publicKey)
         } else {
             null
         }
@@ -183,7 +182,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
             if (newPublicKey.size != Sodium.crypto_sign_publickeybytes()) {
                 Toast.makeText(this, R.string.contact_public_key_invalid, Toast.LENGTH_SHORT).show()
-            } else if (binder!!.getContacts().getContactByPublicKey(newPublicKey) != null) {
+            } else if (Database.getContacts().getContactByPublicKey(newPublicKey) != null) {
                 Toast.makeText(this, R.string.contact_public_key_already_exists, Toast.LENGTH_LONG).show()
             } else {
                 contactPublicKeyEdit.text = Utils.byteArrayToHexString(newPublicKey)
@@ -211,7 +210,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
         okButton.setOnClickListener {
             val newName = nameEditText.text.toString().trim { it <= ' ' }
-            val existingContact = binder!!.getContacts().getContactByName(newName)
+            val existingContact = Database.getContacts().getContactByName(newName)
 
             if (!Utils.isValidName(newName)) {
                 Toast.makeText(this, R.string.contact_name_invalid, Toast.LENGTH_SHORT).show()

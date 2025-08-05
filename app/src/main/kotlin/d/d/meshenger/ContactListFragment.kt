@@ -105,7 +105,7 @@ class ContactListFragment() : Fragment() {
         contactListView = view.findViewById(R.id.contactList)
         contactListView.onItemClickListener = onContactClickListener
 
-        if (binder.getSettings().hideMenus) {
+        if (Database.getSettings().hideMenus) {
             fab.visibility = View.GONE
             contactListView.onItemLongClickListener = null
         } else {
@@ -120,7 +120,7 @@ class ContactListFragment() : Fragment() {
 
         fabGen.setOnClickListener {
             val intent = Intent(requireContext(), QRShowActivity::class.java)
-            intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder.getSettings().publicKey))
+            intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(Database.getSettings().publicKey))
             startActivity(intent)
         }
 
@@ -162,16 +162,16 @@ class ContactListFragment() : Fragment() {
         Log.d(this, "onResume()")
         super.onResume()
 
-        if (binder.getSettings().automaticStatusUpdates) {
+        if (Database.getSettings().automaticStatusUpdates) {
             // ping all contacts
-            binder.pingContacts(binder.getContacts().contactList)
+            binder.pingContacts(Database.getContacts().contactList)
         }
 
         MainService.refreshContacts(requireActivity())
     }
 
     private fun showPingAllButton(): Boolean {
-        return !binder.getSettings().automaticStatusUpdates
+        return !Database.getSettings().automaticStatusUpdates
     }
 
     private fun runFabAnimation(fab: View) {
@@ -258,7 +258,7 @@ class ContactListFragment() : Fragment() {
     }
 
     private fun pingAllContacts() {
-        binder.pingContacts(binder.getContacts().contactList)
+        binder.pingContacts(Database.getContacts().contactList)
         val message = String.format(getString(R.string.ping_all_contacts))
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
@@ -284,7 +284,7 @@ class ContactListFragment() : Fragment() {
     private fun refreshContactList() {
         Log.d(this, "refreshContactList")
 
-        val contacts = binder.getContacts().contactList
+        val contacts = Database.getContacts().contactList
         val activity = requireActivity()
 
         activity.runOnUiThread {

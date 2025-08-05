@@ -8,6 +8,7 @@ package d.d.meshenger
 import android.app.Dialog
 import android.content.*
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -30,7 +31,7 @@ class EventListFragment : Fragment() {
         // get last event that has an address
         val latestEvent = eventGroup.lastOrNull { it.address != null } ?: eventGroup.last()
 
-        val knownContact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
+        val knownContact = Database.getContacts().getContactByPublicKey(latestEvent.publicKey)
         val contact = knownContact ?: latestEvent.createUnknownContact("")
 
         if (contact.addresses.isEmpty()) {
@@ -51,7 +52,7 @@ class EventListFragment : Fragment() {
         val eventGroup = eventListAdapter.getItem(i)
         val latestEvent = eventGroup.last()
         val menu = PopupMenu(requireContext(), view)
-        val contact = binder.getContacts().getContactByPublicKey(latestEvent.publicKey)
+        val contact = Database.getContacts().getContactByPublicKey(latestEvent.publicKey)
         val titles = mutableListOf<Int>()
 
         // allow to add unknown caller
@@ -113,7 +114,7 @@ class EventListFragment : Fragment() {
         eventListView.adapter = eventListAdapter
         eventListView.onItemClickListener = onEventClickListener
 
-        if (binder.getSettings().hideMenus) {
+        if (Database.getSettings().hideMenus) {
             eventListView.onItemLongClickListener = null
         } else {
             eventListView.onItemLongClickListener = onEventLongClickListener
@@ -150,8 +151,8 @@ class EventListFragment : Fragment() {
         Log.d(this, "refreshEventList")
 
         val activity = requireActivity() as MainActivity
-        val events = binder.getEvents().eventList
-        val contacts = binder.getContacts().contactList
+        val events = Database.getEvents().eventList
+        val contacts = Database.getContacts().contactList
 
         activity.runOnUiThread {
             activity.updateEventTabTitle()
@@ -168,10 +169,10 @@ class EventListFragment : Fragment() {
 
     // only available for known contacts
     private fun setBlocked(event: Event, blocked: Boolean) {
-        val contact = binder.getContacts().getContactByPublicKey(event.publicKey)
+        val contact = Database.getContacts().getContactByPublicKey(event.publicKey)
         if (contact != null) {
             contact.blocked = blocked
-            binder.saveDatabase()
+            Database.saveDatabase()
             LocalBroadcastManager.getInstance(requireContext())
                 .sendBroadcast(Intent("refresh_contact_list"))
             LocalBroadcastManager.getInstance(requireContext())
@@ -185,7 +186,7 @@ class EventListFragment : Fragment() {
         Log.d(this, "onResume()")
         super.onResume()
 
-        binder.getEvents().eventsMissed = 0
+        Database.getEvents().eventsMissed = 0
         binder.updateNotification()
 
         MainService.refreshEvents(requireContext())
@@ -206,7 +207,7 @@ class EventListFragment : Fragment() {
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->
             binder.clearEvents()
-            binder.saveDatabase()
+            Database.saveDatabase()
 
             refreshEventList()
             Toast.makeText(activity, R.string.done, Toast.LENGTH_SHORT).show()
@@ -240,7 +241,7 @@ class EventListFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (binder.getContacts().getContactByName(name) != null) {
+            if (Database.getContacts().getContactByName(name) != null) {
                 Toast.makeText(activity, R.string.contact_name_exists, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }

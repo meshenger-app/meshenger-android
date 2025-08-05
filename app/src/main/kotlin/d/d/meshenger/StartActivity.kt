@@ -6,15 +6,12 @@
 package d.d.meshenger
 
 import android.app.Dialog
-import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.ServiceConnection
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
@@ -26,7 +23,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import d.d.meshenger.MainService.MainBinder
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
 import java.util.UUID
@@ -35,8 +31,7 @@ import java.util.UUID
  * Show splash screen, name setup dialog, database password dialog and
  * start background service before starting the MainActivity.
  */
-class StartActivity : BaseActivity(), ServiceConnection {
-    private var binder: MainBinder? = null
+class StartActivity : BaseActivity() {
     private var dialog : Dialog? = null
     private var startState = 0
     private var isStartOnBootup = false
@@ -54,6 +49,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
                     + "Product: ${Build.PRODUCT}"
         )
 
+        Database.databasePath = this.filesDir.toString() + "/database.bin"
+
         // set by BootUpReceiver
         isStartOnBootup = intent.getBooleanExtra(BootUpReceiver.IS_START_ON_BOOTUP, false)
 
@@ -63,10 +60,17 @@ class StartActivity : BaseActivity(), ServiceConnection {
         val type = Typeface.createFromAsset(assets, "rounds_black.otf")
         findViewById<TextView>(R.id.splashText).typeface = type
 
-        // start MainService and call back via onServiceConnected()
-        MainService.start(this)
-
-        bindService(Intent(this, MainService::class.java), this, 0)
+        if (startState == 0) {
+            if (Database.firstStart) {
+                // show delayed splash page
+                Handler(Looper.getMainLooper()).postDelayed({
+                    continueInit()
+                }, 1000)
+            } else {
+                // show contact list as fast as possible
+                continueInit()
+            }
+        }
     }
 
     private fun continueInit() {
@@ -76,7 +80,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 Log.d(this, "init 1: load database")
                 // open without password
                 try {
-                    binder!!.getService().loadDatabase()
+                    Database.loadDatabase()
                 } catch (e: Database.WrongPasswordException) {
                     // ignore and continue with initialization,
                     // the password dialog comes on the next startState
@@ -90,7 +94,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             2 -> {
                 Log.d(this, "init 2: check database")
-                if (!binder!!.isDatabaseLoaded()) {
+                if (!Database.isDatabaseLoaded()) {
                     // database is probably encrypted
                     showDatabasePasswordDialog()
                 } else {
@@ -99,7 +103,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             3 -> {
                 Log.d(this, "init 3: check username")
-                if (binder!!.getSettings().username.isEmpty()) {
+                if (Database.getSettings().username.isEmpty()) {
                     // set username
                     showMissingUsernameDialog()
                 } else {
@@ -108,7 +112,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             4 -> {
                 Log.d(this, "init 4: check key pair")
-                if (binder!!.getSettings().publicKey.isEmpty()) {
+                if (Database.getSettings().publicKey.isEmpty()) {
                     // generate key pair
                     initKeyPair()
                 }
@@ -116,7 +120,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             5 -> {
                 Log.d(this, "init 5: check addresses")
-                if (binder!!.getService().firstStart) {
+                if (Database.firstStart) {
                     showMissingAddressDialog()
                 } else {
                     continueInit()
@@ -124,7 +128,7 @@ class StartActivity : BaseActivity(), ServiceConnection {
             }
             6 -> {
                 Log.d(this, "init 6: start MainActivity")
-                val settings = binder!!.getSettings()
+                val settings = Database.getSettings()
 
                 // set in case we just updated the app
                 BootUpReceiver.setEnabled(this, settings.startOnBootup)
@@ -136,9 +140,10 @@ class StartActivity : BaseActivity(), ServiceConnection {
                 setDefaultNightMode(settings.nightMode)
 
                 if (!isStartOnBootup) {
-                    val firstStart = binder!!.getService().firstStart
+                    val firstStart = Database.firstStart
                     val permissionsToAsk = AskForMissingPermissionsActivity.permissionsToAsk(applicationContext, firstStart)
                     if (settings.skipStartupPermissionCheck || !permissionsToAsk) {
+                        // start main activity immediately
                         startActivity(Intent(this, MainActivity::class.java))
                     } else {
                         // ask for permissions first
@@ -151,30 +156,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
         }
     }
 
-    override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        Log.d(this, "onServiceConnected")
-        binder = iBinder as MainBinder
-
-        if (startState == 0) {
-            if (binder!!.getService().firstStart) {
-                // show delayed splash page
-                Handler(Looper.getMainLooper()).postDelayed({
-                    continueInit()
-                }, 1000)
-            } else {
-                // show contact list as fast as possible
-                continueInit()
-            }
-        }
-    }
-
-    override fun onServiceDisconnected(componentName: ComponentName) {
-        // nothing to do
-    }
-
     override fun onDestroy() {
         dialog?.dismiss()
-        unbindService(this)
         super.onDestroy()
     }
 
@@ -183,10 +166,10 @@ class StartActivity : BaseActivity(), ServiceConnection {
         val publicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
         val secretKey = ByteArray(Sodium.crypto_sign_secretkeybytes())
         Sodium.crypto_sign_keypair(publicKey, secretKey)
-        val settings = binder!!.getSettings()
+        val settings = Database.getSettings()
         settings.publicKey = publicKey
         settings.secretKey = secretKey
-        binder!!.saveDatabase()
+        Database.saveDatabase()
     }
 
     private fun getDefaultAddress(): AddressEntry? {
@@ -231,8 +214,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
 
             adialog.show()
         } else {
-            binder!!.getSettings().addresses = mutableListOf(defaultAddress.address)
-            binder!!.saveDatabase()
+            Database.getSettings().addresses = mutableListOf(defaultAddress.address)
+            Database.saveDatabase()
             continueInit()
         }
     }
@@ -262,8 +245,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
         builder.setNegativeButton(R.string.button_skip) { dialog: DialogInterface?, _: Int ->
             val username = generateRandomUserName()
             if (Utils.isValidName(username)) {
-                binder!!.getSettings().username = username
-                binder!!.saveDatabase()
+                Database.getSettings().username = username
+                Database.saveDatabase()
                 // close dialog
                 dialog?.dismiss()
                 continueInit()
@@ -274,8 +257,8 @@ class StartActivity : BaseActivity(), ServiceConnection {
         builder.setPositiveButton(R.string.button_next) { dialog: DialogInterface?, _: Int ->
             val username = et.text.toString().trim { it <= ' ' }
             if (Utils.isValidName(username)) {
-                binder!!.getSettings().username = username
-                binder!!.saveDatabase()
+                Database.getSettings().username = username
+                Database.saveDatabase()
                 // close dialog
                 dialog?.dismiss()
                 continueInit()
@@ -335,16 +318,16 @@ class StartActivity : BaseActivity(), ServiceConnection {
         val okButton = ddialog.findViewById<Button>(R.id.change_password_ok_button)
         okButton.setOnClickListener {
             val password = passwordEditText.text.toString()
-            binder!!.getService().databasePassword = password
+            Database.databasePassword = password
             try {
-                binder!!.getService().loadDatabase()
+                Database.loadDatabase()
             } catch (e: Database.WrongPasswordException) {
                 Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
             }
 
-            if (binder!!.isDatabaseLoaded()) {
+            if (Database.isDatabaseLoaded()) {
                 // close dialog
                 ddialog.dismiss()
                 continueInit()
@@ -353,7 +336,6 @@ class StartActivity : BaseActivity(), ServiceConnection {
         exitButton.setOnClickListener {
             // shutdown app
             ddialog.dismiss()
-            binder!!.shutdown()
             finish()
         }
 

@@ -55,7 +55,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         // button to show QR-Code
         findViewById<View>(R.id.fabCameraInput).setOnClickListener {
             val intent = Intent(this, QRShowActivity::class.java)
-            intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(binder!!.getSettings().publicKey))
+            intent.putExtra("EXTRA_CONTACT_PUBLICKEY", Utils.byteArrayToHexString(Database.getSettings().publicKey))
             startActivity(intent)
             finish()
         }
@@ -88,7 +88,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         }
 
         // lookup existing contacts by key and name
-        val contacts = binder!!.getContacts()
+        val contacts = Database.getContacts()
         val existingContactByPublicKey = contacts.getContactByPublicKey(newContact.publicKey)
         val existingContactByName = contacts.getContactByName(newContact.name)
         if (existingContactByPublicKey != null) {
@@ -156,7 +156,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
                 return@setOnClickListener
             }
 
-            if (binder!!.getContacts().getContactByName(name) != null) {
+            if (Database.getContacts().getContactByName(name) != null) {
                 Toast.makeText(this, R.string.contact_name_exists, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

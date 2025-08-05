@@ -7,8 +7,11 @@ package d.d.meshenger
 
 import d.d.meshenger.Crypto.decryptDatabase
 import d.d.meshenger.Crypto.encryptDatabase
+import d.d.meshenger.Utils.readInternalFile
+import d.d.meshenger.Utils.writeInternalFile
 import org.json.JSONObject
 import org.json.JSONArray
+import java.io.File
 import java.nio.charset.Charset
 
 class Database {
@@ -28,6 +31,87 @@ class Database {
     class InvalidDataException : Exception("invalid data")
 
     companion object {
+        private var databaseInstance: Database? = null
+        var firstStart = false
+        var databasePath = ""
+        var databasePassword = ""
+
+        fun shutdownDatabase() {
+            databaseInstance?.destroy()
+        }
+
+        fun loadDatabase() {
+            if (File(databasePath).exists()) {
+                // open existing database
+                val db = readInternalFile(databasePath)
+                databaseInstance = Database.fromData(db, databasePassword)
+                firstStart = false
+            } else {
+                // create new database
+                databaseInstance = Database()
+                firstStart = true
+            }
+        }
+
+        fun getSettings(): Settings {
+            return getDatabase().settings
+        }
+
+        fun getContacts(): Contacts {
+            return getDatabase().contacts
+        }
+
+        fun getEvents(): Events {
+            return getDatabase().events
+        }
+
+        fun saveDatabase() {
+            try {
+                val db = databaseInstance
+                if (db != null) {
+                    val dbData = Database.toData(db, databasePassword)
+                    if (dbData != null) {
+                        writeInternalFile(databasePath, dbData)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        fun isDatabaseLoaded(): Boolean {
+            return databaseInstance != null
+        }
+
+        internal fun getDatabase(): Database {
+            if (databaseInstance == null) {
+                Log.e(this, "getDatabase() database is null => try to reload")
+                try {
+                    // database is null, this should not happen, but
+                    // happens anyway, so let's mitigate it for now
+                    // => try to reload it
+                    loadDatabase()
+                } catch (e: Exception) {
+                    Log.e(this, "getDatabase() failed to reload database")
+                }
+            }
+            return databaseInstance!!
+        }
+
+        fun mergeDatabase(new_db: Database) {
+            val oldDatabase = databaseInstance!!
+
+            oldDatabase.settings = new_db.settings
+
+            for (contact in new_db.contacts.contactList) {
+                oldDatabase.contacts.addContact(contact)
+            }
+
+            for (event in new_db.events.eventList) {
+                oldDatabase.events.addEvent(event)
+            }
+        }
+
         fun fromData(db_data: ByteArray, password: String): Database {
             // encrypt database
             val stringData = if (password.isNotEmpty()) {

@@ -6,6 +6,7 @@
 package d.d.meshenger.call
 
 import android.content.Context
+import android.provider.ContactsContract
 import d.d.meshenger.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -232,7 +233,7 @@ class RTCCall : RTCPeerConnection {
     }
 
     private fun createMediaConstraints() {
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
 
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveAudio", "true"))
         sdpMediaConstraints.optional.add(MediaConstraints.KeyValuePair("offerToReceiveVideo", "false"))
@@ -257,7 +258,7 @@ class RTCCall : RTCPeerConnection {
         execute {
             Log.d(this, "initOutgoing() executor start")
             val rtcConfig = RTCConfiguration(emptyList())
-            val settings = binder.getSettings()
+            val settings = Database.getSettings()
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN
             rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_ONCE
             rtcConfig.enableCpuOveruseDetection = !settings.disableCpuOveruseDetection // true by default
@@ -336,7 +337,7 @@ class RTCCall : RTCPeerConnection {
 
         execute {
             Log.d(this, "handleMediaStream() executor start")
-            if (remoteVideoSink == null || stream.videoTracks.size == 0) {
+            if (remoteVideoSink == null || stream.videoTracks.isEmpty()) {
                 return@execute
             }
             stream.videoTracks[0].addSink(remoteVideoSink)
@@ -517,7 +518,7 @@ class RTCCall : RTCPeerConnection {
         Log.d(this, "initVideo()")
         Utils.checkIsOnMainThread()
 
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
         reportStateChange(CallState.WAITING)
 
         // must be created in Main/GUI Thread!
@@ -533,7 +534,7 @@ class RTCCall : RTCPeerConnection {
 
         Log.d(this, "initVideo() video acceleration: ${settings.videoHardwareAcceleration}")
 
-        if (binder.getSettings().videoHardwareAcceleration) {
+        if (Database.getSettings().videoHardwareAcceleration) {
             val enableIntelVp8Encoder = true
             val enableH264HighProfile = true
             encoderFactory = DefaultVideoEncoderFactory(eglBase.eglBaseContext, enableIntelVp8Encoder, enableH264HighProfile)
@@ -622,7 +623,7 @@ class RTCCall : RTCPeerConnection {
 
         execute {
             Log.d(this, "initIncoming() executor start")
-            val settings = binder.getSettings()
+            val settings = Database.getSettings()
             val remoteAddress = commSocket!!.remoteSocketAddress as InetSocketAddress
             val rtcConfig = RTCConfiguration(emptyList())
             rtcConfig.sdpSemantics = SdpSemantics.UNIFIED_PLAN

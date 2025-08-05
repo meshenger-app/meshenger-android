@@ -14,6 +14,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.*
 import android.os.PowerManager.WakeLock
+import android.provider.ContactsContract
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager.LayoutParams
@@ -131,7 +132,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             val setContactState = { state: Contact.State ->
                 val b = binder
                 if (b != null) {
-                    val storedContact = b.getContacts().getContactByPublicKey(contact.publicKey)
+                    val storedContact = Database.getContacts().getContactByPublicKey(contact.publicKey)
                     if (storedContact != null) {
                         storedContact.state = state
                     } else {
@@ -339,7 +340,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         }
 
         // set background
-        val settings = binder!!.getSettings()
+        val settings = Database.getSettings()
         if (settings.pushToTalk) {
             val backgroundId = when (enabled) {
                 true -> R.drawable.ic_button_background_enabled_border
@@ -355,7 +356,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             updateCameraButtons()
             updateControlDisplay()
 
-            val settings = binder!!.getSettings()
+            val settings = Database.getSettings()
             if (settings.enableMicrophoneByDefault != currentCall.getMicrophoneEnabled()) {
                 if (!settings.pushToTalk) {
                     Log.d(this, "onDataChannelReady() toggle microphone")
@@ -544,7 +545,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 currentCall = RTCCall(binder!!, contact)
                 currentCall.setCallContext(this@CallActivity)
 
-                captureQualityController.initFromSettings(binder!!.getSettings())
+                captureQualityController.initFromSettings(Database.getSettings())
 
                 updateControlDisplay()
                 updateVideoDisplay()
@@ -557,7 +558,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 acceptButton.setOnClickListener(startCallListener)
                 declineButton.setOnClickListener(declineListener)
 
-                if (!binder!!.getSettings().promptOutgoingCalls) {
+                if (!Database.getSettings().promptOutgoingCalls) {
                     // start outgoing call immediately
                     acceptButton.performClick()
                 }
@@ -590,7 +591,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
                 currentCall.setCallContext(this@CallActivity)
                 currentCall.setEglBase(eglBase)
 
-                captureQualityController.initFromSettings(binder!!.getSettings())
+                captureQualityController.initFromSettings(Database.getSettings())
 
                 Thread {
                     currentCall.continueOnIncomingSocket()
@@ -601,7 +602,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
 
                 continueCallSetup()
 
-                if (binder!!.getSettings().autoAcceptCalls) {
+                if (Database.getSettings().autoAcceptCalls) {
                     acceptButton.performClick()
                 } else {
                     startRinging()
@@ -663,7 +664,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
             + ", video permissions: ${Utils.hasPermission(this, Manifest.permission.CAMERA)}"
         )
 
-        val settings = binder!!.getSettings()
+        val settings = Database.getSettings()
 
         // swap pip and fullscreen content
         pipRenderer.setOnClickListener {
@@ -734,7 +735,7 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
     }
 
     private fun initCall() {
-        val settings = binder!!.getSettings()
+        val settings = Database.getSettings()
 
         Log.d(this, "initCall() settings"
             + " microphone ${currentCall.getMicrophoneEnabled()} => ${settings.enableMicrophoneByDefault}"

@@ -118,7 +118,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
     private fun exportDatabase(uri: Uri) {
         val password = passwordEditText.text.toString()
         try {
-            val database = binder!!.getDatabase()
+            val database = Database.getDatabase()
             val dbData = Database.toData(database, password)
 
             if (dbData != null) {
@@ -155,7 +155,7 @@ class BackupActivity : BaseActivity(), ServiceConnection {
         builder.setMessage(String.format(getString(R.string.import_dialog), contactCount, eventCount))
         builder.setCancelable(false) // prevent key shortcut to cancel dialog
         builder.setPositiveButton(R.string.button_yes) { dialog: DialogInterface, _: Int ->
-            binder.getService().mergeDatabase(newDatabase)
+            Database.mergeDatabase(newDatabase)
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
             dialog.cancel()
         }

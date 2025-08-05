@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.ContactsContract
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -70,6 +71,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         viewPager = findViewById(R.id.container)
 
+        // start MainService and call back via onServiceConnected()
+        MainService.start(this)
+
         bindService(Intent(this, MainService::class.java), this, 0)
     }
 
@@ -103,7 +107,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     private fun showInvalidAddressSettingsWarning() {
         Handler(Looper.getMainLooper()).postDelayed({
-            val storedAddresses = binder.getSettings().addresses
+            val storedAddresses = Database.getSettings().addresses
             val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) }
             if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
                 // ignore, we only have domains configured
@@ -139,7 +143,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
         this.viewPager.adapter = adapter
 
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
 
         // data source for the views was not ready before
         adapter.let {
@@ -200,7 +204,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             tab.text = when (position) {
                 0 -> getString(R.string.title_contacts)
                 else -> {
-                    val eventsMissed = binder.getEvents().eventsMissed
+                    val eventsMissed = Database.getEvents().eventsMissed
                     if (eventsMissed == 0) {
                         getString(R.string.title_calls)
                     } else {
@@ -276,7 +280,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.d(this, "onOptionsItemSelected()")
 
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
         if (settings.menuPassword.isEmpty()) {
             menuAction(item.itemId)
         } else {
@@ -302,7 +306,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         Log.d(this, "onCreateOptionsMenu()")
 
-        val hideMenus = binder.getSettings().hideMenus
+        val hideMenus = Database.getSettings().hideMenus
         val titles =  if (hideMenus) {
             mutableListOf(R.string.menu_settings)
         } else {

@@ -12,6 +12,7 @@ import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.ContactsContract
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -88,9 +89,9 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
         val addButton = findViewById<View>(R.id.AddCustomAddressButton)
 
         saveButton.setOnClickListener {
-            binder!!.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
+            Database.getSettings().addresses = addressListViewAdapter.storedAddresses.map { it.address }.toMutableList()
             Toast.makeText(this, R.string.done, Toast.LENGTH_SHORT).show()
-            binder!!.saveDatabase()
+            Database.saveDatabase()
         }
 
         addButton.setOnClickListener {
@@ -275,7 +276,7 @@ class AddressManagementActivity : BaseActivity(), ServiceConnection {
     private fun initAddressList() {
         // add extra information to stored addresses
         val storedAddresses = mutableListOf<AddressEntry>()
-        for (address in binder!!.getSettings().addresses) {
+        for (address in Database.getSettings().addresses) {
             val ae = systemAddresses.firstOrNull { it.address == address }
             if (ae != null) {
                 storedAddresses.add(AddressEntry(address, ae.device))

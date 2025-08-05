@@ -7,26 +7,20 @@ package d.d.meshenger
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
-import androidx.transition.Visibility
-import d.d.meshenger.MainService.MainBinder
 import java.util.Locale
 
-class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
+class AskForMissingPermissionsActivity : BaseActivity() {
     private lateinit var progressTextView: TextView
     private lateinit var questionTextView: TextView
     private lateinit var askButton: Button
@@ -67,7 +61,11 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
             continueQuestions()
         }
 
-        bindService(Intent(this, MainService::class.java), this, 0)
+        permissions = AskPermissions(applicationContext, Database.firstStart)
+        questionsToAsk = permissions.getQuestionCount()
+
+        // start questions
+        continueQuestions()
     }
 
     private class AskPermissions(context: Context, firstStart: Boolean) {
@@ -115,21 +113,6 @@ class AskForMissingPermissionsActivity : BaseActivity(), ServiceConnection {
                 doAskPostNotificationPermission = !hasPostNotificationPermission(context)
             }
         }
-    }
-
-    override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-        Log.d(this, "onServiceConnected()")
-        val binder = iBinder as MainBinder
-
-        permissions = AskPermissions(applicationContext, binder.getService().firstStart)
-        questionsToAsk = permissions.getQuestionCount()
-
-        // start questions
-        continueQuestions()
-    }
-
-    override fun onServiceDisconnected(componentName: ComponentName) {
-        // nothing to do
     }
 
     @SuppressLint("InlinedApi")

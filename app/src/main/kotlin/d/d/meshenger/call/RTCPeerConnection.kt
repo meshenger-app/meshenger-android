@@ -54,7 +54,7 @@ abstract class RTCPeerConnection(
         }
 
         //val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
         val ownSecretKey = settings.secretKey
         val ownPublicKey = settings.publicKey
 
@@ -94,7 +94,7 @@ abstract class RTCPeerConnection(
         Utils.checkIsNotOnMainThread()
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
 
@@ -211,7 +211,7 @@ abstract class RTCPeerConnection(
         run {
             // remember latest working address and set state
             val workingAddress = InetSocketAddress(remoteAddress.address, MainService.SERVER_PORT)
-            val storedContact = binder.getContacts().getContactByPublicKey(contact.publicKey)
+            val storedContact = Database.getContacts().getContactByPublicKey(contact.publicKey)
             if (storedContact != null) {
                 storedContact.lastWorkingAddress = workingAddress
             } else {
@@ -335,7 +335,7 @@ abstract class RTCPeerConnection(
         }
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
         val pr = PacketReader(socket)
@@ -450,7 +450,7 @@ abstract class RTCPeerConnection(
         val socket = commSocket
         if (socket != null && !socket.isClosed) {
             val pw = PacketWriter(socket)
-            val settings = binder.getSettings()
+            val settings = Database.getSettings()
             val ownPublicKey = settings.publicKey
             val ownSecretKey = settings.secretKey
 
@@ -549,7 +549,7 @@ abstract class RTCPeerConnection(
             Log.d(this, "createIncomingCallInternal()")
 
             val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-            val settings = binder.getSettings()
+            val settings = Database.getSettings()
             val blockUnknown = settings.blockUnknown
             val ownSecretKey = settings.secretKey
             val ownPublicKey = settings.publicKey
@@ -601,7 +601,7 @@ abstract class RTCPeerConnection(
 
             Log.d(this, "createIncomingCallInternal() request: $decrypted")
 
-            var contact = binder.getContacts().getContactByPublicKey(otherPublicKey)
+            var contact = Database.getContacts().getContactByPublicKey(otherPublicKey)
             if (contact == null && blockUnknown) {
                 Log.d(this, "createIncomingCallInternal() block unknown contact => decline")
                 decline()

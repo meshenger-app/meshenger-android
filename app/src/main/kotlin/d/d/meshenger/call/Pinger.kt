@@ -19,7 +19,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
         Log.d(this, "pingContact() contact: ${contact.name}")
 
         val otherPublicKey = ByteArray(Sodium.crypto_sign_publickeybytes())
-        val settings = binder.getSettings()
+        val settings = Database.getSettings()
         val ownPublicKey = settings.publicKey
         val ownSecretKey = settings.secretKey
         var socket: Socket? = null
@@ -86,7 +86,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
     override fun run() {
         // set all states to unknown
         for (contact in contacts) {
-            binder.getContacts()
+            Database.getContacts()
                 .getContactByPublicKey(contact.publicKey)
                 ?.state = Contact.State.PENDING
         }
@@ -100,7 +100,7 @@ class Pinger(val binder: MainService.MainBinder, val contacts: List<Contact>) : 
             Log.d(this, "contact state is $state")
 
             // set contact state
-            binder.getContacts()
+            Database.getContacts()
                 .getContactByPublicKey(contact.publicKey)
                 ?.state = state
         }

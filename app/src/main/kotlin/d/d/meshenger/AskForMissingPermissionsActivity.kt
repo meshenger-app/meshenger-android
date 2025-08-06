@@ -6,10 +6,8 @@
 package d.d.meshenger
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -17,8 +15,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import java.util.Locale
+import androidx.core.net.toUri
 
 class AskForMissingPermissionsActivity : BaseActivity() {
     private lateinit var progressTextView: TextView
@@ -97,36 +97,42 @@ class AskForMissingPermissionsActivity : BaseActivity() {
                 doAskRecordAudioPermission = true
                 doAskBluetoothConnectPermission = true
             }
+
             if (doAskCameraPermission) {
                 doAskCameraPermission = !hasCameraPermission(context)
             }
+
             if (doAskRecordAudioPermission) {
                 doAskRecordAudioPermission = !hasRecordAudioPermission(context)
             }
+
             if (doAskBluetoothConnectPermission) {
                 doAskBluetoothConnectPermission = !hasBluetoothConnectPermission(context)
             }
+
             if (doAskOverlayPermission) {
                 doAskOverlayPermission = !hasDrawOverlayPermission(context)
             }
+
             if (doAskPostNotificationPermission) {
                 doAskPostNotificationPermission = !hasPostNotificationPermission(context)
             }
         }
     }
 
-    @SuppressLint("InlinedApi")
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun askDrawOverlayPermission() {
         updateProgressLabel()
         skipButton.visibility = View.VISIBLE
         questionTextView.text = getString(R.string.ask_for_draw_overlay_permission)
         askButton.setOnClickListener {
-            val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+            val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                "package:$packageName".toUri())
             requestDrawOverlaysPermissionLauncher.launch(intent)
         }
     }
 
-    @SuppressLint("InlinedApi")
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun askNotificationPermission() {
         updateProgressLabel()
         skipButton.visibility = View.VISIBLE
@@ -228,15 +234,19 @@ class AskForMissingPermissionsActivity : BaseActivity() {
         if (permissions.doAskOverlayPermission) {
             permissions.doAskOverlayPermission = false
             questionCounter += 1
-            askDrawOverlayPermission()
-            return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                askDrawOverlayPermission()
+                return
+            }
         }
 
         if (permissions.doAskPostNotificationPermission) {
             permissions.doAskPostNotificationPermission = false
             questionCounter += 1
-            askNotificationPermission()
-            return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                askNotificationPermission()
+                return
+            }
         }
 
         if (permissions.doAskCameraPermission) {

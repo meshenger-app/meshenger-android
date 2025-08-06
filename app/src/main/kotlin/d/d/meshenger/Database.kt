@@ -437,7 +437,7 @@ class Database {
             }
 
             if (newFrom in listOf("4.4.4", "4.4.5", "4.4.6", "4.4.7")) {
-                // nothing to do
+                settings.put("settings_mode", "basic")
                 newFrom = "4.4.8"
             }
 

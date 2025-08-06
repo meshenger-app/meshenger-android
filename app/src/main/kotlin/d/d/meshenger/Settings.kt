@@ -43,6 +43,7 @@ class Settings {
     var skipStartupPermissionCheck = false
     var audioBitrateMax = "auto" // not used yet
     var videoBitrateMax = "auto" // not used yet
+    var settingsMode = "basic"
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
@@ -90,6 +91,7 @@ class Settings {
             s.audioBitrateMax = obj.getString("audio_bitrate_max")
             s.videoBitrateMax = obj.getString("video_bitrate_max")
             s.hideMenus = obj.getBoolean("hide_menus")
+            s.settingsMode = obj.getString("settings_mode")
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
@@ -149,6 +151,7 @@ class Settings {
             obj.put("audio_bitrate_max", s.audioBitrateMax)
             obj.put("video_bitrate_max", s.videoBitrateMax)
             obj.put("hide_menus", s.hideMenus)
+            obj.put("settings_mode", s.settingsMode)
 
             val addresses = JSONArray()
             for (i in s.addresses.indices) {

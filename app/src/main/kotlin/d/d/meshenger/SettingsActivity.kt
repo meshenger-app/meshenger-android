@@ -240,14 +240,15 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 }
             })
 
-        setupSpinner(settingsMode,
+        setupSpinner(settings.settingsMode,
             R.id.spinnerSettingsModes,
             R.array.settingsModeLabels,
             R.array.settingsModeValues,
             object : SpinnerItemSelected {
                 override fun call(newValue: String?) {
                     if (newValue != null) {
-                        settingsMode = newValue
+                        settings.settingsMode = newValue
+                        Database.saveDatabase()
                         applySettingsMode(newValue)
                     }
                 }
@@ -392,7 +393,7 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<View>(R.id.menuPasswordLayout)
             .setOnClickListener { showMenuPasswordDialog() }
 
-        applySettingsMode(settingsMode)
+        applySettingsMode(settings.settingsMode)
         applyVideoDegradationMode(settings.videoDegradationMode)
 
     }
@@ -648,10 +649,5 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
                 // ignore
             }
         }
-    }
-
-    companion object {
-        // not stored in the database
-        private var settingsMode = "basic"
     }
 }

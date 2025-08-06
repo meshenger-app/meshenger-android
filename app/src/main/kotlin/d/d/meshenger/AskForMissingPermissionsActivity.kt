@@ -243,6 +243,7 @@ class AskForMissingPermissionsActivity : BaseActivity() {
             permissions.doAskCameraPermission = false
             questionCounter += 1
             askCameraPermission()
+            return
         }
 
         if (permissions.doAskRecordAudioPermission) {

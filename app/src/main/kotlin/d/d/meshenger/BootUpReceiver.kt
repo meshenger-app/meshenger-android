@@ -14,16 +14,15 @@ import android.widget.Toast
 
 /*
  * Start App on Android bootup. StartActivity is started to check
- * if a password for the database is need. the name and key-pair
- * is set.
+ * if a password for the database is need.
  */
 class BootUpReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent != null && intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            val i = Intent(context, StartActivity::class.java)
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            i.putExtra(IS_START_ON_BOOTUP, true) // start MainService only, not MainActivity
-            context.startActivity(i)
+            val intent = Intent(context, StartActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra(IS_START_ON_BOOTUP, true) // start MainService only, not MainActivity
+            context.startActivity(intent)
         }
     }
 

@@ -11,10 +11,10 @@
     <string name="app_name" translatable="false">Meshenger</string>
     <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
     <string name="ask_for_bluetooth_connect_permission">Give permission to use a Bluetooth headset now or wait until you use it.</string>
-    <string name="ask_for_camera_permission">Give permission to use the camera now or wait until you use it.</string>
+    <string name="ask_for_camera_permission">Missing permissions for camera for video calls.</string>
     <string name="ask_for_draw_overlay_permission">Missing permission to draw on top. Needed to bring incoming calls to the foreground.</string>
     <string name="ask_for_post_notification_permission">Missing permission to post notifications. This is needed to listen for calls in the background.</string>
-    <string name="ask_for_record_audio_permission">Give permission to use the microphone now or wait until you use it.</string>
+    <string name="ask_for_record_audio_permission">Missing permission to use microphone for calls.</string>
     <string name="audio_device_auto">%1$s (auto)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Earpiece</string>

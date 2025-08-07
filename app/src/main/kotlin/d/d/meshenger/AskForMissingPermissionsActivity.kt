@@ -69,13 +69,19 @@ class AskForMissingPermissionsActivity : BaseActivity() {
     }
 
     private class AskPermissions(context: Context, firstStart: Boolean) {
-        // required
+        // required to bring an incoming call from to the foreground
         var doAskOverlayPermission = true
+
+        // required for running the MainService to listen for incoming calls
         var doAskPostNotificationPermission = true
 
+        // required for android.permission.FOREGROUND_SERVICE_CAMERA
+        var doAskCameraPermission = true
+
+        // required for android.permission.FOREGROUND_SERVICE_MICROPHONE
+        var doAskRecordAudioPermission = true
+
         // optional
-        var doAskCameraPermission = false
-        var doAskRecordAudioPermission = false
         var doAskBluetoothConnectPermission = false
 
         // helper to convert Boolean to Int
@@ -93,8 +99,6 @@ class AskForMissingPermissionsActivity : BaseActivity() {
         init {
             if (firstStart) {
                 // ask these optional permissions on first start anyway
-                doAskCameraPermission = true
-                doAskRecordAudioPermission = true
                 doAskBluetoothConnectPermission = true
             }
 
@@ -123,7 +127,7 @@ class AskForMissingPermissionsActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private fun askDrawOverlayPermission() {
         updateProgressLabel()
-        skipButton.visibility = View.VISIBLE
+        skipButton.visibility = View.GONE
         questionTextView.text = getString(R.string.ask_for_draw_overlay_permission)
         askButton.setOnClickListener {
             val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -135,7 +139,7 @@ class AskForMissingPermissionsActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun askNotificationPermission() {
         updateProgressLabel()
-        skipButton.visibility = View.VISIBLE
+        skipButton.visibility = View.GONE
         questionTextView.text = getString(R.string.ask_for_post_notification_permission)
         askButton.setOnClickListener {
             requestPostNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -144,7 +148,7 @@ class AskForMissingPermissionsActivity : BaseActivity() {
 
     private fun askRecordAudioPermission() {
         updateProgressLabel()
-        skipButton.visibility = View.VISIBLE
+        skipButton.visibility = View.GONE
         questionTextView.text = getString(R.string.ask_for_record_audio_permission)
         askButton.setOnClickListener {
             requestRecordAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -153,7 +157,7 @@ class AskForMissingPermissionsActivity : BaseActivity() {
 
     private fun askCameraPermission() {
         updateProgressLabel()
-        skipButton.visibility = View.VISIBLE
+        skipButton.visibility = View.GONE
         questionTextView.text = getString(R.string.ask_for_camera_permission)
         askButton.setOnClickListener {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)

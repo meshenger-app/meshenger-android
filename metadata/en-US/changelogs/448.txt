@@ -1,1 +1,6 @@
+* keep calls running in background
 * update Japanese translation, thank you jg3hlx
+* allow video/audio call to continue in background
+* fix request for camera permission on start
+* decouple listener service and database
+* fix value labels for video framerate/resolution in settings

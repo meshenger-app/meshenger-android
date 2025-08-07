@@ -123,9 +123,9 @@
     <string name="settings_automatic_status_updates">Automatic Contact Updates</string>
     <string name="settings_block_unknown">Block Unknown Callers</string>
     <string name="settings_camera_framerate">Default Framerate</string>
-    <string name="settings_camera_framerate_auto">Auto</string>
+    <string name="settings_camera_framerate_auto">Auto (default)</string>
     <string name="settings_camera_resolution">Default Resolution</string>
-    <string name="settings_camera_resolution_auto">Auto</string>
+    <string name="settings_camera_resolution_auto">Auto (default)</string>
     <string name="settings_connect_retries">Connect Retries</string>
     <string name="settings_connect_timeout">Connect Timeout (ms)</string>
     <string name="settings_database_password">Startup Password</string>

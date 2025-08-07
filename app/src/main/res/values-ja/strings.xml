@@ -184,11 +184,8 @@
     <string name="title_scan_qr_code">QRコードスキャン</string>
     <string name="title_settings">設定</string>
     <string name="title_show_qr_code">このQRコードをスキャンしてください</string>
-    <string name="unit_frames_per_second">fps</string>
     <string name="unknown_caller">不明な発信者</string>
     <string name="warning_no_addresses_configured">QR コードのアドレスが設定されていません。</string>
     <string name="warning_no_addresses_found">設定されたアドレスが見つかりません。ネットワークが変更されましたか?</string>
     <string name="wrong_password">パスワードが間違っています</string>
-    <string name="unit_kilo_bit_per_second">Kbps</string>
-    <string name="unit_mega_bit_per_second">Mbps</string>
 </resources>

@@ -170,9 +170,6 @@
     <string name="settings_audio_bitrate_max_auto">Automático</string>
     <string name="settings_video_degradation_mode_label_disabled">Deshabilitado</string>
     <string name="theme_label_sky_blue">Azul Cielo</string>
-    <string name="unit_frames_per_second">fps</string>
-    <string name="unit_kilo_bit_per_second">Kbps</string>
-    <string name="unit_mega_bit_per_second">Mbps</string>
     <string name="settings_mode_label_basic">Básico (predeterminado)</string>
     <string name="settings_video_bitrate_max_auto">Automático</string>
     <string name="explain_need_for_overlay_permission">Meshenger necesita superponerse sobre otras aplicaciones para mostrar llamadas emtrantes en primer plano. Por favor, conceda permiso ahora.</string>

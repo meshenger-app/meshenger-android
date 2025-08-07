@@ -90,15 +90,15 @@
 
     <string-array name="cameraFramerateLabels">
         <item>@string/settings_camera_framerate_auto</item>
-        <item>60 @string/unit_frames_per_second</item>
-        <item>50 @string/unit_frames_per_second</item>
-        <item>40 @string/unit_frames_per_second</item>
-        <item>30 @string/unit_frames_per_second</item>
-        <item>20 @string/unit_frames_per_second</item>
-        <item>15 @string/unit_frames_per_second</item>
-        <item>10 @string/unit_frames_per_second</item>
-        <item>5 @string/unit_frames_per_second</item>
-        <item>1 @string/unit_frames_per_second</item>
+        <item>60 fps</item>
+        <item>50 fps</item>
+        <item>40 fps</item>
+        <item>30 fps</item>
+        <item>20 fps</item>
+        <item>15 fps</item>
+        <item>10 fps</item>
+        <item>5 fps</item>
+        <item>1 fps</item>
     </string-array>
 
     <string-array name="cameraFramerateValues">
@@ -116,13 +116,13 @@
 
     <string-array name="audioBitrateMaxLabels">
         <item>@string/settings_audio_bitrate_max_auto</item>
-        <item>256 @string/unit_kilo_bit_per_second</item>
-        <item>128 @string/unit_kilo_bit_per_second</item>
-        <item>64 @string/unit_kilo_bit_per_second</item>
-        <item>40 @string/unit_kilo_bit_per_second</item>
-        <item>20 @string/unit_kilo_bit_per_second</item>
-        <item>12 @string/unit_kilo_bit_per_second</item>
-        <item>8 @string/unit_kilo_bit_per_second</item>
+        <item>256 kbps</item>
+        <item>128 kbps</item>
+        <item>64 kbps</item>
+        <item>40 kbps</item>
+        <item>20 kbps</item>
+        <item>12 kbps</item>
+        <item>8 kbps</item>
     </string-array>
 
     <string-array name="audioBitrateMaxValues">
@@ -138,14 +138,14 @@
 
     <string-array name="videoBitrateMaxLabels">
         <item>@string/settings_video_bitrate_max_auto</item>
-        <item>20 @string/unit_mega_bit_per_second</item>
-        <item>10 @string/unit_mega_bit_per_second</item>
-        <item>5 @string/unit_munit_mega_bit_per_second</item>
-        <item>2 @string/unit_mega_bit_per_second</item>
-        <item>1 @string/unit_mega_bit_per_second</item>
-        <item>0.5 @string/unit_mega_bit_per_second</item>
-        <item>0.2 @string/unit_mega_bit_per_second</item>
-        <item>0.01 @string/unit_mega_bit_per_second</item>
+        <item>20 Mbps</item>
+        <item>10 Mbps</item>
+        <item>5 Mbps</item>
+        <item>2 Mbps</item>
+        <item>1 Mbps</item>
+        <item>0.5 Mbps</item>
+        <item>0.2 Mbps</item>
+        <item>0.01 Mbps</item>
     </string-array>
 
     <string-array name="videoBitrateMaxValues">

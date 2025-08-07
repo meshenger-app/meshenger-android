@@ -188,7 +188,4 @@
     <string name="night_mode_label_on">开</string>
     <string name="settings_video_degradation_mode_label_disabled">已停用</string>
     <string name="settings_video_degradation_mode_label_maintain_framerate">保持帧率</string>
-    <string name="unit_frames_per_second">fps</string>
-    <string name="unit_kilo_bit_per_second">Kbps</string>
-    <string name="unit_mega_bit_per_second">Mbps</string>
 </resources>

@@ -116,13 +116,13 @@
 
     <string-array name="audioBitrateMaxLabels">
         <item>@string/settings_audio_bitrate_max_auto</item>
-        <item>256 kbps</item>
-        <item>128 kbps</item>
-        <item>64 kbps</item>
-        <item>40 kbps</item>
-        <item>20 kbps</item>
-        <item>12 kbps</item>
-        <item>8 kbps</item>
+        <item>256 Kbps</item>
+        <item>128 Kbps</item>
+        <item>64 Kbps</item>
+        <item>40 Kbps</item>
+        <item>20 Kbps</item>
+        <item>12 Kbps</item>
+        <item>8 Kpps</item>
     </string-array>
 
     <string-array name="audioBitrateMaxValues">

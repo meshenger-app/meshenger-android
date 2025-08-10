@@ -8,10 +8,10 @@
     <string name="address_management_help_text">共有するQRコードに含めるIPアドレスを1つ以上選択してください。これらのアドレスは、他のユーザーがあなたに連絡を取るために使用されます。IPアドレスはネットワークによって異なることにご注意ください。IPアドレスが表示されない場合は、WLANを有効にしてください。</string>
     <string name="app_description">サーバーやインターネットへのアクセスなしで音声・ビデオ通話が可能です。お互いの連絡先QRコードをスキャンするだけで通話できます。自宅、コミュニティネットワーク、職場など、ほとんどのネットワークで利用可能です。</string>
     <string name="ask_for_bluetooth_connect_permission">Bluetooth ヘッドセットの使用を今すぐ許可するか、使用するまで待機します。</string>
-    <string name="ask_for_camera_permission">今すぐカメラの使用を許可するか、使用するまでお待ちください。</string>
+    <string name="ask_for_camera_permission">ビデオ通話用のカメラの権限がありません。</string>
     <string name="ask_for_draw_overlay_permission">画面上に表示する権限が不足しています。着信を前面に表示するために必要です。</string>
     <string name="ask_for_post_notification_permission">通知を送信する権限がありません。この権限は、バックグラウンドで通話を受信するために必要です。</string>
-    <string name="ask_for_record_audio_permission">今すぐマイクの使用を許可するか、使用するまで待機します。</string>
+    <string name="ask_for_record_audio_permission">通話にマイクを使用する権限がありません。</string>
     <string name="audio_device_auto">%1$s（自動）</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">イヤホン</string>
@@ -120,9 +120,9 @@
     <string name="settings_automatic_status_updates">自動連絡先更新</string>
     <string name="settings_block_unknown">不明な発信者をブロック</string>
     <string name="settings_camera_framerate">デフォルトのフレームレート</string>
-    <string name="settings_camera_framerate_auto">自動</string>
+    <string name="settings_camera_framerate_auto">自動（デフォルト）</string>
     <string name="settings_camera_resolution">デフォルトの解像度</string>
-    <string name="settings_camera_resolution_auto">自動</string>
+    <string name="settings_camera_resolution_auto">自動（デフォルト）</string>
     <string name="settings_connect_retries">接続再試行</string>
     <string name="settings_connect_timeout">接続タイムアウト（ミリ秒）</string>
     <string name="settings_database_password">起動パスワード</string>

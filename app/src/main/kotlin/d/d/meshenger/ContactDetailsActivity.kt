@@ -18,6 +18,8 @@ import androidx.core.view.isVisible
 import com.google.android.material.switchmaterial.SwitchMaterial
 import d.d.meshenger.MainService.MainBinder
 import d.d.meshenger.AddressUtils.AddressType
+import d.d.meshenger.MainService.Companion.MAX_PORT
+import d.d.meshenger.MainService.Companion.MIN_PORT
 import org.libsodium.jni.Sodium
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,6 +30,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
     private lateinit var contactNameEdit: TextView
     private lateinit var contactPublicKeyEdit: TextView
     private lateinit var contactBlockedSwitch : SwitchMaterial
+    private lateinit var contactPortEdit: TextView
     private lateinit var addressEditText: EditText
 
     private lateinit var addressListView: ListView
@@ -60,6 +63,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
         contactNameEdit = findViewById(R.id.contactNameTv)
         contactPublicKeyEdit = findViewById(R.id.contactPublicKeyTv)
         contactBlockedSwitch = findViewById(R.id.contactBlockedSwitch)
+        contactPortEdit = findViewById(R.id.contactPortTv)
 
         addressListViewAdapter = AddressListAdapter(this)
         addressListView.adapter = addressListViewAdapter
@@ -97,6 +101,9 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
         contactBlockedSwitch.isChecked = newContact.blocked
 
+        contactPortEdit.text = newContact.port.toString()
+        findViewById<View>(R.id.contactPortLayout).setOnClickListener { showChangePortDialog() }
+
         addressListView.setOnItemClickListener { _, _, i, _ ->
             val address = addressListViewAdapter.getAddressAt(i)
             if (address != null) {
@@ -110,7 +117,8 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
 
         findViewById<Button>(R.id.AddAddressButton).setOnClickListener {
             var address = addressEditText.text!!.toString()
-            address = if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+            // check if address is valid
+            address = if (AddressUtils.isInetSocketAddress(address)) {
                 address.lowercase(Locale.ROOT)
             } else {
                 Toast.makeText(this, R.string.error_address_invalid, Toast.LENGTH_SHORT).show()
@@ -136,6 +144,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
             if (contact != null) {
                 contact.name = contactNameEdit.text.toString()
                 contact.blocked = contactBlockedSwitch.isChecked
+                contact.port = contactPortEdit.text.toString().toInt()
                 contact.addresses = addressListViewAdapter.getAddresses()
                 contact.publicKey = publicKey
 
@@ -162,6 +171,36 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
         } else {
             null
         }
+    }
+
+    private fun showChangePortDialog() {
+        Log.d(this, "showChangePortDialog()")
+
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_server_port)
+
+        val serverPortEditText = dialog.findViewById<TextView>(R.id.ServerPortEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
+
+        serverPortEditText.text = serverPortEditText.text
+
+        okButton.setOnClickListener {
+            val portString = serverPortEditText.text.toString()
+            if (AddressUtils.isValidPort(portString)) {
+                contactPortEdit.text = portString
+                dialog.dismiss()
+            } else {
+                val message = String.format(getString(R.string.invalid_number), MIN_PORT, MAX_PORT)
+                Toast.makeText(this@ContactDetailsActivity, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showChangePublicKeyDialog() {

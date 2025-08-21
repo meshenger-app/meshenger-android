@@ -16,17 +16,13 @@ import android.os.Binder
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
-import android.provider.ContactsContract
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import d.d.meshenger.Utils.readInternalFile
-import d.d.meshenger.Utils.writeInternalFile
 import d.d.meshenger.call.PacketWriter
 import d.d.meshenger.call.Pinger
 import d.d.meshenger.call.RTCPeerConnection
-import java.io.File
 import java.io.IOException
 import java.net.*
 import java.util.*
@@ -167,7 +163,11 @@ class MainService : Service(), Runnable {
                     break
                 }
             }
-            serverSocket = ServerSocket(SERVER_PORT)
+
+            val settings = Database.getSettings()
+            serverSocket = ServerSocket(settings.serverPort)
+            Log.d(this, "Listen on port: $serverSocket")
+
             while (isServerSocketRunning) {
                 try {
                     val socket = serverSocket!!.accept()
@@ -296,7 +296,9 @@ class MainService : Service(), Runnable {
     }
 
     companion object {
-        const val SERVER_PORT = 10001
+        var DEFAULT_PORT = 10001
+        var MIN_PORT = 1025
+        var MAX_PORT = 65535
         private const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
         private const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
         private const val NOTIFICATION_ID = 42

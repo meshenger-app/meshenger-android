@@ -87,7 +87,7 @@ class Connector(
             )
         }
 
-        return addresses.distinctBy { it.hostString }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
+        return addresses.distinctBy { "${it.hostString}:${it.port}" }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
     }
 
 

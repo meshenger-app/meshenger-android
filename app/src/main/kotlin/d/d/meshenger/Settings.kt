@@ -5,11 +5,13 @@
 
 package d.d.meshenger
 
+import d.d.meshenger.MainService.Companion.DEFAULT_PORT
 import org.json.JSONObject
 import org.json.JSONArray
 import java.util.*
 
 class Settings {
+    var serverPort = DEFAULT_PORT
     var username = ""
     var secretKey = byteArrayOf()
     var publicKey = byteArrayOf()
@@ -58,6 +60,7 @@ class Settings {
     companion object {
         fun fromJSON(obj: JSONObject): Settings {
             val s = Settings()
+            s.serverPort = obj.optInt("server_port", s.serverPort)
             s.username = obj.getString("username")
             s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))
             s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
@@ -118,6 +121,7 @@ class Settings {
 
         fun toJSON(s: Settings): JSONObject {
             val obj = JSONObject()
+            obj.put("server_port", s.serverPort)
             obj.put("username", s.username)
             obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey))
             obj.put("public_key", Utils.byteArrayToHexString(s.publicKey))

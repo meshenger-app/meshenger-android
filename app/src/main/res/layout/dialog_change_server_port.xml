@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?android:windowBackground">
+
+    <TextView
+        android:id="@+id/ServerPortTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Server Port"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="23sp"
+        android:fontFamily="@font/lato_bold"
+        app:layout_constraintBottom_toTopOf="@+id/ServerPortEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/ServerPortEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/padding_20"
+        android:layout_marginEnd="@dimen/padding_20"
+        android:inputType="number"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="23sp"
+        app:layout_constraintTop_toBottomOf="@+id/ServerPortTextView"
+        app:layout_constraintBottom_toTopOf="@+id/CancelButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/CancelButton"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginBottom="@dimen/padding_20"
+        android:layout_marginStart="@dimen/padding_50"
+        android:layout_marginTop="@dimen/padding_20"
+        android:text="@string/button_cancel"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/ServerPortEditText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/OkButton"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/OkButton"
+        android:layout_width="125dp"
+        android:layout_height="@dimen/padding_50"
+        android:layout_marginBottom="@dimen/padding_20"
+        android:layout_marginStart="@dimen/padding_50"
+        android:layout_marginEnd="@dimen/padding_50"
+        android:layout_marginTop="@dimen/padding_20"
+        android:text="@string/button_ok"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/ServerPortEditText"
+        app:layout_constraintStart_toEndOf="@+id/CancelButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -159,6 +159,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         findViewById<View>(R.id.connectTimeoutLayout)
             .setOnClickListener { showChangeConnectTimeoutDialog() }
 
+        findViewById<TextView>(R.id.serverPortTv)
+            .text = settings.serverPort.toString()
+        findViewById<View>(R.id.serverPortLayout)
+            .setOnClickListener { showChangeServerPortDialog() }
+
         findViewById<SwitchMaterial>(R.id.promptOutgoingCallsSwitch).apply {
             isChecked = settings.promptOutgoingCalls
             setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
@@ -499,6 +504,49 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
         cancelButton.setOnClickListener { dialog.cancel() }
         dialog.show()
     }
+
+    private fun showChangeServerPortDialog() {
+        val settings = Database.getSettings()
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_server_port)
+
+        val serverPortEditText = dialog.findViewById<TextView>(R.id.ServerPortEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
+
+        serverPortEditText.text = "${settings.serverPort}"
+
+        okButton.setOnClickListener {
+            val minValue = 1
+            val maxValue = 65535
+            var serverPort = -1
+            val text = serverPortEditText.text.toString()
+            try {
+                serverPort = parseInt(text)
+            } catch (e: Exception) {
+                // ignore parse error
+            }
+
+            if (serverPort in minValue..maxValue) {
+                settings.serverPort = serverPort
+                Database.saveDatabase()
+                initViews()
+                Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            } else {
+                val message = String.format(getString(R.string.invalid_number), minValue, maxValue)
+                Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
+            }
+
+            dialog.cancel()
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.cancel()
+        }
+
+        dialog.show()
+    }
+
 
     private fun showDatabasePasswordDialog() {
         val databasePassword = Database.databasePassword

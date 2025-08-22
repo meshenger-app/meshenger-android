@@ -72,9 +72,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
         viewPager = findViewById(R.id.container)
 
         // start MainService and call back via onServiceConnected()
-        MainService.start(this)
+        MainService.start(applicationContext)
 
-        bindService(Intent(this, MainService::class.java), this, 0)
+        bindService(Intent(applicationContext, MainService::class.java), this, 0)
     }
 
     override fun onDestroy() {
@@ -84,8 +84,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     }
 
     private fun isWifiConnected(): Boolean {
-        val context = this as Context
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return false
@@ -120,7 +119,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
                     if (storedIPAddresses.intersect(systemAddresses.toSet()).isEmpty()) {
                         // none of the configured addresses are used in the system
                         // addresses might have changed!
-                        Toast.makeText(this, R.string.warning_no_addresses_found, Toast.LENGTH_LONG).show()
+                        Toast.makeText(applicationContext, R.string.warning_no_addresses_found, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -220,8 +219,8 @@ class MainActivity : BaseActivity(), ServiceConnection {
             addressWarningShown = true
         }
 
-        MainService.refreshEvents(this)
-        MainService.refreshContacts(this)
+        MainService.refreshEvents(applicationContext)
+        MainService.refreshContacts(applicationContext)
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
@@ -231,16 +230,16 @@ class MainActivity : BaseActivity(), ServiceConnection {
     private fun menuAction(itemId: Int) {
         when (itemId) {
             R.string.menu_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                startActivity(Intent(applicationContext, SettingsActivity::class.java))
             }
             R.string.menu_backup -> {
-                startActivity(Intent(this, BackupActivity::class.java))
+                startActivity(Intent(applicationContext, BackupActivity::class.java))
             }
             R.string.menu_about -> {
-                startActivity(Intent(this, AboutActivity::class.java))
+                startActivity(Intent(applicationContext, AboutActivity::class.java))
             }
             R.string.menu_shutdown -> {
-                MainService.stop(this)
+                MainService.stop(applicationContext)
                 finish()
             }
         }
@@ -248,7 +247,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 
     // request password for setting activity
     private fun showMenuPasswordDialog(itemId: Int, menuPassword: String) {
-        val dialog = Dialog(this)
+        val dialog = Dialog(applicationContext)
         dialog.setContentView(R.layout.dialog_enter_database_password)
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
@@ -262,7 +261,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 // start menu action
                 menuAction(itemId)
             } else {
-                Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, R.string.wrong_password, Toast.LENGTH_SHORT).show()
             }
 
             // close dialog

@@ -57,12 +57,35 @@ internal object AddressUtils
         GLOBAL_IP, LOCAL_IP, MULTICAST_IP, DOMAIN
     }
 
+    private fun extractIPAddress(address: String): String? {
+        return when {
+            address.startsWith("[") -> {
+                val endBracket = address.indexOf("]")
+                if (endBracket != -1 && address.length > endBracket + 1 && address[endBracket + 1] == ':') {
+                    address.substring(1, endBracket)
+                } else {
+                    address.substring(1, endBracket.coerceAtLeast(address.length))
+                }
+            }
+
+            address.contains(":") && address.count { it == ':' } == 1 -> {
+                val parts = address.split(":")
+                parts.getOrNull(0)
+            }
+
+            else -> {
+                address
+            }
+        }
+    }
+
     fun parseInetAddress(address: String): InetAddress? {
+        val addrWithoutPort = extractIPAddress(address) ?: return null
         if (isIPAddress(address)) {
             val inetAddress = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                InetAddresses.parseNumericAddress(address)
+                InetAddresses.parseNumericAddress(addrWithoutPort)
             } else {
-                InetAddress.getByName(address)
+                InetAddress.getByName(addrWithoutPort)
             }
             return inetAddress
         }
@@ -105,20 +128,21 @@ internal object AddressUtils
     private val IPV6_HEX_COMPRESSED_PATTERN = Pattern.compile("^((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)::((?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4})*)?)$")
 
     fun isIPAddress(address: String): Boolean {
+        val addrWithoutPort = extractIPAddress(address) ?: return false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return InetAddresses.isNumericAddress(address)
+            return InetAddresses.isNumericAddress(addrWithoutPort)
         } else {
             // lots of work to support older SDKs
-            val pc = address.indexOf('%')
+            val pc = addrWithoutPort.indexOf('%')
 
             val addressPart = if (pc != -1) {
-                address.substring(0, pc)
+                addrWithoutPort.substring(0, pc)
             } else {
-                address
+                addrWithoutPort
             }
 
             val devicePart = if (pc != -1) {
-                address.substring(pc + 1)
+                addrWithoutPort.substring(pc + 1)
             } else {
                 null
             }
@@ -139,8 +163,9 @@ internal object AddressUtils
     }
 
     fun isDomain(address: String): Boolean {
-        return DOMAIN_PATTERN.matcher(address).matches()
-            && !address.contains("..")
+        val addrWithoutPort = address.substringBefore(':')
+        return DOMAIN_PATTERN.matcher(addrWithoutPort).matches()
+            && !addrWithoutPort.contains("..")
     }
 
     fun stringToInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {

@@ -210,7 +210,7 @@ abstract class RTCPeerConnection(
 
         run {
             // remember latest working address and set state
-            val workingAddress = InetSocketAddress(remoteAddress.address, MainService.SERVER_PORT)
+            val workingAddress = InetSocketAddress(remoteAddress.address, MainService.DEFAULT_PORT)
             val storedContact = Database.getContacts().getContactByPublicKey(contact.publicKey)
             if (storedContact != null) {
                 storedContact.lastWorkingAddress = workingAddress
@@ -627,7 +627,7 @@ abstract class RTCPeerConnection(
             }
 
             // remember latest working address and set state
-            contact.lastWorkingAddress = InetSocketAddress(remoteAddress.address, MainService.SERVER_PORT)
+            contact.lastWorkingAddress = InetSocketAddress(remoteAddress.address, MainService.DEFAULT_PORT)
 
             val obj = JSONObject(decrypted)
             val action = obj.optString("action", "")

@@ -44,7 +44,7 @@ class Connector(
     }
 
     private fun getAllSocketAddresses(contact: Contact): List<InetSocketAddress> {
-        val port = MainService.SERVER_PORT
+        val port = MainService.DEFAULT_PORT
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
 
@@ -87,7 +87,7 @@ class Connector(
             )
         }
 
-        return addresses.distinctBy { it.hostString }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
+        return addresses.distinctBy { "${it.hostString}:${it.port}" }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
     }
 
 

@@ -241,6 +241,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             R.string.menu_shutdown -> {
                 MainService.stop(applicationContext)
                 finish()
+                System.exit(0)
             }
         }
     }

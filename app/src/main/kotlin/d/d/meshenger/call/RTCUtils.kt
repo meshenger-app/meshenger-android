@@ -6,7 +6,6 @@
 package d.d.meshenger.call
 
 import d.d.meshenger.AddressUtils
-import d.d.meshenger.Log
 import d.d.meshenger.MainService
 import d.d.meshenger.Settings
 import java.net.*
@@ -79,8 +78,8 @@ internal object RTCUtils
         val remoteAddressString = AddressUtils.stripHost(remoteAddress.address.toString())
 
         //a=candidate:<foundation> <component> <protocol> <priority> <public-ip-here> <port> typ host
-        val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.SERVER_PORT + 1} typ host"
-        val iceTcp = "a=candidate:4444444444 2 tcp 1111111111 $remoteAddressString ${MainService.SERVER_PORT + 1} typ host"
+        val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.DEFAULT_PORT + 1} typ host"
+        val iceTcp = "a=candidate:4444444444 2 tcp 1111111111 $remoteAddressString ${MainService.DEFAULT_PORT + 1} typ host"
 
         //Log.d(this, "iceUdp: $iceUdp")
         //Log.d(this, "iceTcp: $iceTcp")

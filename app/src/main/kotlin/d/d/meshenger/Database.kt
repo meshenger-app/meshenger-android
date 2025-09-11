@@ -147,7 +147,7 @@ class Database {
 
         fun toData(db: Database, password: String?): ByteArray? {
             val obj = toJSON(db)
-            var dbdata : ByteArray? = obj.toString().toByteArray()
+            var dbdata = obj.toString().toByteArray()
 
             // encrypt database
             if (!password.isNullOrEmpty()) {
@@ -162,7 +162,7 @@ class Database {
 
         // add missing keys with defaults and remove unexpected keys
         private fun alignSettings(settings: JSONObject) {
-            val defaults: JSONObject = Settings.toJSON(Settings())
+            val defaults = Settings.toJSON(Settings())
 
             // default keys
             val defaultsIter = defaults.keys()

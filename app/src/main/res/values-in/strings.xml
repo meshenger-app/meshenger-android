@@ -1,3 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="address_management_help_text">Pilih satu atau beberapa alamat IP yang akan disertakan dalam kode QR yang dapat Anda bagikan. Alamat-alamat ini akan digunakan oleh orang lain untuk menghubungi Anda. Harap perhatikan bahwa alamat IP dapat berubah tergantung jaringan. Aktifkan WLAN Anda jika tidak ada alamat IP yang terlihat.</string>
+    <string name="app_description">Memungkinkan komunikasi suara dan video tanpa server atau akses internet. Cukup pindai kode QR kontak satu sama lain dan hubungi satu sama lain. Berfungsi di sebagian besar jaringan, misalnya di rumah, jaringan komunitas, atau di tempat kerja.</string>
+    <string name="about_app_description">Deskripsi:</string>
+    <string name="about_app_license">Lisensi:</string>
+    <string name="about_app_version">Versi:</string>
+    <string name="about_app_website">Situs Web:</string>
+    <string name="address_management">Manajemen Alamat</string>
+    <string name="ask_for_bluetooth_connect_permission">Berikan izin untuk menggunakan headset Bluetooth sekarang atau tunggu sampai Anda menggunakannya.</string>
+    <string name="ask_for_camera_permission">Tidak ada izin untuk kamera untuk panggilan video.</string>
+    <string name="ask_for_draw_overlay_permission">Izin untuk menggambar di atas tidak ada. Diperlukan untuk mengarahkan panggilan masuk ke latar depan.</string>
+    <string name="ask_for_post_notification_permission">Tidak ada izin untuk mengirim notifikasi. Izin ini diperlukan untuk mendengarkan panggilan di latar belakang.</string>
+    <string name="ask_for_record_audio_permission">Tidak ada izin untuk menggunakan mikrofon untuk panggilan.</string>
+    <string name="audio_device_auto">%1$s (otomatis)</string>
+    <string name="audio_device_bluetooth">Bluetooth</string>
+    <string name="audio_device_earpiece">Earpiece</string>
+    <string name="button_abort">Batalkan</string>
+    <string name="button_add">Tambah</string>
+    <string name="button_ask">Minta</string>
+    <string name="button_cancel">Batal</string>
+    <string name="button_export">Ekspor</string>
+    <string name="button_import">Impor</string>
+    <string name="button_next">Selanjutnya</string>
+    <string name="button_no">Tidak</string>
+    <string name="button_rename">Ganti nama</string>
+    <string name="button_save">Simpan</string>
+    <string name="button_skip">Lewati</string>
+    <string name="button_yes">Ya</string>
+    <string name="call_authentication_failed">Otentikasi Gagal</string>
+    <string name="call_connected">Tersambung</string>
+    <string name="call_connecting">Memanggil…</string>
+    <string name="call_connection_failed">Sambungan Gagal</string>
+    <string name="call_denied">Ditolak</string>
+    <string name="call_ended">Panggilan Berakhir</string>
 </resources>

@@ -40,11 +40,10 @@ class Connector(
     var addressTry: AddressTry? = null
 
     private fun isLinkLocalAddress(address: String): Boolean {
-        return AddressUtils.parseInetAddress(address)?.isLinkLocalAddress ?: false
+        return AddressUtils.parseInetSocketAddress(address)?.address?.isLinkLocalAddress ?: false
     }
 
     private fun getAllSocketAddresses(contact: Contact): List<InetSocketAddress> {
-        val port = MainService.SERVER_PORT
         val addresses = mutableListOf<InetSocketAddress>()
         val macs = mutableSetOf<String>()
 
@@ -56,7 +55,7 @@ class Connector(
         val ownInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
 
         for (address in contact.addresses) {
-            val socketAddress = AddressUtils.stringToInetSocketAddress(address, port) ?: continue
+            val socketAddress = AddressUtils.parseInetSocketAddress(address, contact.port) ?: continue
 
             if (isLinkLocalAddress(socketAddress.hostString)) {
                 for (interfaceName in collectInterfaceNames(ownInterfaces)) {
@@ -68,11 +67,11 @@ class Connector(
 
             // get MAC address from IPv6 EUI64 address and construct new ones with own IPv6 prefixes
             if (guessEUI64Address || useNeighborTable) {
-                val inetAddress = AddressUtils.parseInetAddress(address)
-                val macAddress = extractMAC(inetAddress)
+                val inetAddress = AddressUtils.parseInetSocketAddress(address)
+                val macAddress = extractMAC(inetAddress?.address)
                 if (macAddress != null) {
                     if (guessEUI64Address) {
-                        addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, port))
+                        addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, socketAddress.port))
                     }
                     if (useNeighborTable) {
                         macs.add(AddressUtils.formatMAC(macAddress))
@@ -83,11 +82,11 @@ class Connector(
 
         if (useNeighborTable) {
             addresses.addAll(
-                getAddressesFromNeighborTable(macs.toList(), port)
+                getAddressesFromNeighborTable(macs.toList(), contact.port)
             )
         }
 
-        return addresses.distinctBy { it.hostString }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
+        return addresses.distinctBy { "${it.hostString}:${it.port}" }.sortedWith(InetSocketAddressComparator(lastWorkingAddress))
     }
 
 

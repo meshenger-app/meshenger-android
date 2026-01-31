@@ -5,6 +5,9 @@
 
 package d.d.meshenger
 
+import d.d.meshenger.MainService.Companion.DEFAULT_PORT
+import d.d.meshenger.MainService.Companion.MAX_PORT
+import d.d.meshenger.MainService.Companion.MIN_PORT
 import org.json.JSONObject
 import org.json.JSONArray
 import org.json.JSONException
@@ -17,6 +20,7 @@ class Contact(
     var name: String,
     var publicKey: ByteArray,
     var addresses: List<String>,
+    var port: Int,
     var blocked: Boolean = false
 ) : Serializable {
     enum class State {
@@ -44,6 +48,7 @@ class Contact(
             for (address in contact.addresses) {
                 array.put(AddressUtils.stripInterface(address))
             }
+            obj.put("port", contact.port)
             obj.put("addresses", array)
             if (all && contact.blocked) {
                 obj.put("blocked", contact.blocked)
@@ -58,15 +63,21 @@ class Contact(
             }
 
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
-            if ((publicKey == null) || (publicKey.size != Sodium.crypto_sign_publickeybytes())) {
+            if (publicKey.size != Sodium.crypto_sign_publickeybytes()) {
                 throw JSONException("Invalid Public Key")
+            }
+
+            var port = obj.optInt("port", DEFAULT_PORT)
+            if (port !in MIN_PORT..MAX_PORT) {
+                throw JSONException("Invalid network port")
             }
 
             val array = obj.getJSONArray("addresses")
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
+                // make sure there is no interface
                 var address = AddressUtils.stripInterface(array[i].toString())
-                if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+                if (AddressUtils.isInetSocketAddress(address)) {
                     address = address.lowercase(Locale.ROOT)
                 } else if (AddressUtils.isMACAddress(address)) {
                     // for backwards compatibility
@@ -84,7 +95,7 @@ class Contact(
                 obj.optBoolean("blocked", false)
             } else false
 
-            return Contact(name, publicKey, addresses.toList(), blocked)
+            return Contact(name, publicKey, addresses.toList(), port, blocked)
         }
     }
 }

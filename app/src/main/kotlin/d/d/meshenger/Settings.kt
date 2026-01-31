@@ -5,11 +5,13 @@
 
 package d.d.meshenger
 
+import d.d.meshenger.MainService.Companion.DEFAULT_PORT
 import org.json.JSONObject
 import org.json.JSONArray
 import java.util.*
 
 class Settings {
+    var serverPort = DEFAULT_PORT
     var username = ""
     var secretKey = byteArrayOf()
     var publicKey = byteArrayOf()
@@ -44,10 +46,11 @@ class Settings {
     var audioBitrateMax = "auto" // not used yet
     var videoBitrateMax = "auto" // not used yet
     var settingsMode = "basic"
+    // List of IP-Addresses and domain names, without port or interfaces names
     var addresses = mutableListOf<String>()
 
     fun getOwnContact(): Contact {
-        return Contact(username, publicKey, addresses)
+        return Contact(username, publicKey, addresses, serverPort)
     }
 
     fun destroy() {
@@ -58,6 +61,7 @@ class Settings {
     companion object {
         fun fromJSON(obj: JSONObject): Settings {
             val s = Settings()
+            s.serverPort = obj.optInt("server_port", s.serverPort)
             s.username = obj.getString("username")
             s.secretKey = Utils.hexStringToByteArray(obj.getString("secret_key"))
             s.publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
@@ -100,8 +104,8 @@ class Settings {
                 if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
                 } else if (AddressUtils.isMACAddress(address)) {
-                    // wrap MAC address to EUI64 link local address
-                    // for backwards compatibility
+                    // For backwards compatibility. Going forward a
+                    // MAC address is embedded in an EUI64 link local address
                     address = AddressUtils.getLinkLocalFromMAC(address)!!
                 } else {
                     Log.d("Settings", "invalid address $address")
@@ -118,6 +122,7 @@ class Settings {
 
         fun toJSON(s: Settings): JSONObject {
             val obj = JSONObject()
+            obj.put("server_port", s.serverPort)
             obj.put("username", s.username)
             obj.put("secret_key", Utils.byteArrayToHexString(s.secretKey))
             obj.put("public_key", Utils.byteArrayToHexString(s.publicKey))

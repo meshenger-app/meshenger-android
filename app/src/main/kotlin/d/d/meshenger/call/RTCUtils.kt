@@ -6,7 +6,6 @@
 package d.d.meshenger.call
 
 import d.d.meshenger.AddressUtils
-import d.d.meshenger.Log
 import d.d.meshenger.MainService
 import d.d.meshenger.Settings
 import java.net.*
@@ -75,12 +74,13 @@ internal object RTCUtils
             return offer
         }
 
-        // 192.168.1.45, 2a02:8109::7cc5, fe80::1234%wlan0 (WebRTC does not accept link local addresses..)
-        val remoteAddressString = AddressUtils.stripHost(remoteAddress.address.toString())
+        // Get IP address, without interface, host or port.
+        // E.g: 192.168.1.45, 2a02:8109::7cc5, fe80::1234%wlan0 (WebRTC does not accept link local addresses..)
+        val remoteAddressString = AddressUtils.stripAddress(remoteAddress.address.toString())
 
-        //a=candidate:<foundation> <component> <protocol> <priority> <public-ip-here> <port> typ host
-        val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${MainService.SERVER_PORT + 1} typ host"
-        val iceTcp = "a=candidate:4444444444 2 tcp 1111111111 $remoteAddressString ${MainService.SERVER_PORT + 1} typ host"
+        // scheme: "a=candidate:<foundation> <component> <protocol> <priority> <public-ip-here> <port> typ host"
+        val iceUdp = "a=candidate:3333333333 1 udp 2222222222 $remoteAddressString ${remoteAddress.port + 1} typ host"
+        val iceTcp = "a=candidate:4444444444 2 tcp 1111111111 $remoteAddressString ${remoteAddress.port + 1} typ host"
 
         //Log.d(this, "iceUdp: $iceUdp")
         //Log.d(this, "iceTcp: $iceTcp")

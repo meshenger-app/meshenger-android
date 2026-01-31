@@ -8,6 +8,9 @@ package d.d.meshenger
 import android.net.InetAddresses
 import android.os.Build
 import android.util.Patterns
+import d.d.meshenger.MainService.Companion.DEFAULT_PORT
+import d.d.meshenger.MainService.Companion.MAX_PORT
+import d.d.meshenger.MainService.Companion.MIN_PORT
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
@@ -23,6 +26,27 @@ internal object AddressUtils
         }
     }
 
+    fun isValidPort(portString: String?): Boolean {
+        return portString != null && parsePort(portString) != -1
+    }
+
+    fun parsePort(portString: String, defaultPort: Int = -1): Int {
+        var port = -1
+        try {
+            port = portString.toInt()
+        } catch (_: Exception) {
+            // ignore parse error
+        }
+
+        return if (port in MIN_PORT..MAX_PORT) {
+            port
+        } else {
+            defaultPort
+        }
+    }
+
+    // List any interfaces we do not want to display
+    // because we know that is cannot be used.
     fun ignoreDeviceByName(device: String): Boolean {
         return device.startsWith("dummy")
     }
@@ -32,24 +56,59 @@ internal object AddressUtils
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
     }
 
-    // remove interface from link local address
-    // fe80::1%wlan0 => fe80::1
-    fun stripInterface(address: String): String {
-        val pc = address.indexOf('%')
-        return if (pc == -1) {
-            address
-        } else {
-            address.substring(0, pc)
+    /*
+     * Strip device name from address:
+     * "192.168.1.1%wlan1" => "192.168.1.1"
+     * "fe80::1%wlan0" => "fe80::1"
+     * "[fe80::1%wlan0]:1234" => "[fe80::]:1234"
+     */
+    fun stripInterface(address:String): String {
+        val beg = address.indexOf('%')
+
+        if (beg != -1) {
+            val end = address.indexOfAny(charArrayOf(']', ':'), startIndex = beg)
+            return if (end == -1) {
+                address.substring(0, beg)
+            } else {
+                address.substring(0, beg) + address.substring(end)
+            }
         }
+
+        return address;
     }
 
-    // strip first entry, e.g.:
-    // /1.2.3.4 => 1.2.3.4
-    // google.com/1.2.3.4 => 1.2.3.4
-    // google.com => google.com
+    /*
+     * Strip first entry, e.g.:
+     * "/1.2.3.4" => "1.2.3.4"
+     * "google.com/1.2.3.4" => "1.2.3.4"
+     * "google.com" => "google.com"
+     */
     fun stripHost(address: String): String {
         val pos = address.indexOf('/')
         return address.substring(pos + 1)
+    }
+
+    fun stripPort(address: String): String {
+        val pos = address.indexOf("]:")
+        if (pos != -1) {
+            address.substring(1, pos + 1)
+        }
+
+        if (address.count { it == ':' } == 1) {
+            val pos = address.lastIndexOf(":")
+            return if (pos != -1) {
+                address.substring(0, pos)
+            } else {
+                address
+            }
+        }
+
+        return address
+    }
+
+    // remove interface, host and port from address
+    fun stripAddress(address: String): String {
+        return stripHost(stripPort(stripInterface(address)))
     }
 
     // coarse address type distinction
@@ -71,11 +130,11 @@ internal object AddressUtils
     }
 
     fun getAddressType(address: String): AddressType {
-        val ipAddress = parseInetAddress(address)
+        val ipAddress = parseInetSocketAddress(address)
         if (ipAddress != null) {
-            if (ipAddress.isMulticastAddress) {
+            if (ipAddress.address.isMulticastAddress) {
                 return AddressType.MULTICAST_IP
-            } else if ((ipAddress.address[1].toInt() and 15) == 0x0E) {
+            } else if ((ipAddress.address.address[1].toInt() and 15) == 0x0E) {
                 // global IP address
                 return AddressType.GLOBAL_IP
             } else {
@@ -108,29 +167,10 @@ internal object AddressUtils
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return InetAddresses.isNumericAddress(address)
         } else {
-            // lots of work to support older SDKs
-            val pc = address.indexOf('%')
-
-            val addressPart = if (pc != -1) {
-                address.substring(0, pc)
-            } else {
-                address
-            }
-
-            val devicePart = if (pc != -1) {
-                address.substring(pc + 1)
-            } else {
-                null
-            }
-
-            if (devicePart != null && !DEVICE_PATTERN.matcher(devicePart).matches()) {
-                return false
-            }
-
             @Suppress("DEPRECATION")
-            return IPV6_STD_PATTERN.matcher(addressPart).matches()
-                 || IPV6_HEX_COMPRESSED_PATTERN.matcher(addressPart).matches()
-                 || Patterns.IP_ADDRESS.matcher(addressPart).matches()
+            return IPV6_STD_PATTERN.matcher(address).matches()
+                 || IPV6_HEX_COMPRESSED_PATTERN.matcher(address).matches()
+                 || Patterns.IP_ADDRESS.matcher(address).matches()
         }
     }
 
@@ -139,33 +179,57 @@ internal object AddressUtils
     }
 
     fun isDomain(address: String): Boolean {
-        return DOMAIN_PATTERN.matcher(address).matches()
-            && !address.contains("..")
+        val addrWithoutPort = address.substringBefore(':')
+        return DOMAIN_PATTERN.matcher(addrWithoutPort).matches()
+            && !addrWithoutPort.contains("..")
     }
 
-    fun stringToInetSocketAddress(address: String?, defaultPort: Int): InetSocketAddress? {
+    // replacement of isIPAddress
+    fun isInetSocketAddress(address: String?): Boolean {
+        return (null != parseInetSocketAddress(address))
+    }
+
+    /* Parses an address string:
+     *
+     * "[<ip-address>]:<port>"
+     * "[<ip-address>]"
+     * "<ip-address>:<port>"
+     * "<ip-address>"
+     * "<domain>:<port>"
+     * "<domain>"
+    */
+    fun parseInetSocketAddress(address: String?, defaultPort: Int = DEFAULT_PORT): InetSocketAddress? {
         if (address.isNullOrEmpty()) {
             return null
         } else if (address.startsWith("[")) {
             val end = address.lastIndexOf("]:")
             if (end > 0) {
-                // [<address>]:<port>
+                // "[<ip-address>]:<port>"
                 val addressPart = address.substring(1, end)
                 val portPart = address.substring(end + 2)
-                val port = portPart.toUShortOrNull()?.toInt()
+                val port = parsePort(portPart)
                 if (port != null && isIPAddress(addressPart)) {
                     return InetSocketAddress(addressPart, port)
+                }
+            } else {
+                val end = address.lastIndexOf("]")
+                // [<ip-address>]
+                if (end > 0) {
+                    val addressPart = address.substring(1, end)
+                    if (isIPAddress(addressPart)) {
+                        return InetSocketAddress(addressPart, defaultPort)
+                    }
                 }
             }
         } else {
             if (address.count { it == ':' } == 1) {
-                //<hostname>:<port>
-                //<ipv4-address>:<port>
+                // "<domain>:<port>"
+                // "<ip-address>:<port>"
                 val end = address.indexOf(":")
                 val addressPart = address.substring(0, end)
                 val portPart = address.substring(end + 1)
-                val port = portPart.toUShortOrNull()?.toInt()
-                if (port != null) {
+                val port = parsePort(portPart)
+                if (port != -1) {
                     return if (isIPAddress(addressPart)) {
                         InetSocketAddress(addressPart, port)
                     } else {
@@ -173,14 +237,13 @@ internal object AddressUtils
                     }
                 }
             } else if (isIPAddress(address)) {
-                //<ipv4-address>
+                // "<ip-address>"
                 return InetSocketAddress(address, defaultPort)
             } else if (isDomain(address)) {
-                //<hostname>
+                // "<domain>"
                 return InetSocketAddress.createUnresolved(address, defaultPort)
             }
         }
-
         return null
     }
 
@@ -190,7 +253,7 @@ internal object AddressUtils
         }
         val address = socketAddress.address
         val port = socketAddress.port
-        if (port !in 0..65535) {
+        if (port !in MIN_PORT..MAX_PORT) {
             return null
         } else if (address == null) {
             val host = socketAddress.hostString.trimStart('/')

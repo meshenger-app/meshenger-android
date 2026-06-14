@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
@@ -148,7 +149,7 @@ class MainService : Service(), Runnable {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 startForeground(NOTIFICATION_ID, notification)
             } else {
-                startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK or FOREGROUND_SERVICE_TYPE_MICROPHONE or FOREGROUND_SERVICE_TYPE_CAMERA)
+                startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK or FOREGROUND_SERVICE_TYPE_MICROPHONE or FOREGROUND_SERVICE_TYPE_CAMERA or FOREGROUND_SERVICE_TYPE_PHONE_CALL)
             }
         } else if (intent.action == STOP_FOREGROUND_ACTION) {
             Log.d(this, "onStartCommand() Received Stop Foreground Intent")
@@ -250,11 +251,11 @@ class MainService : Service(), Runnable {
             MainService.refreshEvents(this@MainService)
         }
 
-/*
-        fun shutdown() {
-            this@MainService.shutdown()
-        }
-*/
+        /*
+                fun shutdown() {
+                    this@MainService.shutdown()
+                }
+        */
         fun pingContacts(contactList: List<Contact>) {
             Log.d(this, "pingContacts()")
             Thread(

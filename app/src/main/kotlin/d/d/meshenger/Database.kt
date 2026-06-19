@@ -147,7 +147,7 @@ class Database {
 
         fun toData(db: Database, password: String?): ByteArray? {
             val obj = toJSON(db)
-            var dbdata = obj.toString().toByteArray()
+            var dbdata = obj.toString().toByteArray() as ByteArray?
 
             // encrypt database
             if (!password.isNullOrEmpty()) {

@@ -441,6 +441,11 @@ class Database {
                 newFrom = "4.4.8"
             }
 
+            if (newFrom in listOf("4.4.8")) {
+                // nothing to do
+                newFrom = "4.4.9"
+            }
+
             alignSettings(settings)
 
             db.put("version", newFrom)

@@ -251,11 +251,11 @@ class MainService : Service(), Runnable {
             MainService.refreshEvents(this@MainService)
         }
 
-/*
-        fun shutdown() {
-            this@MainService.shutdown()
-        }
-*/
+        /*
+                fun shutdown() {
+                    this@MainService.shutdown()
+                }
+        */
         fun pingContacts(contactList: List<Contact>) {
             Log.d(this, "pingContacts()")
             Thread(

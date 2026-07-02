@@ -107,7 +107,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
     private fun showInvalidAddressSettingsWarning() {
         Handler(Looper.getMainLooper()).postDelayed({
             val storedAddresses = Database.getSettings().addresses
-            val storedIPAddresses = storedAddresses.filter { AddressUtils.isIPAddress(it) }
+            val storedIPAddresses = storedAddresses.filter { !AddressUtils.isDomain(it) }
             if (storedAddresses.isNotEmpty() && storedIPAddresses.isEmpty()) {
                 // ignore, we only have domains configured
             } else if (storedAddresses.isEmpty()) {
@@ -241,6 +241,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
             R.string.menu_shutdown -> {
                 MainService.stop(applicationContext)
                 finish()
+                System.exit(0)
             }
         }
     }

@@ -142,6 +142,7 @@
     <string name="settings_mode_label_basic">Basic (default)</string>
     <string name="settings_mode_label_expert">Expert</string>
     <string name="settings_name">Name</string>
+    <string name="settings_network_port">Network Port</string>
     <string name="settings_nightmode">Night Mode</string>
     <string name="settings_prompt_outgoing_calls">Prompt Outgoing Calls</string>
     <string name="settings_public_key">Public Key</string>

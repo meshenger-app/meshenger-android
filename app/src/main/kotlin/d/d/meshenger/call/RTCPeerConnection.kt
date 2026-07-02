@@ -8,6 +8,7 @@ package d.d.meshenger.call
 import android.content.Intent
 import androidx.lifecycle.Lifecycle
 import d.d.meshenger.*
+import d.d.meshenger.MainService.Companion.DEFAULT_PORT
 import org.json.JSONObject
 import org.libsodium.jni.Sodium
 import java.io.IOException
@@ -210,7 +211,7 @@ abstract class RTCPeerConnection(
 
         run {
             // remember latest working address and set state
-            val workingAddress = InetSocketAddress(remoteAddress.address, MainService.SERVER_PORT)
+            val workingAddress = InetSocketAddress(remoteAddress.address, remoteAddress.port)
             val storedContact = Database.getContacts().getContactByPublicKey(contact.publicKey)
             if (storedContact != null) {
                 storedContact.lastWorkingAddress = workingAddress
@@ -616,7 +617,7 @@ abstract class RTCPeerConnection(
 
             if (contact == null) {
                 // unknown caller
-                contact = Contact("", otherPublicKey.clone(), ArrayList())
+                contact = Contact("", otherPublicKey.clone(), ArrayList(), DEFAULT_PORT)
             }
 
             // suspicious change of identity in during peerConnection...
@@ -627,7 +628,7 @@ abstract class RTCPeerConnection(
             }
 
             // remember latest working address and set state
-            contact.lastWorkingAddress = InetSocketAddress(remoteAddress.address, MainService.SERVER_PORT)
+            contact.lastWorkingAddress = InetSocketAddress(remoteAddress.address, remoteAddress.port)
 
             val obj = JSONObject(decrypted)
             val action = obj.optString("action", "")

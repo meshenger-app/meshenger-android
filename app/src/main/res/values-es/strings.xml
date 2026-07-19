@@ -6,7 +6,7 @@
     <string name="about_app_website">Página web:</string>
     <string name="address_management">Gestión de dirección</string>
     <string name="address_management_help_text">Selecciona una o varias direcciones IP que se incluirán en el código QR que compartirás. Dichas direcciones se usarán para que otros puedan contactarte. Ten en cuenta que las direcciones IP pueden cambiar según la red. Habilita tu red WLAN si no puedes ver ninguna dirección IP.</string>
-    <string name="app_description">Permite la comunicación por voz y vídeo sin necesidad de acceder a ningún servidor ni Internet. Simplemente escanead el código QR de contacto del otro y llamaos. Esto funciona en la mayoría de redes, por ejemplo, en casa, en redes comunitarias o en el trabajo.</string>
+    <string name="app_description">Permite la comunicación por voz y vídeo sin necesidad de servidores ni acceso a Internet. Simplemente cada uno escanea el código QR del otro contacto y ya podéis llamaros. Esto funciona en la mayoría de las redes, por ejemplo, en casa, en redes comunitarias o en el trabajo.</string>
     <string name="audio_device_auto">%1$s (automático)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Auricular</string>

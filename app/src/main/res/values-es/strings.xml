@@ -4,9 +4,9 @@
     <string name="about_app_license">Licencia:</string>
     <string name="about_app_version">Versión de la app:</string>
     <string name="about_app_website">Página web:</string>
-    <string name="address_management">Gestión de direcciones</string>
+    <string name="address_management">Gestión de dirección</string>
     <string name="address_management_help_text">Selecciona una o varias direcciones IP que se incluirán en el código QR que compartirás. Dichas direcciones se usarán para que otros puedan contactarte. Ten en cuenta que las direcciones IP pueden cambiar según la red. Habilita tu red WLAN si no puedes ver ninguna dirección IP.</string>
-    <string name="app_description">Permite la comunicación por voz y video sin necesidad de acceder a ningún servidor ni Internet. Simplemente escanead el código QR de contacto del otro y llamaos. Esto funciona en la mayoría de redes, por ejemplo, en casa, en redes comunitarias o en el trabajo.</string>
+    <string name="app_description">Permite la comunicación por voz y vídeo sin necesidad de acceder a ningún servidor ni Internet. Simplemente escanead el código QR de contacto del otro y llamaos. Esto funciona en la mayoría de redes, por ejemplo, en casa, en redes comunitarias o en el trabajo.</string>
     <string name="audio_device_auto">%1$s (automático)</string>
     <string name="audio_device_bluetooth">Bluetooth</string>
     <string name="audio_device_earpiece">Auricular</string>
@@ -155,8 +155,8 @@
     <string name="warning_no_addresses_found">No se encontró la dirección configurada. ¿Ha cambiado la red?</string>
     <string name="wrong_password">Contraseña incorrecta</string>
     <string name="night_mode_label_system">Sistema (por defecto)</string>
-    <string name="settings_camera_framerate_auto">Automático</string>
-    <string name="settings_camera_resolution_auto">Automático</string>
+    <string name="settings_camera_framerate_auto">Automático (por defecto)</string>
+    <string name="settings_camera_resolution_auto">Automático (por defecto)</string>
     <string name="settings_hide_menus">Ocultar menús</string>
     <string name="settings_mode_label_advanced">Avanzado</string>
     <string name="settings_skip_startup_permission_check">Saltar verificación de permisos de inicio</string>
@@ -178,12 +178,14 @@
     <string name="speakerphone_mode_label_auto">Automático (predeterminado)</string>
     <string name="theme_label_fire_red">Rojo Fuego</string>
     <string name="night_mode_label_on">Conectado</string>
-    <string name="ask_for_camera_permission">Dar permiso ahora para usar la cámara o esperar hasta usarla.</string>
+    <string name="ask_for_camera_permission">Faltan permisos para cámara para invocaciones de vídeo.</string>
     <string name="ask_for_bluetooth_connect_permission">Dar permiso ahora para utilizar cascos Bluetooth o esperar hasta usarlos.</string>
     <string name="ask_for_draw_overlay_permission">Falta permiso para superponerse. Necesario para mostrar llamadas entrantes en primer plano.</string>
     <string name="ask_for_post_notification_permission">Falta permiso para mostrar notificaciones. Esto es necesario para escuchar llamadas en segundo plano.</string>
-    <string name="ask_for_record_audio_permission">Dar permiso para usar el micrófono ahora, o esperar hasta usarlo.</string>
+    <string name="ask_for_record_audio_permission">Falta permiso para usar el micrófono para invocaciones.</string>
     <string name="missing_permissions">Faltan permisos</string>
     <string name="missing_required_permissions">No puede ejecurase sin los permisos requeridos.</string>
     <string name="button_ask">Preguntar</string>
+    <string name="night_mode_label_off">Apagado</string>
+    <string name="settings_audio_bitrate_max">Tasa máxima de los bit de sonido</string>
 </resources>

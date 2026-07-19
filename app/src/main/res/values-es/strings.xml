@@ -14,7 +14,7 @@
     <string name="audio_device_speakerphone">Altavoz</string>
     <string name="audio_device_wired_headset">Auriculares con cable</string>
     <string name="button_abort">Abortar</string>
-    <string name="button_add">Agregar</string>
+    <string name="button_add">Añadir</string>
     <string name="button_cancel">Cancelar</string>
     <string name="button_export">Exportar</string>
     <string name="button_import">Importar</string>
@@ -28,7 +28,7 @@
     <string name="button_skip">Omitir</string>
     <string name="button_yes">Sí</string>
     <string name="call_authentication_failed">Error de autenticación</string>
-    <string name="call_connected">Conectad@</string>
+    <string name="call_connected">Conectado</string>
     <string name="call_connecting">Llamando…</string>
     <string name="call_connection_failed">Error de conexión</string>
     <string name="call_denied">Rechazado</string>
@@ -94,7 +94,7 @@
     <string name="missing_bluetooth_permission">Falta permiso. Bluetooth no disponible.</string>
     <string name="missing_camera_permission">Falta permiso. Cámara no disponible.</string>
     <string name="missing_microphone_permission">Falta permiso. Micrófono no disponible.</string>
-    <string name="no_value">Nada</string>
+    <string name="no_value">Ninguno</string>
     <string name="password_title">Contraseña</string>
     <string name="paste_qr_code_data">Pegar contactos JSON aquí</string>
     <string name="ping_all_contacts">Ping a todos los contactos</string>
@@ -132,7 +132,7 @@
     <string name="settings_use_neighbor_table">Usar tabla vecina (ARP/ND)</string>
     <string name="settings_video_degradation_mode">Degradación del vídeo</string>
     <string name="settings_video_hardware_acceleration">Aceleración de vídeo por hardware</string>
-    <string name="setup_address">Establecer dirección</string>
+    <string name="setup_address">Configurar dirección</string>
     <string name="setup_no_address_found">Dirección no configurada. Por favor, active su red WLAN y seleccione al menos una en los Ajustes.</string>
     <string name="startup_hello">¡Hola!</string>
     <string name="startup_name_prefix">Usuari@</string>
@@ -186,6 +186,6 @@
     <string name="missing_permissions">Faltan permisos</string>
     <string name="missing_required_permissions">No puede ejecurase sin los permisos requeridos.</string>
     <string name="button_ask">Preguntar</string>
-    <string name="night_mode_label_off">Apagado</string>
+    <string name="night_mode_label_off">Desconectado</string>
     <string name="settings_audio_bitrate_max">Tasa máxima de los bit de sonido</string>
 </resources>

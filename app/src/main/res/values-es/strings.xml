@@ -136,7 +136,7 @@
     <string name="setup_no_address_found">Dirección no configurada. Habilite su red WLAN y seleccione al menos una en los Ajustes.</string>
     <string name="startup_hello">¡Hola!</string>
     <string name="startup_name_prefix">Usuario/a</string>
-    <string name="startup_prompt_name">¿Cuál debería de ser tu nombre?</string>
+    <string name="startup_prompt_name">¿Cómo debería llamarte?</string>
     <string name="state_app_not_running">La aplicación no se está ejecutando</string>
     <string name="state_authentication_failed">Autentificación fallida</string>
     <string name="state_communication_failed">Comunicación fallada</string>

@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import android.app.Activity
 import android.app.Dialog
 import android.content.*
@@ -74,7 +76,7 @@ class ContactDetailsActivity : BaseActivity(), ServiceConnection {
             val contact = Database.getContacts().getContactByPublicKey(publicKey)!!
             updateContact(contact)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             finish()
         }

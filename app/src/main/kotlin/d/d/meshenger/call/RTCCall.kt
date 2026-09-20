@@ -5,6 +5,8 @@
 
 package d.d.meshenger.call
 
+import android.util.Log
+
 import android.content.Context
 import android.provider.ContactsContract
 import d.d.meshenger.*
@@ -105,7 +107,7 @@ class RTCCall : RTCPeerConnection {
                     this.isCameraEnabled = enabled
                 }
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
             }
             Log.d(this, "setCameraEnabled() executor end")
         }
@@ -173,7 +175,7 @@ class RTCCall : RTCPeerConnection {
                 }
 
             } catch (e: JSONException) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
             }
         }
     }
@@ -201,7 +203,7 @@ class RTCCall : RTCPeerConnection {
                 )
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             return false
         }
 
@@ -328,7 +330,7 @@ class RTCCall : RTCPeerConnection {
         try {
             videoCapturer?.stopCapture()
         } catch (e: InterruptedException) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
         }
     }
 
@@ -356,7 +358,7 @@ class RTCCall : RTCPeerConnection {
                 encoding.scaleResolutionDownBy = 2.0
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
         }
     }
 
@@ -662,7 +664,7 @@ class RTCCall : RTCPeerConnection {
                                 reportStateChange(CallState.ERROR_COMMUNICATION)
                             }
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            Log.e("Meshenger", "Error", e)
                             reportStateChange(CallState.ERROR_COMMUNICATION)
                         }
                         AddressUtils.closeSocket(commSocket)
@@ -766,7 +768,7 @@ class RTCCall : RTCPeerConnection {
             try {
                 peerConnection?.close()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
             }
 
             Log.d(this, "cleanup() executor end")

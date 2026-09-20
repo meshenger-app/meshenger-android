@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import d.d.meshenger.Crypto.decryptDatabase
 import d.d.meshenger.Crypto.encryptDatabase
 import d.d.meshenger.Utils.readInternalFile
@@ -75,7 +77,7 @@ class Database {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
             }
         }
 

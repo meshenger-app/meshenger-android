@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -194,7 +196,7 @@ class Connector(
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
         }
 
         return addresses

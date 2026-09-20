@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -120,7 +122,7 @@ class MainService : Service(), Runnable {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
             }
         }
 
@@ -180,7 +182,7 @@ class MainService : Service(), Runnable {
             }
         } catch (e: IOException) {
             Log.e(this, "run() e=$e")
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             Handler(mainLooper).post { Toast.makeText(this, e.message, Toast.LENGTH_LONG).show() }
             shutdown()
         }

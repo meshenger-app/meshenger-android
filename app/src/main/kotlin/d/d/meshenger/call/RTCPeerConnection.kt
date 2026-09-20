@@ -5,6 +5,8 @@
 
 package d.d.meshenger.call
 
+import android.util.Log
+
 import android.content.Intent
 import androidx.lifecycle.Lifecycle
 import d.d.meshenger.*
@@ -82,7 +84,7 @@ abstract class RTCPeerConnection(
             try {
                 createOutgoingCallInternal(contact, offer)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
                 reportStateChange(CallState.ERROR_COMMUNICATION)
             }
         }.start()
@@ -430,12 +432,12 @@ abstract class RTCPeerConnection(
         try {
             executor.execute(r)
         } catch (e: RejectedExecutionException) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             // can happen when the executor has shut down
             Log.w(this, "execute() catched RejectedExecutionException")
             return false
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             Log.w(this, "execute() catched $e")
             reportStateChange(CallState.ERROR_COMMUNICATION)
             return false
@@ -468,7 +470,7 @@ abstract class RTCPeerConnection(
                     Log.d(this, "declineInternal() write dismissed message to socket")
                     pw.writeMessage(encrypted)
                 } catch (e: IOException) {
-                    e.printStackTrace()
+                    Log.e("Meshenger", "Error", e)
                 }
                 reportStateChange(CallState.DISMISSED)
             }
@@ -539,7 +541,7 @@ abstract class RTCPeerConnection(
                 try {
                     createIncomingCallInternal(binder, socket)
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.e("Meshenger", "Error", e)
                     //decline()
                 }
             }.start()
@@ -696,7 +698,7 @@ abstract class RTCPeerConnection(
                     } catch (e: Exception) {
                         incomingRTCCall?.cleanup()
                         incomingRTCCall = null
-                        e.printStackTrace()
+                        Log.e("Meshenger", "Error", e)
                     }
                 }
                 "ping" -> {

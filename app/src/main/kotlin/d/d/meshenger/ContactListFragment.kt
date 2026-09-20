@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
@@ -304,7 +306,7 @@ class ContactListFragment() : Fragment() {
             intent.putExtra(Intent.EXTRA_TEXT, Contact.toJSON(contact, false).toString())
             startActivity(intent)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
         }
     }
 

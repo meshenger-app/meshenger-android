@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
@@ -187,7 +189,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
                     val data = et.text.toString()
                     addContact(data)
                 } catch (e: JSONException) {
-                    e.printStackTrace()
+                    Log.e("Meshenger", "Error", e)
                     Toast.makeText(this, R.string.invalid_qr_code_data, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -227,7 +229,7 @@ class QRScanActivity : BaseActivity(), BarcodeCallback, ServiceConnection {
         try {
             addContact(result.text)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             Toast.makeText(this, R.string.invalid_qr, Toast.LENGTH_LONG).show()
         }
     }

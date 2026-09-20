@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -55,7 +57,7 @@ class LicenseActivity : BaseActivity() {
                     findViewById<TextView>(R.id.licenceText).text = buffer.toString()
                 }
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.e("Meshenger", "Error", e)
             }
         }.start()
     }

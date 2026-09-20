@@ -5,6 +5,8 @@
 
 package d.d.meshenger
 
+import android.util.Log
+
 import android.app.Activity
 import android.content.*
 import android.graphics.Bitmap
@@ -102,7 +104,7 @@ class QRShowActivity : BaseActivity(), ServiceConnection {
             contact = binder!!.getContactOrOwn(publicKey)!!
             showQRCode()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Meshenger", "Error", e)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             finish()
         }

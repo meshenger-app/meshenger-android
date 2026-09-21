@@ -450,6 +450,13 @@ class CallActivity : BaseActivity(), RTCCall.CallContext {
         speakerphoneButton = findViewById(R.id.speakerphoneButton)
         changePipButton = findViewById(R.id.change_pip_window)
         changeUiButton = findViewById(R.id.change_ui)
+
+        acceptButton.contentDescription = "Accept call"
+        declineButton.contentDescription = "Decline call"
+        toggleCameraButton.contentDescription = "Toggle camera"
+        toggleMicButton.contentDescription = "Toggle microphone"
+        toggleFrontCameraButton.contentDescription = "Switch camera"
+        speakerphoneButton.contentDescription = "Speakerphone"
         controlPanel = findViewById(R.id.controlPanel)
         capturePanel = findViewById(R.id.capturePanel)
 

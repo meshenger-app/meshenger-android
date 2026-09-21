@@ -102,6 +102,10 @@ class ContactListFragment() : Fragment() {
         fabScan = view.findViewById(R.id.fabScan)
         fabGen = view.findViewById(R.id.fabGenerate)
         fabPingAll = view.findViewById(R.id.fabPing)
+        fab.contentDescription = "Expand actions"
+        fabScan.contentDescription = "Scan QR code"
+        fabGen.contentDescription = "Show QR code"
+        fabPingAll.contentDescription = "Ping all contacts"
         contactListView = view.findViewById(R.id.contactList)
         contactListView.onItemClickListener = onContactClickListener
 

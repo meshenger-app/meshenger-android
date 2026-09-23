@@ -188,4 +188,5 @@
     <string name="night_mode_label_on">开</string>
     <string name="settings_video_degradation_mode_label_disabled">已停用</string>
     <string name="settings_video_degradation_mode_label_maintain_framerate">保持帧率</string>
+    <string name="contact_state">联系人状态</string>
 </resources>

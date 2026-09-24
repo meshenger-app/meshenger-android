@@ -17,6 +17,8 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
+import d.d.meshenger.MainService.Companion.MAX_PORT
+import d.d.meshenger.MainService.Companion.MIN_PORT
 import d.d.meshenger.MainService.MainBinder
 import java.lang.Integer.parseInt
 
@@ -158,6 +160,11 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             .text = settings.connectTimeout.toString()
         findViewById<View>(R.id.connectTimeoutLayout)
             .setOnClickListener { showChangeConnectTimeoutDialog() }
+
+        findViewById<TextView>(R.id.serverPortTv)
+            .text = settings.serverPort.toString()
+        findViewById<View>(R.id.serverPortLayout)
+            .setOnClickListener { showChangeServerPortDialog() }
 
         findViewById<SwitchMaterial>(R.id.promptOutgoingCallsSwitch).apply {
             isChecked = settings.promptOutgoingCalls
@@ -497,6 +504,39 @@ class SettingsActivity : BaseActivity(), ServiceConnection {
             dialog.cancel()
         }
         cancelButton.setOnClickListener { dialog.cancel() }
+        dialog.show()
+    }
+
+    private fun showChangeServerPortDialog() {
+        val settings = Database.getSettings()
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_change_server_port)
+
+        val serverPortEditText = dialog.findViewById<TextView>(R.id.ServerPortEditText)
+        val cancelButton = dialog.findViewById<Button>(R.id.CancelButton)
+        val okButton = dialog.findViewById<Button>(R.id.OkButton)
+
+        serverPortEditText.text = settings.serverPort.toString()
+
+        okButton.setOnClickListener {
+            val text = serverPortEditText.text.toString()
+            if (AddressUtils.isValidPort(text)) {
+                settings.serverPort = text.toInt()
+                Database.saveDatabase()
+                initViews()
+                Toast.makeText(this@SettingsActivity, R.string.done, Toast.LENGTH_SHORT).show()
+            } else {
+                val message = String.format(getString(R.string.invalid_number), MIN_PORT, MAX_PORT)
+                Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
+            }
+
+            dialog.cancel()
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.cancel()
+        }
+
         dialog.show()
     }
 

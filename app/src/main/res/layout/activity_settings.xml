@@ -1115,6 +1115,40 @@
                     app:dividerColor="@color/light_grey" />
 
                 <LinearLayout
+                    android:id="@+id/serverPortLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/settings_network_port"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="@dimen/title_text_size" />
+
+                    <TextView
+                        android:id="@+id/serverPortTv"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="@dimen/options_text_size" />
+
+                </LinearLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    app:dividerColor="@color/light_grey" />
+
+                <LinearLayout
                     android:id="@+id/connectTimeoutLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

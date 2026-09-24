@@ -5,6 +5,7 @@
 
 package d.d.meshenger
 
+import d.d.meshenger.MainService.Companion.DEFAULT_PORT
 import org.json.JSONObject
 import java.net.InetSocketAddress
 import java.util.*
@@ -26,11 +27,11 @@ class Event(
 
     fun createUnknownContact(name: String): Contact {
         val addresses = mutableListOf<String>()
-        val address = address?.address
-        if (address != null) {
-            addresses.add(address.toString().removePrefix("/"))
+        val inetAddress = address?.address
+        if (inetAddress != null) {
+            addresses.add(AddressUtils.stripPort(AddressUtils.stripHost(inetAddress.toString())))
         }
-        return Contact(name, publicKey, addresses)
+        return Contact(name, publicKey, addresses, address?.port ?: DEFAULT_PORT)
     }
 
     companion object {
@@ -73,7 +74,7 @@ class Event(
 
         fun fromJSON(obj: JSONObject): Event {
             val publicKey = Utils.hexStringToByteArray(obj.getString("public_key"))
-            val address = AddressUtils.stringToInetSocketAddress(obj.optString("address"), MainService.SERVER_PORT)
+            val address = AddressUtils.parseInetSocketAddress(obj.optString("address"))
             val type = eventTypeFromString(obj.getString("type"))
             val date = Date(obj.getString("date").toLong(10))
             return Event(publicKey, address, type, date)
